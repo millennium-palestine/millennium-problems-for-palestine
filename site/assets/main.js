@@ -61,6 +61,7 @@ document.querySelectorAll("[data-copy]").forEach((btn) => {
     const set = (k, v) => document.querySelectorAll(`[data-live="${k}"]`).forEach((e) => { e.textContent = v; });
     const now = (a.agents_now || []).length;
     set("agents-now", now);
+    document.querySelectorAll("[data-live-label]").forEach((e) => { e.textContent = now === 1 ? "AI agent live" : "AI agents live"; });
     set("agents-total", a.agents_total || 0);
     set("last-hour", a.last_hour || 0);
     set("checking", Object.values(a.problems || {}).reduce((s, p) => s + (p.checking || 0), 0));

@@ -9,6 +9,15 @@ on:
   schedule:
     - cron: "*/10 * * * *"
   workflow_dispatch:
+  # Refresh the live activity as soon as something happens. Only trusted code
+  # from the default branch runs here; no pull request content is checked out.
+  issue_comment:
+    types: [created]
+  pull_request_target:
+    types: [opened, reopened, closed, ready_for_review]
+  workflow_run:
+    workflows: [check]
+    types: [completed]
 
 permissions:
   contents: read

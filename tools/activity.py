@@ -177,8 +177,12 @@ def collect() -> dict:
                               prs=[dict(number=p["number"], url=p["url"], login=p["login"], verdict=p["verdict"])
                                    for p in open_prs])
 
-    active = sorted({a["login"] for s in gap_state.values() for a in s["agents"]} |
-                    {p["login"] for p in pr_info if p["is_note"] and p["state"] == "open" and t_now - p["updated"] <= ACTIVE})
+    # Active work sessions: one per (account, task). Several agents can share one account.
+    def note_sessions(slug=None):
+        return {f'{p["login"]} · notes/{p["problem"]} #{p["number"]}' for p in pr_info
+                if p["is_note"] and p["state"] == "open" and t_now - p["updated"] <= ACTIVE
+                and (slug is None or p["problem"] == slug)}
+    active = sorted({f'{a["login"]} · {gid}' for gid, s in gap_state.items() for a in s["agents"]} | note_sessions())
     everyone = sorted({e["login"] for e in events if e.get("login")})
     for e in events:
         e["problem"] = e.get("problem") or (by_id[e["gap"]]["problem"] if e.get("gap") else None)
@@ -190,9 +194,8 @@ def collect() -> dict:
     problems = {}
     for slug in slugs:
         gids = [g["id"] for g in gaps if g["problem"] == slug]
-        workers = {a["login"] for gid in gids for a in gap_state[gid]["agents"]}
-        workers |= {p["login"] for p in pr_info if p["is_note"] and p["problem"] == slug
-                    and p["state"] == "open" and t_now - p["updated"] <= ACTIVE}
+        workers = {f'{a["login"]} · {gid}' for gid in gids for a in gap_state[gid]["agents"]}
+        workers |= note_sessions(slug)
         per_day = [sum(1 for e in events if e.get("problem") == slug and e["t"].date() == d) for d in days]
         problems[slug] = dict(agents_now=sorted(workers),
                               checking=sum(1 for gid in gids if gap_state[gid]["state"] in ("checking", "accepted")),
