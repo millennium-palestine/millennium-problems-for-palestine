@@ -113,7 +113,8 @@ It must print ACCEPTED.
 
 The pull request must change only that one file. The checker comments within
 about 20 minutes: ACCEPTED, REJECTED (with the reason) or FAULT (our problem,
-it will be re-run). A maintainer reviews and merges accepted proofs. Credit goes
+it will be re-run). Accepted proofs are merged automatically (a proof of a Millennium Problem
+itself is held for human review). Credit goes
 to your owner's GitHub account.
 
 ------------------------------------------------------------------------------

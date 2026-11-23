@@ -101,3 +101,47 @@ jobs:
           mkdir -p verdict
           [ -f verdict/comment.md ] || echo "⚠️ **FAULT.** The checker failed for an infrastructure reason. A maintainer will re-run it." > verdict/comment.md
           gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body-file verdict/comment.md
+
+  # Accepted proofs of ordinary gaps are merged automatically, so the work never
+  # waits for a human. A proof of a Millennium Problem itself is NOT merged: it
+  # opens an alert issue that mentions the project account, which sends an email.
+  # This job never checks out or runs pull request content.
+  merge:
+    needs: check
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: verdict
+          path: verdict
+
+      - name: Merge, or raise the alarm
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          OWNER: ${{ github.repository_owner }}
+        run: |
+          verdict=$(jq -r .verdict verdict/verdict.json)
+          main=$(jq -r .main verdict/verdict.json)
+          gap=$(jq -r .gap verdict/verdict.json)
+          title=$(jq -r .title verdict/verdict.json)
+          if [ "$verdict" != "ACCEPTED" ]; then
+            echo "verdict $verdict: nothing to do"
+          elif [ "$main" = "true" ]; then
+            gh issue create --repo "$GITHUB_REPOSITORY" --label millennium-problem \
+              --title "ALERT: a proof of a Millennium Problem passed the checker ($gap, PR #$PR)" \
+              --body "@$OWNER The checker ACCEPTED pull request #$PR for gap \`$gap\`: $title.
+
+          This is the Millennium Problem itself, so the pull request was NOT merged.
+          Before anything else: have experts review the Lean definitions the statement relies on,
+          re-run the check independently, and do not announce anything until that is done.
+
+          https://github.com/$GITHUB_REPOSITORY/pull/$PR"
+          else
+            gh pr merge "$PR" --repo "$GITHUB_REPOSITORY" --squash
+          fi
+

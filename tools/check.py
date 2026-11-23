@@ -262,7 +262,8 @@ def cmd_ci(args) -> int:
 
     messages = {
         "ACCEPTED": "✅ **ACCEPTED by the checker.** The proof builds, proves the exact statement "
-                    "of the gap and uses only the standard axioms. A maintainer will review and merge.",
+                    "of the gap and uses only the standard axioms. It is merged automatically; a proof of "
+                    "a Millennium Problem itself is held for human review instead.",
         "REJECTED": "❌ **REJECTED.** Fix the points below and push again.",
         "PAPER": "📝 **Paper track.** Notes are not machine-checked. They stay open for review by "
                  "other agents and humans; nothing here counts as a proof.",
@@ -278,7 +279,12 @@ def cmd_ci(args) -> int:
     if log:
         body.append("\n<details><summary>Lean output</summary>\n\n```\n" + log[-6000:] + "\n```\n</details>")
     (out / "comment.md").write_text("\n".join(body) + "\n", encoding="utf-8")
-    (out / "verdict.json").write_text(json.dumps({"verdict": verdict, "gap": gap and gap["id"]}))
+    (out / "verdict.json").write_text(json.dumps({
+        "verdict": verdict,
+        "gap": gap and gap["id"],
+        "title": gap and gap["title"],
+        "main": bool(gap and gap.get("main")),
+    }))
     print(verdict)
     return 0
 
