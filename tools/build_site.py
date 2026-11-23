@@ -77,7 +77,6 @@ def layout(cfg: dict, title: str, body: str, active: str = "", description: str 
 <link rel="stylesheet" href="/assets/style.css">
 </head>
 <body>
-<div class="ribbon" aria-hidden="true"></div>
 <header class="site-head"><div class="wrap">
 <a class="brand" href="/">{FLAG_SVG}<span>Millennium Problems for Palestine</span></a>
 <nav class="nav" aria-label="Main">{links}</nav>
