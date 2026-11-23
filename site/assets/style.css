@@ -410,3 +410,60 @@ main { flex: 1 0 auto; }
 }
 
 .status td:last-child, .status th:last-child { text-align: center; width: 3em; }
+
+/* ---- Live home: embroidery, fleet, record ---- */
+.live-home { background: var(--black); color: var(--white); padding: 56px 0 60px; position: relative; }
+.live-home::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 6px; background: linear-gradient(90deg, var(--black) 0 33%, var(--white) 33% 66%, var(--green) 66%); }
+.live-home .kicker { color: #f3b0b8; }
+.lh-head h2 { font-family: var(--serif); font-size: clamp(1.8rem, 4vw, 2.8rem); margin: 0 0 10px; }
+.lh-head p { color: #cfcfcf; max-width: 70ch; margin: 0; }
+.lh-count { color: var(--white); white-space: nowrap; }
+.lh-grid { display: grid; grid-template-columns: minmax(260px, 0.9fr) 1.1fr; gap: 40px; margin-top: 30px; align-items: start; }
+.embroidery { width: 100%; max-width: 420px; height: auto; display: block; margin: 0 auto; }
+.embroidery .st .bg { fill: transparent; stroke: #3a3a3a; stroke-width: 1.2; }
+.embroidery .st .x { stroke-width: 3.2; stroke-linecap: round; fill: none; opacity: 0.38; }
+.embroidery .prob-pvsnp .x { stroke: #2fbf71; }
+.embroidery .prob-bsd .x { stroke: #ff4d63; }
+.embroidery .st-main .bg { stroke: #ff4d63; stroke-width: 1.8; }
+.embroidery .st-working .x, .embroidery .st-checking .x, .embroidery .st-accepted .x { opacity: 1; }
+.embroidery .st-working .x { animation: stitchpulse 1.2s ease-in-out infinite; }
+.embroidery .st-working .bg { stroke: var(--white); }
+.embroidery .st-checking .bg, .embroidery .st-accepted .bg { stroke: var(--white); stroke-dasharray: 3 3; }
+.embroidery .prob-pvsnp.st-proved .bg { fill: var(--green); stroke: var(--green); }
+.embroidery .prob-bsd.st-proved .bg { fill: var(--red); stroke: var(--red); }
+.embroidery .st-proved .x { stroke: var(--white); opacity: 1; }
+.embroidery .st-future circle { fill: #4a4a4a; }
+.embroidery a:hover .bg { stroke: var(--white); }
+.live-home .legend { justify-content: center; color: #bdbdbd; }
+.live-home .legend .sw { margin-right: 0; }
+.sw-p { background: #2fbf71 !important; border-color: #2fbf71 !important; }
+.sw-b { background: #ff4d63 !important; border-color: #ff4d63 !important; }
+.sw-w { background: transparent !important; border: 1.5px solid var(--white) !important; animation: stitchpulse 1.2s ease-in-out infinite; }
+.sw-d { background: var(--green) !important; border-color: var(--green) !important; }
+.lh-side h3 { font-family: var(--serif); font-size: 1.25rem; margin: 0 0 10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.lh-side h3 small { font-family: var(--sans); font-size: 0.78rem; color: #9a9a9a; font-weight: 400; }
+.lh-side h3:not(:first-child) { margin-top: 26px; }
+.fleet { list-style: none; margin: 0; padding: 0; border-top: 1px solid #2a2a2a; }
+.fl-row { display: grid; grid-template-columns: 12px auto auto 1fr auto; align-items: baseline; gap: 2px 10px; padding: 9px 0; border-bottom: 1px solid #2a2a2a; font-size: 0.92rem; }
+.fl-title { grid-column: 2 / -1; grid-row: 2; font-size: 0.85rem; }
+.fl-state { text-align: right; }
+.fl-dot { width: 8px; height: 8px; border-radius: 50%; background: #2fbf71; align-self: center; animation: breathe 1.4s ease-in-out infinite; }
+.fl-who { font-family: var(--mono); font-weight: 700; }
+.fl-gap { font-family: var(--mono); color: #8fd9b0; text-decoration: none; }
+.fl-title { color: #bdbdbd; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.fl-state { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: #f0b35a; }
+.elapsed { font-family: var(--mono); color: var(--white); font-variant-numeric: tabular-nums; }
+.fl-empty { color: #9a9a9a; padding: 10px 0; }
+.fl-empty a { color: #8fd9b0; }
+.live-home .feed { border-top-color: #2a2a2a; }
+.live-home .ev { border-bottom-color: #2a2a2a; }
+.live-home .ev a { color: #eaeaea; }
+.live-home .ev a:hover { color: #ff8a98; }
+.live-home .ev time { color: #8a8a8a; }
+.ev.new { animation: flashin 2.4s ease-out; }
+@keyframes flashin { 0% { background: rgba(47,191,113,0.35); } 100% { background: transparent; } }
+@media (max-width: 860px) {
+  .lh-grid { grid-template-columns: 1fr; }
+  .fl-state { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .embroidery .st-working .x, .sw-w, .fl-dot { animation: none; } }

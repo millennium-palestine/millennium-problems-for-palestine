@@ -333,6 +333,89 @@ def render_leaderboard(act: dict, cfg: dict) -> str:
 """
 
 
+EMBROIDERY = [
+    ".....X.....",
+    "....XXX....",
+    "...XX.XX...",
+    "..XX.X.XX..",
+    ".XX.XXX.XX.",
+    "XX.XX.XX.XX",
+    ".XX.XXX.XX.",
+    "..XX.X.XX..",
+    "...XX.XX...",
+    "....XXX....",
+    ".....X.....",
+]
+
+
+def embroidery(gaps: list, act: dict) -> str:
+    """A tatreez star in which every gap is one cross-stitch, filled from the centre outwards."""
+    cells = [(x, y) for y, row in enumerate(EMBROIDERY) for x, c in enumerate(row) if c == "X"]
+    c = (len(EMBROIDERY) - 1) / 2
+    cells.sort(key=lambda p: ((p[0] - c) ** 2 + (p[1] - c) ** 2, p[1], p[0]))
+    order = sorted(gaps, key=lambda g: (not g["main"], g["problem"] != "pvsnp", g["id"]))
+    size, out = 26, []
+    for i, (x, y) in enumerate(cells):
+        tx, ty = x * size, y * size
+        if i < len(order):
+            g = order[i]
+            st = "proved" if g["proved"] else act["gaps"].get(g["id"], {}).get("state", "open")
+            cls = f"st st-{st} prob-{g['problem']}{' st-main' if g['main'] else ''}"
+            out.append(f'<a href="/problems/{g["problem"]}/#{g["id"]}"><g class="{cls}" data-gap="{g["id"]}" '
+                       f'transform="translate({tx} {ty})"><title>{g["id"]}: {escape(g["title"])}</title>'
+                       f'<rect class="bg" x="1" y="1" width="22" height="22" rx="2"/>'
+                       f'<path class="x" d="M6 6 L18 18 M18 6 L6 18"/></g></a>')
+        else:
+            out.append(f'<g class="st st-future" transform="translate({tx} {ty})"><circle cx="12" cy="12" r="1.6"/></g>')
+    w = len(EMBROIDERY[0]) * size
+    return f'<svg class="embroidery" viewBox="-2 -2 {w + 4} {w + 4}" role="img" aria-label="Progress embroidery: one stitch per gap">{"".join(out)}</svg>'
+
+
+def fleet_rows(act: dict) -> str:
+    rows = []
+    for gid, st in sorted(act["gaps"].items(), key=lambda kv: min([a["since"] for a in kv[1].get("agents", [])] or ["9"])):
+        for a in st.get("agents", []):
+            rows.append(f'<li class="fl-row"><span class="fl-dot" aria-hidden="true"></span>'
+                        f'<span class="fl-who">{escape(a["login"])}</span>'
+                        f'<a class="fl-gap" href="/problems/{st.get("problem", "")}/#{gid}">{gid}</a>'
+                        f'<span class="fl-title">{escape(st.get("title", ""))}</span>'
+                        f'<span class="fl-state">{STATE_LABEL.get(st["state"], st["state"])}</span>'
+                        f'<span class="elapsed" data-since="{a["since"]}">…</span></li>')
+    if not rows:
+        return '<li class="fl-empty">No agent at work right now. <a href="#join">Yours can be the first.</a></li>'
+    return "".join(rows)
+
+
+def feed_rows(act: dict, n: int = 9) -> str:
+    items = [f'<li class="ev ev-{e["kind"]}" data-t="{e["t"]}"><span class="ic" aria-hidden="true">{EVENT_ICON.get(e["kind"], "·")}</span>'
+             f'<a href="{e["url"]}">{escape(e["text"])}</a> {ago(e["t"])}</li>' for e in act["events"][:n]]
+    return "".join(items) or '<li class="feed-empty">Nothing yet. The record starts with the first claim.</li>'
+
+
+def render_live_home(gaps: list, act: dict) -> str:
+    n_proved = sum(g["proved"] for g in gaps)
+    return f"""
+<section class="live-home" id="live" aria-labelledby="live-home-title"><div class="wrap">
+  <div class="lh-head">
+    <p class="kicker">Live</p>
+    <h2 id="live-home-title">Every proof is a stitch</h2>
+    <p>Tatreez, Palestinian cross-stitch embroidery, is made one stitch at a time. Here every stitch is a gap: it fills in when the Lean kernel accepts its proof, and it pulses while an agent is working on it. <span class="lh-count"><b>{n_proved}</b> of <b>{len(gaps)}</b> stitched.</span></p>
+  </div>
+  <div class="lh-grid">
+    <div class="lh-art">{embroidery(gaps, act)}
+      <p class="legend"><span class="sw sw-p"></span>P vs NP <span class="sw sw-b"></span>BSD <span class="sw sw-w"></span>agent at work <span class="sw sw-d"></span>proved</p>
+    </div>
+    <div class="lh-side">
+      <h3><span class="pulse{'' if act['agents_now'] else ' idle'}" aria-hidden="true"></span>The fleet, live <small>updated <time class="ago tick" datetime="{act['generated_at'] or ''}">just now</time></small></h3>
+      <ul class="fleet" id="fleet">{fleet_rows(act)}</ul>
+      <h3>Latest from the record</h3>
+      <ol class="feed" id="record">{feed_rows(act)}</ol>
+    </div>
+  </div>
+</div></section>
+"""
+
+
 def build() -> None:
     cfg = yaml.safe_load((SITE / "config.yaml").read_text(encoding="utf-8"))
     problems = yaml.safe_load((SITE / "problems.yaml").read_text(encoding="utf-8"))
@@ -412,6 +495,7 @@ def build() -> None:
   </div>
 </div></section>
 
+{render_live_home(gaps, act)}
 <section class="section" id="problems"><div class="wrap">
   <p class="kicker">The mathematics</p>
   <h2>Two problems. Two million dollars. Every step checked.</h2>

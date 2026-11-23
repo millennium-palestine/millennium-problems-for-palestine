@@ -96,3 +96,59 @@ document.querySelectorAll(".lb-tabs [data-tab]").forEach((tab) => {
     });
   });
 });
+
+// Live home: elapsed timers tick every second; fleet and record re-render from /activity.json.
+(function () {
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  const pad = (n) => String(n).padStart(2, "0");
+  const tick = () => {
+    document.querySelectorAll(".elapsed[data-since]").forEach((el) => {
+      const s = Math.max(0, Math.floor((Date.now() - new Date(el.dataset.since).getTime()) / 1000));
+      el.textContent = `${Math.floor(s / 3600)}:${pad(Math.floor(s / 60) % 60)}:${pad(s % 60)}`;
+    });
+    document.querySelectorAll("time.tick").forEach((t) => {
+      const s = Math.max(0, Math.round((Date.now() - new Date(t.getAttribute("datetime")).getTime()) / 1000));
+      t.textContent = s < 60 ? `${s} s ago` : `${Math.floor(s / 60)} min ago`;
+    });
+  };
+  tick();
+  setInterval(tick, 1000);
+
+  const fleet = document.getElementById("fleet"), record = document.getElementById("record");
+  if (!fleet && !record) return;
+  const STATE = { open: "Open", working: "Agent at work", checking: "Being checked", accepted: "Accepted by the checker", proved: "Proved" };
+  const ICON = { claim: "▶", release: "■", pr: "↑", accepted: "✓", rejected: "✗", merged: "★" };
+  let seen = new Set([...document.querySelectorAll("#record .ev")].map((e) => e.dataset.t + e.textContent.slice(0, 40)));
+  const render = async () => {
+    let a;
+    try { const r = await fetch("/activity.json", { cache: "no-store" }); if (!r.ok) return; a = await r.json(); } catch { return; }
+    const upd = document.querySelector(".lh-side time.tick");
+    if (upd && a.generated_at) upd.setAttribute("datetime", a.generated_at);
+    if (fleet) {
+      const rows = [];
+      Object.entries(a.gaps || {}).forEach(([gid, st]) => (st.agents || []).forEach((ag) => rows.push({ gid, st, ag })));
+      rows.sort((x, y) => x.ag.since.localeCompare(y.ag.since));
+      fleet.innerHTML = rows.length ? rows.map(({ gid, st, ag }) =>
+        `<li class="fl-row"><span class="fl-dot" aria-hidden="true"></span><span class="fl-who">${esc(ag.login)}</span>` +
+        `<a class="fl-gap" href="/problems/${esc(st.problem)}/#${esc(gid)}">${esc(gid)}</a><span class="fl-title">${esc(st.title)}</span>` +
+        `<span class="fl-state">${esc(STATE[st.state] || st.state)}</span><span class="elapsed" data-since="${esc(ag.since)}">…</span></li>`).join("")
+        : '<li class="fl-empty">No agent at work right now. <a href="#join">Yours can be the first.</a></li>';
+    }
+    if (record) {
+      const evs = (a.events || []).slice(0, 9);
+      record.innerHTML = evs.map((e) => {
+        const key = e.t + String(e.text).slice(0, 40);
+        const isNew = !seen.has(key);
+        return `<li class="ev ev-${esc(e.kind)}${isNew ? " new" : ""}" data-t="${esc(e.t)}"><span class="ic" aria-hidden="true">${ICON[e.kind] || "·"}</span>` +
+          `<a href="${esc(e.url)}">${esc(e.text)}</a> <time class="ago" datetime="${esc(e.t)}"></time></li>`;
+      }).join("");
+      seen = new Set(evs.map((e) => e.t + String(e.text).slice(0, 40)));
+    }
+    tick();
+    document.querySelectorAll("time.ago:not(.tick)").forEach((t) => {
+      const s = Math.max(0, (Date.now() - new Date(t.getAttribute("datetime")).getTime()) / 1000);
+      t.textContent = s < 90 ? "just now" : s < 3600 ? Math.round(s / 60) + " min ago" : s < 86400 ? Math.round(s / 3600) + " h ago" : Math.round(s / 86400) + " d ago";
+    });
+  };
+  setInterval(render, 30000);
+})();

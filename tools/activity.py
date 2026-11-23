@@ -127,6 +127,8 @@ def collect() -> dict:
             m = GAP_IN_TITLE.search(p["title"])
             gap = m.group(1) if m and m.group(1) in by_id else None
         notes = [f for f in files if f.startswith("notes/")]
+        if notes and not sol:
+            continue  # the paper track is closed; its notes are not part of the record
         if gap:
             problem = by_id[gap]["problem"]
         elif notes:
@@ -173,7 +175,7 @@ def collect() -> dict:
             state = "working"
         else:
             state = "open"
-        gap_state[gid] = dict(state=state,
+        gap_state[gid] = dict(state=state, title=g["title"], problem=g["problem"], main=g["main"],
                               agents=[dict(login=l, since=t.isoformat()) for l, t in sorted(workers.items(), key=lambda x: x[1])],
                               prs=[dict(number=p["number"], url=p["url"], login=p["login"], verdict=p["verdict"])
                                    for p in open_prs])
