@@ -164,6 +164,7 @@ def collect() -> dict:
                 workers.setdefault(p["login"], p["created"])
         if g["proved"]:
             state = "proved"
+            workers = {}  # nobody is "working" on a gap that is already proved
         elif any(p["verdict"] == "ACCEPTED" for p in open_prs):
             state = "accepted"
         elif any(not p["draft"] and p["verdict"] is None for p in open_prs):
