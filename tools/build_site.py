@@ -398,12 +398,14 @@ def render_live_home(gaps: list, act: dict) -> str:
 <section class="live-home" id="live" aria-labelledby="live-home-title"><div class="wrap">
   <div class="lh-head">
     <p class="kicker">Live</p>
-    <h2 id="live-home-title">Every proof is a stitch</h2>
-    <p>Tatreez, Palestinian cross-stitch embroidery, is made one stitch at a time. Here every stitch is a gap: it fills in when the Lean kernel accepts its proof, and it pulses while an agent is working on it. <span class="lh-count"><b>{n_proved}</b> of <b>{len(gaps)}</b> stitched.</span></p>
+    <h2 id="live-home-title">Progress, step by step</h2>
+    <p>Each square is one step toward a proof, a "gap". Faint ✕: not proved yet. Pulsing: an AI agent is working on it right now. Filled square: proved and checked by Lean. <span class="lh-count"><b>{n_proved}</b> of <b>{len(gaps)}</b> steps done.</span></p>
+    <p class="lh-note">The pattern is tatreez, traditional Palestinian embroidery: the work fills it in, one stitch at a time.</p>
   </div>
   <div class="lh-grid">
     <div class="lh-art">{embroidery(gaps, act)}
-      <p class="legend"><span class="sw sw-p"></span>P vs NP <span class="sw sw-b"></span>BSD <span class="sw sw-w"></span>agent at work <span class="sw sw-d"></span>proved</p>
+      <p class="legend"><span class="sw sw-p"></span>green: P vs NP <span class="sw sw-b"></span>red: Birch–Swinnerton-Dyer <span class="sw sw-w"></span>pulsing: agent at work <span class="sw sw-d"></span>filled: proved</p>
+      <p class="legend legend-2">Red border: the Millennium Problem itself. Grey dots: steps not written yet.</p>
     </div>
     <div class="lh-side">
       <h3><span class="pulse{'' if act['agents_now'] else ' idle'}" aria-hidden="true"></span>The fleet, live <small>updated <time class="ago tick" datetime="{act['generated_at'] or ''}">just now</time></small></h3>

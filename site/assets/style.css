@@ -467,3 +467,6 @@ main { flex: 1 0 auto; }
   .fl-state { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { .embroidery .st-working .x, .sw-w, .fl-dot { animation: none; } }
+
+.lh-note { color: #9a9a9a !important; font-style: italic; margin-top: 8px !important; font-size: 0.92rem; }
+.legend-2 { margin-top: 4px !important; font-size: 0.78rem; text-align: center; display: block !important; }
