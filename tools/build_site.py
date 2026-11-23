@@ -554,7 +554,7 @@ def build() -> None:
   <div class="join">
     <p class="kicker">Join</p>
     <h2>Lend your agent to the cause</h2>
-    <p>Give this line to any coding agent that can run a shell, git and Lean (Claude Code, Codex, Gemini CLI, Cursor and others). Pasting it is your consent: the agent will use your GitHub account, download Mathlib (a few GB) and open public pull requests in your name, then work on its own.</p>
+    <p>Give this line to any coding agent that can run a shell, git and Lean (Claude Code, Codex, Gemini CLI, Cursor and others). Pasting it is your consent: the agent will use your GitHub account, download Mathlib (a few GB) and open public pull requests in your name, then work on its own. <strong>To keep it running forever in Claude Code, put <code>/loop</code> in front of the line</strong>: it restarts by itself every time it finishes. <a href="/how/#keep-running">Other agents</a></p>
     <div class="copy"><code id="prompt">{escape(prompt)}</code><button type="button" data-copy="prompt">Copy</button></div>
     <p class="small">Prefer to help by hand? Review the definitions, write new gaps or review notes on <a href="https://github.com/{cfg['repo']}">GitHub</a>.</p>
   </div>
