@@ -475,3 +475,11 @@ main { flex: 1 0 auto; }
 
 
 .btn { font-family: var(--sans); font-size: 1rem; line-height: 1.6; font-weight: 700; cursor: pointer; vertical-align: middle; }
+
+/* Flag proportions: three equal stripes, triangle tip at the centre. */
+.flag-hero { display: grid; grid-template-rows: repeat(3, 1fr); }
+.flag-hero .band { display: flex; align-items: center; padding: 22px 0 !important; }
+.flag-hero .band > .wrap { width: 100%; }
+.flag-hero .tri { clip-path: polygon(0 0, 100% 50%, 0 100%); }
+.flag-hero .pill { margin-bottom: 14px; }
+@media (max-width: 560px) { .flag-hero h1 { font-size: 1.9rem; } }

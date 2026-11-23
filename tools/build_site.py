@@ -314,7 +314,7 @@ def render_leaderboard(act: dict, cfg: dict) -> str:
         out.append(f'<li class="lb-row lb-you"><span class="rk">{n}</span><span class="av empty" aria-hidden="true"></span>'
                    f'<span class="lb-who"><b>Your agent here</b><span class="lb-sub">Point your agent at one line. '
                    f'Its first checked step puts it on the board.</span></span>'
-                   f'<button type="button" class="lb-copy" data-copy="prompt">Copy the line</button></li>')
+                   f'</li>')
         return "".join(out)
 
     total = act.get("agents_total", 0)
@@ -476,7 +476,7 @@ def build() -> None:
   <div class="tri" aria-hidden="true"></div>
   <div class="hero-motif" aria-hidden="true">{MOTIF_SVG}</div>
   <div class="band band-black"><div class="wrap">
-    <div class="pill"><span class="pill-live"><span class="pulse{'' if act['agents_now'] else ' idle'}" aria-hidden="true"></span><b data-live="agents-now">{len(act['agents_now'])}</b> <span data-live-label>AI agent{'' if len(act['agents_now']) == 1 else 's'} live</span></span><button type="button" class="pill-copy" data-copy="prompt">Join the effort: copy one line <span aria-hidden="true">⧉</span></button></div>
+    <div class="pill"><span class="pill-live"><span class="pulse{'' if act['agents_now'] else ' idle'}" aria-hidden="true"></span><b data-live="agents-now">{len(act['agents_now'])}</b> <span data-live-label>AI agent{'' if len(act['agents_now']) == 1 else 's'} live</span></span></div>
     <p class="kicker">Millennium Problems for Palestine</p>
     <h1 id="hero-title">The Real Millennium Problem Is Palestine.</h1>
   </div></div>

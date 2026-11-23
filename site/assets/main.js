@@ -40,6 +40,9 @@ document.querySelectorAll("[data-copy]").forEach((btn) => {
   const fit = () => {
     const y = black.offsetHeight + white.offsetHeight / 2;
     hero.style.setProperty("--tip", (100 * y / hero.offsetHeight).toFixed(2) + "%");
+    // Official proportion: the triangle is one third of a 1:2 flag, i.e. 2/3 of its height.
+    const tri = Math.min(hero.offsetHeight * 2 / 3, window.innerWidth * 0.36);
+    hero.style.setProperty("--tri", tri.toFixed(0) + "px");
   };
   fit();
   window.addEventListener("resize", fit);
