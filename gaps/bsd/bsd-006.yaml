@@ -1,0 +1,19 @@
+id: bsd-006
+problem: bsd
+title: The L-series converges for Re s > 3/2
+status: open
+imports:
+- Mathlib
+- MPP.Defs.BSD
+open:
+- MPP.BSD
+depends: []
+statement: |
+  ∀ (E : WeierstrassCurve ℚ) [E.IsElliptic] (s : ℂ), 3 / 2 < s.re →
+    LSeriesSummable ((↑) ∘ E.LFunction) s
+context: |
+  Follows from the Hasse bound |a_p| ≤ 2√p and the Euler product, which give
+  |a_n| ≤ d(n)·√n. The Hasse bound for elliptic curves over finite fields is not yet in
+  Mathlib, so this is a substantial formalization.
+sketch: ''
+dead: []

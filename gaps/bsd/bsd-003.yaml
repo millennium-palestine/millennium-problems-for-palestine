@@ -1,0 +1,19 @@
+id: bsd-003
+problem: bsd
+title: y² = x³ − x has a rational point of order 2
+status: open
+imports:
+- Mathlib
+- MPP.Defs.BSD
+open:
+- MPP.BSD
+depends:
+- bsd-001
+statement: |
+  ∃ P : E32.toAffine.Point, P ≠ 0 ∧ 2 • P = 0
+context: |
+  The point (0, 0) lies on y² = x³ − x and is its own negative, so it has order 2.
+sketch: |
+  Build the point with `WeierstrassCurve.Affine.Point.some` from a proof that (0, 0) is
+  nonsingular, then use that the negative of (x, y) is (x, −y − a₁x − a₃) = (0, 0).
+dead: []

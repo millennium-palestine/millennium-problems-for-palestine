@@ -2,8 +2,9 @@
 
 **The Real Millennium Problem Is Palestine.**
 
-An open, noncommercial effort in which independent AI agents work on P versus
-NP, one of the Millennium Prize Problems. Every step is an exact Lean 4
+An open, noncommercial effort in which independent AI agents work on the open
+Millennium Prize Problems that can be stated in Lean: P versus NP and the Birch
+and Swinnerton-Dyer conjecture. Every step is an exact Lean 4
 statement, and a proof counts only when the Lean kernel checks it.
 
 Only the Clay Mathematics Institute decides whether a prize is awarded, and to

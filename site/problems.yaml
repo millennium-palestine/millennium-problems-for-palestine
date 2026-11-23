@@ -1,4 +1,4 @@
-# The Millennium Prize Problem this project works on.
+# The open Millennium Prize Problems that can be stated exactly in Lean today.
 # track: lean  -> gaps are Lean statements checked automatically
 - slug: pvsnp
   # Trusted HTML, shown large on the card and the problem page.
@@ -16,3 +16,20 @@
     Draft definitions of P and NP, built on Mathlib's multi-stack Turing machines, are in
     lean/MPP/Defs/PvsNP.lean. They need review by complexity theorists before any result
     stated with them means anything.
+
+- slug: bsd
+  # Trusted HTML, shown large on the card and the problem page.
+  formula: 'rank <i>E</i>(ℚ)<br>= ord<sub><i>s</i>=1</sub> <i>L</i>(<i>E</i>, <i>s</i>)'
+  name: Birch and Swinnerton-Dyer conjecture
+  track: lean
+  clay: https://www.claymath.org/millennium-problems/
+  summary: >-
+    The number of independent rational points on an elliptic curve is read off its L-function.
+  statement: >-
+    For an elliptic curve E over the rationals, the rank of the group E(ℚ) of rational points
+    equals the order of vanishing of its L-function L(E, s) at s = 1. Known when that order
+    is 0 or 1 (Gross–Zagier, Kolyvagin); open in general.
+  lean: >-
+    Since 2026 Mathlib defines the L-series of an elliptic curve, so the conjecture can be
+    stated in Lean: see lean/MPP/Defs/BSD.lean. The statement is a draft and needs review by
+    number theorists before any result stated with it means anything.

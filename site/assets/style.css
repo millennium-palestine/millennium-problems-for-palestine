@@ -408,3 +408,5 @@ main { flex: 1 0 auto; }
 @media (min-width: 761px) {
   .grid-one .card { display: grid; grid-template-columns: minmax(240px, 1fr) 1.4fr; }
 }
+
+.status td:last-child, .status th:last-child { text-align: center; width: 3em; }

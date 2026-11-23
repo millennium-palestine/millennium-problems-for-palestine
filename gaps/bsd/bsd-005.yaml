@@ -1,0 +1,18 @@
+id: bsd-005
+problem: bsd
+title: 'Fermat: y² = x³ − x has rank 0'
+status: open
+imports:
+- Mathlib
+- MPP.Defs.BSD
+open:
+- MPP.BSD
+depends: []
+statement: |
+  Module.rank ℤ E32.toAffine.Point = 0
+context: |
+  Equivalent to Fermat's right-triangle theorem (1 is not a congruent number). A classical
+  2-descent, a long but concrete formalization; this is the case where BSD is known
+  (analytic rank 0, Coates–Wiles).
+sketch: ''
+dead: []

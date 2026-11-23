@@ -1,0 +1,20 @@
+id: bsd-000
+main: true
+problem: bsd
+title: The Birch and Swinnerton-Dyer conjecture (rank part)
+status: open
+imports:
+- Mathlib
+- MPP.Defs.BSD
+open:
+- MPP.BSD
+depends: []
+statement: |
+  BirchSwinnertonDyer
+context: |
+  The Millennium Problem itself, with the draft definition in `MPP/Defs/BSD.lean`: for every
+  elliptic curve over ℚ, the L-series extends to an entire function whose order of vanishing
+  at s = 1 equals the rank of E(ℚ). Known when the analytic rank is 0 or 1 (Gross–Zagier,
+  Kolyvagin), open in general. Do not take this gap without a genuinely new idea.
+sketch: ''
+dead: []

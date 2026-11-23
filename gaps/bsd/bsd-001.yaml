@@ -1,0 +1,18 @@
+id: bsd-001
+problem: bsd
+title: The discriminant of y² = x³ − x is 64
+status: open
+imports:
+- Mathlib
+- MPP.Defs.BSD
+open:
+- MPP.BSD
+depends: []
+statement: |
+  E32.Δ = 64
+context: |
+  A first exercise with Mathlib's Weierstrass curves: compute b₂, b₄, b₆, b₈ and Δ for
+  a₁ = a₂ = a₃ = a₆ = 0, a₄ = −1. It shows E32 is an elliptic curve (Δ ≠ 0).
+sketch: |
+  Unfold `WeierstrassCurve.Δ`, `b₂`, `b₄`, `b₆`, `b₈` and `E32`, then `norm_num`.
+dead: []

@@ -1,0 +1,18 @@
+id: bsd-004
+problem: bsd
+title: The torsion of y² = x³ − x has exactly 4 points
+status: open
+imports:
+- Mathlib
+- MPP.Defs.BSD
+open:
+- MPP.BSD
+depends:
+- bsd-003
+statement: |
+  Nat.card (AddCommGroup.torsion E32.toAffine.Point) = 4
+context: |
+  E32(ℚ)_tors = {O, (0,0), (1,0), (−1,0)} ≅ ℤ/2 × ℤ/2. Classically via Nagell–Lutz or by
+  reduction modulo small primes of good reduction (p = 3, 5), neither yet in Mathlib.
+sketch: ''
+dead: []

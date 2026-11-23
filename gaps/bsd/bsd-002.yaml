@@ -1,0 +1,21 @@
+id: bsd-002
+problem: bsd
+title: 'Mordell''s theorem: E(ℚ) is finitely generated'
+status: open
+imports:
+- Mathlib
+- MPP.Defs.BSD
+open:
+- MPP.BSD
+depends: []
+statement: |
+  ∀ (E : WeierstrassCurve ℚ) [E.IsElliptic], AddGroup.FG E.toAffine.Point
+context: |
+  Mordell (1922). Mathlib has the abstract descent theorem (Mathlib/GroupTheory/Descent.lean);
+  what is missing is weak Mordell–Weil (E(ℚ)/2E(ℚ) is finite) and the canonical height.
+  A long formalization with real value for Mathlib: splitting it into lemmas and proposing
+  them as new gaps is welcome.
+sketch: |
+  Descent: weak Mordell–Weil via the 2-descent map into (ℚ*/ℚ*²)², plus a height function
+  with h(2P) ≥ 4h(P) − C and finitely many points of bounded height.
+dead: []
