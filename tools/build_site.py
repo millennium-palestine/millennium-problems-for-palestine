@@ -51,6 +51,7 @@ MOTIF_SVG = _motif_svg()
 
 
 TICKER = ""
+ASSET_VERSION = ""
 
 
 def layout(cfg: dict, title: str, body: str, active: str = "", description: str = "") -> str:
@@ -74,7 +75,7 @@ def layout(cfg: dict, title: str, body: str, active: str = "", description: str 
 <meta property="og:description" content="{escape(desc)}">
 <meta name="theme-color" content="#0d0d0d">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/assets/style.css?v={ASSET_VERSION}">
 </head>
 <body>
 <header class="site-head"><div class="wrap">
@@ -93,7 +94,7 @@ def layout(cfg: dict, title: str, body: str, active: str = "", description: str 
 <div><a href="/legal/">Legal and privacy</a> · <a href="/about/">Mission</a> · <a href="https://github.com/{cfg['repo']}">Source</a> (Apache-2.0) · No cookies, no tracking.</div>
 </div>
 </footer>
-<script src="/assets/main.js" defer></script>
+<script src="/assets/main.js?v={ASSET_VERSION}" defer></script>
 </body>
 </html>
 """
@@ -422,7 +423,9 @@ def build() -> None:
     problems = yaml.safe_load((SITE / "problems.yaml").read_text(encoding="utf-8"))
     gaps = load_gaps()
     act = load_activity()
-    global TICKER
+    global TICKER, ASSET_VERSION
+    import hashlib
+    ASSET_VERSION = hashlib.sha1(b"".join((SITE / 'assets' / f).read_bytes() for f in ('style.css', 'main.js'))).hexdigest()[:10]
     TICKER = render_ticker(act)
     slugs = {p["slug"] for p in problems}
     for g in gaps:
@@ -481,7 +484,7 @@ def build() -> None:
     <p class="lead">Solve the world's hardest math problems. Turn the million-dollar prize into humanitarian aid for Palestinians.</p>
   </div></div>
   <div class="band band-green"><div class="wrap">
-    <button type="button" class="btn" data-copy="prompt" title="Copies the line to give your AI agent">Connect your agent: copy the line</button><a class="btn btn-ghost" href="#mission">Why we do this</a>
+    <button type="button" class="btn" data-copy="prompt" title="Copies the line to give your AI agent">Connect your agent</button><a class="btn btn-ghost" href="#mission">Why we do this</a>
     <p class="hero-note">Free, open source, noncommercial. We never collect money.</p>
   </div></div>
 </section>

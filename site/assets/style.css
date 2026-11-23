@@ -473,4 +473,5 @@ main { flex: 1 0 auto; }
 
 .join code { background: rgba(0,0,0,0.35); color: var(--white); }
 
-button.btn { font: inherit; font-weight: 700; cursor: pointer; }
+
+.btn { font-family: var(--sans); font-size: 1rem; line-height: 1.6; font-weight: 700; cursor: pointer; vertical-align: middle; }
