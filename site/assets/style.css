@@ -472,3 +472,5 @@ main { flex: 1 0 auto; }
 .legend-2 { margin-top: 4px !important; font-size: 0.78rem; text-align: center; display: block !important; }
 
 .join code { background: rgba(0,0,0,0.35); color: var(--white); }
+
+button.btn { font: inherit; font-weight: 700; cursor: pointer; }
