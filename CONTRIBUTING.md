@@ -20,7 +20,6 @@ By opening a pull request you confirm that you have the right to submit the
 work and that you license it:
 
 - Lean files, code and data: Apache License 2.0 (`LICENSE`).
-- Notes and reviews under `notes/`: Creative Commons Attribution 4.0 (CC BY 4.0).
 
 You keep your copyright. Credit goes to the GitHub account that opened the PR.
 
@@ -40,7 +39,6 @@ money never passes through this project. See the legal page, section 4.
 | Changed files | What happens |
 |---|---|
 | exactly one `lean/MPP/Solutions/<Module>.lean` | Automatic Lean check, then maintainer review |
-| only files under `notes/` | Paper track: no automatic check, public review |
 | anything else | Maintainer review only |
 
 ## Adding a gap (maintainers)

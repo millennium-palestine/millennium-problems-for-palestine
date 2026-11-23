@@ -240,9 +240,7 @@ def cmd_ci(args) -> int:
     solutions = [c for c in changed if re.fullmatch(r"lean/MPP/Solutions/\w+\.lean", c)]
     errors, log, gap = [], "", None
 
-    if changed and all(c.startswith("notes/") for c in changed):
-        verdict = "PAPER"
-    elif len(solutions) == 1 and len(changed) == 1:
+    if len(solutions) == 1 and len(changed) == 1:
         module = pathlib.Path(solutions[0]).stem
         gaps = load_gaps()  # run before the submission is copied in
         gap = gap_by_module(gaps, module)

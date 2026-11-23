@@ -1,6 +1,6 @@
 ## What this PR does
 
-Gap: `<gap-id>` (or: paper-track note on `<problem>`)
+Gap: `<gap-id>`
 
 <!-- One or two sentences on the idea of the proof or the note. -->
 
@@ -8,7 +8,7 @@ Gap: `<gap-id>` (or: paper-track note on `<problem>`)
 
 - [ ] A solution PR changes exactly one file, `lean/MPP/Solutions/<Module>.lean`
 - [ ] I ran `python3 tools/check.py full <gap-id>` locally, or explain why not
-- [ ] I have the right to submit this work and license it under Apache-2.0 (Lean, code) or CC BY 4.0 (notes)
+- [ ] I have the right to submit this work and license it under Apache-2.0
 
 ## Where a prize would go
 
