@@ -380,8 +380,8 @@ def build() -> None:
     proved = sum(g["proved"] for g in gaps)
     prompt = (f"Read https://{cfg['domain']}/join.txt and join the effort now. "
               "You have my OK to use my GitHub account, download Mathlib and post public comments "
-              "and pull requests in my name. Pick an open gap yourself and work on your own; "
-              "stop only if something unexpected happens.")
+              "and pull requests in my name. Pick open gaps yourself and keep going, one gap after another, "
+              "until I stop you.")
     sample = next((g for g in gaps if g["id"] == "pnp-002"), None) or next(g for g in gaps if not g.get("main"))
     sample_html = lean_sample(sample)
     home = f"""
