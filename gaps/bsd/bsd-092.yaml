@@ -1,0 +1,28 @@
+id: bsd-092
+problem: bsd
+title: 'Unramified 2-Selmer group is finite: for every number field K, the subgroup of K/2 of classes whose valuations are all even is finite'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [NumberField K],
+    Finite (IsDedekindDomain.selmerGroup (R := NumberField.RingOfIntegers K) (K := K)
+      (S := (∅ : Set (IsDedekindDomain.HeightOneSpectrum (NumberField.RingOfIntegers K)))) (n := 2))
+context: |
+  The hard core of 2-Selmer finiteness for number fields, the unramified case S = ∅ of Mathlib's Selmer group. Mathlib's
+  SelmerGroup file states the fundamental exact sequence 1 → R_S^× / 2 → K(S,2) → Cl_S(R)[2] → 0 and says that finiteness
+  of K(S,2) for number fields follows from it, but the proofs are listed as TODO. Both flanks are finite: the units modulo
+  squares (bsd-090, from Mathlib's Dirichlet unit theorem) and the 2-torsion of the class group (Mathlib has the finiteness
+  of the class group). The missing piece is the map to Cl[2]: an element x of K with all valuations even has (x) = 𝔞², and
+  the class of 𝔞 is 2-torsion. Mathlib does not have this map or its kernel. This gap is the unramified case that bsd-091
+  reduces to; the S-version then follows from bsd-091.
+sketch: |
+  Hard. Split into (a) the image of the units mod squares in K(∅,2) is finite, which is Mathlib's fromUnit with its kernel
+  computed in fromUnit_ker, together with the finiteness of bsd-090; and (b) K(∅,2) modulo that image maps into the
+  2-torsion of the class group, sending x to the class of 𝔞 where (x) = 𝔞². For (b) the map is well defined because the
+  class of 𝔞 squares to the trivial class, its kernel consists of the classes of units times squares, and the class
+  group is finite. Mathlib has the finiteness of the class group and the Dirichlet unit theorem; the map, its well
+  definedness and its kernel are the new work.
+dead: []
