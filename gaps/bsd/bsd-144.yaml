@@ -1,0 +1,32 @@
+id: bsd-144
+problem: bsd
+title: 'Short model with the same point count: every elliptic curve over a prime field F_p with p ≠ 2, 3 has a short model y² = x³ + ax + b, elliptic, with the same number of F_p-points'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic], p ≠ 2 → p ≠ 3 →
+    ∃ a b : ZMod p, ∃ _ : (WeierstrassCurve.mk (0 : ZMod p) 0 0 a b).IsElliptic,
+      Nat.card W.toAffine.Point = Nat.card (WeierstrassCurve.mk (0 : ZMod p) 0 0 a b).toAffine.Point
+context: |
+  The change-of-model glue between bsd-024 and the short-form chain bsd-141, bsd-142, bsd-143. Those three
+  statements are about y² = x³ + ax + b only, while bsd-024 is about every Weierstrass curve over F_p. This gap
+  says that the short form loses nothing for point counts: a change of variables of the curve (u, r, s, t) with
+  u ≠ 0 is a bijection of F_p-points, and when 2 and 3 are invertible (p ≠ 2, 3) Mathlib produces a change of
+  variables to a short normal form (WeierstrassCurve.exists_variableChange_isShortNF). Once this is proved,
+  bsd-024 for p ≥ 5 reduces to bsd-142 alone. The statement is true. It does not decide any Millennium problem.
+sketch: |
+  Take C : VariableChange (ZMod p) with (C • W).IsShortNF from WeierstrassCurve.exists_variableChange_isShortNF
+  (Invertible 2 and 3 come from p ≠ 2, 3, e.g. invertibleOfNonzero). Put a := (C • W).a₄, b := (C • W).a₆; the
+  short normal form gives a₁ = a₂ = a₃ = 0, so C • W = mk 0 0 0 a b as structures. IsElliptic transfers along
+  the change of variables (instance (C • W).IsElliptic in VariableChange.lean, after rewriting). For the count:
+  for elliptic curves, Nonsingular and Equation agree (WeierstrassCurve.Affine.equation_iff_nonsingular), so both
+  point sets are in bijection with the solutions of the respective equations; the change of variables maps solutions
+  of C • W to solutions of W by (x', y') ↦ (u²x' + r, u³y' + s u²x' + t), with inverse (x, y) ↦
+  ((x − r)/u², (y − s(x − r) − t)/u³) (the change of variables is x = u²x' + r, y = u³y' + s u²x' + t), an
+  explicit bijection that one checks
+  by unfolding variableChange_a₁..a₆ and field_simp/ring. Conclude with Nat.card_congr through
+  nonsingularPointEquiv on both sides, then Option/WithZero congruence.
+dead: []
