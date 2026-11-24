@@ -1,0 +1,23 @@
+id: bsd-114
+problem: bsd
+title: 'Norm identity in the one-root case: if u² − v²(e² + p) = x and 2uv − ev² = −1, then x² + ex + (e² + p) = (u² − euv + v²(e² + p))²'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p e u v x : ℚ), u ^ 2 - v ^ 2 * (e ^ 2 + p) = x → 2 * u * v - e * v ^ 2 = -1 →
+    x ^ 2 + e * x + (e ^ 2 + p) = (u ^ 2 - e * u * v + v ^ 2 * (e ^ 2 + p)) ^ 2
+context: |
+  The norm input of the one-root case of bsd-036 (weak Mordell–Weil). Let g = X² + eX + (e² + p) and L = ℚ[X]/(g) with
+  root θ. If β = u + vθ satisfies β² = x − θ (the coordinates of bsd-112), then the norm of x − θ is g(x), and the norm of β
+  is N = u² − euv + v²(e² + p), so g(x) = N². For a point (x, y) of y² = (x − e)·g(x) with y ≠ 0 this makes x − e the
+  square (y/N)², which is the rational half of the kernel of the one-root Kummer map (bsd-085 needs x − e = a²). This gap
+  is the algebraic identity behind that step; it is a pure identity modulo the two relations, with no curve in it.
+sketch: |
+  Put c = e² + p and s = 2uv − ev² + 1, which is zero by hypothesis, and substitute x = u² − v²c from the first hypothesis.
+  The difference x² + ex + c − N² reduces to (c − 2cuv + eu²)·s after using only s, so it is a linear combination of the two
+  hypotheses. In Lean: linear_combination (c − 2·c·u·v + e·u²) · h2 − (x + (u² − v²c) + e) · h1, where h1 is the first
+  hypothesis (u² − v²c − x) and h2 the second (2uv − ev² + 1). Check with ring; no field operations are needed.
+dead: []

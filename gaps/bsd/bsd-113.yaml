@@ -1,0 +1,24 @@
+id: bsd-113
+problem: bsd
+title: 'Fibre argument with a finite defect: a homomorphism whose image lies in a finite set and whose fibres differ by twice the group plus an element of a finite set D has a finite set of representatives modulo twice the group'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (G H : Type) [AddCommGroup G] [AddCommGroup H] (κ : G →+ H) (s : Set H) (D : Finset G), s.Finite →
+    (∀ P : G, κ P ∈ s) → (∀ P Q : G, κ P = κ Q → ∃ d ∈ D, ∃ R : G, P = Q + d + 2 • R) →
+    ∃ t : Finset G, ∀ P : G, ∃ Q ∈ t, ∃ R : G, P = Q + 2 • R
+context: |
+  The defect version of the last step of bsd-036 (weak Mordell–Weil), needed for the one-root case. There the Kummer
+  kernel is twice the group except for the rational 2-torsion point T = (e, 0), which may or may not lie in 2E(ℚ). So the
+  kernel statement is κ(P) = κ(Q) ⇒ P − Q ∈ D + 2G for the finite set D = {0, T}, not P − Q ∈ 2G as in bsd-086. The fibre
+  argument goes through unchanged: choose one preimage Q_c for each value c in the finite image, and the finite set of
+  representatives is {Q_c + d : c, d}. This is bsd-086 with D in place of {0}, and it is true for the same reason.
+sketch: |
+  Choose preimages. By cases on ∃ P, κ P = c, define pick : H → G with κ (pick c) = c whenever c is in the image (use
+  Classical.choose through `choose`). Let t be the image of (hs.toFinset.image pick) ×ˢ D under (z ↦ z.1 + z.2), which is a
+  Finset G. For P, put c = κ P, which is in s, so pick c lies in hs.toFinset.image pick. Apply the fibre hypothesis to P
+  and pick c (κ P = κ (pick c)): it gives d ∈ D and R with P = pick c + d + 2R. Then Q = pick c + d is in t.
+dead: []
