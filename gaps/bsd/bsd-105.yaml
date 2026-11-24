@@ -1,0 +1,42 @@
+id: bsd-105
+problem: bsd
+title: 'Hasse at good reduction: if the Hasse bound holds over every prime field, then the local polynomial at good reduction of an elliptic curve over ℚ satisfies a² ≤ 4q (glue between bsd-024 and bsd-104)'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-024
+- bsd-104
+statement: |
+  (∀ (p : ℕ) [Fact p.Prime] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic],
+      |((Nat.card W.toAffine.Point : ℕ) : ℝ) - ((p : ℝ) + 1)| ≤ 2 * Real.sqrt (p : ℝ)) →
+    ∀ (E : WeierstrassCurve ℚ) [E.IsElliptic]
+      (v : IsDedekindDomain.HeightOneSpectrum (NumberField.RingOfIntegers ℚ)) (a q : ℤ),
+      ((E.baseChange (v.adicCompletion ℚ)).minimal (v.adicCompletionIntegers ℚ)).HasGoodReduction
+          (v.adicCompletionIntegers ℚ) →
+        (E.baseChange (v.adicCompletion ℚ)).localPolynomial (v.adicCompletionIntegers ℚ) =
+          1 - Polynomial.C a * Polynomial.X + Polynomial.C q * Polynomial.X ^ 2 →
+        a ^ 2 ≤ 4 * q
+context: |
+  Glue between Hasse's bound over prime fields (bsd-024) and the local Hasse inequality that bsd-104 uses. The
+  hypothesis of this gap is exactly the statement of bsd-024, so the gap is: bsd-024 implies the local form. With
+  bsd-104 this makes bsd-016 follow from bsd-024 alone (bsd-016 is the coefficient bound d(n)√n for E over ℚ).
+  Mathematically: at good reduction at v, Mathlib's local polynomial is 1 − aT + qT² with q = Nat.card of the residue
+  field (= the prime p of v, by bsd-099) and a = q + 1 − #(reduction of the minimal model)(points), by the definition
+  of `WeierstrassCurve.localPolynomial`. The reduction is an elliptic curve over the residue field, which is ZMod p
+  up to a ring isomorphism, and the point counts agree under that isomorphism. So a = p + 1 − #(E mod p)(F_p), and
+  bsd-024 gives |a| ≤ 2√p, hence a² ≤ 4p = 4q. It is true.
+sketch: |
+  Intro the hypothesis H and the data. Unfold `WeierstrassCurve.localPolynomial` at the good-reduction case (as in the
+  bsd-104 solution: `rw [WeierstrassCurve.localPolynomial]; simp only [hg, if_true]`) to read off
+  a = q + 1 − Nat.card (reduction).toAffine.Point and q = Nat.card (IsLocalRing.ResidueField R), a cast to ℤ. Then
+  q = p by bsd-099 (solution merged), so the residue field has p elements. Transport the reduction to ZMod p along a
+  ring isomorphism `IsLocalRing.ResidueField R ≃+* ZMod p` (e.g. `PadicInt.residueField` after the identification
+  of the local integers with ℤ_[p], see the bsd-099 solution), with `WeierstrassCurve.map`, and show
+  Nat.card of the affine points is preserved (a bijection between affine points of isomorphic curves, built from
+  `WeierstrassCurve.Affine.Point` and the map of the coordinates; search Mathlib for `Affine.Point.map` and
+  `WeierstrassCurve.map_... ` lemmas first). The reduction is elliptic (search for `IsElliptic` of a good reduction, or
+  prove it from `HasGoodReduction`, which says the reduction is nonsingular). Then apply H to the transported curve
+  and cast |a| ≤ 2√p to a² ≤ 4p.
+dead: []
