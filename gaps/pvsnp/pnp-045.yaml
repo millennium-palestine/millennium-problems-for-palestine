@@ -1,0 +1,27 @@
+id: pnp-045
+problem: pvsnp
+title: Dropping the leading zeros of a witness and its marker is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  ∃ g : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) g) ∧
+    ∀ w : List Bool, g w = (w.dropWhile fun b => !b).tail
+context: |
+  Unpadding map for the exact-length normalisation pnp-044. A padded witness is a block of false
+  bits, then the marker true, then the real witness. The map drops the leading false bits, which
+  stops at the marker, and then drops the marker. It is a single left-to-right scan on the input
+  stack, in the same style as the pair decoder of pnp-021. It is a structural lemma; it does not
+  decide P vs NP.
+sketch: |
+  Build a multi-stack machine that pops the input one bit at a time while the bit is false, then
+  pops one more bit (the marker) and halts with the remaining stack. Its running time is at most the
+  input length plus a constant, so the bound is polynomial. The equation g w = (w.dropWhile (!·)).tail
+  follows by induction on w, since dropWhile stops at the first true bit.
+dead: []
