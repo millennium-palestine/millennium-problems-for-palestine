@@ -1,0 +1,46 @@
+id: bsd-104
+problem: bsd
+title: 'Coefficient bound d(n)√n for E over ℚ from the Hasse inequality at good reduction in local form: bsd-016 with the Hasse input as a hypothesis'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-021
+- bsd-029
+- bsd-033
+- bsd-034
+- bsd-045
+- bsd-099
+- bsd-102
+statement: |
+  ∀ (E : WeierstrassCurve ℚ) [E.IsElliptic],
+    (∀ (v : IsDedekindDomain.HeightOneSpectrum (NumberField.RingOfIntegers ℚ)) (a q : ℤ),
+      ((E.baseChange (v.adicCompletion ℚ)).minimal (v.adicCompletionIntegers ℚ)).HasGoodReduction
+          (v.adicCompletionIntegers ℚ) →
+        (E.baseChange (v.adicCompletion ℚ)).localPolynomial (v.adicCompletionIntegers ℚ) =
+          1 - Polynomial.C a * Polynomial.X + Polynomial.C q * Polynomial.X ^ 2 →
+        a ^ 2 ≤ 4 * q) →
+    ∀ n : ℕ, 0 < n → ‖((E.LFunction n : ℤ) : ℂ)‖ ≤ (n.divisors.card : ℝ) * Real.sqrt (n : ℝ)
+context: |
+  Assembly step of bsd-016 (the coefficient bound d(n)√n for an elliptic curve over ℚ), with the one deep input
+  kept as a hypothesis. The hypothesis is the Hasse inequality a² ≤ 4q in the shape Mathlib uses at good reduction
+  (`WeierstrassCurve.localPolynomial` = 1 − aT + qT²), for every height-one prime v where E has good reduction. Hasse's
+  bound itself is bsd-024 and is still open; this gap shows that it is the only input bsd-016 needs beyond the
+  local-factor steps, which are now proved (bsd-102 identifies E.LFunction at p^k with the local power series;
+  bsd-029 handles bad reduction; bsd-033 and bsd-034 handle good reduction; bsd-045 reduces to prime powers).
+  It is true: it is an implication whose conclusion holds unconditionally (bsd-016), and the hypothesis is only
+  used at good primes.
+sketch: |
+  Apply bsd-045 to E. Its hypothesis is the prime-power bound: for a prime p, let v be the height-one prime with
+  natGenerator v = p (the inverse of `Rat.HeightOneSpectrum.primesEquiv`). By bsd-102, E.LFunction (p^k) is the k-th
+  coefficient c_k of W.localPowerSeries R at v (W = E.baseChange over the adic completion). Split on whether
+  (W.minimal R).HasGoodReduction R holds.
+  Bad case: bsd-029 gives |c_k| ≤ 1 ≤ (k+1) √(p^k), using d(p^k) = k + 1 (bsd-021) and p^k ≥ 1.
+  Good case: unfold `WeierstrassCurve.localPolynomial` (the `if` on HasGoodReduction, `if_pos`) to get
+  localPolynomial = 1 − C a X + C q X² with q = Nat.card (residue field) (cast to ℤ). By bsd-099, q = p. The hypothesis
+  gives a² ≤ 4p. Then bsd-033 (in its squared form, with 0 ≤ q) gives c_k² ≤ (k+1)² p^k, so |c_k| ≤ (k+1)√(p^k) =
+  d(p^k) √(p^k). Note that bsd-034 alone gives the shape only with an existential q, so the proof must re-derive
+  q = p from the definition (`WeierstrassCurve.localPolynomial`, `if_pos`) instead of using bsd-034.
+  The solution may import the accepted solutions of bsd-021, bsd-029, bsd-033, bsd-034, bsd-045, bsd-099 and bsd-102.
+dead: []
