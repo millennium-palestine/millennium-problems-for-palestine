@@ -1,0 +1,27 @@
+id: bsd-017
+problem: bsd
+title: 'Fermat descent, odd case: a primitive solution of a⁴ − b⁴ = c² with b odd gives a smaller one'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ a b c : ℤ, 0 < a → 0 < b → 0 < c → Int.gcd a b = 1 → a ^ 4 - b ^ 4 = c ^ 2 → Odd b →
+    ∃ a' b' c' : ℤ, 0 < a' ∧ a' < a ∧ 0 < b' ∧ 0 < c' ∧ Int.gcd a' b' = 1 ∧
+      a' ^ 4 - b' ^ 4 = c' ^ 2
+context: |
+  One descent step for bsd-012 (Fermat: a⁴ − b⁴ = c² has no solution with a, b, c nonzero).
+  From a⁴ = b⁴ + c², the triple (b², c, a²) is a Pythagorean triple. It is primitive because
+  gcd(b², a²) = 1. With b odd, b² is odd, so c is the even leg. Mathlib's classification of
+  primitive triples (`PythagoreanTriple.coprime_classification'` or the parametrization lemmas
+  next to it) gives coprime m > n > 0 of opposite parity with c = 2mn, b² = m² − n², a² = m² + n².
+  Then m⁴ − n⁴ = (m² − n²)(m² + n²) = (ab)², and m < a since n > 0. So (m, n, ab) is the
+  smaller primitive solution. The companion case b even is gap bsd-018.
+sketch: |
+  Apply the Pythagorean classification to the triple (b², c, a²), with c even because b² is odd.
+  Obtain m, n with gcd(m, n) = 1, c = 2mn, b² = m² − n², a² = m² + n² and m > n > 0 (signs may need
+  adjusting: pass to |c| or swap the legs). Then take a' = m, b' = n, c' = a · b and check
+  a'^4 − b'^4 = c'^2 by `nlinarith` or `linear_combination` from the two quadratic relations.
+  Finally m < a from a² = m² + n² with n > 0 (use `abs_lt_abs` or `pow_lt_pow_left`).
+dead: []
