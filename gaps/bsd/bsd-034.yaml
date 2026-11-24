@@ -1,0 +1,27 @@
+id: bsd-034
+problem: bsd
+title: 'Good reduction: the local polynomial of a Weierstrass curve with good reduction has the form 1 − aT + qT² with q ≥ 0'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (R : Type) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] (K : Type) [Field K]
+    [Algebra R K] [IsFractionRing R K] (W : WeierstrassCurve K),
+    (W.minimal R).HasGoodReduction R →
+      ∃ a q : ℤ, 0 ≤ q ∧ W.localPolynomial R = 1 - Polynomial.C a * Polynomial.X + Polynomial.C q * Polynomial.X ^ 2
+context: |
+  Shape step of bsd-016 (the coefficient bound d(n)√n for an elliptic curve over ℚ). Mathlib's
+  `WeierstrassCurve.localPolynomial` is defined by cases. At good reduction it is 1 − a T + q T² with
+  q = Nat.card of the residue field (cast to ℤ, so q ≥ 0) and a = q + 1 − #(reduction points). This gap
+  records only the shape, with the a and q existentially quantified, so no point count is involved. It is
+  the input to bsd-033 (the power series bound, squared form). The Hasse bound a² ≤ 4q is not part of this
+  gap; it is bsd-024 applied to the reduction, which is still open.
+sketch: |
+  Unfold `WeierstrassCurve.localPolynomial` (the `letI`s are definitional), rewrite with `if_pos h` (the
+  branch condition is the hypothesis h about `W.minimal R`; the `split_ifs` tactic also works), and take
+  a := (Nat.card (IsLocalRing.ResidueField R) : ℤ) + 1 − Nat.card (...) and q := Nat.card (IsLocalRing.ResidueField R)
+  as the witnesses, with `Int.natCast_nonneg` (or `by positivity`) for 0 ≤ q and `rfl` for the equation.
+  Watch for `Classical` decidability instances: `if_pos` works for any instance.
+dead: []
