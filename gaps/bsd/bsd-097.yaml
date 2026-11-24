@@ -1,0 +1,24 @@
+id: bsd-097
+problem: bsd
+title: 'Local factor away from p: for q > 1 not divisible by the prime p and k ≥ 1, the arithmetic function of a power series over q is zero at p^k'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (q p k : ℕ) (f : PowerSeries ℤ), 1 < q → p.Prime → ¬ p ∣ q → 0 < k →
+    ArithmeticFunction.ofPowerSeries q f (p ^ k) = 0
+context: |
+  Generalises bsd-096 from a prime q to any q > 1 that p does not divide. The residue field of a prime of the
+  ring of integers of a number field has cardinality a power of the residue characteristic, which need not be
+  prime, so bsd-096 does not cover the Euler factors of E.LFunction at primes of residue characteristic ℓ ≠ p
+  with ℓ^f an arbitrary prime power. The argument is the same: ofPowerSeries_apply puts the value at p^k on the
+  powers of q; if p^k = q^j with k ≥ 1 then p divides q^j, hence q, which is excluded. Used in the prime-power
+  identification of bsd-016 (the Euler factors at the other primes contribute 1 at p^k).
+sketch: |
+  `ArithmeticFunction.ofPowerSeries_apply` (from 1 < q) rewrites the value to `Function.extend (q ^ ·) _ 0 (p ^ k)`.
+  Use `Function.extend_apply'` with the side goal ¬ ∃ j, q ^ j = p ^ k. Given such j, p ∣ p ^ k since k ≠ 0
+  (`dvd_pow_self`), so p ∣ q ^ j, so p ∣ q by `Nat.Prime.dvd_of_dvd_pow`, contradicting ¬ p ∣ q. The case j = 0 needs
+  no separate treatment, since p ∣ 1 is false and `Nat.Prime.dvd_of_dvd_pow` covers it.
+dead: []
