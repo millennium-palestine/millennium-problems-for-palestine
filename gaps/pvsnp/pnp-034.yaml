@@ -1,0 +1,39 @@
+id: pnp-034
+problem: pvsnp
+title: NP is closed under conjunction
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-006
+- pnp-008
+- pnp-011
+- pnp-012
+- pnp-021
+- pnp-025
+- pnp-026
+- pnp-027
+statement: |
+  ∀ L M : Lang, InNP L → InNP M → InNP (fun x => L x && M x)
+context: |
+  Unconditional closure of NP under conjunction. The witness for the conjunction is the pair
+  encoding of the two witnesses. The verifier decodes the instance x and the two witnesses,
+  checks each witness against its own polynomial bound (pnp-027), and runs the two verifiers.
+  The witness bound is 2 p1 + p2 + 2, by the length of the pair encoding (pnp-012). The pnp-024
+  route needs a length check for one polynomial; this gap needs one for each of two. Unlike
+  pnp-016, it does not assume P = NP. It is a structural lemma and does not decide P vs NP.
+sketch: |
+  Let V1, p1 and V2, p2 witness the two NP memberships. Let d be the decoder of pnp-021 and e the
+  witness part of pnp-025, and let C1, C2 be the length checks of pnp-027 for p1 and p2. For a
+  pair z, the instance is d z and the witness is e z. Set h1 z = pair (d z) (d (e z)) and
+  h2 z = pair (d z) (e (e z)), both polynomial-time by pnp-026 and pnp-006. Take the verifier
+  W z = V1 (h1 z) && V2 (h2 z) && C1 (h1 z) && C2 (h2 z), which is in P by pnp-008 and pnp-011.
+  The witness bound is q = 2 p1 + p2 + 2, using pnp-012 for the length of pair w1 w2.
+  If L x and M x hold, take w = pair w1 w2 for the two witnesses; then W (pair x w) holds and
+  |w| ≤ q(|x|). Conversely if W (pair x w) holds, then L x and M x hold, since the length checks
+  give the bounds p1 and p2 on the decoded witnesses.
+dead: []
