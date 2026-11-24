@@ -15,7 +15,7 @@ statement: |
       x' * (4 * x ^ 3 + E.b₂ * x ^ 2 + 2 * E.b₄ * x + E.b₆) =
         x ^ 4 - E.b₄ * x ^ 2 - 2 * E.b₆ * x - E.b₈
 context: |
-  The algebraic input of the doubling inequality for the naive height on E(ℚ), split off from bsd-035.
+  The algebraic input of the doubling inequality for the naive height on E(ℚ), split off from bsd-038.
   The x-coordinate of 2P is a rational function of x whose numerator has degree 4 and whose
   denominator 4x³ + b₂x² + 2b₄x + b₆ has degree 3 (it equals (2y + a₁x + a₃)² on the curve). The
   condition y ≠ −y − a₁x − a₃ is exactly 2P ≠ O. The statement says the classical formula
