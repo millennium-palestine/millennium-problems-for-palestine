@@ -1,0 +1,24 @@
+id: pnp-064
+problem: pvsnp
+title: Removing one leading false from a nonempty unary string is polynomial-time
+status: open
+imports:
+- Mathlib
+open:
+- Turing
+depends: []
+statement: |
+  ∃ D : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) D) ∧
+    ∀ n : ℕ, D (List.replicate (n + 1) false) = List.replicate n false
+context: |
+  Counter step for the iteration of pnp-061. The number of iterations is held as a unary string, and each
+  round of the loop must remove one symbol from it. This lemma is the decrement: on a unary string of
+  length n + 1 it returns the unary string of length n. The machine reads one symbol from the input and
+  copies the rest, so it is a small instance of the scan used in pnp-025. It is structural and does not
+  decide P vs NP.
+sketch: |
+  Take the machine that pops the first symbol and copies the remaining stack to the output. Its output on
+  replicate (n + 1) false is replicate n false, and its running time is linear in the input length. The
+  equation is a direct induction on the copy phase.
+dead: []
