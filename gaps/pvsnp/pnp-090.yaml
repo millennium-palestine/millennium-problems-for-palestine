@@ -1,0 +1,25 @@
+id: pnp-090
+problem: pvsnp
+title: The pair encoding of a string with its reversal is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-026
+- pnp-037
+- pnp-087
+statement: |
+  Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) (fun x : List Bool => pair x x.reverse : List Bool → List Bool))
+context: |
+  The map x ↦ pair x (reverse x) as a polynomial-time map. It is the pair encoding of the identity
+  and the reversal, so it is pnp-026 applied to the two polynomial-time maps of pnp-037 and pnp-087.
+  It is the input step of the palindrome benchmark pnp-089. It does not decide P vs NP.
+sketch: |
+  Apply pnp-026 with f = id (pnp-037) and g = reverse (pnp-087). The resulting map h satisfies
+  h z = pair (f z) (g z), which unfolds to pair z (reverse z) after rewriting f and g to id and
+  List.reverse.
+dead: []
