@@ -28,10 +28,11 @@ from gaps import ROOT, gap_by_module, load_gaps  # noqa: E402
 
 OUT = ROOT / "_data" / "activity.json"
 API = "https://api.github.com"
-ACTIVE = dt.timedelta(hours=6)      # a claim or a PR update counts as "working" this long
+ACTIVE = dt.timedelta(minutes=75)   # a claim counts as "working" this long (agents re-claim hourly)
 WINDOW = dt.timedelta(days=45)      # how far back to look
 VERDICTS = ("ACCEPTED", "REJECTED", "FAULT", "PAPER", "MAINTAINER")
 GAP_IN_TITLE = re.compile(r"\[([a-z]+-[0-9]{3}[a-z]?)\]")
+AGENT_NAME = re.compile(r"agent:\s*([A-Za-z0-9_.-]+)")
 
 
 def now() -> dt.datetime:
@@ -96,6 +97,7 @@ def collect() -> dict:
 
     events: list[dict] = []
     claims: dict[tuple[str, str], dt.datetime] = {}   # (gap, login) -> time of last claim
+    signed: dict[tuple[str, str], str | None] = {}    # (gap, login) -> agent name in the claim
     verdict: dict[int, tuple[str, dt.datetime]] = {}  # PR number -> latest verdict
 
     for c in comments:
@@ -113,6 +115,8 @@ def collect() -> dict:
         word = body.split()[0].lower().strip(".:!") if body else ""
         if word == "claim":
             claims[(gap, login)] = t
+            m = AGENT_NAME.search(body)
+            signed[(gap, login)] = m.group(1) if m else None
             events.append(dict(t=t, kind="claim", login=login, gap=gap,
                                text=f"{login} started working on {gap}", url=c["html_url"]))
         elif word in ("release", "unclaim"):
@@ -186,11 +190,11 @@ def collect() -> dict:
         open_prs = [p for p in pr_info if p["gap"] == gid and p["state"] == "open"]
         workers = {}
         for (cg, login), t in claims.items():
-            if cg == gid and t_now - t <= ACTIVE:
+            # A claim stops counting once the same account opened a pull request for this gap:
+            # the work is handed in and the agent has moved on.
+            handed_in = any(p["gap"] == gid and p["login"] == login and p["created"] >= t for p in pr_info)
+            if cg == gid and t_now - t <= ACTIVE and not handed_in:
                 workers[login] = t
-        for p in open_prs:
-            if t_now - p["updated"] <= ACTIVE:
-                workers.setdefault(p["login"], p["created"])
         if g["proved"]:
             state = "proved"
             workers = {}  # nobody is "working" on a gap that is already proved
@@ -233,7 +237,31 @@ def collect() -> dict:
         return {f'{p["login"]} · notes/{p["problem"]} #{p["number"]}' for p in pr_info
                 if p["is_note"] and p["state"] == "open" and t_now - p["updated"] <= ACTIVE
                 and (slug is None or p["problem"] == slug)}
-    active = {f'{a["login"]} · {gid}' for gid, s in gap_state.items() for a in s["agents"]} | note_sessions() | set(proposal_sessions)
+    latest = {}  # (login, agent name) -> (time, label) for signed agents
+    unsigned = set()
+    for gid, st_ in gap_state.items():
+        for a in st_["agents"]:
+            name = signed.get((gid, a["login"]))
+            label = f'{a["login"]} · {gid}'
+            if name:
+                key, t_ = (a["login"], name), parse(a["since"])
+                if key not in latest or t_ > latest[key][0]:
+                    latest[key] = (t_, label)
+            else:
+                unsigned.add(label)
+    for pr in pulls:
+        if pr["state"] == "open" and pr.get("_gap_files") and t_now - parse(pr["updated_at"]) <= dt.timedelta(hours=1):
+            m = AGENT_NAME.search(pr.get("body") or "")
+            ids = ", ".join(pathlib.Path(f).stem for f in pr["_gap_files"])
+            label = f'{pr["user"]["login"]} · proposing {ids}'
+            if m:
+                key, t_ = (pr["user"]["login"], m.group(1)), parse(pr["updated_at"])
+                if key not in latest or t_ > latest[key][0]:
+                    latest[key] = (t_, label)
+            else:
+                unsigned.add(label)
+    active = {lab for _, lab in latest.values()} | unsigned | note_sessions() | \
+        {k for k in proposal_sessions if "(proposed)" in k}
     busy = {x.split(" · ")[0] for x in active}
     active |= {f"{login} · between gaps" for login in recent if login not in busy}
     active = sorted(active)
