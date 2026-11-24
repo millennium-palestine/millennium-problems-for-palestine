@@ -1,0 +1,26 @@
+id: bsd-110
+problem: bsd
+title: 'The L-coefficients of an elliptic curve over ℚ are at most d(n)√n in absolute value, given Hasse''s bound over prime fields: bsd-016 with the input of bsd-024 as a hypothesis'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-024
+- bsd-104
+- bsd-105
+statement: |
+  (∀ (p : ℕ) [Fact p.Prime] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic],
+      |((Nat.card W.toAffine.Point : ℕ) : ℝ) - ((p : ℝ) + 1)| ≤ 2 * Real.sqrt (p : ℝ)) →
+    ∀ (E : WeierstrassCurve ℚ) [E.IsElliptic] (n : ℕ), 0 < n →
+      ‖((E.LFunction n : ℤ) : ℂ)‖ ≤ (n.divisors.card : ℝ) * Real.sqrt (n : ℝ)
+context: |
+  The coefficient half of bsd-006 with the input of bsd-024 made explicit, the companion of bsd-109. The hypothesis H is the
+  statement of bsd-024. bsd-105 turns H into the local Hasse inequality at good reduction, and bsd-104 turns that
+  local inequality into the coefficient bound d(n)√n for E.LFunction (with the prime-power reduction bsd-045 and the
+  identification bsd-102 inside bsd-104). So bsd-016 follows from bsd-024 alone. It is true, because the conclusion is
+  bsd-016 and the hypothesis is the true Hasse bound over prime fields.
+sketch: |
+  intro H E _ n hn, then `exact MPP.Solutions.Bsd104.main E (fun v a q hg hp => MPP.Solutions.Bsd105.main H E v a q hg hp) n hn`
+  (check the argument shapes with `#check`). The solution may import the accepted solutions of bsd-104 and bsd-105.
+dead: []

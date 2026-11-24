@@ -1,0 +1,34 @@
+id: bsd-109
+problem: bsd
+title: 'The L-series converges for Re s > 3/2, given Hasse''s bound over prime fields: bsd-006 with the input of bsd-024 as a hypothesis'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-024
+- bsd-046
+- bsd-104
+- bsd-105
+statement: |
+  (∀ (p : ℕ) [Fact p.Prime] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic],
+      |((Nat.card W.toAffine.Point : ℕ) : ℝ) - ((p : ℝ) + 1)| ≤ 2 * Real.sqrt (p : ℝ)) →
+    ∀ (E : WeierstrassCurve ℚ) [E.IsElliptic] (s : ℂ), 3 / 2 < s.re →
+      LSeriesSummable ((↑) ∘ E.LFunction) s
+context: |
+  Assembly for bsd-006 with its one deep input made explicit. The statement of bsd-024 (Hasse's bound over prime fields)
+  is taken as a hypothesis H. Then the chain is: bsd-105 turns H into the local Hasse inequality at good reduction,
+  bsd-104 turns that into the coefficient bound d(n)√n for E.LFunction, and bsd-046 (with bsd-015) gives absolute
+  convergence of the L-series for Re s > 3/2. So bsd-006 follows from bsd-024 alone. The gap is true: its conclusion is
+  bsd-006, which is true (it is the Hasse-based bound of the Euler factors), and the hypothesis is the statement of
+  bsd-024, which is true by Hasse's theorem.
+sketch: |
+  Let H be the hypothesis. For E and the given data, bsd-105 (its statement is ∀ E [IsElliptic] v a q, good reduction →
+  localPolynomial shape → a² ≤ 4q, under the hypothesis H) gives the local inequality; bsd-104 (its statement takes exactly
+  that local inequality as a hypothesis, ∀ v a q, ...) gives the coefficient bound for E.LFunction; and bsd-046 applied to E
+  with that bound and s gives the summability. Concretely: intro H E _ s hs, then
+  `exact MPP.Solutions.Bsd046.main E s (MPP.Solutions.Bsd104.main E (fun v a q hg hp => MPP.Solutions.Bsd105.main H E v a q hg hp)) hs`
+  (the argument shapes must match the statements; check them with `#check`). The solution may import the accepted
+  solutions of bsd-046, bsd-104 and bsd-105 once those are merged. The gaps bsd-104 and bsd-105 are on main; their solutions
+  are in review.
+dead: []
