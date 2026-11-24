@@ -1,0 +1,34 @@
+id: pnp-084
+problem: pvsnp
+title: Under P = NP, every NP language has an exact-length verifier with a polynomial-time greatest-witness finder
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-044
+- pnp-083
+statement: |
+  PEqualsNP → ∀ L : Lang, InNP L →
+    ∃ (V : Lang) (p : Polynomial ℕ), InP V ∧
+      (∀ x : List Bool, L x = true ↔ ∃ w : List Bool, w.length = p.eval x.length ∧ V (pair x w) = true) ∧
+      ∃ f : List Bool → List Bool,
+        Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) ∧
+        ∀ x : List Bool, L x = true →
+          (f x).length = p.eval x.length ∧ V (pair x (f x)) = true ∧
+          ∀ w : List Bool, w.length = p.eval x.length → V (pair x w) = true → ¬ (f x < w)
+context: |
+  The dual of pnp-078, lifted from verifiers to languages. pnp-044 turns an NP language into an
+  exact-length verifier V with a polynomial p. pnp-083 gives, under P = NP, a polynomial-time map
+  returning the lexicographically greatest accepted witness of exact length p(|x|) for any such
+  verifier. Together they give the greatest-witness search for every NP language, not only for
+  verifiers of the form in pnp-083. This is a corollary of P = NP and does not decide P vs NP.
+sketch: |
+  intro hP L hL. Obtain V, p, hV and the characterisation hLV from pnp-044 applied to L and hL.
+  Obtain f with its polynomial-time property and its clauses from pnp-083 applied to V, p, hV and
+  hP. Provide V, p, hV, hLV and f. For the last clause, given L x = true, the characterisation hLV
+  turns it into an existential witness, and the three clauses of pnp-083 give the conclusion.
+dead: []
