@@ -1,0 +1,35 @@
+id: bsd-037
+problem: bsd
+title: 'Doubling formula: for a nonsingular affine point with 2P ≠ O, the x-coordinate of 2P times the denominator 4x³ + b₂x² + 2b₄x + b₆ equals x⁴ − b₄x² − 2b₆x − b₈'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (E : WeierstrassCurve ℚ) [E.IsElliptic] (x y : ℚ) (h : E.toAffine.Nonsingular x y),
+    y ≠ E.toAffine.negY x y →
+    ∃ (x' y' : ℚ) (h' : E.toAffine.Nonsingular x' y'),
+      WeierstrassCurve.Affine.Point.some x y h + WeierstrassCurve.Affine.Point.some x y h =
+        WeierstrassCurve.Affine.Point.some x' y' h' ∧
+      x' * (4 * x ^ 3 + E.b₂ * x ^ 2 + 2 * E.b₄ * x + E.b₆) =
+        x ^ 4 - E.b₄ * x ^ 2 - 2 * E.b₆ * x - E.b₈
+context: |
+  The algebraic input of the doubling inequality for the naive height on E(ℚ), split off from bsd-035.
+  The x-coordinate of 2P is a rational function of x whose numerator has degree 4 and whose
+  denominator 4x³ + b₂x² + 2b₄x + b₆ has degree 3 (it equals (2y + a₁x + a₃)² on the curve). The
+  condition y ≠ −y − a₁x − a₃ is exactly 2P ≠ O. The statement says the classical formula
+  x(2P) = (x⁴ − b₄x² − 2b₆x − b₈)/(4x³ + b₂x² + 2b₄x + b₆) (Silverman, The Arithmetic of Elliptic Curves,
+  Ch. III, the duplication formula). It is the first step towards a height lower bound h(2P) ≥ 4h(P) − D:
+  the next step is that the reduced denominator and numerator of the quotient are at least a constant
+  times the fourth power of the height of x, because the resultant of the two polynomials is nonzero on
+  a nonsingular curve.
+sketch: |
+  Let s = 2y + a₁x + a₃ ≠ 0, which is y − negY x y. The slope is ℓ = m / s with m = 3x² + 2a₂x + a₄ − a₁y,
+  and the x-coordinate of P + P is ℓ² + a₁ℓ − a₂ − 2x (Mathlib: `WeierstrassCurve.Affine.Point.add_self_of_Y_ne`,
+  `WeierstrassCurve.Affine.slope_of_Y_ne`). Clearing the denominator s², the claim reduces to
+  (m² + a₁ms − (a₂ + 2x)s²) · D − N · s² = q · F, where F = y² + a₁xy + a₃y − (x³ + a₂x² + a₄x + a₆) is the
+  curve equation and q = −(a₁²x + a₁a₃ + 4a₂x + 2a₄ + 6x²)². This identity is checked by polynomial division
+  in y (remainder zero), so `linear_combination q * hcurve` closes it after `field_simp` on the generic
+  expression (m/s)² + a₁(m/s) − a₂ − 2x = (m² + a₁ms − (a₂+2x)s²)/s².
+dead: []
