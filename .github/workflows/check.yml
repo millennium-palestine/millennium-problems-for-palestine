@@ -41,9 +41,16 @@ jobs:
           gh api "repos/$GITHUB_REPOSITORY/pulls/$PR/files" --paginate --jq '.[].filename' > "$RUNNER_TEMP/changed.txt"
           cat "$RUNNER_TEMP/changed.txt"
           touch "$RUNNER_TEMP/submission.lean"
+          mkdir -p "$RUNNER_TEMP/proposed"
           if [ "$(wc -l < "$RUNNER_TEMP/changed.txt")" = "1" ] && grep -Eq '^lean/MPP/Solutions/[A-Za-z0-9_]+\.lean$' "$RUNNER_TEMP/changed.txt"; then
             f=$(cat "$RUNNER_TEMP/changed.txt")
             gh api -H "Accept: application/vnd.github.raw" "repos/$HEAD_REPO/contents/$f?ref=$HEAD_SHA" > "$RUNNER_TEMP/submission.lean"
+          elif ! grep -Evq '^gaps/[a-z0-9-]+/[a-z]+-[0-9]{3}[a-z]?\.yaml$' "$RUNNER_TEMP/changed.txt"; then
+            # Only new gap files: fetch each one (as data, never executed here).
+            while read -r f; do
+              mkdir -p "$RUNNER_TEMP/proposed/$(dirname "$f")"
+              gh api -H "Accept: application/vnd.github.raw" "repos/$HEAD_REPO/contents/$f?ref=$HEAD_SHA" > "$RUNNER_TEMP/proposed/$f"
+            done < "$RUNNER_TEMP/changed.txt"
           fi
 
       - name: Set up Python
@@ -73,6 +80,7 @@ jobs:
           python3 tools/check.py ci \
             --changed "$RUNNER_TEMP/changed.txt" \
             --submission "$RUNNER_TEMP/submission.lean" \
+            --proposed "$RUNNER_TEMP/proposed" \
             --out "$RUNNER_TEMP/verdict"
 
       - uses: actions/upload-artifact@v4
@@ -129,7 +137,16 @@ jobs:
           main=$(jq -r .main verdict/verdict.json)
           gap=$(jq -r .gap verdict/verdict.json)
           title=$(jq -r .title verdict/verdict.json)
-          if [ "$verdict" != "ACCEPTED" ]; then
+          if [ "$verdict" = "GAP_ACCEPTED" ]; then
+            gh pr merge "$PR" --repo "$GITHUB_REPOSITORY" --squash
+            jq -c '.new_gaps[]' verdict/verdict.json | while read -r g; do
+              id=$(echo "$g" | jq -r .id); problem=$(echo "$g" | jq -r .problem); gtitle=$(echo "$g" | jq -r .title)
+              module=$(echo "$g" | jq -r .module)
+              body=$(printf '**Gap `%s`**: %s\n\nProve exactly this statement as `theorem main` in `lean/MPP/Solutions/%s.lean`:\n\n```lean\n%s\n```\n\n%s\n\nProposed in #%s. To work on it, comment `claim` here. Instructions: https://millenniumproblemsforpalestine.org/join.txt' \
+                "$id" "$gtitle" "$module" "$(echo "$g" | jq -r .statement)" "$(echo "$g" | jq -r .context)" "$PR")
+              gh issue create --repo "$GITHUB_REPOSITORY" --title "[$id] $gtitle" --body "$body" --label gap --label "$problem" || true
+            done
+          elif [ "$verdict" != "ACCEPTED" ]; then
             echo "verdict $verdict: nothing to do"
           elif [ "$main" = "true" ]; then
             gh issue create --repo "$GITHUB_REPOSITORY" --label millennium-problem \

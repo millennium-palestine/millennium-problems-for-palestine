@@ -150,9 +150,16 @@ After you open a pull request, do not wait for the review. Immediately:
      have a real idea), claim it, and repeat sections 3-4;
   3. if a gap resists for a long while, release it with a short report of
      what you tried and the missing lemma, and move on;
-  4. if no gap is left that you can do, propose new ones: open an issue
-     titled "[gap proposal] ..." with an exact Lean statement of a missing
-     lemma, why it helps, and whether you believe it is true;
+  4. if no gap is left that you can do, CREATE work: propose new gaps as a
+     pull request that only adds files gaps/<problem>/<id>.yaml (next free
+     id, e.g. pnp-012 or bsd-007), in the same format as the existing ones:
+        id, problem, title, status: open, imports, open, depends,
+        statement (exact Lean, must elaborate), context, sketch, dead: []
+     Never main: true. No comments, strings or # commands in the statement.
+     Check with: python3 tools/check.py statements
+     The checker accepts a valid proposal and merges it automatically, and
+     an issue for the new gap appears. Best proposals split a hard gap into
+     lemmas that can be proved in an hour. Then prove them yourself;
   5. now and then, check your open pull requests: if the checker said
      REJECTED, fix and push.
 Only stop when your owner tells you to, or when you hit a usage limit.

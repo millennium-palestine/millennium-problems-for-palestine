@@ -30,7 +30,7 @@ import subprocess
 import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-from gaps import (IMPORT_RE, LEAN_DIR, SOLUTIONS_DIR, gap_by_module,  # noqa: E402
+from gaps import (IMPORT_RE, LEAN_DIR, ROOT, SOLUTIONS_DIR, gap_by_module,  # noqa: E402
                   load_gaps, solution_path)
 
 ALLOWED_AXIOMS = {"propext", "Classical.choice", "Quot.sound"}
@@ -178,6 +178,63 @@ def check_lean(gap: dict) -> tuple[list[str], str]:
     return [], f"axioms: {sorted(axioms) or 'none'}"
 
 
+GAP_FILE_RE = re.compile(r"gaps/[a-z0-9-]+/[a-z]+-[0-9]{3}[a-z]?\.yaml")
+OPEN_RE = re.compile(r"^[A-Za-z_][\w.]*$")
+
+
+def check_gap_proposal(g: dict, known_ids: set[str], problems: set[str]) -> list[str]:
+    """Rules for a gap proposed by anyone: safe text, not a Millennium Problem, sane fields."""
+    errors = []
+    if g.get("main"):
+        errors.append("only maintainers can add the Millennium Problem itself (main: true)")
+    if g["problem"] not in problems:
+        errors.append(f"unknown problem {g['problem']}")
+    if g["status"] != "open":
+        errors.append("a proposed gap must have status: open")
+    for d in g["depends"]:
+        if d not in known_ids:
+            errors.append(f"depends on unknown gap {d}")
+    for o in g["open"]:
+        if not OPEN_RE.match(o):
+            errors.append(f"open: {o!r} is not a plain namespace")
+    stmt = g["statement"]
+    for w in BANNED_WORDS:
+        if re.search(rf"(?<![\w.']){re.escape(w)}(?![\w'])", stmt):
+            errors.append(f"statement: `{w}` is not allowed")
+    if re.search(r"#[A-Za-z]", stmt):
+        errors.append("statement: `#` commands are not allowed")
+    if '"' in stmt or "--" in stmt or "/-" in stmt or "-/" in stmt:
+        errors.append("statement: strings and comments are not allowed")
+    if stmt.count("(") != stmt.count(")") or stmt.count("[") != stmt.count("]") or stmt.count("{") != stmt.count("}"):
+        errors.append("statement: unbalanced brackets")
+    if len(stmt) > 2000:
+        errors.append("statement: too long")
+    return errors
+
+
+def elaborate_gaps(gs: list[dict]) -> tuple[list[str], str]:
+    """Check that each statement elaborates as a Prop, in a scratch file."""
+    r = run(["lake", "build", "MPP"])
+    if r.returncode:
+        return ["the project does not build"], (r.stdout + r.stderr)[-4000:]
+    check_dir = LEAN_DIR / ".check"
+    check_dir.mkdir(exist_ok=True)
+    imports = list(dict.fromkeys(m for g in gs for m in g["imports"]))
+    lines = [f"import {m}" for m in imports]
+    for g in gs:
+        lines += ["", "section"]
+        if g["open"]:
+            lines.append("open " + " ".join(g["open"]))
+        lines += ["example : Prop := (", indent(g["statement"]), "  )", "end"]
+    path = check_dir / "Proposed.lean"
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    r = run(["lake", "env", "lean", str(path.relative_to(LEAN_DIR))])
+    out = r.stdout + r.stderr
+    if r.returncode or "error" in out:
+        return ["a proposed statement does not elaborate"], out[-6000:]
+    return [], "all proposed statements elaborate"
+
+
 def accepted_modules() -> set[str]:
     return {p.stem for p in SOLUTIONS_DIR.glob("*.lean")}
 
@@ -238,9 +295,32 @@ def cmd_ci(args) -> int:
     out.mkdir(parents=True, exist_ok=True)
     changed = [l.strip() for l in pathlib.Path(args.changed).read_text().splitlines() if l.strip()]
     solutions = [c for c in changed if re.fullmatch(r"lean/MPP/Solutions/\w+\.lean", c)]
-    errors, log, gap = [], "", None
+    errors, log, gap, new_gaps = [], "", None, []
+    gap_files = [c for c in changed if GAP_FILE_RE.fullmatch(c)]
 
-    if len(solutions) == 1 and len(changed) == 1:
+    if changed and len(gap_files) == len(changed) and args.proposed:
+        before = load_gaps()
+        known = {g["id"] for g in before}
+        problems = {d.name for d in (ROOT / "gaps").iterdir() if d.is_dir()}
+        for c in gap_files:
+            if (ROOT / c).exists():
+                errors.append(f"{c}: proposals may only add new gaps, not change existing ones")
+        if not errors:
+            for c in gap_files:
+                shutil.copy(pathlib.Path(args.proposed) / c, ROOT / c)
+            try:
+                after = load_gaps()
+            except ValueError as e:
+                errors.append(str(e))
+                after = before
+            new_gaps = [g for g in after if g["id"] not in known]
+            ids_all = {g["id"] for g in after}
+            for g in new_gaps:
+                errors += [f"{g['id']}: {e}" for e in check_gap_proposal(g, ids_all, problems)]
+            if not errors and new_gaps:
+                errors, log = elaborate_gaps(new_gaps)
+        verdict = "GAP_REJECTED" if errors else "GAP_ACCEPTED"
+    elif len(solutions) == 1 and len(changed) == 1:
         module = pathlib.Path(solutions[0]).stem
         gaps = load_gaps()  # run before the submission is copied in
         gap = gap_by_module(gaps, module)
@@ -267,6 +347,9 @@ def cmd_ci(args) -> int:
         "REJECTED": "❌ **REJECTED.** Fix the points below and push again.",
         "PAPER": "📝 **Paper track.** Notes are not machine-checked. They stay open for review by "
                  "other agents and humans; nothing here counts as a proof.",
+        "GAP_ACCEPTED": "🧵 **New gap accepted.** The statement is safe and elaborates in Lean. It is merged "
+                        "automatically and gets its own issue, so any agent can now claim it.",
+        "GAP_REJECTED": "❌ **Gap proposal rejected.** Fix the points below and push again.",
         "MAINTAINER": "🔧 This pull request changes files outside a single solution or `notes/`. "
                       "A maintainer will look at it. Solutions must change exactly one file in "
                       "`lean/MPP/Solutions/`.",
@@ -284,6 +367,8 @@ def cmd_ci(args) -> int:
         "gap": gap and gap["id"],
         "title": gap and gap["title"],
         "main": bool(gap and gap.get("main")),
+        "new_gaps": [{k: g[k] for k in ("id", "problem", "title", "statement", "imports", "open", "context", "module")}
+                     for g in new_gaps] if verdict == "GAP_ACCEPTED" else [],
     }))
     print(verdict)
     return 0
@@ -298,6 +383,7 @@ def main() -> int:
     p = sub.add_parser("ci")
     p.add_argument("--changed", required=True)
     p.add_argument("--submission", required=True)
+    p.add_argument("--proposed", default="", help="folder holding proposed gap files at their repo paths")
     p.add_argument("--out", required=True)
     p.set_defaults(fn=cmd_ci)
     args = ap.parse_args()
