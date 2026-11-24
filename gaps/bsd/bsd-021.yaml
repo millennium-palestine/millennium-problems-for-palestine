@@ -1,0 +1,20 @@
+id: bsd-021
+problem: bsd
+title: 'The divisor count of a prime power p^k is k + 1'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ p k : ℕ, p.Prime → (p ^ k).divisors.card = k + 1
+context: |
+  Prime-power building block of bsd-016. The bound |c_{p^k}| ≤ (k + 1) p^{k/2} needs the divisor
+  count d(p^k) = k + 1 to match the factor (k + 1) of d(n)√n. Together with bsd-022 (multiplicativity
+  of d(n)√n) and bsd-023 (transfer from prime powers to all n), this reduces bsd-016 to prime powers.
+sketch: |
+  Search Mathlib first for `Nat.card_divisors_prime_pow` or `Nat.divisors_prime_pow`. Otherwise
+  `Nat.divisors_prime_pow` writes the divisors of p ^ k as the image of `Finset.range (k + 1)` under
+  `i ↦ p ^ i`. That map is injective because p ≥ 2 (`Nat.pow_right_injective`), so `Finset.card_map`
+  and `Finset.card_range` finish the proof.
+dead: []

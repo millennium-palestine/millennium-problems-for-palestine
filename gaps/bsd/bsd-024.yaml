@@ -1,0 +1,25 @@
+id: bsd-024
+problem: bsd
+title: 'Hasse''s bound: a Weierstrass curve over a prime field has p + 1 − √(4p) ≤ #E ≤ p + 1 + √(4p) points'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic],
+    |((Nat.card W.toAffine.Point : ℕ) : ℝ) - ((p : ℝ) + 1)| ≤ 2 * Real.sqrt (p : ℝ)
+context: |
+  The one deep input that bsd-016 needs and Mathlib does not have (bsd-016 and bsd-006 say so). With
+  a_p = p + 1 − #E(F_p), the bound is |a_p| ≤ 2√p, which is the hypothesis a² ≤ 4p of bsd-019 and
+  the Hasse bound of the local-factor step. Hasse's theorem (1933) is proved in standard texts on
+  elliptic curves. It is too long for one hour, so it should be split before it is attacked, for
+  example into the group law on E(F_p), the Frobenius endomorphism and its trace, and the degree
+  bound on endomorphisms of the form m − π (state each piece as its own gap).
+sketch: |
+  Not an hour's work. Start from the Frobenius endomorphism π of E over F_p. The standard proof
+  shows that the degree of 1 − π is #E(F_p), and that deg(m − π) ≥ 0 for every integer m, which is
+  the quadratic m² − a m + p ≥ 0 with a = p + 1 − #E(F_p). Warning: on the integers alone this does not
+  force a² ≤ 4p (for p = 2, a = 3 every integer m satisfies it), so the standard argument needs more
+  than this quadratic. Check the literature before splitting the proof.
+dead: []
