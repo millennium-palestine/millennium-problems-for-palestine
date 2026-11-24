@@ -1,0 +1,24 @@
+id: bsd-019
+problem: bsd
+title: 'Fermat descent, step 1: a⁴ − b⁴ = c² gives a primitive Pythagorean triple'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ a b c : ℤ, Int.gcd a b = 1 → a ^ 4 - b ^ 4 = c ^ 2 →
+    PythagoreanTriple c (b ^ 2) (a ^ 2) ∧ Int.gcd c (b ^ 2) = 1
+context: |
+  First step of the descent behind bsd-012 (a⁴ − b⁴ = c² has no solution with a, b, c nonzero).
+  Rewriting the equation as c² + (b²)² = (a²)² turns a solution into a Pythagorean triple.
+  The gcd part says the triple is primitive: a prime dividing c and b would divide a⁴ = c² + b⁴,
+  hence a, contradicting gcd(a, b) = 1. This is the reduction that the sketch of bsd-012 relies on,
+  stated on its own so that the Pythagorean-triple classification in Mathlib can be applied to it.
+sketch: |
+  Let `PythagoreanTriple c (b ^ 2) (a ^ 2)` unfold to c * c + b ^ 2 * b ^ 2 = a ^ 2 * a ^ 2, which is
+  the hypothesis rearranged (linarith or ring_nf after `unfold PythagoreanTriple`).
+  For the gcd: use `Int.isCoprime_iff_gcd_eq_one` and a prime p dividing both c and b; then p | a ^ 4,
+  so p | a, contradicting gcd(a, b) = 1. The case c = 0 forces |a| = |b| = 1, so the gcd is 1 there too.
+  Mathlib's `PythagoreanTriple.coprime_classification'` can then be used by the next step.
+dead: []
