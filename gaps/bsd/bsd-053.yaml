@@ -1,0 +1,30 @@
+id: bsd-053
+problem: bsd
+title: 'Halving identity for a split cubic: if x − e_i = a_i² for the three roots e_i of x³ + px + q, then the point with x-coordinate x + a₁a₂ + a₂a₃ + a₃a₁ has the right doubling'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (e1 e2 e3 a1 a2 a3 : ℚ), e1 + e2 + e3 = 0 → a1 ^ 2 + e1 = a2 ^ 2 + e2 → a1 ^ 2 + e1 = a3 ^ 2 + e3 →
+    (3 * (a1 ^ 2 + e1 + a1 * a2 + a2 * a3 + a3 * a1) ^ 2 + (e1 * e2 + e1 * e3 + e2 * e3)) ^ 2 =
+      4 * ((a1 ^ 2 + e1 + a1 * a2 + a2 * a3 + a3 * a1) ^ 3 +
+        (e1 * e2 + e1 * e3 + e2 * e3) * (a1 ^ 2 + e1 + a1 * a2 + a2 * a3 + a3 * a1) - e1 * e2 * e3) *
+        (a1 ^ 2 + e1 + 2 * (a1 ^ 2 + e1 + a1 * a2 + a2 * a3 + a3 * a1))
+context: |
+  Second algebraic step of the Kummer map for bsd-036: the kernel of the Kummer map in the split case. Let
+  f(x) = (x − e₁)(x − e₂)(x − e₃) = x³ + px + q with e₁ + e₂ + e₃ = 0, and let P = (x, y) be a rational point
+  with x − e_i = a_i² for rationals a_i. Put x_R = x + a₁a₂ + a₂a₃ + a₃a₁. Then x_R − e₁ = (a₁ + a₂)(a₁ + a₃),
+  x_R − e₂ = (a₂ + a₁)(a₂ + a₃) and x_R − e₃ = (a₃ + a₁)(a₃ + a₂), so f(x_R) = ((a₁+a₂)(a₁+a₃)(a₂+a₃))² is a
+  rational square and R = (x_R, ±(a₁+a₂)(a₁+a₃)(a₂+a₃)) is a rational point. The x-coordinate of 2R is
+  (3x_R² + p)²/(4f(x_R)) − 2x_R, and this statement is the identity that this equals x, written without
+  division: (3x_R² + p)² = 4f(x_R)(x + 2x_R). It gives P = ±2R, which proves P ∈ 2E(ℚ) for these curves.
+  Scratch check: with random roots and a₁ and consistent a₂, a₃, the identity holds to relative error 10⁻¹³.
+sketch: |
+  Substitute a_i² = x − e_i (the two hypotheses and e₁ + e₂ + e₃ = 0 are the only relations) and use
+  p = e₁e₂ + e₁e₃ + e₂e₃, q = −e₁e₂e₃ implicitly: the statement is polynomial in e₁, e₂, e₃, a₁, a₂, a₃.
+  Prove it by `linear_combination` with cofactors for the three relations, found by sympy (Gröbner
+  reduction or direct division) and checked with `ring`. The factorisations x_R − e_i = (a_i + a_j)(a_i + a_k)
+  are helper identities that can be used as intermediate `have`s.
+dead: []

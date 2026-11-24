@@ -1,0 +1,30 @@
+id: bsd-052
+problem: bsd
+title: 'Kummer identity: for y² = x³ + px + q, the chord through two points gives (x₁ − t)(x₂ − t)(x₃ − t) = (y₁ − λ(x₁ − t))² for every root t of the cubic'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p q : ℚ) (R : Type) [CommRing R] [Algebra ℚ R] (t : R),
+    t ^ 3 + algebraMap ℚ R p * t + algebraMap ℚ R q = 0 →
+    ∀ (x1 y1 x2 y2 lam x3 : ℚ), y1 ^ 2 = x1 ^ 3 + p * x1 + q → y2 ^ 2 = x2 ^ 3 + p * x2 + q →
+      x1 ≠ x2 → lam * (x1 - x2) = y1 - y2 → x3 = lam ^ 2 - x1 - x2 →
+      (algebraMap ℚ R x1 - t) * (algebraMap ℚ R x2 - t) * (algebraMap ℚ R x3 - t) =
+        (algebraMap ℚ R y1 - algebraMap ℚ R lam * (algebraMap ℚ R x1 - t)) ^ 2
+context: |
+  First algebraic step of the Kummer map for bsd-036 (weak Mordell–Weil). For a curve y² = f(x) with
+  f(x) = x³ + px + q, the Kummer map sends a point P = (x, y) to the class of x − t in L*/L*², where L is
+  the algebra ℚ[T]/(f(T)) and t is the class of T. This statement is the identity behind the homomorphism
+  property: the line y = λx + ν through P and Q meets the cubic in x₁, x₂ and x₃ = λ² − x₁ − x₂, so
+  f(X) − (λX + ν)² = (X − x₁)(X − x₂)(X − x₃). Evaluating at a root t of f gives the identity, with
+  ν = y₁ − λx₁. The statement is over an arbitrary commutative ℚ-algebra R, so it applies to L and to
+  ℚ × ℚ × ℚ alike. The hypothesis x₁ ≠ x₂ is needed to cancel x₁ − x₂ in y₁² − y₂² = f(x₁) − f(x₂).
+sketch: |
+  From y₁² − y₂² = f(x₁) − f(x₂) and λ(x₁ − x₂) = y₁ − y₂ with x₁ ≠ x₂ cancel x₁ − x₂ to get
+  λ(y₁ + y₂) = x₁² + x₁x₂ + x₂² + p (`mul_left_cancel₀` on sub_ne_zero). Then the identity follows from
+  the hypotheses and t³ + pt + q = 0 by `linear_combination` with cofactors computed by computer algebra
+  (sympy, checked with `ring`). Numerically the identity holds for the depressed cubic with real roots
+  to relative error 10⁻¹⁰ (scratch check, 2000 random chords and all three roots).
+dead: []
