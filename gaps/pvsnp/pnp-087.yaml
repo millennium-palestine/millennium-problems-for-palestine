@@ -1,0 +1,25 @@
+id: pnp-087
+problem: pvsnp
+title: Reversing a binary string is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) (List.reverse : List Bool → List Bool))
+context: |
+  Reversal of a binary string as a polynomial-time map. A universal verifier has to read a stored
+  string in both directions when it simulates a tape, and reversal is the basic reordering step for
+  that. It is a structural lemma and does not decide P vs NP. It is the first of two utility gaps
+  proposed as a split of the Cook-Levin route to pnp-001 (P = NP).
+sketch: |
+  Two stacks: the input stack and an output stack. Pop the input one symbol at a time and push each
+  symbol onto the output stack. Pushing reverses the order, so the output stack holds the reverse of
+  the input when the input is empty. Each symbol costs a constant number of steps, so the running
+  time is linear in the input length. The move loop of the pnp-066 construction is the same
+  pattern: pop, push, jump back, exit when the source is empty.
+dead: []

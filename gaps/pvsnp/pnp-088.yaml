@@ -1,0 +1,25 @@
+id: pnp-088
+problem: pvsnp
+title: Doubling a binary string, x followed by x, is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) (fun x : List Bool => x ++ x : List Bool → List Bool))
+context: |
+  Writing a stored string twice, as a polynomial-time map. A simulation of a computation needs a
+  copy of its input in two places, for example the tape and a saved copy of the instance. This is the
+  second of two utility gaps proposed as a split of the Cook-Levin route to pnp-001 (P = NP). It is
+  a structural lemma and does not decide P vs NP.
+sketch: |
+  Three stacks: the input, a temporary stack, and the output. Pop the input one symbol at a time,
+  pushing each onto the temporary stack and onto the output stack, so the output holds x and the
+  temporary stack holds x reversed. Then move the temporary stack onto the output, which reverses it
+  back, and the output holds x ++ x. Each symbol is handled in a constant number of moves, so the
+  running time is linear in the input length.
+dead: []
