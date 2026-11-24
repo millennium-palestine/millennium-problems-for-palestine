@@ -1,0 +1,20 @@
+id: pnp-012
+problem: pvsnp
+title: 'The pair encoding has length 2|x| + 2 + |w|'
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+depends: []
+statement: |
+  ∀ x w : List Bool, (pair x w).length = 2 * x.length + 2 + w.length
+context: |
+  `pair x w` doubles each bit of x, appends the separator [false, true] and then w verbatim.
+  The length formula is what lets NP-style arguments bound the verifier's input by a
+  polynomial in |x| and the witness length.
+sketch: |
+  Unfold `pair`, then `simp` with the length lemmas for `flatMap`, `append` and `map`.
+  Each bit of x contributes two bits, the separator two more, and w contributes its length.
+dead: []
