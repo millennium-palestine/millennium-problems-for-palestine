@@ -1,0 +1,23 @@
+id: pnp-049
+problem: pvsnp
+title: A verifier whose witnesses have exactly the bound length gives membership in NP
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+depends: []
+statement: |
+  ∀ L : Lang, (∃ V : Lang, InP V ∧ ∃ p : Polynomial ℕ, ∀ x : List Bool,
+    (L x = true ↔ ∃ w : List Bool, w.length = p.eval x.length ∧ V (pair x w) = true)) → InNP L
+context: |
+  Converse direction of the exact-length normalisation of pnp-044. A verifier whose witnesses
+  have exactly the bound length p(|x|) is in particular one whose witnesses have length at most
+  p(|x|), which is the definition of InNP in MPP/Defs/PvsNP.lean. The direction proved here is
+  the easy one; the other direction is pnp-044. It is a structural lemma; it does not decide
+  P vs NP.
+sketch: |
+  Take V and p from the hypothesis, keep the same verifier and polynomial, and convert each
+  witness equation w.length = p.eval |x| into w.length ≤ p.eval |x| by le_of_eq.
+dead: []
