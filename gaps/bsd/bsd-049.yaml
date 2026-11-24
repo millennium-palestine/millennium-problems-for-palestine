@@ -1,0 +1,38 @@
+id: bsd-049
+problem: bsd
+title: 'Biquadratic addition identities: for x₁ ≠ x₂ on a Weierstrass curve, the sum and product of x(P+Q) and x(P−Q) are explicit polynomials over (x₁ − x₂)²'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (a1 a2 a3 a4 a6 x1 x2 y1 y2 u v : ℚ),
+    y1 ^ 2 + a1 * x1 * y1 + a3 * y1 = x1 ^ 3 + a2 * x1 ^ 2 + a4 * x1 + a6 →
+    y2 ^ 2 + a1 * x2 * y2 + a3 * y2 = x2 ^ 3 + a2 * x2 ^ 2 + a4 * x2 + a6 →
+    x1 ≠ x2 →
+    u = ((y1 - y2) / (x1 - x2)) ^ 2 + a1 * ((y1 - y2) / (x1 - x2)) - a2 - x1 - x2 →
+    v = ((y1 + y2 + a1 * x2 + a3) / (x1 - x2)) ^ 2 + a1 * ((y1 + y2 + a1 * x2 + a3) / (x1 - x2))
+      - a2 - x1 - x2 →
+    (x1 - x2) ^ 2 * (u + v) = 2 * x1 ^ 2 * x2 + 2 * x1 * x2 ^ 2 + a1 ^ 2 * x1 * x2
+        + a1 * a3 * (x1 + x2) + 4 * a2 * x1 * x2 + a3 ^ 2 + 2 * a4 * (x1 + x2) + 4 * a6 ∧
+    (x1 - x2) ^ 2 * (u * v) = x1 ^ 2 * x2 ^ 2 - a1 * a3 * x1 * x2 - 2 * a4 * x1 * x2
+        - a3 ^ 2 * (x1 + x2) - 4 * a6 * (x1 + x2) + a4 ^ 2 - a1 ^ 2 * a6 + a1 * a3 * a4
+        - a2 * a3 ^ 2 - 4 * a2 * a6
+context: |
+  Core algebra for bsd-044 (naive parallelogram inequality) on a general Weierstrass model. Here
+  u = x(P+Q) and v = x(P−Q) are given by the chord formulas (Mathlib `WeierstrassCurve.Affine.addX`
+  with slope (y₁ − y₂)/(x₁ − x₂) for P+Q, and slope (y₁ + y₂ + a₁x₂ + a₃)/(x₁ − x₂) for P − Q, since
+  −Q = (x₂, −y₂ − a₁x₂ − a₃)). The identities say that u + v and uv are explicit polynomials in
+  x₁, x₂ over (x₁ − x₂)², with coefficients in the Weierstrass coefficients only. Their bidegree in
+  (x₁, x₂) is at most (2, 2), which is what makes the naive height of x(P+Q) at most a constant times
+  H(x₁)² H(x₂)² (see bsd-050). Checked by computer algebra: the y-free remainder is zero modulo the
+  two curve relations. Note that the sum needs only the curve equations, not the value of y.
+sketch: |
+  Let D = (x₁ − x₂)². Multiplying out, D·u = U₀ := (y₁−y₂)² + a₁(y₁−y₂)(x₁−x₂) − (a₂+x₁+x₂)D and
+  D·v = V₀ := (y₁+y₂+a₁x₂+a₃)² + a₁(y₁+y₂+a₁x₂+a₃)(x₁−x₂) − (a₂+x₁+x₂)D (prove by `field_simp` then `ring`).
+  Then U₀ + V₀ − Q = 2H₁ + 2H₂ and U₀V₀ − D·R = q₁H₁ + q₂H₂, where H₁, H₂ are the curve relations
+  (so `linear_combination` closes both; the cofactors are q₁ = a₁²x₁x₂ − a₁²x₂² + … + y₁² − 2y₂² and
+  q₂ = −a₁²x₁² + … + y₂², which a computer algebra system produces by division with remainder).
+  Cancel D ≠ 0 with `mul_left_cancel₀` for the product identity.
+dead: []

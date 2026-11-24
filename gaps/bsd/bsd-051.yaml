@@ -1,0 +1,29 @@
+id: bsd-051
+problem: bsd
+title: 'Doubling height upper bound: for a rational x with 4x³ + b₂x² + 2b₄x + b₆ ≠ 0, the reduced height of (x⁴ − b₄x² − 2b₆x − b₈)/(4x³ + b₂x² + 2b₄x + b₆) is at most K·H(x)⁴'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-048
+statement: |
+  ∀ (b2 b4 b6 b8 : ℚ), ∃ K : ℕ, ∀ x : ℚ,
+    4 * x ^ 3 + b2 * x ^ 2 + 2 * b4 * x + b6 ≠ 0 →
+    max ((x ^ 4 - b4 * x ^ 2 - 2 * b6 * x - b8) / (4 * x ^ 3 + b2 * x ^ 2 + 2 * b4 * x + b6)).num.natAbs
+        ((x ^ 4 - b4 * x ^ 2 - 2 * b6 * x - b8) / (4 * x ^ 3 + b2 * x ^ 2 + 2 * b4 * x + b6)).den
+      ≤ K * (max x.num.natAbs x.den) ^ 4
+context: |
+  Doubling upper bound for bsd-044 (the case P + Q = 2P) and for the naive height in bsd-038. By bsd-037,
+  for a nonsingular point with 2P ≠ O, x(2P) = F(x)/G(x) with F(x) = x⁴ − b₄x² − 2b₆x − b₈ and
+  G(x) = 4x³ + b₂x² + 2b₄x + b₆. Writing x = a/d in lowest terms, d⁴F(a/d) and d³G(a/d) are integer
+  forms of degree 4 and 3 in (a, d) once the rational coefficients are scaled by a common denominator N₀.
+  So x(2P) = N/M with N = d⁴F(a/d) and M = d·(d³G(a/d)), both bounded by a constant times max(|a|, d)⁴.
+  Then bsd-048 gives the bound for the reduced height. The hypothesis excludes 2P = O.
+sketch: |
+  Set x = a/d (`Rat.num_div_den`). Let N₀ be a positive integer clearing the denominators of b₂, b₄, b₆, b₈.
+  Then N₀·(a⁴ − b₄a²d² − 2b₆ad³ − b₈d⁴) and N₀·d·(4a³ + b₂a²d + 2b₄ad² + b₆d³) are integers, equal to
+  N₀ d⁴F and N₀ d⁴G, so X = F/G equals their quotient. Apply bsd-048 to get the bound on the reduced
+  numerator and denominator, with max(|N|, |M|) ≤ K·max(|a|, d)⁴ for an explicit K depending on N₀ and the
+  b's. Use `max_le`, `Int.natAbs_mul`, and `pow_le_pow_left` for the bounds.
+dead: []

@@ -1,0 +1,26 @@
+id: bsd-047
+problem: bsd
+title: 'Rational root height: a rational root of an integer quadratic with leading coefficient A has numerator bounded by max(|A|, |B|, |C|) and denominator at most |A|'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (A B C : ℤ) (u : ℚ), A ≠ 0 → (A : ℚ) * u ^ 2 + (B : ℚ) * u + (C : ℚ) = 0 →
+    u.num.natAbs ≤ max A.natAbs (max B.natAbs C.natAbs) ∧ u.den ≤ A.natAbs
+context: |
+  Elementary helper for bsd-044 (naive parallelogram inequality). If u = x(P+Q) is a root of an integer
+  quadratic whose coefficients have controlled size, then the naive height of u is controlled by those
+  sizes. This is the rational root theorem: write u = p/q in lowest terms, q > 0. Clearing denominators,
+  A p² + B p q + C q² = 0, so q divides A p², hence q divides A, and p divides C q², hence p divides C.
+  The case C = 0 needs B instead: then p (A p + B q) = 0, so for p ≠ 0 we get p divides B q, hence p divides B.
+  Note that the bound must include B: with C = 0 the root −B/A has numerator B, not bounded by |C|.
+sketch: |
+  Let u = p/q with p = u.num, q = u.den. Case p = 0: the numerator bound is trivial and q = 1 ≤ |A|.
+  Case p ≠ 0: from the cleared equation, q ∣ A p² and gcd(p, q) = 1 (`Rat.reduced`, `Int.isCoprime_iff_gcd_eq_one`),
+  so q ∣ A (`IsCoprime.dvd_of_dvd_mul_left`), giving q ≤ |A| by `Nat.le_of_dvd` on |A| > 0.
+  For the numerator: if C ≠ 0, p ∣ C q² and coprimality give p ∣ C, so |p| ≤ |C|. If C = 0, p ∣ B q gives p ∣ B,
+  so |p| ≤ |B| when B ≠ 0; if B = C = 0 then A u² = 0 forces u = 0, contradicting p ≠ 0.
+  Use `Int.natAbs_le_of_dvd_ne_zero` (or `Int.le_of_dvd` on absolute values) and `Nat.le_max_left`/`le_max_*`.
+dead: []

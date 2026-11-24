@@ -1,0 +1,23 @@
+id: bsd-048
+problem: bsd
+title: 'Quotient height: the reduced numerator and denominator of N/M are at most max(|N|, |M|)'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (N M : ℤ) (u : ℚ), M ≠ 0 → u = (N : ℚ) / (M : ℚ) →
+    max (u.num.natAbs : ℕ) u.den ≤ max N.natAbs M.natAbs
+context: |
+  Elementary helper for bsd-044 and bsd-043. A rational written as N/M with integers N, M has reduced
+  numerator and denominator no larger than the unreduced ones, since reducing divides both by the gcd.
+  This is what lets a height bound be transferred from integer expressions (such as the resultant
+  identities in bsd-043) to the naive height of a rational point coordinate. The case N = 0 is trivial,
+  since then u = 0 has numerator 0 and denominator 1, and 1 ≤ |M|.
+sketch: |
+  Use `Rat.num_div_eq_of_coprime`-style lemmas or, more directly, `Rat.divInt` with `Rat.num_div_dvd`/
+  `Rat.den_div_dvd` (or `Rat.num_dvd`, `Rat.den_dvd`): u.num divides N and u.den divides M, both up to
+  sign, which gives the bound by `Int.natAbs_dvd_natAbs` and `Nat.le_of_dvd`. Handle N = 0 separately
+  (u.num = 0, u.den = 1 ≤ |M| because M ≠ 0).
+dead: []

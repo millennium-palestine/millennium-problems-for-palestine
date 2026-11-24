@@ -1,0 +1,35 @@
+id: bsd-050
+problem: bsd
+title: 'Biquadratic height bound: a rational root u of u² − s u + p = 0, with (x₁ − x₂)² s and (x₁ − x₂)² p the bsd-049 polynomials, has height at most K·H(x₁)²·H(x₂)²'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-047
+- bsd-049
+statement: |
+  ∀ (a1 a2 a3 a4 a6 : ℚ), ∃ K : ℕ, ∀ (x1 x2 s p u : ℚ), x1 ≠ x2 →
+    (x1 - x2) ^ 2 * s = 2 * x1 ^ 2 * x2 + 2 * x1 * x2 ^ 2 + a1 ^ 2 * x1 * x2
+        + a1 * a3 * (x1 + x2) + 4 * a2 * x1 * x2 + a3 ^ 2 + 2 * a4 * (x1 + x2) + 4 * a6 →
+    (x1 - x2) ^ 2 * p = x1 ^ 2 * x2 ^ 2 - a1 * a3 * x1 * x2 - 2 * a4 * x1 * x2
+        - a3 ^ 2 * (x1 + x2) - 4 * a6 * (x1 + x2) + a4 ^ 2 - a1 ^ 2 * a6 + a1 * a3 * a4
+        - a2 * a3 ^ 2 - 4 * a2 * a6 →
+    u ^ 2 - s * u + p = 0 →
+    max u.num.natAbs u.den ≤ K * (max x1.num.natAbs x1.den) ^ 2 * (max x2.num.natAbs x2.den) ^ 2
+context: |
+  Height input for bsd-044. Multiply the relation by (x₁ − x₂)² and by the common denominator N₀ of the
+  rational coefficients: M u² − Q u + R = 0 has integer coefficients whose sizes are bounded by a
+  constant times H(x₁)² H(x₂)², where x₁ = a/d and x₂ = b/e in lowest terms (so |a|, d ≤ H(x₁) and
+  |b|, e ≤ H(x₂)). Indeed (de)²(x₁ − x₂)² = (ae − bd)² and (de)² x₁^i x₂^j = a^i d^{2−i} b^j e^{2−j} for
+  i, j ≤ 2, so each integer coefficient is a bihomogeneous form of bidegree (2, 2) in (a, d), (b, e).
+  Then bsd-047 bounds the numerator and denominator of u. The constant K depends only on a₁,…,a₆.
+  The hypothesis x₁ ≠ x₂ makes the leading coefficient (ae − bd)² nonzero.
+sketch: |
+  Obtain K from the rational coefficients of the two polynomials (take the least common denominator N₀ and
+  a bound on the absolute values of the scaled integer coefficients). For x₁ = a/d, x₂ = b/e with
+  d, e ≥ 1, the integer quadratic is A u² + B u + C = 0 with A = N₀(ae − bd)², B = −N₀ Σ c_ij a^i d^{2−i} b^j e^{2−j},
+  C = N₀ Σ c'_ij a^i d^{2−i} b^j e^{2−j}. Bound |A|, |B|, |C| ≤ K₀ H₁² H₂² with H₁ = max(|a|, d), H₂ = max(|b|, e).
+  Apply bsd-047 to get the bounds on u.num and u.den. Take K ≥ K₀ times the constant from the bounds.
+  Use `Rat.num_div_den` and `Rat.reduced` to pass from x₁ to (a, d).
+dead: []
