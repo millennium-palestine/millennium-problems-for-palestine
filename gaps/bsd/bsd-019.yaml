@@ -1,0 +1,27 @@
+id: bsd-019
+problem: bsd
+title: 'A second-order recurrence with a² ≤ 4p has |c k| ≤ (k + 1) √p ^ k'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p a : ℝ) (c : ℕ → ℝ), 0 ≤ p → a ^ 2 ≤ 4 * p → c 0 = 1 → c 1 = a →
+    (∀ k : ℕ, c (k + 2) = a * c (k + 1) - p * c k) →
+    ∀ k : ℕ, |c k| ≤ ((k : ℝ) + 1) * Real.sqrt p ^ k
+context: |
+  Splits off the prime-power step of bsd-016. For a good prime p, the local factor of the
+  L-series is 1 − a_p T + p T², so its coefficients c_k satisfy c_0 = 1, c_1 = a_p and
+  c_{k+2} = a_p c_{k+1} − p c_k. Hasse's bound |a_p| ≤ 2√p is the hypothesis a² ≤ 4p. The
+  conclusion |c_k| ≤ (k + 1) p^{k/2} is exactly what bsd-016 needs for the prime power p^k,
+  so bsd-016 reduces to this lemma plus Hasse's bound and the Euler product. The naive
+  triangle inequality does not give (k + 1); the invariant below does.
+sketch: |
+  Invariant: c_{k+1}² − a c_{k+1} c_k + p c_k² = p^{k+1}, by induction (the base case is
+  a² − a² + p = p; the step substitutes the recurrence and cancels a factor p).
+  Bound: write s = √p and x = c_{k+2}, y = c_{k+1}. Since |a| ≤ 2s, the invariant gives
+  (|x| − s|y|)² ≤ x² − a x y + s² y² = s^{2(k+2)}, so |x| ≤ s|y| + s^{k+2}. Strong induction
+  on k with the hypothesis |c_k| ≤ (k + 1) s^k and |c_{k+1}| ≤ (k + 2) s^{k+1} then gives
+  |c_{k+2}| ≤ (k + 3) s^{k+2}. Handle the base cases c_0 and c_1 = a separately.
+dead: []
