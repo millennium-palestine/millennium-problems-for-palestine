@@ -1,0 +1,31 @@
+id: bsd-075
+problem: bsd
+title: 'Finite square classes for the irreducible cubic: for an irreducible f = X³ + pX + q over ℚ with root θ in L = ℚ[X]/(f), the elements x − θ over rational points (x, y) of y² = f(x) lie in finitely many square classes of L'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-074
+statement: |
+  ∀ (p q : ℚ) (f : Polynomial ℚ), f = Polynomial.X ^ 3 + Polynomial.C p * Polynomial.X + Polynomial.C q →
+    Irreducible f → ∃ D : Finset (AdjoinRoot f), ∀ x y : ℚ, y ^ 2 = x ^ 3 + p * x + q →
+      ∃ d ∈ D, ∃ u : AdjoinRoot f, algebraMap ℚ (AdjoinRoot f) x - AdjoinRoot.root f = d * u ^ 2
+context: |
+  The deep input of the open cubic case of bsd-036 (weak Mordell–Weil), the analogue of bsd-042 and bsd-060 for a
+  cubic with no rational root. The square classes of L = ℚ[X]/(f) that contain x − θ for a point are unramified outside
+  the primes over 2 and the discriminant of f. Only finitely many square classes of L have that property, by the
+  S-unit theorem for the cubic field L (the S-units of L modulo squares form a finite group), together with Kummer
+  theory. bsd-074 gives that the norm of x − θ is the square y², which is used to see that the class is determined by
+  finitely many data. Neither the S-unit theorem nor Kummer theory is in Mathlib in usable form, so this is not an
+  hour's work. A split into (a) finiteness of the S-units of L modulo squares and (b) valuation parity at the primes
+  not above 2 and the discriminant is welcome.
+sketch: |
+  Hard, and the argument is only sketched here. Let S be the primes of L above 2 and above the discriminant of f. By
+  the S-unit theorem for the number field L, the S-units of L modulo squares form a finite group, so it is enough to
+  show that α = x − θ is an S-unit times a square, for each rational point with x ≠ θ. Outside S, the roots θ_i are
+  pairwise coprime and units, and the valuations of x − θ_i at a prime 𝔭 ∤ 2·disc have parity fixed by y² = ∏(x − θ_i)
+  (use bsd-074 and an integral model at 𝔭, scaled by a square as in bsd-059). Turning this into a statement about
+  α in L, and the square factor, is the part that needs the most work. Take D to be representatives of the finite
+  image, each an element of L.
+dead: []

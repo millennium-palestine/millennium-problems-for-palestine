@@ -1,0 +1,25 @@
+id: bsd-074
+problem: bsd
+title: 'Norm of x minus the root: for an irreducible cubic f = X³ + pX + q over ℚ and a rational point (x, y) with y² = f(x), the norm of x − θ in ℚ[X]/(f) is y²'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p q : ℚ) (f : Polynomial ℚ), f = Polynomial.X ^ 3 + Polynomial.C p * Polynomial.X + Polynomial.C q →
+    Irreducible f → ∀ x y : ℚ, y ^ 2 = x ^ 3 + p * x + q →
+      Algebra.norm ℚ (algebraMap ℚ (AdjoinRoot f) x - AdjoinRoot.root f) = y ^ 2
+context: |
+  First step of the open cubic case of bsd-036 (weak Mordell–Weil). When the cubic x³ + px + q has no rational root,
+  the Kummer map of 2-descent sends a rational point to the square class of x − θ in L* / L*², where L = ℚ[X]/(f) and
+  θ is the class of X. The norm of that element is the product of the three conjugates (x − θ_i), which is f(x) = y².
+  So the image consists of elements of L whose norm is a rational square. This gap proves only that identity. The
+  finiteness of the square classes in L (the S-unit input, stated as bsd-075) is separate, and is not covered here.
+sketch: |
+  The norm of α in ℚ[X]/(f) is the determinant of multiplication by α on the power basis 1, θ, θ². Over a splitting
+  field with roots θ_i of f (f = ∏ (X − θ_i) since f is monic), Algebra.norm (x − θ) = ∏ (x − θ_i) = f(x) = y².
+  Note the sign: the norm of θ − x would be −f(x), so the statement uses x − θ. Mathlib route: Algebra.norm_eq_prod_embeddings
+  over a splitting field, or the characteristic polynomial of AdjoinRoot.root on AdjoinRoot.powerBasis, or a direct
+  determinant computation on the power basis.
+dead: []
