@@ -1,0 +1,25 @@
+id: bsd-071
+problem: bsd
+title: 'Nonsingular transport: a nonsingular rational point of E is carried by a rational change of variables to a nonsingular point of C · E, with x′ = (x − r)/u², y′ = (y − s(x − r) − t)/u³'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (E : WeierstrassCurve ℚ) (C : WeierstrassCurve.VariableChange ℚ) (x y : ℚ),
+    E.toAffine.Nonsingular x y →
+      (C • E).toAffine.Nonsingular ((x - C.r) / (C.u : ℚ) ^ 2) ((y - C.s * (x - C.r) - C.t) / (C.u : ℚ) ^ 3)
+context: |
+  Second half of the point-level reduction for bsd-036 and bsd-002, after bsd-070 (the equation). A point is a group element
+  only when it is nonsingular, so the transport must keep nonsingularity. With the criterion of Mathlib's `nonsingular_iff'`
+  (the equation and one of the partial derivatives G₁ = a₁y − (3x² + 2a₂x + a₄), G₂ = 2y + a₁x + a₃ nonzero), the partial
+  derivatives of the transported curve are G₂′ = u⁻³G₂ and G₁′ = u⁻⁴(G₁ + sG₂) at the transported point, by the
+  coefficient formulas of Mathlib's `variableChange_a₁` … `variableChange_a₆`. So a vanishing pair for C • E forces G₁ = G₂ = 0
+  for E. The compatibility with the group law (that the transport is a group isomorphism of rational points) is still open.
+sketch: |
+  Rewrite with `WeierstrassCurve.Affine.nonsingular_iff'` in both directions. The equation part is the proof of bsd-070.
+  For the second component, `by_contra`, `simp only [not_or, not_not]`, and the two identities hid2 (G₂′ = (u³)⁻¹ G₂) and
+  hid1 (G₁′ = (u⁴)⁻¹(G₁ + sG₂)), each by `simp only` on the variableChange lemmas, `field_simp` and `ring`. Cancel the
+  nonzero u-powers with `mul_eq_zero`, then G₁ = 0 from G₁ + sG₂ = 0 and G₂ = 0 by `linear_combination`.
+dead: []
