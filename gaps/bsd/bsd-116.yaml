@@ -1,0 +1,36 @@
+id: bsd-116
+problem: bsd
+title: 'Kummer homomorphism for the one-root cubic: for y² = x³ + px + q over ℚ with a rational root e and an irreducible quadratic factor g = X² + eX + (e² + p), the map sending an affine point (x, y) to the square class of x − θ in (ℚ[X]/(g))ˣ/squares, and the origin to 0, is a homomorphism'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-078
+statement: |
+  ∀ (p q e : ℚ) (g : Polynomial ℚ) (E : WeierstrassCurve ℚ) [E.IsElliptic],
+    E.a₁ = 0 → E.a₂ = 0 → E.a₃ = 0 → E.a₄ = p → E.a₆ = q → e ^ 3 + p * e + q = 0 →
+    g = Polynomial.X ^ 2 + Polynomial.C e * Polynomial.X + Polynomial.C (e ^ 2 + p) → Irreducible g →
+    ∃ κ : E.toAffine.Point →+ Additive ((AdjoinRoot g)ˣ ⧸ (powMonoidHom (2 : ℕ) : (AdjoinRoot g)ˣ →* (AdjoinRoot g)ˣ).range),
+      ∀ (x y : ℚ) (h : E.toAffine.Nonsingular x y), ∃ u : (AdjoinRoot g)ˣ,
+        (u : AdjoinRoot g) = AdjoinRoot.of g x - AdjoinRoot.root g ∧
+          κ (WeierstrassCurve.Affine.Point.some x y h) = Additive.ofMul (QuotientGroup.mk u)
+context: |
+  The Kummer map of the one-root case of bsd-036 (weak Mordell–Weil), the quadratic-factor component only. It is the
+  analogue of bsd-103 (irreducible cubic), with L = ℚ[X]/(g) in place of ℚ[X]/(f). The point is that the component
+  x − θ is nonzero for every affine point, because θ is not rational (g is irreducible), including the rational 2-torsion
+  point (e, 0), so the map is defined on all of E(ℚ) and is a homomorphism there. Its homomorphism property is bsd-078
+  applied to the field L with the root θ of the cubic (θ³ + pθ + q = (θ − e)·g(θ) = 0). Its kernel is not 2E(ℚ) (the
+  rational component x − e is missing), which is why the one-root fibre argument needs bsd-113 with a finite defect set and
+  bsd-114 to recover x − e; this gap is only the homomorphism.
+sketch: |
+  Work in L = ℚ[X]/(g) with θ = root g, which is a field because g is irreducible (use haveI : Fact (Irreducible g)). The
+  statement uses AdjoinRoot.of g, which does not depend on a choice of Algebra instance, so state and prove everything
+  with `of`; a rational algebraMap x equals `of g x` because both are the image of the rational x under ring homs out of
+  ℚ (`eq_ratCast`). (a) θ satisfies θ² + eθ + (e² + p) = 0 (mk g g = 0), hence θ³ + pθ + q = 0 using e³ + pe + q = 0.
+  (b) θ is not of the form `of g a` for rational a: otherwise g(a) = 0 by injectivity of `of g`, contradicting that the
+  irreducible quadratic g has no rational root (degree argument). (c) Define κ(O) = 0 and κ(x, y) = class of x − θ, and
+  check additivity exactly as in bsd-103: the chord case by bsd-078 (its conclusion rewritten by the same identity), the
+  doubling by the same argument, and the case P + Q = O because κ(P) and κ(−P) = κ(P) are equal classes. Package the map
+  with AddMonoidHom.mk'.
+dead: []
