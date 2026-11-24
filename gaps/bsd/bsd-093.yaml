@@ -1,0 +1,26 @@
+id: bsd-093
+problem: bsd
+title: 'Even valuations give a square ideal: for a number field K and x ≠ 0 in K whose valuation at every finite prime is an even power, the principal fractional ideal of x is the square of a fractional ideal'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [NumberField K] (x : K), x ≠ 0 →
+    (∀ v : IsDedekindDomain.HeightOneSpectrum (NumberField.RingOfIntegers K),
+      ∃ n : ℤ, v.valuation K x = WithZero.exp (2 * n)) →
+    ∃ J : FractionalIdeal (nonZeroDivisors (NumberField.RingOfIntegers K)) K,
+      FractionalIdeal.spanSingleton (nonZeroDivisors (NumberField.RingOfIntegers K)) x = J ^ 2
+context: |
+  The ideal-theoretic input of the unramified 2-Selmer group (bsd-092). An element of K whose valuations are all even has
+  principal fractional ideal equal to a square, and the square root is the product of the primes raised to half their
+  exponents. Mathlib has the factorization of fractional ideals into height-one primes (FractionalIdeal.count and the
+  finprod factorization in DedekindDomain/Factorization.lean), so this is the statement that a fractional ideal whose
+  counts are all even is a square. It is needed to produce an ideal class for each element in bsd-094.
+sketch: |
+  Let I = spanSingleton x. Its counts at the height-one primes are the valuations of x (up to sign), which are even, and
+  only finitely many are nonzero (FractionalIdeal.count_ne_zero and the finiteness of the support). Define J as the finprod
+  over the height-one spectrum of v^(count/2), which has finite support. Then J² has the same counts as I, and the
+  factorization of a nonzero fractional ideal determines it (finprod_heightOneSpectrum_factorization), so J² = I.
+dead: []
