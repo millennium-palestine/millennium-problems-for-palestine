@@ -1,0 +1,22 @@
+id: bsd-028
+problem: bsd
+title: 'The sine of (n + 1)θ is at most (n + 1) times the sine of θ in absolute value'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (θ : ℝ) (n : ℕ), |Real.sin (((n : ℝ) + 1) * θ)| ≤ ((n : ℝ) + 1) * |Real.sin θ|
+context: |
+  Trigonometric core of the Hasse-type bound in bsd-016 and bsd-030. A local factor 1 − a T + p T²
+  with |a| ≤ 2√p has coefficients that are (up to the factor p^(k/2)) Chebyshev-type sine ratios
+  sin((k+1)θ) / sin θ, where cos θ = a/(2√p). This lemma is the uniform bound |sin((k+1)θ)| ≤ (k+1)|sin θ|
+  that makes those coefficients at most (k+1) p^(k/2). It involves no elliptic curve and no
+  number theory, only real trigonometry.
+sketch: |
+  Induction on n. Write sin((n+2)θ) = sin((n+1)θ) cos θ + cos((n+1)θ) sin θ (Real.sin_add). Then
+  |sin((n+2)θ)| ≤ |sin((n+1)θ)| + |sin θ|, using |cos| ≤ 1 (Real.abs_cos_le_one) and
+  |cos((n+1)θ)| ≤ 1. The base case n = 0 is trivial. Combine with the induction hypothesis to
+  get (n + 2)|sin θ|. Use `abs_add_le`, `abs_mul` and `mul_le_of_le_one_left` style steps.
+dead: []
