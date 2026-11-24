@@ -1,0 +1,37 @@
+id: bsd-101
+problem: bsd
+title: 'Valuation parity for the irreducible cubic: for an irreducible f = X³ + pX + q over ℚ with root θ in L = ℚ[X]/(f), there is a finite set S of primes of L such that for every rational point (x, y) of y² = x³ + px + q with x ≠ θ, the element x − θ has even valuation at every prime outside S'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-074
+statement: |
+  ∀ (p q : ℚ) (f : Polynomial ℚ) [Fact (Irreducible f)],
+    f = Polynomial.X ^ 3 + Polynomial.C p * Polynomial.X + Polynomial.C q →
+    ∃ S : Set (IsDedekindDomain.HeightOneSpectrum (NumberField.RingOfIntegers (AdjoinRoot f))),
+      S.Finite ∧ ∀ x y : ℚ, y ^ 2 = x ^ 3 + p * x + q →
+        algebraMap ℚ (AdjoinRoot f) x ≠ AdjoinRoot.root f →
+        ∀ v : IsDedekindDomain.HeightOneSpectrum (NumberField.RingOfIntegers (AdjoinRoot f)), v ∉ S →
+          ∃ n : ℤ, v.valuation (AdjoinRoot f) (algebraMap ℚ (AdjoinRoot f) x - AdjoinRoot.root f) =
+            WithZero.exp (2 * n)
+context: |
+  The arithmetic half of the cubic case of bsd-036 (finite square classes for the irreducible cubic, bsd-075). Together
+  with the finite representatives bsd-100 it gives bsd-075. The key point is an identity in L: with α = x − θ and
+  β = x² + xθ + θ² + p one has α·β = f(x) = y², so the valuations of α and β multiply to an even exponent, and a prime
+  dividing both α and β must divide f'(θ) = β − α(x + 2θ), which is a nonzero element with finitely many primes of small
+  valuation. The gap statement uses L = AdjoinRoot f with its number field structure (NumberField (AdjoinRoot f) needs
+  Fact (Irreducible f)), and the hypothesis x − θ ≠ 0 is needed because the valuation of 0 is not of the form exp(2n).
+sketch: |
+  Elementary once the right identity is used; no splitting field is needed. Let α = x − θ and β = x² + xθ + θ² + p in L.
+  Since f(θ) = 0, f(x) = α·β = y², and f'(θ) = 3θ² + p = β − α(x + 2θ). Let S be the finite set of primes v of L where
+  one of p, q, θ is not integral, together with the primes where v(f'(θ)) < 1 (f'(θ) ≠ 0 because θ is a simple root of
+  f, so this set is finite). For v ∉ S:
+  (a) if v(x) > 1, then v(α) = v(x) and v(β) = v(x)², and v(α)·v(β) = v(y)² gives 3·e = 2·e' for the exponents, so the
+  exponent of v(α) is even;
+  (b) if v(x) ≤ 1, then α, β, x + 2θ are integral; if v(α) < 1 and v(β) < 1 then f'(θ) = β − α(x + 2θ) has v < 1, which
+  is excluded for v ∉ S. So v(α) = 1 or v(β) = 1, and v(α)·v(β) = v(y)² gives an even exponent for v(α).
+  The only Mathlib inputs are the valuation of a product and of a power, and the finiteness of the set of primes at which
+  a fixed nonzero element has valuation below 1. The norm form of bsd-074 is not needed here.
+dead: []
