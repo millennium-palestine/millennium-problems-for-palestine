@@ -1,0 +1,42 @@
+id: pnp-068
+problem: pvsnp
+title: Under P = NP, the greedy step on pairs is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-054
+- pnp-055
+- pnp-026
+- pnp-060
+statement: |
+  ∀ (V : Lang) (p : Polynomial ℕ), InP V → PEqualsNP →
+    ∃ G : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) G) ∧
+      ∀ x u : List Bool,
+        ((∃ t : List Bool, (u ++ [false] ++ t).length = p.eval x.length ∧
+            V (pair x (u ++ [false] ++ t)) = true) → G (pair x u) = pair x (u ++ [false])) ∧
+        (¬ (∃ t : List Bool, (u ++ [false] ++ t).length = p.eval x.length ∧
+            V (pair x (u ++ [false] ++ t)) = true) → G (pair x u) = pair x (u ++ [true]))
+context: |
+  One bit of the greedy search of pnp-058, applied to the pair encoding. For a verifier V and a
+  polynomial p, the prefix predicate of the witnesses of exact length p(|x|) is the language
+  D (pair x u') = (some witness t makes u' ++ t of length p(|x|) accepted by V on pair x (u' ++ t)).
+  If P = NP, then D is in NP (pnp-054 with the exact-length normal form) and therefore in P
+  (pnp-055). The greedy step appends false when the extension by false is accepted and true
+  otherwise, which is the append of the negated decision of pnp-060 applied to pair x (u ++ [false]).
+  The map is stated on pairs only, so that the same map can be iterated while x stays fixed. It is
+  structural and does not decide P vs NP.
+sketch: |
+  Assume P = NP and take the polynomial-time decider M of D from pnp-055. Define G on pair x u as
+  pair x (u ++ [b]) where b is the negation of the decision of M on pair x (u ++ [false]); the
+  bit is computed from the pair by pnp-026 (pairing), pnp-052 (concatenation on the second
+  component), and pnp-060 (appending the negated decision). The two implications follow from the
+  definition of D, because D (pair x (u ++ [false])) holds exactly when the first case holds.
+  Polynomial time follows by composition of pnp-006. The length of the second component grows by
+  one, as in pnp-057.
+dead: []

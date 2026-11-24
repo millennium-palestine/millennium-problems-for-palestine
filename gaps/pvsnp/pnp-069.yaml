@@ -1,0 +1,38 @@
+id: pnp-069
+problem: pvsnp
+title: Under P = NP, a polynomial-time map finds a witness of exact length p(|x|) whenever one exists
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-025
+- pnp-033
+- pnp-058
+- pnp-059
+- pnp-066
+statement: |
+  ∀ (V : Lang) (p : Polynomial ℕ), InP V → PEqualsNP →
+    ∃ f : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) ∧
+      ∀ x : List Bool, (∃ w : List Bool, w.length = p.eval x.length ∧ V (pair x w) = true) →
+        (f x).length = p.eval x.length ∧ V (pair x (f x)) = true
+context: |
+  The search-to-decision route of pnp-055, pnp-057 and pnp-058, closed off. Under P = NP, the
+  greedy step of pnp-068 is polynomial-time on pairs. Iterating it p(|x|) times from the pair
+  x and the empty witness, with the loop of pnp-066, produces a pair whose second component is the
+  greedy string of length p(|x|). By pnp-058 this string is accepted by V whenever some witness of
+  exact length p(|x|) exists, and pnp-059 gives the hypotheses of that lemma. The count p(|x|) is a
+  polynomial-time function of x (pnp-033), so the loop applies. It is structural and does not decide
+  P vs NP.
+sketch: |
+  Take G from pnp-068 and, for the function ignoring the case where G is not on pairs, let the step
+  be G on pairs and the identity-with-a-bit elsewhere, so that the length grows by one at every
+  input (pnp-062). Apply pnp-066 to the step with the input pair (pair x []) and the unary count of
+  p(|x|), which is polynomial in x by pnp-033 and pnp-026. The output pair is pair x w, and w is the
+  second component, extracted by pnp-025. Then |w| = p(|x|) by pnp-062 and the greedy invariant
+  E w = true at the end holds by pnp-058 and pnp-059, which gives V (pair x w) = true.
+dead: []
