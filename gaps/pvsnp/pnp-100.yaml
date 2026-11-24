@@ -1,0 +1,33 @@
+id: pnp-100
+problem: pvsnp
+title: An NP-complete language exists (Cook–Levin, over TM2 machines)
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  ∃ S : Lang, InNP S ∧ ∀ L : Lang, InNP L → ∃ f : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) ∧
+    ∀ x : List Bool, L x = S (f x)
+context: |
+  The Cook–Levin half of the NP-complete approach. pnp-019 says that an NP-hard language in NP that is
+  not in P gives P ≠ NP. Its first hypothesis, the existence of an NP-hard language in NP, is this
+  gap. It is the only missing piece on the hardness side: pnp-024 and pnp-020 already transport hardness
+  along reductions, and pnp-018/pnp-019 turn it into a separation once a language outside P is known.
+  This gap does not decide P vs NP. Even with it, one still needs ¬ InP S for the NP-complete S, which is
+  the open lower bound. The proof is hard, not an hour-level lemma: every NP verifier is a different
+  TM2 machine, so the reduction must simulate an arbitrary polynomial-time machine on a fixed alphabet
+  (a circuit or tableau construction), and the membership part needs circuit evaluation in polynomial
+  time. Any proof must be checked against the draft definitions in MPP/Defs/PvsNP.lean.
+sketch: |
+  Take S to be CIRCUIT-SAT on a fixed encoding of circuits. Membership: the witness is a satisfying
+  assignment, and evaluating a circuit on it is polynomial-time (circuit value problem), so S is in NP.
+  Hardness: for a polynomial-time verifier V of L with witness bound p, build from x a circuit that
+  simulates V for p(|x|) + |x| steps on the pair encoding (a tableau of the TM2 run with its stacks)
+  and outputs its accept bit; satisfiable exactly when some witness is accepted. The tableau size is
+  polynomial by pnp-023 (the output length of a polynomial-time map is polynomially bounded).
+dead: []
