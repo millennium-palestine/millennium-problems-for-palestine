@@ -1,0 +1,27 @@
+id: bsd-152
+problem: bsd
+title: 'Point count parity: for a short Weierstrass curve y² = x³ + ax + b over a prime field F_p with p ≠ 2, #E(F_p) − 1 − r is even, where r is the number of roots of x³ + ax + b in F_p'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-141
+- bsd-151
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (a b : ZMod p)
+    [(WeierstrassCurve.mk (0 : ZMod p) 0 0 a b).IsElliptic], p ≠ 2 →
+    (2 : ℤ) ∣ ((Nat.card (WeierstrassCurve.mk (0 : ZMod p) 0 0 a b).toAffine.Point : ℕ) : ℤ) -
+      (1 + ((Finset.univ.filter fun x : ZMod p => x ^ 3 + a * x + b = 0).card : ℤ))
+context: |
+  Parity consequence of the point count of bsd-141: #E(F_p) = p + 1 + S with S = Σ_x χ(x³ + ax + b). By bsd-151, S ≡ p − r
+  (mod 2). So #E(F_p) − 1 − r = p + S − r ≡ 2p − 2r ≡ 0. In particular, when the cubic has no root in F_p the point count is
+  odd, so E(F_p) has no point of order 2 (the 2-torsion of E(F_p) is the set of roots of the cubic, plus O). This is a
+  fact about the reduction of E modulo p, and it is elementary: it gives no size bound, so it is not Hasse's bound.
+  The statement is true for every odd prime p and every elliptic short form. It is the first parity step in the
+  2-torsion analysis of bsd-003 and bsd-004.
+sketch: |
+  Use bsd-141 for the point count (rewrite #E as p + 1 + S), and bsd-151 for the parity of S − (p − r). Then the difference
+  #E − 1 − r equals (p + S − r) = (S − (p − r)) + 2p − 2r, which is even. Finish with Int.dvd_add or omega after
+  setting the two quantities as integers.
+dead: []
