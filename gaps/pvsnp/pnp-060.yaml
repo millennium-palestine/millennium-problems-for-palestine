@@ -1,0 +1,29 @@
+id: pnp-060
+problem: pvsnp
+title: Appending the negated decision of a polynomial-time language is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  ∀ D : Lang, InP D → ∃ s : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) s) ∧
+    ∀ z : List Bool, s z = z ++ [!D z]
+context: |
+  Greedy step for a witness search. In pnp-058 the bit appended at each step is false exactly when the
+  prefix extended by false is still extendable. If that extendability test is a language D in P, the
+  appended bit is the negation of D's answer on the current string z, which is the statement here. The
+  map keeps z and appends one bit, so it is the natural step map for a search built from a decider. It
+  uses the negation of pnp-004 and the composition machinery of pnp-006 and pnp-009. It is structural;
+  it does not decide P vs NP.
+sketch: |
+  Let f be the machine that decides D (InP D). Run f on the input z, giving the answer bit b = D z,
+  while the input stack still holds z. Then a one-symbol machine flips b (as in pnp-004) and appends
+  the result to z. The composite runs in time polynomial in |z|, because the running time of f is
+  polynomial and the appended part is one symbol. The equation s z = z ++ [!D z] is the output
+  specification of the composite.
+dead: []

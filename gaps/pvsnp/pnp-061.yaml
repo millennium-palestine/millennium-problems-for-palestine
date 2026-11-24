@@ -1,0 +1,31 @@
+id: pnp-061
+problem: pvsnp
+title: Iterating a polynomial-time one-bit extension polynomially many times is polynomial-time
+status: open
+imports:
+- Mathlib
+open:
+- Turing
+depends: []
+statement: |
+  ∀ s : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) s) →
+    (∀ z : List Bool, (s z).length = z.length + 1) →
+    ∀ p : Polynomial ℕ, ∃ T : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) T) ∧
+      ∀ z : List Bool, T z = s^[p.eval z.length] z
+context: |
+  The machine-level step of a witness search. The search of pnp-058 and pnp-059 applies a one-bit
+  extension step p(|x|) times, where p(|x|) is the length of the witness. Iterating a single step is
+  not composition: it needs a loop whose count is read from the input length. The length hypothesis
+  says that each step appends exactly one symbol, so after k steps the string has length |z| + k and
+  the total cost stays polynomial in |z| + p(|z|). Without the hypothesis the output could double at
+  each step and leave polynomial time. This is the hard machine lemma on the search route; it is
+  structural and does not decide P vs NP.
+sketch: |
+  Build T as a machine with a unary counter: read p(|z|) from the input length (pnp-033 gives the
+  unary evaluation of a polynomial of the input length), then repeat the machine for s that many
+  times, each time reading the current string, applying s, and keeping the result. The invariant is
+  that after j rounds the work tape holds s^[j] z, with length |z| + j, so each round costs time
+  polynomial in |z| + p(|z|) by pnp-023 and the length hypothesis. Induction on j gives the equation.
+dead: []
