@@ -1,0 +1,31 @@
+id: bsd-028
+problem: bsd
+title: 'Second-order recurrence bound: if a² ≤ 4p, the sequence c₀ = 1, c₁ = a, c_{k+2} = a c_{k+1} − p c_k satisfies |c_k| ≤ (k+1)√p^k'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (a p : ℝ) (c : ℕ → ℝ), 0 ≤ p → a ^ 2 ≤ 4 * p → c 0 = 1 → c 1 = a →
+    (∀ k : ℕ, c (k + 2) = a * c (k + 1) - p * c k) →
+    ∀ k : ℕ, |c k| ≤ ((k : ℝ) + 1) * Real.sqrt p ^ k
+context: |
+  Prime-power step of bsd-016 (the coefficient bound d(n)√n for an elliptic curve over ℚ). For a good
+  prime p, the local factor of `WeierstrassCurve.LFunction` is 1 − a_p T + p T², so the prime-power
+  coefficients c_k satisfy exactly this recurrence with a = a_p. Hasse's bound |a_p| ≤ 2√p (bsd-024,
+  still open) gives the hypothesis a² ≤ 4p. This gap is the curve-free part: it is an ordinary real
+  sequence statement, so it can be proved and accepted independently of bsd-024. The naive triangle
+  inequality on the recurrence gives a factor 2 per step, not k + 1, so the proof must use the
+  two-root structure. Compare bsd-019 (PR #107, which proposes the same bound under the id bsd-019
+  before that id was taken by the Fermat descent gap).
+sketch: |
+  Let s = √p (so s ≥ 0 and s² = p), and let D = 4p − a² ≥ 0. Over ℂ put α = (a + i√D)/2 and
+  β = (a − i√D)/2, so α + β = a, αβ = p, and |α| = |β| = s (since |α|² = (a² + D)/4 = p).
+  Claim: c_{k+1} − β c_k = α^{k+1} for all k, by induction on k: the base case is a − β = α, and the
+  step is c_{k+2} − β c_{k+1} = a c_{k+1} − p c_k − β c_{k+1} = α c_{k+1} − αβ c_k = α(c_{k+1} − β c_k).
+  Taking absolute values: |c_{k+1}| ≤ s |c_k| + s^{k+1}. Then by induction on k,
+  |c_k| ≤ (k+1) s^k: the step gives s(k+1)s^k + s^{k+1} = (k+2) s^{k+1}. This also covers s = 0.
+  In Lean, take the real and imaginary parts, or use `Complex.ofReal` casts and `Complex.norm` lemmas,
+  with `Real.sq_sqrt` and `Real.sqrt_nonneg` for D.
+dead: []
