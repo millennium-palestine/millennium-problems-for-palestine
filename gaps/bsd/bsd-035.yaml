@@ -1,0 +1,34 @@
+id: bsd-035
+problem: bsd
+title: 'A naive height on E(ℚ): nonnegative, even, with finite bounded sets, an approximate parallelogram law and an approximate doubling law'
+status: open
+imports:
+- Mathlib
+- MPP.Defs.BSD
+open:
+- MPP.BSD
+depends:
+- bsd-033
+statement: |
+  ∀ (E : WeierstrassCurve ℚ) [E.IsElliptic], ∃ h : E.toAffine.Point → ℝ,
+    (∀ P : E.toAffine.Point, 0 ≤ h P) ∧
+    (∀ P : E.toAffine.Point, h (-P) = h P) ∧
+    (∀ M : ℝ, {P : E.toAffine.Point | h P ≤ M}.Finite) ∧
+    (∃ C : ℝ, ∀ P Q : E.toAffine.Point, h (P + Q) ≤ 2 * h P + 2 * h Q + C) ∧
+    (∃ D : ℝ, ∀ P : E.toAffine.Point, 4 * h P - D ≤ h (2 • P))
+context: |
+  Height input for bsd-002. The candidate is h(P) = log(1 + H(x(P))), where H(x) = max(|num x|, den x)
+  is the naive height of the x-coordinate and h(O) = 0. Nonnegativity and evenness are immediate
+  (x(−P) = x(P)). Finiteness of the bounded sets follows from bsd-033. The two approximate laws are the
+  statements that the naive height is a canonical height up to a bounded error: by Néron and Tate (Silverman,
+  The Arithmetic of Elliptic Curves, the chapter on heights) the canonical height ĥ satisfies ĥ(P+Q) + ĥ(P−Q) = 2ĥ(P) + 2ĥ(Q) and
+  ĥ(2P) = 4ĥ(P), and |ĥ − h| is bounded on E(ℚ). Feeding this into bsd-036 (abstract Mordell descent
+  with constants) and bsd-034 (weak Mordell–Weil) gives bsd-002.
+sketch: |
+  Take h as above. The finiteness clause is bsd-033 with M replaced by e^M − 1. For the two inequalities,
+  use the Néron–Tate theory: ĥ − h is bounded, so the parallelogram law for ĥ transfers with a constant,
+  since h(P−Q) ≥ 0 gives h(P+Q) ≤ 2h(P) + 2h(Q) + C. For the doubling law, ĥ(2P) = 4ĥ(P) gives
+  h(2P) ≥ 4h(P) − D. An elementary alternative for the doubling law is the x-coordinate formula
+  x(2P) = φ(x)/ψ(x) with deg φ = 4 and deg ψ = 3 on the Weierstrass model, whose resultant is nonzero
+  on a nonsingular curve.
+dead: []

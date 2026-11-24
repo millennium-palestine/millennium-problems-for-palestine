@@ -1,0 +1,25 @@
+id: bsd-033
+problem: bsd
+title: 'Northcott finiteness for points: on any elliptic curve over ℚ, the points whose x-coordinate has bounded numerator and denominator are finitely many'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (E : WeierstrassCurve ℚ) [E.IsElliptic] (M : ℕ),
+    {P : E.toAffine.Point | P = 0 ∨ ∃ x y : ℚ, ∃ h : E.toAffine.Nonsingular x y,
+      P = WeierstrassCurve.Affine.Point.some x y h ∧ x.num.natAbs ≤ M ∧ x.den ≤ M}.Finite
+context: |
+  Points-level version of bsd-030 (Northcott finiteness of the x-coordinates on one Weierstrass
+  equation). It is the finiteness input of the naive height of a point on E(ℚ): the height of
+  P = O is 0, and the height of an affine point is the height of its x-coordinate. Together with
+  bsd-030 it gives the Northcott property needed by bsd-027 (Mordell descent, abstract form) for the
+  height constructed in bsd-035. Nothing about the group law is used.
+sketch: |
+  Map each point to Option (ℚ × ℚ): O goes to none, the affine point (x, y) goes to some (x, y).
+  This map is injective on the set, and its image lies in insert none (some '' T), where T is the
+  finite set of rational solutions of the Weierstrass equation with bounded x-numerator and
+  x-denominator (the proof of bsd-030). Conclude with Set.Finite.of_finite_image.
+  The equation of a nonsingular point is `(WeierstrassCurve.Affine.equation_iff x y).mp h.1`.
+dead: []
