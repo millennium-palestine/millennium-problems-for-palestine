@@ -1,0 +1,24 @@
+id: bsd-046
+problem: bsd
+title: 'The L-series of an elliptic curve over ℚ converges for Re s > 3/2, given the coefficient bound'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-015
+statement: |
+  ∀ (E : WeierstrassCurve ℚ) [E.IsElliptic] (s : ℂ),
+    (∀ n : ℕ, 0 < n → ‖((E.LFunction n : ℤ) : ℂ)‖ ≤ (n.divisors.card : ℝ) * Real.sqrt (n : ℝ)) →
+    3 / 2 < s.re → LSeriesSummable ((↑) ∘ E.LFunction) s
+context: |
+  Assembly step for bsd-006. The analytic half is bsd-015 (a Dirichlet series whose coefficients are
+  bounded by d(n)√n converges for Re s > 3/2). This gap applies it to the L-coefficients of E. Its
+  hypothesis is exactly the coefficient bound of bsd-016, which is still open, so this gap by itself
+  does not prove bsd-006. Together with bsd-016 it gives bsd-006, so the open part of bsd-006
+  is bsd-016.
+sketch: |
+  Apply `MPP.Solutions.Bsd015.main` to a n = ((E.LFunction n : ℤ) : ℂ), with the bound as the
+  hypothesis and s as given. The coercion `(↑) ∘ E.LFunction` is definitionally the function `a`, so
+  `exact` should close the goal. The solution file imports MPP.Solutions.Bsd015.
+dead: []
