@@ -26,9 +26,11 @@ permissions:
   pages: write
   id-token: write
 
+# Let a running deploy finish; GitHub keeps only the newest waiting run, so
+# frequent events never starve the site of updates.
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:
