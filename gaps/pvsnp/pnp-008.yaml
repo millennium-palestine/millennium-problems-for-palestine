@@ -1,0 +1,24 @@
+id: pnp-008
+problem: pvsnp
+title: P is closed under polynomial-time preprocessing
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-006
+statement: |
+  ∀ (L : Lang) (f : List Bool → List Bool),
+    InP L → TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f →
+      InP (fun x => L (f x))
+context: |
+  Reduction (pullback) form of closure: if `L` is in P and `f` is computable in polynomial
+  time, then `L ∘ f` is in P. Every polynomial-time reduction between languages has this
+  shape, so this is the standard tool for moving membership in P along a reduction. It is a
+  direct corollary of the composition gap `pnp-006`.
+sketch: |
+  Compose the machine for `f` with the machine for `L` using `Pnp006.main`.
+dead: []
