@@ -1,0 +1,32 @@
+id: pnp-105
+problem: pvsnp
+title: The halting step of a polynomial-time machine is unique and within its time bound
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Computability
+- Turing
+depends:
+- pnp-102
+statement: |
+  ∀ (L : Lang) (T : TM2ComputableInPolyTime (id : List Bool → List Bool) encodeBool L) (x : List Bool),
+    ∃! n : ℕ, n ≤ T.time.eval x.length ∧
+      ∃ c : TM2.Cfg T.tm.Γ T.tm.Λ T.tm.σ,
+        (fun o : Option (TM2.Cfg T.tm.Γ T.tm.Λ T.tm.σ) => o.bind (TM2.step T.tm.m))^[n]
+          (some (initList T.tm (List.map T.inputAlphabet.invFun x))) = some c ∧ c.l = Option.none
+context: |
+  Third piece of halting bookkeeping for the Cook–Levin tableau of pnp-100. For every input there is
+  exactly one step index within the time bound at which the run is a halting configuration. The
+  tableau uses this index as the row that carries the accept bit. Existence is the content of
+  pnp-102; uniqueness follows from pnp-104, since after a halting step the run is none. This is about
+  one machine and does not decide P vs NP.
+sketch: |
+  Existence: the statement of pnp-102 applied to T, which for a given T is outputsFun x (its steps and
+  halting configuration give n and c, with n ≤ time.eval |x| from steps_le_m). Uniqueness: if n and m
+  both satisfy the condition with halting configurations c and d, and n < m, write m = (n + 1) + k
+  for k = m - n - 1. By pnp-104 the iterate at m is none, which contradicts it being some d. So n = m
+  by symmetry. The iterate-add-apply and omega steps are routine.
+dead: []

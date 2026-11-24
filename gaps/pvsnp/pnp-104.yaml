@@ -1,0 +1,33 @@
+id: pnp-104
+problem: pvsnp
+title: Once a polynomial-time machine has halted, its run is none from the next step on
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Computability
+- Turing
+depends: []
+statement: |
+  ∀ (L : Lang) (T : TM2ComputableInPolyTime (id : List Bool → List Bool) encodeBool L)
+    (x : List Bool) (n : ℕ) (c : TM2.Cfg T.tm.Γ T.tm.Λ T.tm.σ),
+    (fun o : Option (TM2.Cfg T.tm.Γ T.tm.Λ T.tm.σ) => o.bind (TM2.step T.tm.m))^[n]
+      (some (initList T.tm (List.map T.inputAlphabet.invFun x))) = some c →
+    c.l = Option.none →
+    ∀ k : ℕ, (fun o : Option (TM2.Cfg T.tm.Γ T.tm.Λ T.tm.σ) => o.bind (TM2.step T.tm.m))^[n + 1 + k]
+      (some (initList T.tm (List.map T.inputAlphabet.invFun x))) = Option.none
+context: |
+  Second piece of halting bookkeeping for the Cook–Levin tableau of pnp-100. Once the run of a
+  polynomial-time machine reaches a halting configuration at step n, every later step gives none, so
+  the tableau rows after the halting row are all dead. Together with pnp-105 this makes the halting
+  time of each input a unique index, which the tableau needs in order to read off the accept bit from
+  one fixed row. This is about one machine and does not decide P vs NP.
+sketch: |
+  Write the run from the initial configuration as f^[n] (some init) = some c with c.l = none. By
+  Function.iterate_add_apply, f^[(n + 1) + k] x = f^[k] (f^[n + 1] x). Then f^[n + 1] (some init) =
+  f^[n] (f (some c)) = f^[n] (TM2.step T.tm.m c) = f^[n] none, and f^[n] none is none by
+  pnp-103's argument (none is a fixed point of f, Function.iterate_fixed). Applying f^[k] to none
+  gives none again by the same fixed-point fact.
+dead: []

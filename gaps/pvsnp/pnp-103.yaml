@@ -1,0 +1,25 @@
+id: pnp-103
+problem: pvsnp
+title: A halted TM2 configuration is followed by none at every later step
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  ∀ (tm : FinTM2) (c : TM2.Cfg tm.Γ tm.Λ tm.σ), c.l = Option.none → ∀ n : ℕ,
+    (fun o : Option (TM2.Cfg tm.Γ tm.Λ tm.σ) => o.bind (TM2.step tm.m))^[n + 1] (some c) = Option.none
+context: |
+  Halting bookkeeping for the Cook–Levin tableau of pnp-100. A TM2 step from a halted configuration
+  (label none) returns none, so a halted run does not continue: the iterate of the step function
+  takes the value none one step after it reaches a halting configuration. The tableau needs this to
+  know that every row after the halting time is a dead row, and that the halting time is unique.
+  This is a fact about the step function, not about any language, and it does not decide P vs NP.
+sketch: |
+  Function.iterate_succ_apply gives f^[n + 1] x = f^[n] (f x) for f = fun o => o.bind (TM2.step tm.m).
+  Here f (some c) = TM2.step tm.m c, which is none by the case ⟨none, _, _⟩ of TM2.step. Then none is
+  a fixed point of f, since none.bind _ = none, so Function.iterate_fixed gives f^[n] none = none.
+dead: []
