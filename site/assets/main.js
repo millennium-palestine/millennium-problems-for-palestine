@@ -61,6 +61,17 @@ document.querySelectorAll("[data-copy]").forEach((btn) => {
       if (!r.ok) return;
       a = await r.json();
     } catch { return; }
+    // New gaps change the map itself: reload the page to draw them (at most once a minute).
+    const drawn = new Set([...document.querySelectorAll(".st[data-gap]")].map((g) => g.dataset.gap)).size;
+    if (drawn && a.gaps && Object.keys(a.gaps).length !== drawn) {
+      let last = 0;
+      try { last = +sessionStorage.getItem("mpp-reload") || 0; } catch {}
+      if (Date.now() - last > 60000) {
+        try { sessionStorage.setItem("mpp-reload", String(Date.now())); } catch {}
+        location.reload();
+        return;
+      }
+    }
     const set = (k, v) => document.querySelectorAll(`[data-live="${k}"]`).forEach((e) => { e.textContent = v; });
     const now = (a.agents_now || []).length;
     set("agents-now", now);
