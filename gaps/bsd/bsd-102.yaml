@@ -1,0 +1,42 @@
+id: bsd-102
+problem: bsd
+title: 'Prime-power coefficients of the L-function: for an elliptic curve over ℚ and the prime p of a height-one prime v, E.LFunction at p^k is the k-th coefficient of its local power series at v'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-026
+- bsd-095
+- bsd-097
+- bsd-098
+- bsd-099
+statement: |
+  ∀ (E : WeierstrassCurve ℚ) [E.IsElliptic]
+    (v : IsDedekindDomain.HeightOneSpectrum (NumberField.RingOfIntegers ℚ)) (k : ℕ),
+    E.LFunction (Rat.HeightOneSpectrum.natGenerator v ^ k) =
+      PowerSeries.coeff k ((E.baseChange (v.adicCompletion ℚ)).localPowerSeries (v.adicCompletionIntegers ℚ))
+context: |
+  The identification step of bsd-016: the coefficient of E.LFunction at p^k, for p = natGenerator v, is the k-th
+  coefficient of the local power series of E at v. It holds for every prime, good or bad, and it needs no Hasse
+  input. Once it is on main, the prime-power bound at good primes is bsd-024 (Hasse) plus bsd-033 and bsd-034 and the
+  bound of bsd-028, and the bound at bad primes is bsd-029.
+  Proof plan: E.LFunction is the Euler product over the height-one primes of the local Euler factors. Apply bsd-095 with
+  i₀ = v (the factor at v has trivial values at the other terms by bsd-097 and bsd-099, since a factor at w ≠ v has
+  residue cardinality natGenerator w, which is not divisible by p). Its hypothesis at j = 0 is bsd-026 (constant
+  coefficient 1). The cofinite hypothesis is bsd-098 together with the observation that the local factor at w has
+  value 1 at n when natGenerator w > n. The local factor at v at p^k is `ArithmeticFunction.ofPowerSeries_apply_pow`
+  with q = p (bsd-099), which is the coefficient. It is true as stated, for every prime v.
+sketch: |
+  Let f w = (E.baseChange (w.adicCompletion ℚ)).localEulerFactor (w.adicCompletionIntegers ℚ) and recall that
+  `WeierstrassCurve.localEulerFactor` is `ArithmeticFunction.ofPowerSeries (Nat.card (IsLocalRing.ResidueField R))`
+  of `localPowerSeries`. So f w = ofPowerSeries (natGenerator w) (localPowerSeries) by bsd-099. Apply
+  `ArithmeticFunction.eulerProduct` with bsd-095 (ι = HeightOneSpectrum, i₀ = v, p = natGenerator v, k). Its two
+  hypotheses: (1) for w ≠ v and j ≤ k, f w (p^j) = 1 (p^j): for j = 0 by `ofPowerSeries_apply_one` and bsd-026; for
+  j ≥ 1 by bsd-097 (natGenerator w > 1, p ∤ natGenerator w because w ≠ v and both are primes, so they are distinct
+  primes by injectivity of natGenerator, and `Nat.prime_dvd_prime_iff_eq`) together with `ArithmeticFunction.one_apply_ne`.
+  (2) cofinite triviality: use bsd-098 and `ofPowerSeries_apply` (values at n not a power of natGenerator w vanish, and
+  natGenerator w > n rules out n = natGenerator w ^ j for j ≥ 1, while n = 0 and n = 1 are handled by
+  `ofPowerSeries_apply_zero`, `ofPowerSeries_apply_one`). Finally `ofPowerSeries_apply_pow` gives the value at p^k.
+  The solution may import the accepted solutions of bsd-026, bsd-095, bsd-097, bsd-098 and bsd-099 once they are merged.
+dead: []
