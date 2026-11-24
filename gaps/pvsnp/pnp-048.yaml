@@ -1,0 +1,21 @@
+id: pnp-048
+problem: pvsnp
+title: P is contained in NP and in co-NP
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+depends:
+- pnp-002
+- pnp-014
+statement: |
+  ∀ L : Lang, InP L → InNP L ∧ InNP (fun x => !L x)
+context: |
+  Combines pnp-002 (P is contained in NP) with pnp-014 (the complement of a P language is in NP).
+  It is the statement that P lies in NP ∩ co-NP, the usual first observation about the two
+  classes. It is a structural lemma; it does not decide P vs NP.
+sketch: |
+  Given InP L, take InNP L from pnp-002 and InNP (fun x => !L x) from pnp-014.
+dead: []
