@@ -1,0 +1,24 @@
+id: bsd-106
+problem: bsd
+title: 'Integral scaling of the short form: for rationals p and q there are a nonzero rational u and integers a, b with u⁴p = a and u⁶q = b'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ p q : ℚ, ∃ u : ℚ, u ≠ 0 ∧ ∃ a b : ℤ, u ^ 4 * p = a ∧ u ^ 6 * q = b
+context: |
+  Integral reduction for bsd-036 (weak Mordell–Weil). The rational change of variables x = X/u², y = Y/u³ takes
+  y² = x³ + px + q to Y² = X³ + (u⁴p) X + u⁶q, so every short form over ℚ is isomorphic over ℚ to one with integer
+  coefficients. The integer short form is what the root-theoretic inputs bsd-060 and bsd-073 need, because their
+  roots are then integers (a monic integer cubic has only integer rational roots). This gap is the purely arithmetic
+  half of that reduction: it produces the scaling u and the integer coefficients. The transport of E(ℚ) along the
+  change of variables is bsd-072 and bsd-070, and is not part of this gap.
+sketch: |
+  Take u = p.den * q.den, which is nonzero because both denominators are positive. Take a = p.den³ q.den⁴ p.num and
+  b = p.den⁶ q.den⁵ q.num. From Rat.mul_den_eq_num, p * p.den = p.num and q * q.den = q.num. Then
+  u⁴ p = p.den⁴ q.den⁴ p = p.den³ q.den⁴ (p * p.den) = a, and similarly u⁶ q = b. Each identity is push_cast, then
+  rewrite the integer numerator as a rational multiple of the rational p (resp. q), then ring. This was checked
+  with lake env lean on a scratch file.
+dead: []
