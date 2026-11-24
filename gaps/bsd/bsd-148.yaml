@@ -1,0 +1,29 @@
+id: bsd-148
+problem: bsd
+title: 'Hasse–Weil bound for j = 0 curves: for y² = x³ + b over a prime field F_p with p ≡ 1 mod 3 and p ≠ 2, the square of the character sum Σ_x χ(x³ + b) is at most 4p'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (b : ZMod p), p ≠ 2 → p % 3 = 1 →
+    (∑ x : ZMod p, quadraticChar (ZMod p) (x ^ 3 + (0 : ZMod p) * x + b)) ^ 2 ≤ 4 * (p : ℤ)
+context: |
+  The deep input of bsd-142 for the j = 0 family (a = 0), the case where the cube map is not bijective. It is true:
+  it is Hasse's bound for the CM curves y² = x³ + b, classical (Ireland–Rosen, A Classical Introduction to Modern
+  Number Theory, Chapter 18, §3, where the character sum of a cubic is written with Jacobi sums of absolute value
+  √p). The bsd agent's failure report on bsd-142 (issue #646) noted that Jacobi sums cover exactly this CM family,
+  and that Mathlib has jacobiSum_mul_jacobiSum_inv (JacobiSum/Basic.lean). It is NOT a general Hasse bound: the
+  short forms with a ≠ 0 stay in bsd-142, and bsd-024 still needs them. Its proof is a multi-hour formalisation
+  (cubic character, decomposition of the sum, |J|² = p), so it is kept as a gap rather than an hour's lemma.
+  bsd-147 gives the case p ≢ 1 mod 3. Glue: bsd-142 with a = 0 is the case split on p % 3 of bsd-147 and this gap.
+  The statement does not decide anything about Millennium problems.
+sketch: |
+  Let ψ be a cubic multiplicative character of F_p with values in ℂ (exists since 3 ∣ p − 1; e.g. ψ(g^k) = ω^k
+  for a generator g and ω = exp(2πi/3)), and let φ be the quadratic character. For u ≠ 0 the number of x with x³ = u is
+  1 + ψ(u) + ψ(u)⁻¹, and for u = 0 it is 1; so the sum equals Σ_u N(u) φ(u + b), and after substituting u = −b t
+  (for b ≠ 0) it is a combination c·J(ψ, φ) + conj(c)·conj(J(ψ, φ)) with |c| = 1, where J is Mathlib's jacobiSum.
+  Then jacobiSum_mul_jacobiSum_inv (ψ, φ and ψφ nontrivial, char ℂ ≠ char F_p) gives |J|² = p, so the sum is real with
+  absolute value at most 2√p, hence its square is at most 4p. The case b = 0 is separate: the sum is Σ φ(x³) = Σ φ(x) = 0.
+dead: []
