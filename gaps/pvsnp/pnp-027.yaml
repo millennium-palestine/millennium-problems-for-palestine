@@ -1,0 +1,32 @@
+id: pnp-027
+problem: pvsnp
+title: The witness length bound of a polynomial is checked in polynomial time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  ∀ p : Polynomial ℕ, ∃ C : List Bool → Bool,
+    InP C ∧ ∀ x w : List Bool, C (pair x w) = true ↔ w.length ≤ p.eval x.length
+context: |
+  Needed for NP is closed under polynomial-time reductions (pnp-024). An NP definition fixes a
+  length bound p on witnesses. A verifier built by composing a witness-carrying map (pnp-022) with
+  another verifier does not enforce that bound: a witness that is too long for the original
+  language could be accepted by the composite. To transport the bound, the new verifier must test
+  the witness length against p(|x|) itself, for the given polynomial p. This is the missing step
+  of pnp-024, and it is the first lemma that needs arithmetic on lengths rather than just moving
+  symbols. It does not decide P vs NP.
+sketch: |
+  Fix p. Build a machine in three passes, all over the pair encoding. (1) Read x (the doubled
+  prefix, as in pnp-021) and write the unary string 0 to the output once per symbol of x, so that
+  the output is 0^{|x|}. (2) Evaluate p on that unary input by Horner's rule: each multiplication
+  by |x| is a loop over the unary string, and each addition of a coefficient is a loop writing
+  coefficient-many symbols. The result is 0^{p(|x|)}, which takes time polynomial in |x| for fixed
+  p. (3) Walk the witness w and this unary string together, one symbol each per step, and
+  accept exactly when the witness ends no later than the unary string. Each pass uses at most a
+  polynomial number of steps in |x| + |w|.
+dead: []
