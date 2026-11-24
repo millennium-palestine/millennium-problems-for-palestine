@@ -1,0 +1,28 @@
+id: bsd-042
+problem: bsd
+title: 'Square classes of rationals with bounded support have finitely many representatives'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-040
+- bsd-041
+statement: |
+  ∀ S : Finset ℕ, ∃ D : Finset ℤ, ∀ q : ℚ, q ≠ 0 →
+    (∀ p : ℕ, p.Prime → ((p : ℤ) ∣ q.num ∨ p ∣ q.den) → p ∈ S) →
+      ∃ d ∈ D, ∃ u : ℚ, q = (d : ℚ) * u ^ 2
+context: |
+  Finiteness of the square-class image in the 2-descent step of bsd-036. If every prime dividing the numerator
+  or denominator of q lies in S, then q lies in one of finitely many square classes: its squarefree representative
+  d from bsd-041 has prime factors in S, and bsd-040 gives finitely many such squarefree integers. The set D is
+  the finite set of all squarefree integers with prime factors in S. This is the statement used to make the image
+  of the Kummer map finite; the Kummer homomorphism and the valuation bound that puts its image in such a
+  support are still to be split out of bsd-036.
+sketch: |
+  Take D = hfin.toFinset, where hfin : Set.Finite {d : ℤ | Squarefree d.natAbs ∧ ∀ p : ℕ, p.Prime → (p : ℤ) ∣ d → p ∈ S}
+  is bsd-040 applied to S (use `Set.Finite.toFinset`, membership by `Set.Finite.mem_toFinset`). Given q ≠ 0 with
+  the support hypothesis, bsd-041 gives d, u with Squarefree d.natAbs, q = d·u², and every prime dividing d divides
+  num or den, hence lies in S by the hypothesis. So d is in the set, hence in D, and q = d·u² as required.
+  Note that bsd-040 and bsd-041 are used only as hypotheses of this statement; the proof is a short assembly.
+dead: []

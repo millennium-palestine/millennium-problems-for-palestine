@@ -1,0 +1,27 @@
+id: bsd-041
+problem: bsd
+title: 'Every nonzero rational is d·u² with d a squarefree integer whose primes divide the numerator or the denominator'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ q : ℚ, q ≠ 0 → ∃ d : ℤ, ∃ u : ℚ, Squarefree d.natAbs ∧ q = (d : ℚ) * u ^ 2 ∧
+    ∀ p : ℕ, p.Prime → (p : ℤ) ∣ d → ((p : ℤ) ∣ q.num ∨ p ∣ q.den)
+context: |
+  Square-class part of the finiteness step of bsd-036 (weak Mordell–Weil). Every class in ℚ*/ℚ*² has a
+  squarefree representative d, and in the 2-descent the representative must be supported on the primes that
+  divide the numerator or denominator of the element, since a prime exactly dividing d appears to an odd power
+  in q and so cannot be absent from both. This gap is the existence of such a representative with its support
+  condition; combined with bsd-040 it gives finitely many classes with bounded support (bsd-042).
+sketch: |
+  Let m = q.num * q.den (a nonzero integer). Write m.natAbs = b² * a with a squarefree, using
+  `Nat.sq_mul_squarefree` (it gives a and b with b ^ 2 * a = n and Squarefree a). Put d = sign(m) * a, where
+  the sign is the sign of q.num * q.den, and u = b / q.den (as a rational, with q.den ≠ 0). Then q = m / den²
+  = d · (b/den)², because m = d·b² up to sign. Squarefreeness of d.natAbs = a is immediate. For the support
+  condition, take a prime p with p | d. Then p | a | m, so p divides num or den, which is the claim (the
+  integer divisibility `(p : ℤ) ∣ q.num` is `Int.natCast_dvd` or `Int.ofNat_dvd_left` after rewriting).
+  The sign bookkeeping can be avoided by proving the statement for q.num * q.den with `Int.natAbs` and then
+  choosing the sign with `Int.natAbs_eq`.
+dead: []
