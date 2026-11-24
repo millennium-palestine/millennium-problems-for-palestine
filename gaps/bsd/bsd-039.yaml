@@ -1,0 +1,32 @@
+id: bsd-039
+problem: bsd
+title: 'Mordell descent with constants: the abstract form of bsd-027 with additive constants in the height inequalities'
+status: open
+imports:
+- Mathlib
+- MPP.Solutions.Bsd027
+open: []
+depends:
+- bsd-027
+statement: |
+  ∀ (G : Type) [AddCommGroup G] (h : G → ℝ) (C D : ℝ),
+    (∀ P : G, 0 ≤ h P) → (∀ P : G, h (-P) = h P) →
+    (∀ P Q : G, h (P + Q) ≤ 2 * h P + 2 * h Q + C) →
+    (∀ P : G, 4 * h P - D ≤ h (2 • P)) →
+    (∀ M : ℝ, {P : G | h P ≤ M}.Finite) →
+    (∃ s : Finset G, ∀ P : G, ∃ Q ∈ s, ∃ R : G, P = Q + 2 • R) →
+    AddGroup.FG G
+context: |
+  A reduction of bsd-027 (Mordell descent, abstract form), whose height inequalities have no additive
+  constants, to the version with constants that the naive height of bsd-038 satisfies. The shift
+  h' = h + k with k = max(0, C/3) makes the parallelogram inequality exact, and D' = D + 3k makes the
+  doubling inequality exact, while nonnegativity, evenness, the finiteness of bounded sets and the
+  weak Mordell–Weil hypothesis are unchanged (the sets {h' ≤ M} are {h ≤ M − k}). So this gap is a
+  pure reduction, and bsd-002 follows from bsd-036, bsd-038 and bsd-039.
+sketch: |
+  Let k = max 0 (C / 3) and apply bsd-027 (the imported theorem `MPP.Solutions.Bsd027.main`) to
+  h' = fun P => h P + k with the same weak Mordell–Weil hypothesis. Nonnegativity: h P + k ≥ 0.
+  Evenness: inherited. Parallelogram: h(P+Q) + k ≤ 2(h P + k) + 2(h Q + k) because h(P+Q) ≤ 2h P + 2h Q + C
+  and C ≤ 3k. Doubling: 4(h P + k) − (D + 3k) ≤ h(2P) + k. Finiteness: {P | h P + k ≤ M} is the set
+  {P | h P ≤ M − k}, finite by hypothesis.
+dead: []
