@@ -1,0 +1,35 @@
+id: pnp-072
+problem: pvsnp
+title: Under P = NP, a polynomial-time map returns the lexicographically least witness of exact length p(|x|)
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-069
+- pnp-071
+statement: |
+  ∀ (V : Lang) (p : Polynomial ℕ), InP V → PEqualsNP →
+    ∃ f : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) ∧
+      ∀ x : List Bool, (∃ w : List Bool, w.length = p.eval x.length ∧ V (pair x w) = true) →
+        (f x).length = p.eval x.length ∧ V (pair x (f x)) = true ∧
+        ∀ w : List Bool, w.length = p.eval x.length → V (pair x w) = true → ¬ (w < f x)
+context: |
+  The canonical version of pnp-069. The witness finder of pnp-069 returns some accepted witness of
+  exact length p(|x|), not a specific one. The greedy construction of pnp-058 and the loop of
+  pnp-066 give a specific one: the greedy string is the lexicographically least accepted witness
+  of that length (false < true), by the lemma of pnp-071. Under P = NP the greedy string is
+  computed in polynomial time, as in the proof of pnp-069, so the same map also satisfies the
+  minimality clause. The statement is a strengthening of pnp-069 and does not decide P vs NP.
+sketch: |
+  Repeat the construction of pnp-069: the decision of the prefix-extension language D from pnp-070,
+  the bit step of pnp-068, the loop of pnp-066 over the count p(|x|) from pnp-033, and the witness
+  part from pnp-025. The loop output is the greedy string, which satisfies the first two clauses by
+  pnp-058 and pnp-059. For the third clause apply pnp-071 with A w := V (pair x w), N := p(|x|),
+  E := the decision of D on pairs with prefix x, and step the greedy step, whose hypothesis is the
+  definition of step. The minimality follows from that lemma.
+dead: []
