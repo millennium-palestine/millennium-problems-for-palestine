@@ -1,0 +1,27 @@
+id: pnp-009
+problem: pvsnp
+title: "Parallel composition: two polynomial-time machines on one input"
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-006
+statement: |
+  ∀ L M : Lang, InP L → InP M →
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool)
+      (fun p : Bool × Bool => [p.1, p.2]) (fun x => (L x, M x)))
+context: |
+  Runs two polynomial-time machines on the same input and returns both answers as one pair.
+  Composition (`pnp-006`) cannot do this, because `compose` erases the spare stacks at the
+  handoff, so the input is gone before the second machine runs. The missing ingredient is a
+  machine that keeps a copy of its input on a spare stack while the first machine runs.
+  This is the missing piece for `P` closed under `&&` and `||`.
+sketch: |
+  Copy the input to a spare stack, run the machine for `L` on the first stack while the spare
+  stack is untouched, then run the machine for `M` on the copy, and pack the two output bits.
+  Time is a polynomial plus a constant.
+dead: []
