@@ -1,0 +1,29 @@
+id: bsd-146
+problem: bsd
+title: 'Hasse bound for all elliptic curves over F_p from the short-form character-sum bound: bsd-024 follows from bsd-142 for the short forms and bsd-145 for p = 2, 3'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  (∀ (q : ℕ) [Fact q.Prime] (a b : ZMod q) [(WeierstrassCurve.mk (0 : ZMod q) 0 0 a b).IsElliptic], q ≠ 2 →
+    (∑ x : ZMod q, quadraticChar (ZMod q) (x ^ 3 + a * x + b)) ^ 2 ≤ 4 * (q : ℤ)) →
+  ∀ (p : ℕ) [Fact p.Prime] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic],
+    |((Nat.card W.toAffine.Point : ℕ) : ℝ) - ((p : ℝ) + 1)| ≤ 2 * Real.sqrt (p : ℝ)
+context: |
+  The glue that turns the short-form chain into bsd-024 for every Weierstrass curve over every prime field. The
+  hypothesis is exactly bsd-142 (the Hasse–Weil character-sum bound for short forms over F_q, q ≠ 2), kept as an
+  assumption so that this step can be proved now. The conclusion is bsd-024 itself. Proof: if p = 2 or p = 3, the
+  conclusion is bsd-145. Otherwise bsd-144 gives a short model y² = x³ + ax + b with the same point count, and
+  bsd-143 (with the hypothesis instantiated at q = p) gives the bound for that model; the count is the same for W, so
+  the bound transfers. Once bsd-142 and bsd-145 are proved, bsd-024 is proved. The statement is true, and it does not
+  decide any Millennium problem.
+sketch: |
+  intro H p _ W _. Split on p = 2 ∨ p = 3 (by_cases). In the small case apply bsd-145 directly. Otherwise p ≠ 2 and
+  p ≠ 3 (from the negation and Nat.Prime facts), so obtain a b and the IsElliptic instance from bsd-144 applied to W,
+  rewrite the point count with its equality, and apply bsd-143 (proved, MPP.Solutions.Bsd143 once merged; otherwise
+  inline its proof: the bound is H p a b with p ≠ 2, then the square root step). Inline bsd-143 and bsd-144 as `have`
+  statements if their solution modules are not on main when this is proved (the id-race rule of the propose flow).
+  Use the bsd-141 identity only through bsd-143; do not reprove it.
+dead: []

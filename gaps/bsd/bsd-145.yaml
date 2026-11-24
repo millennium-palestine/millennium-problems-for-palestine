@@ -1,0 +1,27 @@
+id: bsd-145
+problem: bsd
+title: 'Hasse bound over F_2 and F_3: every elliptic curve over the prime field F_p with p = 2 or p = 3 has |#E(F_p) − (p + 1)| ≤ 2√p'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic], (p = 2 ∨ p = 3) →
+    |((Nat.card W.toAffine.Point : ℕ) : ℝ) - ((p : ℝ) + 1)| ≤ 2 * Real.sqrt (p : ℝ)
+context: |
+  The small-prime case of bsd-024, which bsd-024 needs in addition to the short-form chain bsd-141, bsd-142, bsd-143
+  and bsd-144. Those handle p ≥ 5 only (the change of model to a short form needs 2 and 3 invertible), so p = 2 and
+  p = 3 are not covered by any merged or open gap. The statement is true and is a finite check: over F_2 there are
+  2⁵ coefficient tuples (a₁, a₂, a₃, a₄, a₆) and over F_3 there are 3⁵, and the bound is |N − (p + 1)| ≤ 2 for p = 2
+  (since 2√2 < 3) and ≤ 3 for p = 3 (since 2√3 < 4). It does not decide any Millennium problem.
+sketch: |
+  Reduce to an integer bound: it is enough to show (N − (p + 1))² ≤ 4p as integers, where N = Nat.card W.toAffine.Point,
+  because |x| ≤ 2√p follows from x² ≤ 4p by monotonicity of sqrt on the reals. Counting: W.toAffine.nonsingularPointEquiv
+  gives Point ≃ Option {q : F × F // W.toAffine.Nonsingular q.1 q.2}, and for an elliptic curve Nonsingular and Equation
+  agree (WeierstrassCurve.Affine.equation_iff_nonsingular), so N = 1 + #{(x, y) ∈ F_p² : Equation}. Then destructure
+  the five coefficients of W over ZMod p (each in a finite type; 2 or 3 values) and let decide check the bound for
+  every tuple with IsElliptic (discriminant ≠ 0, via the IsElliptic unit condition) as the only hypothesis. Keep the
+  cases p = 2 and p = 3 separate, since the type ZMod p changes. Native decide is not allowed; use decide with a
+  raised maxRecDepth if needed.
+dead: []
