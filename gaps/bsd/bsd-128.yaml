@@ -1,0 +1,29 @@
+id: bsd-128
+problem: bsd
+title: 'Weak Mordell–Weil for the split short form: for y² = x³ + px + q over ℚ whose cubic has three distinct rational roots e1, e2, e3 of sum zero, E(ℚ) modulo twice itself is finite'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-072
+- bsd-124
+- bsd-126
+statement: |
+  ∀ (p q e1 e2 e3 : ℚ) (E : WeierstrassCurve ℚ) [E.IsElliptic],
+    E.a₁ = 0 → E.a₂ = 0 → E.a₃ = 0 → E.a₄ = p → E.a₆ = q →
+    e1 + e2 + e3 = 0 → p = e1 * e2 + e1 * e3 + e2 * e3 → q = -(e1 * e2 * e3) →
+    e1 ≠ e2 → e1 ≠ e3 → e2 ≠ e3 →
+    ∃ s : Finset E.toAffine.Point, ∀ P : E.toAffine.Point, ∃ Q ∈ s, ∃ R : E.toAffine.Point, P = Q + 2 • R
+context: |
+  The rational split case of weak Mordell–Weil (bsd-036). The integer-root case is bsd-124. A rational split curve is
+  carried to an integer-root curve C·E by a rational change of variables (bsd-126), and the points of E and C·E are in
+  bijection by an additive map (bsd-072). Finiteness of E(ℚ)/2E(ℚ) transfers along such a bijection: the representatives
+  of C·E pull back to representatives for E, since the bijection respects doubling and addition.
+sketch: |
+  (a) Get C, integers f_i, and the coefficient identities from bsd-126. (b) Let E' = C·E; it is elliptic, and bsd-124
+  applies to it with the integer roots f_i, giving a finite set s' of points of E'. (c) bsd-072 gives a bijective additive
+  map f : E(ℚ) → E'(ℚ); make it an additive equivalence g with AddEquiv.ofBijective. (d) Take s = s'.image g.symm. For
+  P, apply the property of s' to g P, giving g P = Q' + 2 • R'; then P = g.symm Q' + 2 • g.symm R' by applying g.symm
+  and using map_add and map_nsmul.
+dead: []
