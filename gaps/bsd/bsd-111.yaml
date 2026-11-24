@@ -1,0 +1,32 @@
+id: bsd-111
+problem: bsd
+title: 'Mordell''s theorem from weak Mordell–Weil: if E(ℚ)/2E(ℚ) is finite for every elliptic curve over ℚ, then E(ℚ) is finitely generated (bsd-002 with bsd-036 as a hypothesis)'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-036
+- bsd-038
+- bsd-039
+statement: |
+  (∀ (E : WeierstrassCurve ℚ) [E.IsElliptic], ∃ s : Finset E.toAffine.Point,
+      ∀ P : E.toAffine.Point, ∃ Q ∈ s, ∃ R : E.toAffine.Point, P = Q + 2 • R) →
+    ∀ (E : WeierstrassCurve ℚ) [E.IsElliptic], AddGroup.FG E.toAffine.Point
+context: |
+  The last step of bsd-002 (Mordell's theorem), with the first half of its proof kept as a hypothesis. The
+  hypothesis is the statement of bsd-036 (weak Mordell–Weil). The rest is already proved: the naive height
+  h(P) = log(1 + max(|num x|, den x)) with its nonnegativity, symmetry, finite bounded sets, parallelogram and
+  doubling bounds (bsd-038, which uses bsd-035, bsd-043 and bsd-044), and the abstract Mordell descent with
+  constants (bsd-039, which uses bsd-027). Applying bsd-039 to the group E(ℚ) with this height and the finite
+  set from the hypothesis gives finite generation. So bsd-002 follows from bsd-036 alone. It is true: the
+  conclusion is Mordell's theorem, and the hypothesis is weak Mordell–Weil, which holds for every elliptic
+  curve over ℚ.
+sketch: |
+  intro hA E _. Obtain the height data from `MPP.Solutions.Bsd038.main E`: a function h with nonnegativity,
+  evenness, finite bounded sets, the parallelogram bound with constant C and the doubling bound with constant D.
+  Then `MPP.Solutions.Bsd039.main E.toAffine.Point h C D h0 hneg hC hD hfin (hA E)` gives AddGroup.FG. The
+  hypothesis of bsd-039 that the finite set s exists is exactly hA E after unfolding `P = Q + 2 • R`. The
+  solution may import the accepted solutions of bsd-038 and bsd-039. The exact shape of bsd-038's conclusion is
+  `∃ h, (∀ P, 0 ≤ h P) ∧ (∀ P, h (-P) = h P) ∧ (∀ M, {P | h P ≤ M}.Finite) ∧ (∃ C, ...) ∧ (∃ D, ...)`.
+dead: []
