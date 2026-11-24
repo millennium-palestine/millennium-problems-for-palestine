@@ -1,0 +1,32 @@
+id: bsd-141
+problem: bsd
+title: 'Point count by quadratic characters: for a short Weierstrass curve y² = x³ + ax + b over a prime field F_p with p ≠ 2, #E(F_p) = p + 1 + Σ_x χ(x³ + ax + b), where χ is the quadratic character'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (a b : ZMod p)
+    [(WeierstrassCurve.mk (0 : ZMod p) 0 0 a b).IsElliptic], p ≠ 2 →
+    ((Nat.card (WeierstrassCurve.mk (0 : ZMod p) 0 0 a b).toAffine.Point : ℕ) : ℤ) =
+      (p : ℤ) + 1 + ∑ x : ZMod p, quadraticChar (ZMod p) (x ^ 3 + a * x + b)
+context: |
+  The elementary half of Hasse's bound, split off from bsd-024. Over F_p with p odd, the affine points with
+  first coordinate x are the solutions y of y² = f(x), where f(x) = x³ + ax + b. Mathlib counts those
+  solutions: quadraticChar_card_sqrts gives 1 + χ(f(x)) of them, for every x (also when f(x) = 0). Adding the
+  point at infinity gives 1 + Σ_x (1 + χ(f(x))) = p + 1 + Σ_x χ(f(x)). The statement is true for every prime
+  p ≠ 2 and every elliptic short form (the discriminant condition enters only through the IsElliptic binder,
+  which makes every affine point nonsingular). This is the count #E(F_p) that bsd-024 talks about, so bsd-024
+  for short forms follows from this together with bsd-142 (see bsd-143). It is an elementary counting argument,
+  not the deep part of Hasse's theorem.
+sketch: |
+  Let f x = x³ + a x + b. Build an equivalence between W.toAffine.Point and Option (Σ x : ZMod p, {y : ZMod p //
+  y ^ 2 = f x}): zero goes to none, and some x y h goes to some ⟨x, y, _⟩ with the equation from h (the
+  Weierstrass equation with a₁ = a₂ = a₃ = 0 is y² = x³ + ax + b). The inverse uses that every such point is
+  nonsingular, which holds for an elliptic curve (search Mathlib for the affine nonsingularity lemmas, e.g.
+  WeierstrassCurve.Affine.nonsingular_of_Equation or the IsElliptic lemmas used in bsd-131). Then
+  Nat.card_congr, Nat.card_sum/Nat.card_option, and Fintype.card_sigma give
+  Nat.card = 1 + Σ_x #{y | y² = f x}. For each x, #{y | y² = f x} = χ(f x) + 1 by quadraticChar_card_sqrts
+  (hp : p ≠ 2), converted from ℤ to ℕ with Int.natCast_add/push_cast. Finish with Finset.sum_add_distrib and ring/omega.
+dead: []
