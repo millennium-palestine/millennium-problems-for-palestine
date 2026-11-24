@@ -1,0 +1,18 @@
+id: bsd-013
+problem: bsd
+title: 'Rational points of y² = x³ − x with y = 0 have x ∈ {0, 1, −1}'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ x y : ℚ, y ^ 2 = x ^ 3 - x → y = 0 → x = 0 ∨ x = 1 ∨ x = -1
+context: |
+  The 2-torsion of y² = x³ − x. With y = 0 the curve gives x³ − x = x(x − 1)(x + 1) = 0,
+  so x is 0, 1 or −1. These are the three points of order 2 apart from O (see bsd-003).
+  Used by bsd-014 to list the affine points with y = 0 and so bound E32(ℚ).
+sketch: |
+  From y = 0 get x ^ 3 - x = 0. Rewrite it as x * ((x - 1) * (x + 1)) = 0 by `ring`, then
+  apply `mul_eq_zero` twice and finish each case with `linarith` or `norm_num`.
+dead: []
