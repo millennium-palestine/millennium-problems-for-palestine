@@ -1,0 +1,22 @@
+id: bsd-069
+problem: bsd
+title: 'Short form over ℚ: every Weierstrass curve over ℚ is changed by a rational change of variables to a curve y² = x³ + px + q'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (E : WeierstrassCurve ℚ), ∃ (p q : ℚ) (C : WeierstrassCurve.VariableChange ℚ),
+    (C • E).a₁ = 0 ∧ (C • E).a₂ = 0 ∧ (C • E).a₃ = 0 ∧ (C • E).a₄ = p ∧ (C • E).a₆ = q
+context: |
+  Reduction step for bsd-036 and bsd-002 (weak Mordell–Weil and Mordell's theorem), coefficient level. The Kummer map and the
+  splitting arguments of bsd-052 to bsd-068 are written for curves y² = x³ + px + q, and the general curve over ℚ is brought to
+  this form by a change of variables (Silverman, The Arithmetic of Elliptic Curves, III.1). Mathlib already has the normal form
+  theorem for fields of characteristic different from 2 and 3 (`WeierstrassCurve.exists_variableChange_isShortNF`), and this
+  gap is its consequence on the coefficients a₁, a₂, a₃, a₄, a₆. The transport of the rational points through the change of
+  variables is a separate step, not part of this gap.
+sketch: |
+  Take C from `E.exists_variableChange_isShortNF`, with `hC : (C • E).IsShortNF`. Then `hC.a₁`, `hC.a₂`, `hC.a₃` give the
+  vanishing of the first three coefficients, and p, q are the values of a₄ and a₆ of C • E, so the last two equations are rfl.
+dead: []

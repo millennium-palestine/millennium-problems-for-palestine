@@ -1,0 +1,24 @@
+id: bsd-064
+problem: bsd
+title: 'Irreducible cubic: over ℚ, a monic cubic X³ + pX + q with no rational root is irreducible'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p q : ℚ), (∀ e : ℚ, e ^ 3 + p * e + q ≠ 0) →
+    Irreducible (Polynomial.X ^ 3 + Polynomial.C p * Polynomial.X + Polynomial.C q : Polynomial ℚ)
+context: |
+  Non-split case for bsd-036 (weak Mordell–Weil). For y² = f(x) with f(x) = x³ + px + q, the Kummer map takes values in
+  L*/L*² with L = ℚ[T]/(f(T)). When f has no rational root, f is irreducible and L is a field, so the split argument of
+  bsd-052 to bsd-060 does not apply and one works in a field extension of ℚ. This gap is the elementary fact that a cubic
+  without a rational root is irreducible: a reducible cubic has a linear factor, hence a rational root. It is proved with
+  Mathlib's `Polynomial.irreducible_iff_roots_eq_zero_of_degree_le_three`, the degree and root bookkeeping being the
+  only work.
+sketch: |
+  Compute natDegree = 3 by `compute_degree!`, so the polynomial is nonzero. Apply
+  `Polynomial.irreducible_iff_roots_eq_zero_of_degree_le_three` with 2 ≤ 3 ≤ 3 (by omega). Then the root multiset is
+  empty: `Multiset.eq_zero_of_forall_notMem`, and a root e gives e³ + pe + q = 0 by `Polynomial.mem_roots` and `simp`
+  with `Polynomial.IsRoot`, contradicting the hypothesis.
+dead: []

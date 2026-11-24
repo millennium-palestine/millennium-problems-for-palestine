@@ -1,0 +1,29 @@
+id: bsd-067
+problem: bsd
+title: 'Kummer multiplicativity in a field: for a field K over ℚ with a root t of X³ + pX + q, a chord on y² = x³ + px + q with x₁, x₂ ≠ t has x₃ − t = (x₁ − t)(x₂ − t)·r² for some r in K'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p q : ℚ) (K : Type) [Field K] [Algebra ℚ K] (t : K),
+    t ^ 3 + algebraMap ℚ K p * t + algebraMap ℚ K q = 0 →
+    ∀ (x1 y1 x2 y2 lam x3 : ℚ), y1 ^ 2 = x1 ^ 3 + p * x1 + q → y2 ^ 2 = x2 ^ 3 + p * x2 + q →
+      x1 ≠ x2 → algebraMap ℚ K x1 ≠ t → algebraMap ℚ K x2 ≠ t → lam * (x1 - x2) = y1 - y2 →
+      x3 = lam ^ 2 - x1 - x2 →
+      ∃ r : K, algebraMap ℚ K x3 - t = (algebraMap ℚ K x1 - t) * (algebraMap ℚ K x2 - t) * r ^ 2
+context: |
+  Non-split case of the Kummer map for bsd-036 (weak Mordell–Weil). Let f(X) = X³ + pX + q over ℚ, and let K be a field
+  containing ℚ and a root t of f (for example K = L = ℚ[T]/(f) when f is irreducible, by bsd-064, or any extension in which f
+  has a root). The chord identity of bsd-052 holds over K, and the square-class step of bsd-066 turns it into the
+  multiplicativity of the classes of x − t in K*/K*². This is the field version of bsd-062 (which is the case K = ℚ, t = e).
+  The proof reruns the cancellation of x₁ − x₂ in ℚ, maps the three relations into K, and applies the identity and the
+  square-class step. Nothing is assumed about the splitting of f.
+sketch: |
+  In ℚ, cancel x₁ − x₂ to get λ(y₁ + y₂) = x₁² + x₁x₂ + x₂² + p (`mul_eq_zero`, `linarith`), then 2λy₁ = S + λ²(x₁ − x₂)
+  by `linear_combination`. Map the curve equation for P₁ and the last relation into K with `congrArg (algebraMap ℚ K)` and
+  `simp only [map_add, map_mul, map_sub, map_pow, map_ofNat]`. The identity (A₁ − t)(A₂ − t)(A₃ − t) = (Y₁ − Λ(A₁ − t))² with
+  A_i = algebraMap x_i and A₃ = Λ² − A₁ − A₂ is `linear_combination` of the mapped curve equation (coefficient −1), the mapped
+  halved relation (coefficient A₁ − t) and ht (coefficient −1). Then the field square-class step (bsd-066) gives r.
+dead: []

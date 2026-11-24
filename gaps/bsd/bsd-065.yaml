@@ -1,0 +1,31 @@
+id: bsd-065
+problem: bsd
+title: 'Kummer multiplicativity on Mathlib points: on y² = x³ + px + q (as a Weierstrass curve) with a rational root e, the sum of two affine points with x₁ ≠ x₂, x₁ ≠ e, x₂ ≠ e has x-coordinate x₃ with x₃ − e = (x₁ − e)(x₂ − e)·r²'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p q e : ℚ) (E : WeierstrassCurve ℚ), E.a₁ = 0 → E.a₂ = 0 → E.a₃ = 0 → E.a₄ = p → E.a₆ = q →
+    e ^ 3 + p * e + q = 0 →
+    ∀ (x1 y1 x2 y2 : ℚ) (h1 : E.toAffine.Nonsingular x1 y1) (h2 : E.toAffine.Nonsingular x2 y2),
+      x1 ≠ x2 → x1 ≠ e → x2 ≠ e →
+      ∃ (x3 y3 : ℚ) (h3 : E.toAffine.Nonsingular x3 y3),
+        WeierstrassCurve.Affine.Point.some _ _ h1 + WeierstrassCurve.Affine.Point.some _ _ h2 =
+          WeierstrassCurve.Affine.Point.some _ _ h3 ∧
+        ∃ r : ℚ, x3 - e = (x1 - e) * (x2 - e) * r ^ 2
+context: |
+  Chord case of the homomorphism property of the Kummer map for bsd-036 (weak Mordell–Weil), stated on Mathlib's group
+  law. For a point sum P + Q of two affine points with distinct x-coordinates, neither equal to the rational root e, the
+  x-coordinate of P + Q minus e is (x₁ − e)(x₂ − e) times a rational square. So at the root e the square class of
+  the x-coordinate is multiplicative on these sums. The proof bridges Mathlib's `Point.add_of_X_ne` to the explicit chord
+  formula, using the curve equation of each point, and then applies the chord identity of bsd-062 (reproved inside).
+  The curve is given in the form a₁ = a₂ = a₃ = 0 with a₄ = p and a₆ = q, as in bsd-054. It is self-contained.
+sketch: |
+  From `h1.1` and `WeierstrassCurve.Affine.equation_iff`, rewrite the coefficients with their hypotheses to get
+  y₁² = x₁³ + px₁ + q and the same for P₂. Then `Point.add_of_X_ne hne` gives the sum with x-coordinate
+  `addX x₁ x₂ (slope x₁ x₂ y₁ y₂)`; rewrite the slope with `slope_of_X_ne hne`, unfold `addX` and simplify the zero
+  coefficients, which leaves λ² − x₁ − x₂ with λ = (y₁ − y₂)/(x₁ − x₂). The chord identity and the square class
+  step are the internal lemma `key` (the proof of bsd-062), applied with `div_mul_cancel₀` for λ(x₁ − x₂) = y₁ − y₂.
+dead: []

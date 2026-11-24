@@ -1,0 +1,32 @@
+id: bsd-068
+problem: bsd
+title: 'Kummer multiplicativity on Mathlib points over a field: for a Weierstrass curve y² = x³ + px + q over ℚ and a field K over ℚ with a root t of X³ + pX + q, the sum of two affine points with distinct x-coordinates, both not at t, has x₃ − t = (x₁ − t)(x₂ − t)·r² in K'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p q : ℚ) (K : Type) [Field K] [Algebra ℚ K] (t : K) (E : WeierstrassCurve ℚ),
+    E.a₁ = 0 → E.a₂ = 0 → E.a₃ = 0 → E.a₄ = p → E.a₆ = q →
+    t ^ 3 + algebraMap ℚ K p * t + algebraMap ℚ K q = 0 →
+    ∀ (x1 y1 x2 y2 : ℚ) (h1 : E.toAffine.Nonsingular x1 y1) (h2 : E.toAffine.Nonsingular x2 y2),
+      x1 ≠ x2 → algebraMap ℚ K x1 ≠ t → algebraMap ℚ K x2 ≠ t →
+      ∃ (x3 y3 : ℚ) (h3 : E.toAffine.Nonsingular x3 y3),
+        WeierstrassCurve.Affine.Point.some _ _ h1 + WeierstrassCurve.Affine.Point.some _ _ h2 =
+          WeierstrassCurve.Affine.Point.some _ _ h3 ∧
+        ∃ r : K, algebraMap ℚ K x3 - t = (algebraMap ℚ K x1 - t) * (algebraMap ℚ K x2 - t) * r ^ 2
+context: |
+  Non-split chord case of the homomorphism property of the Kummer map for bsd-036 (weak Mordell–Weil), on Mathlib's group
+  law. It is the point-level form of bsd-067: K is any field containing ℚ and a root t of f = X³ + pX + q, which covers the
+  non-split case with K = ℚ[T]/(f) (a field by bsd-064). For P₁ + P₂ with x₁ ≠ x₂ and neither x-coordinate at t, the
+  x-coordinate of the sum minus t is (x₁ − t)(x₂ − t) times a square in K. The proof bridges Mathlib's `Point.add_of_X_ne`
+  to the chord formula as in bsd-065, then uses the identity and square-class step of bsd-067 (reproved inside).
+  The curve is in the form a₁ = a₂ = a₃ = 0, a₄ = p, a₆ = q; the general curve reduces to this form by a separate gap.
+sketch: |
+  Put the field identity of bsd-067 inside as `K67`, with its own proof (cancel x₁ − x₂ in ℚ, map to K, identity, square
+  class). Get the curve equations from `WeierstrassCurve.Affine.equation_iff` applied to `h1.1` and `h2.1`, rewrite the
+  coefficients, and use `div_mul_cancel₀` for λ(x₁ − x₂) = y₁ − y₂ with λ = (y₁ − y₂)/(x₁ − x₂). Then `Point.add_of_X_ne hne`,
+  `slope_of_X_ne hne`, unfold `addX` and simplify the zero coefficients, leaving λ² − x₁ − x₂, which `K67` covers, and
+  finish with `linear_combination`.
+dead: []

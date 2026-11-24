@@ -1,0 +1,21 @@
+id: bsd-061
+problem: bsd
+title: 'Square classes over ℚ: if a and b are nonzero and a·b·c is a square, then c = a·b·r² for some rational r'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (a b c s : ℚ), a ≠ 0 → b ≠ 0 → a * b * c = s ^ 2 → ∃ r : ℚ, c = a * b * r ^ 2
+context: |
+  Square-class step for bsd-036 (weak Mordell–Weil). The Kummer map sends a point to the square classes of its
+  coordinates x − e in ℚ*/ℚ*². For two points P₁, P₂ of a chord, the three factors x₁ − e, x₂ − e and x₃ − e of the
+  identity behind bsd-052 multiply to a square, so the class of x₃ − e is the product of the classes of x₁ − e and x₂ − e.
+  This is the elementary fact that turns such a product identity into a statement about square classes. It is used with
+  the chord identity to show that the Kummer map is a homomorphism on the split part, and it is the only place where
+  the nonvanishing of the factors is needed.
+sketch: |
+  Take r = s / (a * b). Then a * b * r ^ 2 = s ^ 2 / (a * b) = c, because a * b * c = s ^ 2 and a * b ≠ 0.
+  In Lean: `refine ⟨s / (a * b), ?_⟩`, then `field_simp` and `linear_combination` with the hypothesis.
+dead: []
