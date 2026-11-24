@@ -1,0 +1,25 @@
+id: bsd-040
+problem: bsd
+title: 'Finitely many squarefree integers have all their prime factors in a given finite set'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ S : Finset ℕ, Set.Finite {d : ℤ | Squarefree d.natAbs ∧ ∀ p : ℕ, p.Prime → (p : ℤ) ∣ d → p ∈ S}
+context: |
+  Arithmetic engine for the finiteness step of bsd-036 (weak Mordell–Weil: E(ℚ)/2E(ℚ) is finite). In the
+  2-descent, the Kummer image lies in the square classes of rationals whose numerator and denominator have
+  prime factors in a fixed finite set, and each square class has a squarefree representative. This gap says
+  there are only finitely many such representatives among the integers: a squarefree integer whose prime
+  factors all lie in S divides the product of the primes in S, so its absolute value is bounded. The
+  statement uses `Squarefree d.natAbs`, so d = 0 is excluded (0 is not squarefree).
+sketch: |
+  Let N = ∏ p ∈ S, p (as a natural number). For d in the set, let n = d.natAbs. Since n is squarefree,
+  n = ∏ p ∈ n.primeFactors, p (`Nat.prod_primeFactors_of_squarefree`), and n.primeFactors ⊆ S because each
+  prime factor of n divides d. Hence n ∣ N by `Finset.prod_dvd_prod_of_subset`. So the set is contained in
+  {d : ℤ | d.natAbs ∣ N}, which is finite: it is the image of the finite set of divisors of N
+  (`Nat.divisors N`) under the two sign choices, or use `Set.Finite.subset` with `Set.finite_Icc (-N) N`
+  since |d| ≤ N. The second route is simplest: d ∣ N in ℤ gives |d| ≤ N for N > 0 (`Int.le_of_dvd`).
+dead: []
