@@ -1,0 +1,23 @@
+id: pnp-082
+problem: pvsnp
+title: Complementing every bit reverses the lexicographic order of equal-length strings
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ u v : List Bool, u.length = v.length →
+    (u.map (fun b => !b) < v.map (fun b => !b) ↔ v < u)
+context: |
+  A pure combinatorial fact about the lexicographic order on binary strings of one length (false <
+  true). Negating every bit swaps the two symbols, which reverses the order at the first position
+  where two strings differ. It is the bridge that turns the least-witness map of pnp-072 into a
+  greatest-witness map in pnp-083. It involves no machine and does not decide P vs NP.
+sketch: |
+  Induction on u generalising v, with the length hypothesis cases on v. For the empty lists both
+  sides are false. For u = a :: u' and v = b :: v', compare heads: if a = b the claim reduces to the
+  induction hypothesis on the tails, and if a ≠ b then the negated heads are also distinct and the
+  order is decided at the head on both sides. Simp lemmas for List.lt on cons, and the Bool order
+  facts, should close the head cases.
+dead: []

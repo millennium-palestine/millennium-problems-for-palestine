@@ -1,0 +1,39 @@
+id: pnp-083
+problem: pvsnp
+title: Under P = NP, a polynomial-time map returns the lexicographically greatest witness of exact length p(|x|)
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-008
+- pnp-072
+- pnp-081
+- pnp-082
+statement: |
+  ∀ (V : Lang) (p : Polynomial ℕ), InP V → PEqualsNP →
+    ∃ f : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) ∧
+      ∀ x : List Bool, (∃ w : List Bool, w.length = p.eval x.length ∧ V (pair x w) = true) →
+        (f x).length = p.eval x.length ∧ V (pair x (f x)) = true ∧
+        ∀ w : List Bool, w.length = p.eval x.length → V (pair x w) = true → ¬ (f x < w)
+context: |
+  The dual of pnp-072. There the map returns the lexicographically least accepted witness; here it
+  returns the greatest. The reduction is by negation: the verifier V' z := V (r z), with r the
+  bit-complement of the witness part from pnp-081, accepts (x, w) exactly when V accepts
+  (x, complement of w). Under P = NP the language of V' is in P by pnp-008, so pnp-072 applies to V'.
+  Its least witness, complemented, is the greatest witness of V, by the order reversal of pnp-082.
+  The statement is a consequence of P = NP and does not decide P vs NP.
+sketch: |
+  Let r be the map from pnp-081 and V' z := V (r z). From hV and pnp-008 (with f := r, computable
+  by pnp-081) get InP V'. Apply pnp-072 to V', p and PEqualsNP to obtain f' with its three
+  clauses. Take f x := (f' x).map not. Length: List.length_map. Acceptance: V (pair x (f x)) =
+  V (r (pair x (f' x))) = V' (pair x (f' x)), true by the second clause for V'. Greatest: for an
+  accepted w of length p(|x|), the word w.map not is accepted by V' and has the same length, so
+  ¬ (f' x < w.map not) by the third clause for V'. The order reversal of pnp-082 with u := f' x and
+  v := w.map not, after simplifying the double negation, gives f x < w ↔ w.map not < f' x, so
+  ¬ (f x < w).
+dead: []
