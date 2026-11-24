@@ -1,0 +1,41 @@
+id: pnp-054
+problem: pvsnp
+title: The prefix-extension language of a polynomial-time verifier is in NP
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+- MPP.Solutions.Pnp008
+- MPP.Solutions.Pnp011
+- MPP.Solutions.Pnp021
+- MPP.Solutions.Pnp022
+- MPP.Solutions.Pnp050
+- MPP.Solutions.Pnp053
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-008
+- pnp-011
+- pnp-021
+- pnp-022
+- pnp-050
+- pnp-053
+statement: |
+  ∀ V : Lang, InP V → ∀ p : Polynomial ℕ, ∃ D : Lang, InNP D ∧
+    ∀ x u : List Bool, D (pair x u) = true ↔
+      ∃ w : List Bool, w.length = p.eval x.length ∧ V (pair x (u ++ w)) = true
+context: |
+  Search-to-decision step. Given a polynomial-time verifier V and a polynomial p, the language D asks
+  whether a prefix u of the witness can be extended, by some suffix w of exact length p(|x|), to a
+  witness accepted by V on the instance x. Membership of D in NP is the claim: the NP witness of D is
+  the suffix w, checked together with the prefix u by V after the flattening of pnp-053. This is
+  structural and does not decide P vs NP.
+sketch: |
+  Let s be the transport of the decoder of pnp-021 on the second component (pnp-022) and E the
+  exact-length test of pnp-050 for p. Set W y = E (s y) && V (r y), where r is the flattening of
+  pnp-053, which sends pair (pair x u) w to pair x (u ++ w). W is in P by pnp-008 and pnp-011. Take
+  D z = true exactly when some w with |w| ≤ p(|z|) makes W accept pair z w. Since |x| ≤ |pair x u|
+  and p has natural coefficients, p(|x|) ≤ p(|pair x u|), so a witness of exact length p(|x|) is
+  admissible; E forces the exact length on the W side.
+dead: []
