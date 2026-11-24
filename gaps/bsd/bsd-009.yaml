@@ -1,0 +1,20 @@
+id: bsd-009
+problem: bsd
+title: 'Every rational x-coordinate on y² = x³ + 4x is in ±□ or ±2□'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ x y : ℚ, y ^ 2 = x ^ 3 + 4 * x →
+    ∃ u : ℚ, x = u ^ 2 ∨ x = -(u ^ 2) ∨ x = 2 * u ^ 2 ∨ x = -(2 * u ^ 2)
+context: |
+  Second half of 2-descent for E32, via the 2-isogenous curve E' : y² = x³ + 4x
+  (Silverman–Tate, the congruent-number chapter). The square classes of x-coordinates on E'
+  divide 4, so they lie in {±1, ±2}. Together with bsd-008 this bounds the 2-descent image,
+  the route to bsd-005. Easy to get wrong when x is even: track the power of 2.
+sketch: |
+  As in bsd-008, write x = a/b in lowest terms. The product a·(a² + 4b²) is a square up
+  to a factor of 2. Split into the cases a odd and a even, and use coprimality in each.
+dead: []
