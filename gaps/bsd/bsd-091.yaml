@@ -1,0 +1,26 @@
+id: bsd-091
+problem: bsd
+title: 'Finitely many square classes of S-units: for a number field K and a finite set S of finite primes, the elements of K with even valuation outside S fall into finitely many classes modulo squares'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [NumberField K] (S : Finset (IsDedekindDomain.HeightOneSpectrum (NumberField.RingOfIntegers K))),
+    ∃ D : Finset K, ∀ α : K, α ≠ 0 →
+      (∀ v : IsDedekindDomain.HeightOneSpectrum (NumberField.RingOfIntegers K), v ∉ S →
+        ∃ n : ℤ, v.valuation K α = WithZero.exp (2 * n)) →
+      ∃ d ∈ D, ∃ u : K, α = d * u ^ 2
+context: |
+  The S-unit theorem in square-class form, the deep input of the open cubic case of weak Mordell–Weil (bsd-036, through
+  bsd-075). An element of K with even valuation at every prime outside S is a unit times a square up to a finite list of
+  classes. Two inputs are needed: the S-units modulo squares are finite (for S = empty this is bsd-090), and the
+  2-torsion of the class group is finite, which Mathlib has in the finiteness of the class group. Mathlib has the Dirichlet
+  unit theorem only for units, not the S-unit version, so the S-unit part is the missing step.
+sketch: |
+  Hard. Split into (a) finiteness of the S-units of K modulo squares, which is the Dirichlet argument of bsd-090 for the
+  finitely generated group of S-units, and (b) for α with even valuation outside S, the ideal (α) factors as 𝔞²·𝔟 with 𝔟
+  supported on S. Since the class group is finite, 𝔞 is a principal ideal times one of finitely many representatives, which
+  moves α into a finite set of S-units times squares. Mathlib's finiteness of the class group is the input for (b).
+dead: []
