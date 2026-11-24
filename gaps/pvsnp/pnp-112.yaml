@@ -1,0 +1,41 @@
+id: pnp-112
+problem: pvsnp
+title: Run locality of a pop-bounded TM2 machine, after t steps the label, variable and top n + 1 cells of each stack depend only on the top n + t b + 1 cells at the start
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- Computability
+- Turing
+depends: []
+statement: |
+  ∀ (K : Type) [DecidableEq K] (Γ : K → Type) (Λ σ : Type) (M : Λ → TM2.Stmt Γ Λ σ) (b : ℕ),
+    (∀ l, TM2.Stmt.rec (motive := fun _ => ℕ) (fun _ _ _ ih => ih) (fun _ _ _ ih => ih)
+      (fun _ _ _ ih => ih + 1) (fun _ _ ih => ih) (fun _ _ _ ih₁ ih₂ => max ih₁ ih₂) (fun _ => 0) 0 (M l) ≤ b) →
+    ∀ (t n : ℕ) (c c' : TM2.Cfg Γ Λ σ), c.l = c'.l → c.var = c'.var →
+      (∀ k, (c.stk k).take (n + t * b + 1) = (c'.stk k).take (n + t * b + 1)) →
+      ((fun o : Option (TM2.Cfg Γ Λ σ) => o.bind (TM2.step M))^[t] (some c)).map
+          (fun d => (d.l, d.var, fun k => (d.stk k).take (n + 1))) =
+        ((fun o : Option (TM2.Cfg Γ Λ σ) => o.bind (TM2.step M))^[t] (some c')).map
+          (fun d => (d.l, d.var, fun k => (d.stk k).take (n + 1)))
+context: |
+  Run-level locality for the Cook–Levin tableau of pnp-100, the iterated form of pnp-111. Let b bound the
+  pop depth of every block of the machine M. pnp-111 says that one step maps two configurations that
+  agree on the top b + n cells of each stack to configurations with the same label, the same variable,
+  and agreeing top n + 1 cells. Iterating t times, the agreement needed at the start grows by b per
+  step, so the top n + 1 cells after t steps depend only on the top n + t b + 1 cells at the start.
+  Halting is a label, so two runs halt at the same step, and the statement compares the whole run
+  (including none) through Option.map. This is the statement that bounds the window of a tableau after
+  t rows, for a fixed machine. It is a fact about one machine, not about any language, and it does not
+  decide P vs NP.
+sketch: |
+  Induction on t, generalising n and the two configurations. For t = 0 the iterates are some c and some c',
+  and the claim is the hypothesis (take (n + 1) of the stacks, plus the labels and variables). For t + 1,
+  Function.iterate_succ_apply rewrites the run as the run of length t from the one-step result. If
+  c.l = none, both one-step results are none, so both sides are none. If c.l = some l, then M l is the
+  block that both runs execute, and pnp-111 applied with n' = n + t b (the hypothesis at b + n' is
+  n + (t + 1) b, which is available) gives equal labels, equal variables and equal top n' + 1 cells of
+  the one-step results. The induction hypothesis at n then gives the claim, since its window is
+  n + t b + 1, which is exactly what pnp-111 provides.
+dead: []
