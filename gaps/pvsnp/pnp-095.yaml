@@ -1,0 +1,24 @@
+id: pnp-095
+problem: pvsnp
+title: A language in P stays in P when its inputs are reversed
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-087
+statement: |
+  ∀ L : List Bool → Bool, InP L → InP (fun x : List Bool => L x.reverse)
+context: |
+  Precomposing a polynomial-time decider with the reversal of the input keeps it polynomial-time. The
+  reversal map is polynomial-time by pnp-087, and InP is closed under composition by pnp-006 (the
+  composition lemma of the machine tools). This is a composition exercise and does not decide P vs NP.
+  It is the reversal step that the palindrome benchmark pnp-089 needs in its generalised form.
+sketch: |
+  Let h = List.reverse. By pnp-087 there is a polynomial-time map h' with h' = h. The language L is decided
+  by a machine in polynomial time (InP L). Compose the map h with the machine of L using the composition
+  lemma of pnp-006 (Pnp006.main), then rewrite the composed function to fun x => L x.reverse.
+dead: []
