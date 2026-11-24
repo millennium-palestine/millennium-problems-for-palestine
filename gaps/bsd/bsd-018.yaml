@@ -1,23 +1,27 @@
 id: bsd-018
 problem: bsd
-title: 'Fermat: x⁴ + 4y⁴ = z² has no solution with x and y nonzero'
+title: 'Fermat descent, even case: a primitive solution of a⁴ − b⁴ = c² with b even gives a smaller one'
 status: open
 imports:
 - Mathlib
 open: []
 depends: []
 statement: |
-  ∀ x y z : ℤ, x ≠ 0 → y ≠ 0 → x ^ 4 + 4 * y ^ 4 ≠ z ^ 2
+  ∀ a b c : ℤ, 0 < a → 0 < b → 0 < c → Int.gcd a b = 1 → a ^ 4 - b ^ 4 = c ^ 2 → Even b →
+    ∃ a' b' c' : ℤ, 0 < a' ∧ a' < a ∧ 0 < b' ∧ 0 < c' ∧ Int.gcd a' b' = 1 ∧
+      a' ^ 4 - b' ^ 4 = c' ^ 2
 context: |
-  The even case of the Fermat descent behind bsd-012. If a⁴ − b⁴ = c² is primitive with b even,
-  the triple (b², c, a²) has c odd, so b² = 2mn, c = m² − n², a² = m² + n² with coprime m, n of
-  opposite parity. Splitting the coprime factors of b²/2 into squares gives m = s² and n = 2t²
-  (or the reverse), so a² = s⁴ + 4t⁴ with s, t nonzero. Gap bsd-017 handles the odd case.
-  This equation is a classical Fermat-type result with no nontrivial solutions. Mathlib has
-  `not_fermat_42` (a⁴ + b⁴ ≠ c²) but nothing for the coefficient 4 here.
+  The even companion of bsd-017, the two cases of the descent for bsd-012 (Fermat:
+  a⁴ − b⁴ = c² has no solution with a, b, c nonzero). Let b be even. The triple (b², c, a²) is
+  primitive with c odd, so b² = 2mn, c = m² − n², a² = m² + n² with coprime m > n > 0 of
+  opposite parity. The even one of m, n is 2t², and the odd one is s² (the coprime factors of b²/4
+  are squares). So a² = s⁴ + 4t⁴ with s odd and gcd(s, t) = 1. The triple (s², 2t², a) is primitive,
+  so its parametrization gives s² = p⁴ − q⁴ and a = p⁴ + q⁴ with p > q ≥ 1. Then (p, q, s) solves
+  the same equation and p < a. Together with bsd-017 this gives bsd-012 by strong induction on a,
+  after dividing out common factors.
 sketch: |
-  Hint only, not a verified route. Start from a solution with x, y, z positive and a minimal choice
-  of x after dividing out common factors. The triple (x², 2y², z) is Pythagorean and can be
-  parametrized with Mathlib's classification of primitive triples. Look for a smaller solution of
-  the same equation or of a related one, and check every parity case.
+  Use Mathlib's `PythagoreanTriple.coprime_classification` (with the even leg given) to get the
+  parametrizations. Use `Int.sq_of_isCoprime` (coprime integers whose product is a square are squares)
+  to split b²/4 and the odd coprime factor into squares. Finish with `nlinarith` for p < a
+  from a = p⁴ + q⁴ and q ≥ 1.
 dead: []
