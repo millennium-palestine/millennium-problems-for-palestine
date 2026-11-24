@@ -1,0 +1,28 @@
+id: pnp-042
+problem: pvsnp
+title: The constant-false language is not NP-hard
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-002
+- pnp-003
+statement: |
+  ¬ (∀ L : Lang, InNP L → ∃ f : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) ∧
+      ∀ x, L x = (fun _ => false) (f x))
+context: |
+  Non-triviality of the NP-hardness target. The constant-false language reduces every language to
+  "no", so it can only be NP-hard if every NP language is constant-false, which fails for the
+  constant-true language. The constant-true language is in P (pnp-003), hence in NP (pnp-002). This
+  is a structural sanity check on the NP-complete route to pnp-000: a language that is trivially
+  hard for NP is not a candidate for it. It does not decide P vs NP.
+sketch: |
+  Intro h. Apply h to the constant-true language, using InNP (fun _ => true) from pnp-002 applied
+  to pnp-003, to get f with hf : ∀ x, (fun _ => true) x = (fun _ => false) (f x). Specialise at
+  x = [] and reduce the beta redexes: true = false, which is absurd.
+dead: []

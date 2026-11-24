@@ -1,0 +1,27 @@
+id: pnp-043
+problem: pvsnp
+title: If the constant-true language is NP-hard, then P = NP
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-003
+statement: |
+  (∀ L : Lang, InNP L → ∃ f : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) ∧
+      ∀ x, L x = (fun _ => true) (f x)) → PEqualsNP
+context: |
+  Converse-style triviality check for the NP-complete route. If every NP language reduces to the
+  constant-true language, then every NP language is constant-true, since the reduction forces
+  L x = true for all x. The constant-true language is in P (pnp-003), so every NP language is in P,
+  which is PEqualsNP. So the trivial target cannot be an NP-hard witness for P ≠ NP without already
+  giving P = NP. This is a structural lemma; it does not decide P vs NP.
+sketch: |
+  Intro h L hL. Obtain f, hf, hx from h L hL. Show L = fun _ => true by funext x, using
+  hx x : L x = (fun _ => true) (f x), which reduces to L x = true. Rewrite with this equality and
+  conclude InP (fun _ => true) from pnp-003.
+dead: []
