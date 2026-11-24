@@ -1,0 +1,25 @@
+id: bsd-070
+problem: bsd
+title: 'Equation transport: a rational point of E is carried by a rational change of variables to a point of C · E, with the affine coordinates x′ = (x − r)/u², y′ = (y − s(x − r) − t)/u³'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (E : WeierstrassCurve ℚ) (C : WeierstrassCurve.VariableChange ℚ) (x y : ℚ),
+    E.toAffine.Equation x y →
+      (C • E).toAffine.Equation ((x - C.r) / (C.u : ℚ) ^ 2) ((y - C.s * (x - C.r) - C.t) / (C.u : ℚ) ^ 3)
+context: |
+  Point-level reduction for bsd-036 and bsd-002. The Kummer map and the splitting arguments of bsd-052 to bsd-068 are written for
+  the short form y² = x³ + px + q, and bsd-069 gives a rational change of variables to that form. To transport the group of
+  rational points one needs to carry points along the change of variables. This is the equation part: the coefficients of C • E
+  are given by Mathlib's `variableChange_a₁` to `variableChange_a₆` (with u⁻¹ powers), and the curve equation transforms by
+  the substitution x = u²x′ + r, y = u³y′ + s u²x′ + t, which is a polynomial identity after clearing denominators. The
+  nonsingularity of the transported point (partial derivatives) and the compatibility with the group law are separate gaps.
+sketch: |
+  Rewrite the affine equation of E and of C • E with `WeierstrassCurve.Affine.equation_iff`, with `change` to the coefficients
+  of E and C • E (they are definitionally equal to a₁ … a₆ of the affine structure). Unfold the five coefficient formulas of
+  `variableChange_a₁` … `variableChange_a₆` with `Units.val_inv_eq_inv_val` as the simp set, clear the denominators with
+  `field_simp`, and close with `linear_combination h`: after clearing, the difference is exactly the original equation.
+dead: []
