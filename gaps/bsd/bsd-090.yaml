@@ -1,0 +1,25 @@
+id: bsd-090
+problem: bsd
+title: 'Finitely many square classes of units: for every number field K, the units of its ring of integers fall into finitely many classes modulo squares'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [NumberField K],
+    ∃ D : Finset (NumberField.RingOfIntegers K)ˣ,
+      ∀ u : (NumberField.RingOfIntegers K)ˣ, ∃ d ∈ D, ∃ v : (NumberField.RingOfIntegers K)ˣ, u = d * v ^ 2
+context: |
+  The unit case of the S-unit input of bsd-075, the square-class finiteness needed for the open cubic case of weak
+  Mordell–Weil (bsd-036). The S-unit theorem for a cubic field L says that the S-units of L modulo squares form a
+  finite group. With S empty this is the statement here: the units of the ring of integers of a number field have
+  finitely many square classes. It follows from the Dirichlet unit theorem, which Mathlib has as the finite generation
+  of the unit group (Module.Finite ℤ (Additive (𝓞 K)ˣ), in Mathlib's DirichletTheorem file). A finitely generated
+  commutative group has squares of finite index, which is Mathlib's Subgroup.finiteIndex_range_powMonoidHom_of_fg.
+sketch: |
+  Apply Subgroup.finiteIndex_range_powMonoidHom_of_fg to the unit group, using Group.FG from Monoid.FG via
+  Group.fg_iff_monoid_fg. Take D to be the image of the chosen representatives (Quotient.out) of the finitely many
+  cosets of the range of the squaring map. For a unit u, QuotientGroup.mk_out_eq_mul writes out(u) = u·h with h in the
+  range, and h⁻¹ is a square, which gives u = out(u)·w² with w a unit.
+dead: []

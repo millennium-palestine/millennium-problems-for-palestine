@@ -1,0 +1,28 @@
+id: bsd-091
+problem: bsd
+title: 'Finite Selmer group with S: for a number field K and a finite set S of finite primes, if the unramified 2-Selmer group K⟮∅,2⟯ is finite, then so is K⟮S,2⟯'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [NumberField K]
+    (S : Set (IsDedekindDomain.HeightOneSpectrum (NumberField.RingOfIntegers K))),
+    S.Finite →
+      Finite (IsDedekindDomain.selmerGroup (R := NumberField.RingOfIntegers K) (K := K)
+        (S := (∅ : Set (IsDedekindDomain.HeightOneSpectrum (NumberField.RingOfIntegers K)))) (n := 2)) →
+      Finite (IsDedekindDomain.selmerGroup (R := NumberField.RingOfIntegers K) (K := K) (S := S) (n := 2))
+context: |
+  The S-version of the 2-Selmer finiteness that the open cubic case of weak Mordell–Weil (bsd-036, through bsd-075)
+  needs. Mathlib's Selmer group K⟮S,n⟯ (IsDedekindDomain.selmerGroup) is the subgroup of K/n of classes whose valuations
+  are divisible by n away from S. Its valuation map to the finite product over S of Z/n has kernel K⟮∅,n⟯
+  (Mathlib's valuation_ker_eq), so finiteness passes from S = ∅ to any finite S. This is the step that is provable now:
+  the S-valuation map has finite target because S is finite, and the kernel is a copy of the unramified group. The
+  unramified finiteness itself is bsd-092.
+sketch: |
+  Let φ be selmerGroup.valuation for S, a homomorphism into S → Multiplicative (ZMod 2), which is finite since S is
+  finite. Its kernel is K⟮∅,2⟯ (valuation_ker_eq), finite by hypothesis. The quotient by the kernel is finite, since it
+  injects into the range of φ (QuotientGroup.quotientKerEquivRange). The cardinality formula Nat.card G = Nat.card ker ·
+  index of the kernel (Subgroup.card_mul_index) then gives Finite G.
+dead: []
