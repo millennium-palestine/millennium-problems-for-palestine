@@ -1,0 +1,30 @@
+id: bsd-136
+problem: bsd
+title: 'Frobenius is additive on the points: the p-power Frobenius of an elliptic curve over a prime field respects the group law over the algebraic closure'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] [DecidableEq (AlgebraicClosure (ZMod p))] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic]
+    (P Q : (W.baseChange (AlgebraicClosure (ZMod p))).toAffine.Point),
+    WeierstrassCurve.Affine.Point.map (W' := W)
+      (FiniteField.frobeniusAlgHom (ZMod p) (AlgebraicClosure (ZMod p))) (P + Q) =
+    WeierstrassCurve.Affine.Point.map (W' := W)
+      (FiniteField.frobeniusAlgHom (ZMod p) (AlgebraicClosure (ZMod p))) P +
+    WeierstrassCurve.Affine.Point.map (W' := W)
+      (FiniteField.frobeniusAlgHom (ZMod p) (AlgebraicClosure (ZMod p))) Q
+context: |
+  The first input of the characteristic equation (bsd-121): the Frobenius φ must be an endomorphism of the group
+  E(K), K the algebraic closure of F_p, before one can speak of φ² − aφ + p and of its kernel. Silverman, The
+  Arithmetic of Elliptic Curves, II.2.11, states this. It is true: the addition law of a Weierstrass curve is given
+  by rational functions with coefficients in F_p, and the Frobenius is a ring homomorphism of K, so it commutes with
+  the group law. Mathlib already defines `WeierstrassCurve.Affine.Point.map` as an additive monoid homomorphism
+  (for a field homomorphism over the base ring), so this is a restatement of that fact for the Frobenius.
+sketch: |
+  Take `map_add` applied to the additive monoid homomorphism `WeierstrassCurve.Affine.Point.map (W' := W) φ`, where
+  φ = `FiniteField.frobeniusAlgHom (ZMod p) (AlgebraicClosure (ZMod p))`. Concretely:
+  `intro p _ _ W _ P Q; exact map_add (WeierstrassCurve.Affine.Point.map (W' := W) _) P Q`, or `simp` with the
+  lemma `map_add`.
+dead: []
