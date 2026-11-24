@@ -1,0 +1,23 @@
+id: bsd-151
+problem: bsd
+title: 'Parity of the character sum of a cubic: for a cubic x³ + ax + b over a prime field F_p, the sum Σ_x χ(x³ + ax + b) and p − #{x : x³ + ax + b = 0} have the same parity'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (a b : ZMod p),
+    (2 : ℤ) ∣ (∑ x : ZMod p, quadraticChar (ZMod p) (x ^ 3 + a * x + b)) -
+      ((p : ℤ) - ((Finset.univ.filter fun x : ZMod p => x ^ 3 + a * x + b = 0).card : ℤ))
+context: |
+  Elementary parity step toward the 2-torsion of E(F_p), split off from the point count of bsd-141. The quadratic
+  character takes the values 0 (at 0), 1 and −1 (at nonzero elements). So χ(y) − [y ≠ 0] is 0 or −2 for every y, hence
+  even. Summing over x, the sum of the terms [f(x) ≠ 0] is p − #{x : f(x) = 0}. So Σ_x χ(f(x)) − (p − r) is even, with
+  r the number of roots of f in F_p. It holds for every prime p, and needs no curve hypothesis. It does not touch the
+  deep part of Hasse's bound (bsd-142): it is a parity fact about the same character sum, and it is used by bsd-152.
+sketch: |
+  Prove for each y : ZMod p that 2 ∣ quadraticChar y − (if y = 0 then 0 else 1): at y = 0 use quadraticChar_zero; for
+  y ≠ 0 use quadraticChar_dichotomy (values ±1). Then rewrite p as Σ_x 1 (ZMod.card), and the filter count as
+  Σ_x (if f x = 0 then 1 else 0) (Finset.card_filter). Combine with Finset.sum_sub_distrib and Finset.dvd_sum.
+dead: []
