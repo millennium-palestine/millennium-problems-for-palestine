@@ -1,0 +1,30 @@
+id: bsd-119
+problem: bsd
+title: 'Translation by a rational 2-torsion point of the split cubic: for y² = (x − e1)(x − e2)(x − e3) with e1 + e2 + e3 = 0 and P = (x, y) with x ≠ e1, the x-coordinate of P + (e1, 0) satisfies (x₃ − e1)(x − e1) = (e1 − e2)(e1 − e3)'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p q e1 e2 e3 : ℚ) (E : WeierstrassCurve ℚ) [E.IsElliptic],
+    E.a₁ = 0 → E.a₂ = 0 → E.a₃ = 0 → E.a₄ = p → E.a₆ = q →
+    e1 + e2 + e3 = 0 → p = e1 * e2 + e1 * e3 + e2 * e3 → q = -(e1 * e2 * e3) →
+    ∀ (x y x3 y3 : ℚ) (h : E.toAffine.Nonsingular x y) (h1 : E.toAffine.Nonsingular e1 0)
+      (h3 : E.toAffine.Nonsingular x3 y3),
+      WeierstrassCurve.Affine.Point.some x y h + WeierstrassCurve.Affine.Point.some e1 0 h1 =
+        WeierstrassCurve.Affine.Point.some x3 y3 h3 → x ≠ e1 →
+      (x3 - e1) * (x - e1) = (e1 - e2) * (e1 - e3)
+context: |
+  The translation formula for the split case of bsd-036 (weak Mordell–Weil). When the cubic has three rational roots
+  e1, e2, e3 (summing to zero, as in the short form), the point T1 = (e1, 0) is rational and 2-torsion. The Kummer map of the
+  split case uses the class of x − e1 in ℚ*/ℚ*², and its value at T1 must be the class of (e1 − e2)(e1 − e3) for the map to be
+  a homomorphism on all of E(ℚ). This gap is the identity that makes that possible: adding T1 to a point with x ≠ e1
+  multiplies the class of x − e1 by the class of (e1 − e2)(e1 − e3). It is the chord computation with the slope y/(x − e1),
+  which is the same as bsd-054 and bsd-055 for the chord and doubling on Weierstrass curves.
+sketch: |
+  The sum is affine because x ≠ e1 (so the non-vertical case of add_some applies). The x-coordinate of the sum is the addX
+  formula λ² − x − e1 with λ = (y − 0)/(x − e1), since a₁ = a₂ = 0. Since y² = (x − e1)(x − e2)(x − e3) (from the curve
+  equation and the three root relations), (y/(x − e1))²·(x − e1) = (x − e2)(x − e3). Substituting e3 = −e1 − e2, the identity
+  (x − e2)(x − e3) − (x + 2e1)(x − e1) = (e1 − e2)(e1 − e3) is a polynomial identity, so linear_combination closes it.
+dead: []
