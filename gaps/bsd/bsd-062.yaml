@@ -1,0 +1,28 @@
+id: bsd-062
+problem: bsd
+title: 'Kummer multiplicativity on a chord: on y² = x³ + px + q with a rational root e, if x₁ ≠ x₂ and x₁, x₂ ≠ e, the third intersection x₃ satisfies x₃ − e = (x₁ − e)(x₂ − e)·r² for a rational r'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p q e : ℚ), e ^ 3 + p * e + q = 0 →
+    ∀ (x1 y1 x2 y2 lam x3 : ℚ), y1 ^ 2 = x1 ^ 3 + p * x1 + q → y2 ^ 2 = x2 ^ 3 + p * x2 + q →
+      x1 ≠ x2 → x1 ≠ e → x2 ≠ e → lam * (x1 - x2) = y1 - y2 → x3 = lam ^ 2 - x1 - x2 →
+      ∃ r : ℚ, x3 - e = (x1 - e) * (x2 - e) * r ^ 2
+context: |
+  Multiplicativity step of the Kummer map for bsd-036 (weak Mordell–Weil), in the case where the root e is rational. The
+  chord through P₁ = (x₁, y₁) and P₂ = (x₂, y₂) meets the curve again at x₃ = λ² − x₁ − x₂, and the identity behind
+  bsd-052 gives (x₁ − e)(x₂ − e)(x₃ − e) = (y₁ − λ(x₁ − e))². Together with bsd-061 this says that the class of x₃ − e in
+  ℚ*/ℚ*² is the product of the classes of x₁ − e and x₂ − e, which is the homomorphism property of the Kummer map at the
+  root e. This gap is self-contained: it reproves the identity directly, so it does not depend on bsd-052. The cases
+  x₁ = e and x₂ = e (where a factor vanishes) are excluded here and are a separate gap.
+sketch: |
+  From y₁² − y₂² = f(x₁) − f(x₂) and λ(x₁ − x₂) = y₁ − y₂ with x₁ ≠ x₂, cancel x₁ − x₂ to get
+  λ(y₁ + y₂) = x₁² + x₁x₂ + x₂² + p (`mul_left_cancel₀` with `sub_ne_zero.mpr`). Then
+  (x₁ − e)(x₂ − e)(x₃ − e) = (y₁ − λ(x₁ − e))² follows by `linear_combination` from the two curve equations, the
+  cancelled relation and e³ + pe + q = 0, with cofactors found by sympy and checked with `ring`.
+  Put a = x₁ − e, b = x₂ − e, c = x₃ − e and s = y₁ − λ(x₁ − e) and apply the square-class argument of bsd-061
+  (its proof is one line: r = s / (a b)), which needs a ≠ 0 and b ≠ 0 from the hypotheses.
+dead: []
