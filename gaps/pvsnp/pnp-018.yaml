@@ -1,0 +1,29 @@
+id: pnp-018
+problem: pvsnp
+title: If an NP-hard language is in P, then P = NP
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-008
+statement: |
+  ∀ S : Lang, (∀ L : Lang, InNP L → ∃ f : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) ∧
+      ∀ x, L x = S (f x)) → InP S → PEqualsNP
+context: |
+  Reduction transfer, the first half of the standard route through NP-complete problems. Here S is
+  called NP-hard when every language in NP reduces to S by a polynomial-time map f with L x = S (f x).
+  If such an S lies in P, then every NP language lies in P, which is PEqualsNP (pnp-001).
+  The statement is conditional: it does not assert that some NP-hard language is in P, and it does
+  not assert that an NP-hard language exists (the Cook–Levin theorem, a separate and hard gap).
+  It is a structural lemma only; it does not decide P vs NP.
+sketch: |
+  Intro S, hard and hS. Given L with InNP L, obtain f, hf and hLf from hard. The languages L and
+  fun x => S (f x) agree pointwise, so they are equal by funext. The closure of P under
+  polynomial-time preprocessing (pnp-008, proved) applied to InP S and hf gives
+  InP (fun x => S (f x)), which rewrites back to InP L.
+dead: []
