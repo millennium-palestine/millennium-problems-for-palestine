@@ -1,0 +1,26 @@
+id: bsd-072
+problem: bsd
+title: 'Group isomorphism under a change of variables: for a Weierstrass curve E over ℚ and a rational change of variables C, there is a bijection from the rational points of E onto those of C · E that respects the group law'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-070
+- bsd-071
+statement: |
+  ∀ (E : WeierstrassCurve ℚ) (C : WeierstrassCurve.VariableChange ℚ),
+    ∃ f : E.toAffine.Point → (C • E).toAffine.Point, Function.Bijective f ∧ ∀ P Q, f (P + Q) = f P + f Q
+context: |
+  Group-law step of the point-level reduction for bsd-036 and bsd-002. bsd-070 and bsd-071 transport the affine equation and the
+  nonsingularity of a point along a rational change of variables; this gap says the transport is a group isomorphism of rational
+  points, so that the Kummer map and the descent for the short form y² = x³ + px + q (bsd-052 to bsd-068) apply to any E over ℚ.
+  The map is P = (x, y) ↦ ((x − r)/u², (y − s(x − r) − t)/u³) and O ↦ O, bijective with inverse given by C⁻¹. Additivity is checked
+  case by case on Mathlib's `Point.add` (x₁ ≠ x₂, x₁ = x₂ with y₁ = y₂ (doubling), x₁ = x₂ with y₁ = −y₂ (sum zero)), using
+  `add_of_X_ne`, `add_self_of_Y_ne` and the negation formula of Point.neg_some. The split suggested here: (a) the map on
+  nonsingular points, as a function of the two transport lemmas; (b) the sum with x₁ ≠ x₂; (c) the doubling and the sum-zero cases.
+sketch: |
+  Define f by cases on the point (zero to zero, some h to the transported point given by bsd-071 and bsd-070). Bijectivity from
+  the inverse transport C⁻¹ (its formulas invert those of C), and additivity from the chord formula `add_of_X_ne` on both sides,
+  with the transported x-coordinates and slope, and the doubling and negation cases from `add_self_of_Y_ne` and `neg_some`.
+dead: []
