@@ -1,0 +1,26 @@
+id: bsd-137
+problem: bsd
+title: 'Frobenius is a group automorphism: the p-power Frobenius is a bijection of the points over the algebraic closure of a prime field, and it respects the group law'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-130
+- bsd-134
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] [DecidableEq (AlgebraicClosure (ZMod p))] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic],
+    Function.Bijective ⇑(WeierstrassCurve.Affine.Point.map (W' := W)
+      (FiniteField.frobeniusAlgHom (ZMod p) (AlgebraicClosure (ZMod p))))
+context: |
+  The map φ on E(K), K the algebraic closure of F_p, is a group automorphism. This is the form in which Silverman,
+  The Arithmetic of Elliptic Curves, II.2.11 and III.4.10, uses the Frobenius before the characteristic equation
+  (bsd-121). It combines bsd-130 (injectivity) and bsd-134 (surjectivity), both already proved; the additivity is
+  built into `WeierstrassCurve.Affine.Point.map`, which is an additive monoid homomorphism. It is true for the
+  reasons given in bsd-130 and bsd-134.
+sketch: |
+  Use `Function.Bijective` as the pair of injectivity and surjectivity. Injectivity: `Point.map_injective` (Mathlib),
+  as in bsd-130. Surjectivity: the argument of bsd-134 (choose p-th roots of the coordinates in the algebraically closed
+  field K). The solution may import `MPP.Solutions.Bsd130` and `MPP.Solutions.Bsd134` and reuse their `main`
+  theorems: `⟨fun P Q h => Bsd130.main p W P Q h, fun Q => Bsd134.main p W Q⟩`, after the binders are introduced.
+dead: []
