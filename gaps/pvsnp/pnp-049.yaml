@@ -8,9 +8,7 @@ imports:
 open:
 - MPP.PvsNP
 depends:
-- pnp-008
 - pnp-011
-- pnp-027
 - pnp-050
 statement: |
   ∀ L : Lang, (∃ V : Lang, InP V ∧ ∃ p : Polynomial ℕ, ∀ x : List Bool,
@@ -18,15 +16,14 @@ statement: |
 context: |
   Converse of the exact-length normalisation of pnp-044. The NP definition of
   MPP/Defs/PvsNP.lean accepts witnesses of length at most p(|x|), while this form accepts only
-  witnesses of length exactly p(|x|). Shorter witnesses are handled by padding them with false
-  bits up to the bound (pnp-050) and checking the length bound (pnp-027). The padding is needed:
-  a shorter witness cannot be used directly, since the exact-length hypothesis says nothing about it.
-  It is a structural lemma; it does not decide P vs NP.
+  witnesses of length exactly p(|x|). The exact-length test of pnp-050 closes the gap: a verifier
+  that also checks the length is exact accepts a witness of length at most p(|x|) only when that
+  length is exactly p(|x|), so the two acceptance conditions agree. It is a structural lemma; it
+  does not decide P vs NP.
 sketch: |
-  Take V and p from the hypothesis. Let C be the length-bound checker of pnp-027 for p, and f the
-  padding map of pnp-050, so f (pair x w) = pair x (w ++ replicate (p|x| − |w|) false). Define
-  V'(y) = C y && V (f y). InP V' by pnp-011 (conjunction) and pnp-008 (preprocessing by f).
-  (→) An exact witness w has |w| = p|x|, so f (pair x w) = pair x w and V' accepts pair x w.
-  (←) A witness w with |w| ≤ p|x| makes C accept, and the padded word has length exactly p|x|
-  and V accepts it, so L x holds by the hypothesis.
+  Take V and p from the hypothesis, and let E be the exact-length test of pnp-050 for p. Define
+  V'(y) = E y && V y, which is in P by pnp-011 (conjunction). (→) An exact witness w has
+  |w| = p|x|, so E accepts pair x w and V' accepts it, and |w| ≤ p|x|. (←) A witness w with
+  |w| ≤ p|x| for which V' accepts has |w| = p|x| by E, and V accepts pair x w, so L x holds
+  by the hypothesis.
 dead: []
