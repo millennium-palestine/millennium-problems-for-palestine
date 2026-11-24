@@ -1,4 +1,5 @@
 import Mathlib
+import MPP.Defs.PvsNP
 
 namespace MPP.Solutions.Pnp023
 
