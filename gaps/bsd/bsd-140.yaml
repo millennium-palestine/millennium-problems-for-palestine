@@ -1,0 +1,28 @@
+id: bsd-140
+problem: bsd
+title: 'Every point is fixed by an iterate of Frobenius: on an elliptic curve over a prime field, each point over the algebraic closure is fixed by some positive iterate of the p-power Frobenius'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-138
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] [DecidableEq (AlgebraicClosure (ZMod p))] (W : WeierstrassCurve (ZMod p))
+    (P : (W.baseChange (AlgebraicClosure (ZMod p))).toAffine.Point),
+    ∃ n : ℕ, 0 < n ∧ (fun Q => WeierstrassCurve.Affine.Point.map (W' := W)
+        (FiniteField.frobeniusAlgHom (ZMod p) (AlgebraicClosure (ZMod p))) Q)^[n] P = P
+context: |
+  The points of E over the algebraic closure K of F_p form the union of the sets E(F_{p^n}), n ≥ 1, since every
+  coordinate lies in a finite field. bsd-138 says a point is fixed by the n-th Frobenius iterate exactly when its
+  coordinates lie in F_{p^n}; this gap is the converse direction, that every point is fixed by some positive iterate.
+  It is the reduction needed before the characteristic equation bsd-121 can be checked one finite field at a time.
+  It is true: a point over K has coordinates that are algebraic over F_p, hence lie in finite fields, and the two
+  coordinates can be handled with a common exponent n (the product of their two exponents). The zero point is fixed
+  by every iterate. No isogeny theory is used.
+sketch: |
+  Zero point: take n = 1 (`Point.map_zero`). For `some x y h`: from K being algebraic over F_p, obtain m, k ≥ 1 with
+  x^(p^m) = x and y^(p^k) = y (the finite subfield F_p(x) has p^d elements, so x^(p^d) = x, and d ≥ 1 because the
+  field is nontrivial). Then x^(p^(m·j)) = x and y^(p^(k·j)) = y for all j, by induction on j. Take n = m·k and use
+  bsd-138 (its `main` gives the equivalence of the fixed-point condition with the two power conditions).
+dead: []
