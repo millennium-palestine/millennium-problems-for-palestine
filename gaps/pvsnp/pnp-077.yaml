@@ -1,0 +1,26 @@
+id: pnp-077
+problem: pvsnp
+title: If the language of exact-length witnesses of every polynomial-time verifier is in P, then P = NP
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-044
+statement: |
+  (∀ (V : Lang) (p : Polynomial ℕ), InP V → ∀ L : Lang,
+    (∀ x : List Bool, L x = true ↔ ∃ w : List Bool, w.length = p.eval x.length ∧ V (pair x w) = true) →
+    InP L) →
+  PEqualsNP
+context: |
+  Second half of a split of pnp-001 (P = NP), the converse of pnp-076. Every language in NP has an
+  exact-length verifier by pnp-044, so if all such languages are in P then every NP language is in
+  P. This does not decide P vs NP: its hypothesis is as open as the conclusion.
+sketch: |
+  intro H L hL. Apply pnp-044 to L and hL to get V, hV, p and the characterisation hL'. Then
+  H V p hV L hL' is InP L. In Lean: obtain ⟨V, hV, p, hL'⟩ := MPP.Solutions.Pnp044.main L hL;
+  exact H V p hV L hL'.
+dead: []

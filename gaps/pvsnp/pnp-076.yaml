@@ -1,0 +1,27 @@
+id: pnp-076
+problem: pvsnp
+title: Under P = NP, the language of exact-length witnesses of a polynomial-time verifier is in P
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-044
+- pnp-049
+statement: |
+  PEqualsNP → ∀ (V : Lang) (p : Polynomial ℕ), InP V → ∀ L : Lang,
+    (∀ x : List Bool, L x = true ↔ ∃ w : List Bool, w.length = p.eval x.length ∧ V (pair x w) = true) →
+    InP L
+context: |
+  First half of a split of pnp-001 (P = NP). The language of exact-length witnesses of a
+  polynomial-time verifier is in NP by pnp-049, so under P = NP it is in P. The converse
+  direction is pnp-077. Together they say that P = NP is equivalent to: every language cut out by
+  a polynomial-time verifier with exact-length witnesses is in P. The split is structural and
+  does not decide P vs NP.
+sketch: |
+  intro hPNP V p hV L hL. Apply pnp-049 to L, with the verifier V and the bound p, to get
+  InNP L. Then hPNP L gives InP L. In Lean: exact hPNP L (MPP.Solutions.Pnp049.main L ⟨V, hV, p, hL⟩).
+dead: []
