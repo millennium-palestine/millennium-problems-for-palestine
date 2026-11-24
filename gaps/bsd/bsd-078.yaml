@@ -1,0 +1,37 @@
+id: bsd-078
+problem: bsd
+title: 'Kummer homomorphism on Mathlib points over a field away from t: for y² = x³ + px + q over ℚ and a field K over ℚ with a root t, if P + Q = R with x(P), x(Q) not at t, then (x(R) − t)(x(P) − t)(x(Q) − t) is a square in K'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-068
+statement: |
+  ∀ (p q : ℚ) (K : Type) [Field K] [Algebra ℚ K] (t : K) (E : WeierstrassCurve ℚ),
+    E.a₁ = 0 → E.a₂ = 0 → E.a₃ = 0 → E.a₄ = p → E.a₆ = q →
+    t ^ 3 + algebraMap ℚ K p * t + algebraMap ℚ K q = 0 →
+    ∀ (x1 y1 x2 y2 x3 y3 : ℚ) (h1 : E.toAffine.Nonsingular x1 y1) (h2 : E.toAffine.Nonsingular x2 y2)
+      (h3 : E.toAffine.Nonsingular x3 y3),
+      WeierstrassCurve.Affine.Point.some _ _ h1 + WeierstrassCurve.Affine.Point.some _ _ h2 =
+          WeierstrassCurve.Affine.Point.some _ _ h3 →
+      algebraMap ℚ K x1 ≠ t → algebraMap ℚ K x2 ≠ t →
+      ∃ r : K, (algebraMap ℚ K x3 - t) * (algebraMap ℚ K x1 - t) * (algebraMap ℚ K x2 - t) = r ^ 2
+context: |
+  Homomorphism property of the Kummer map of bsd-036 (weak Mordell–Weil) for the non-split cases, on Mathlib's group
+  law, away from the root t. The map P ↦ x(P) − t in K*/K*² is multiplicative on the affine points whose x-coordinates
+  avoid t: the chord case is bsd-068 (x(P+Q) − t = (x(P) − t)(x(Q) − t)·r²) and the doubling case is bsd-077
+  (x(2P) − t is a square). The statement covers both cases, because a sum that is an affine point forces either
+  x(P) ≠ x(Q), or P = Q with y ≠ 0 (the case P = −Q gives O, and a sum of P with itself and y = 0 also gives O). The
+  statement does not need x(R) ≠ t: when x(R) = t the left side is 0, which is a square.
+  Together with bsd-036's finiteness steps, this is the homomorphism property that the weak Mordell–Weil proof uses for
+  K = ℚ[T]/(f) or K = ℚ, with a root t of f. The curve is in the form a₁ = a₂ = a₃ = 0, a₄ = p, a₆ = q.
+sketch: |
+  Case x1 ≠ x2: apply bsd-068 (its statement, as an imported solution) to get a point R' with P + Q = some h3' and
+  x(R') − t = (x1 − t)(x2 − t) r²; the sums agree, so x3 = x(R') by injectivity of `Point.some`
+  (`WeierstrassCurve.Affine.Point.some.injEq`), and the product is ((x1 − t)(x2 − t) r)².
+  Case x1 = x2: if y1 = negY x2 y2 then the sum is 0 by `WeierstrassCurve.Affine.Point.add_of_Y_eq`, which contradicts
+  the equation with some h3. Otherwise `WeierstrassCurve.Affine.Y_eq_of_X_eq` gives y2 = y1, so P = Q. Then y1 ≠ 0
+  (else y1 = negY x1 y1 and the sum is 0 again), and bsd-077 gives P + P = some h3' with x(R') − t = s². Injectivity
+  gives x3 = x(R'), and the product is (x1 − t)² s², a square.
+dead: []
