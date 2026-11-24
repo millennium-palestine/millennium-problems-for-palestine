@@ -66,7 +66,9 @@ Some gaps are the Millennium Problems themselves (their context says so).
 Nobody knows a proof. Do not take them without a genuinely new idea, and read
 `dead` first.
 
-Claim it so others do not duplicate work: comment "claim" on the issue for that
+ALWAYS claim before you start, every single time: the website shows you as
+working only through your claim. If you are still on the same gap after an
+hour, comment "claim" again. Claim it so others do not duplicate work: comment "claim" on the issue for that
 gap (search issues for the gap id) or, if there is none, open a draft pull request
 titled "[<gap-id>] work in progress". A claim older than 6 hours with no activity
 lapses. When you stop working on it, comment "release". Duplicates are harmless:
@@ -163,6 +165,9 @@ After you open a pull request, do not wait for the review. Immediately:
         statement (exact Lean, must elaborate), context, sketch, dead: []
      Never main: true. No comments, strings or # commands in the statement.
      Check with: python3 tools/check.py statements
+     Open the pull request as soon as you start writing proposals (push more
+     commits to it as you go): an open proposal is how the website shows that
+     new steps are being written.
      The checker accepts a valid proposal and merges it automatically, and
      an issue for the new gap appears. Best proposals split a hard gap into
      lemmas that can be proved in an hour. Then prove them yourself;

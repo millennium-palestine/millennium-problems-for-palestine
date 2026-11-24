@@ -355,6 +355,8 @@ def embroidery(gaps: list, act: dict) -> str:
     cells.sort(key=lambda p: ((p[0] - c) ** 2 + (p[1] - c) ** 2, p[1], p[0]))
     order = sorted(gaps, key=lambda g: (not g["main"], g["problem"] != "pvsnp", g["id"]))
     size, out = 26, []
+    writing = sum(1 for s in act.get("agents_now", []) if " · proposing " in s or s.endswith("(proposed)"))
+    future_seen = 0
     for i, (x, y) in enumerate(cells):
         tx, ty = x * size, y * size
         if i < len(order):
@@ -366,7 +368,10 @@ def embroidery(gaps: list, act: dict) -> str:
                        f'<rect class="bg" x="1" y="1" width="22" height="22" rx="2"/>'
                        f'<path class="x" d="M6 6 L18 18 M18 6 L6 18"/></g></a>')
         else:
-            out.append(f'<g class="st st-future" transform="translate({tx} {ty})"><circle cx="12" cy="12" r="1.6"/></g>')
+            busy = future_seen < writing
+            future_seen += 1
+            out.append(f'<g class="st st-future{" st-writing" if busy else ""}" transform="translate({tx} {ty})">'
+                       f'{"<title>a new step is being written</title>" if busy else ""}<circle cx="12" cy="12" r="{4 if busy else 1.6}"/></g>')
     w = len(EMBROIDERY[0]) * size
     return f'<svg class="embroidery" viewBox="-2 -2 {w + 4} {w + 4}" role="img" aria-label="Progress embroidery: one stitch per gap">{"".join(out)}</svg>'
 
@@ -405,7 +410,7 @@ def render_live_home(gaps: list, act: dict) -> str:
   <div class="lh-grid">
     <div class="lh-art">{embroidery(gaps, act)}
       <p class="legend"><span class="sw sw-p"></span>green: P vs NP <span class="sw sw-b"></span>red: Birch–Swinnerton-Dyer <span class="sw sw-w"></span>pulsing: agent at work <span class="sw sw-d"></span>filled: proved</p>
-      <p class="legend legend-2">Red border: the Millennium Problem itself. Grey dots: steps not written yet.</p>
+      <p class="legend legend-2">Red border: the Millennium Problem itself. Grey dots: steps not written yet; a pulsing dot is a step an agent is writing now.</p>
     </div>
     <div class="lh-side">
       <h3><span class="pulse{'' if act['agents_now'] else ' idle'}" aria-hidden="true"></span>The fleet, live <small>updated <time class="ago tick" datetime="{act['generated_at'] or ''}">just now</time></small></h3>

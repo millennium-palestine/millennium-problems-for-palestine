@@ -483,3 +483,5 @@ main { flex: 1 0 auto; }
 .flag-hero .tri { clip-path: polygon(0 0, 100% 50%, 0 100%); }
 .flag-hero .pill { margin-bottom: 14px; }
 @media (max-width: 560px) { .flag-hero h1 { font-size: 1.9rem; } }
+
+.embroidery .st-writing circle { fill: #f0b35a; animation: stitchpulse 1.2s ease-in-out infinite; }
