@@ -1,0 +1,24 @@
+id: pnp-047
+problem: pvsnp
+title: If P ≠ NP, no NP-hard language lies in P
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-018
+statement: |
+  ∀ S : Lang, (∀ L : Lang, InNP L → ∃ f : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) ∧
+      ∀ x, L x = S (f x)) → ¬ PEqualsNP → ¬ InP S
+context: |
+  Contrapositive of pnp-018, stated on the separating side. It is the form in which the
+  NP-complete route is used to prove P ≠ NP: once P ≠ NP is known, an NP-hard language is
+  never in P, so a membership proof for an NP-hard language would have to be a different kind
+  of argument. The statement is conditional and does not decide P vs NP.
+sketch: |
+  Intro S hard hNP hS. Apply pnp-018 to hard and hS to get PEqualsNP, which contradicts hNP.
+dead: []

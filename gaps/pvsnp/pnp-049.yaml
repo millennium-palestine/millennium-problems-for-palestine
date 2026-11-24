@@ -1,0 +1,29 @@
+id: pnp-049
+problem: pvsnp
+title: A verifier whose witnesses have exactly the bound length gives membership in NP
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+depends:
+- pnp-011
+- pnp-050
+statement: |
+  ∀ L : Lang, (∃ V : Lang, InP V ∧ ∃ p : Polynomial ℕ, ∀ x : List Bool,
+    (L x = true ↔ ∃ w : List Bool, w.length = p.eval x.length ∧ V (pair x w) = true)) → InNP L
+context: |
+  Converse of the exact-length normalisation of pnp-044. The NP definition of
+  MPP/Defs/PvsNP.lean accepts witnesses of length at most p(|x|), while this form accepts only
+  witnesses of length exactly p(|x|). The exact-length test of pnp-050 closes the gap: a verifier
+  that also checks the length is exact accepts a witness of length at most p(|x|) only when that
+  length is exactly p(|x|), so the two acceptance conditions agree. It is a structural lemma; it
+  does not decide P vs NP.
+sketch: |
+  Take V and p from the hypothesis, and let E be the exact-length test of pnp-050 for p. Define
+  V'(y) = E y && V y, which is in P by pnp-011 (conjunction). (→) An exact witness w has
+  |w| = p|x|, so E accepts pair x w and V' accepts it, and |w| ≤ p|x|. (←) A witness w with
+  |w| ≤ p|x| for which V' accepts has |w| = p|x| by E, and V accepts pair x w, so L x holds
+  by the hypothesis.
+dead: []

@@ -1,0 +1,26 @@
+id: pnp-051
+problem: pvsnp
+title: The length of the first component is at most the length of the second, on the pair encoding
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+depends: []
+statement: |
+  ∃ C : Lang, InP C ∧ ∀ u w : List Bool, C (pair u w) = true ↔ u.length ≤ w.length
+context: |
+  Reverse of the length comparison of pnp-028, which decides w.length ≤ u.length on the pair
+  encoding. Here the roles are swapped: the test reads the doubled first component, counts its
+  bits on a spare stack, and then reads the second component, rejecting as soon as the second
+  component ends while the spare stack is still non-empty. It is a structural lemma; it does
+  not decide P vs NP.
+sketch: |
+  Copy the machine of pnp-028 with the outcomes changed. Label 0 reads two symbols: a doubled bit
+  pushes one false onto the spare stack and repeats; otherwise the separator has been read and the
+  machine moves to label 1. Label 1 reads one symbol of the second component: if there is none,
+  answer true when the spare stack is empty and false otherwise; if there is one, pop one symbol
+  of the spare stack, answering true if there was none, and otherwise return to label 1. The
+  correctness follows by induction on the length of the second component.
+dead: []
