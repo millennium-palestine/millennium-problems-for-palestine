@@ -1,0 +1,44 @@
+id: pnp-070
+problem: pvsnp
+title: Under P = NP, the prefix-extension language with an exact total length is in P
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-006
+- pnp-008
+- pnp-011
+- pnp-021
+- pnp-025
+- pnp-026
+- pnp-050
+- pnp-052
+statement: |
+  ∀ (V : Lang) (p : Polynomial ℕ), InP V → PEqualsNP →
+    ∃ D : Lang, InP D ∧
+      ∀ x u : List Bool, D (pair x u) = true ↔
+        ∃ t : List Bool, (u ++ t).length = p.eval x.length ∧ V (pair x (u ++ t)) = true
+context: |
+  The total-length variant of pnp-055, needed by the greedy step of pnp-068. Pnp-055 fixes the
+  length of the suffix t to p(|x|), but the greedy step asks for a suffix t such that the whole
+  second component u ++ t has length exactly p(|x|). The two differ when u is nonempty, so pnp-068
+  cannot be read off pnp-055 directly. Under P = NP, the language is in NP: the verifier receives
+  pair z t, reads x and u out of z = pair x u with pnp-021 and pnp-025, concatenates u and t with
+  pnp-052, checks the exact length with pnp-050, and checks V with pnp-011. The witness bound is
+  the polynomial p itself, since |t| ≤ |u ++ t| = p(|x|) ≤ p(|z|). PEqualsNP then gives membership
+  in P. It is structural and does not decide P vs NP.
+sketch: |
+  Take the verifier W on inputs y = pair z t defined by W y = (E (F y) && V (F y)), where
+  F y = pair (d (d y)) (C (pair (e (d y)) (e y))). Here d is pnp-021 (first component), e is the
+  witness part of pnp-025, C is the concatenation of pnp-052, and E is the exact-length check of
+  pnp-050. Each piece is polynomial-time, so F is polynomial-time by pnp-026 and pnp-006, and W is
+  polynomial-time by pnp-008 and pnp-011. For z = pair x u and y = pair z t we get
+  F y = pair x (u ++ t), so W y holds exactly when |u ++ t| = p(|x|) and V (pair x (u ++ t)).
+  Define D z as the existence of t with |t| ≤ p(|z|) and W (pair z t). This language is in NP with
+  bound p, since |x| ≤ |z| and p is monotone on ℕ. Then PEqualsNP gives InP D, and the
+  equivalence for D (pair x u) follows from the bound |t| ≤ |u ++ t| = p(|x|) ≤ p(|pair x u|).
+dead: []
