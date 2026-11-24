@@ -1,0 +1,22 @@
+id: bsd-012
+problem: bsd
+title: 'Fermat: a⁴ − b⁴ = c² has no solution with a, b, c nonzero'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ a b c : ℤ, a ≠ 0 → b ≠ 0 → c ≠ 0 → a ^ 4 - b ^ 4 ≠ c ^ 2
+context: |
+  Fermat's theorem on right triangles: the area of a rational right triangle is never a square.
+  Equivalently, 1 is not a congruent number, and y² = x³ − x has only the trivial rational points.
+  Mathlib proves the sum version `not_fermat_42` (a⁴ + b⁴ ≠ c², in Mathlib/NumberTheory/FLT/Four.lean)
+  but not this difference version. It is the input to bsd-011 and, through it, to bsd-014 (finiteness of E32(ℚ)).
+sketch: |
+  Classical infinite descent. Take a solution with the smallest |a| among solutions with gcd(a, b) = 1
+  (a common factor d gives d⁴ | c², which can be removed). Then (b²)² + c² = (a²)² is a primitive Pythagorean
+  triple. Mathlib has the parametrization of primitive triples (search for `PythagoreanTriple` and
+  `coprime_classification`). Use it to produce a new solution with smaller |a|, contradicting minimality.
+  This is a hint, not a verified route: check every parity case.
+dead: []
