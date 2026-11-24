@@ -1,0 +1,27 @@
+id: pnp-057
+problem: pvsnp
+title: The one-bit extension of a polynomial-time language is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+- MPP.Solutions.Pnp008
+- MPP.Solutions.Pnp056
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-008
+- pnp-056
+statement: |
+  ∀ V : Lang, InP V → ∃ D : Lang, InP D ∧
+    ∀ x u : List Bool, D (pair x u) = V (pair x (u ++ [false]))
+context: |
+  Bit-by-bit step of a search. A witness is built one bit at a time, and each trial asks whether
+  the prefix extended by the bit false is accepted. This lemma says that, for a polynomial-time
+  verifier V, the trial language D, which runs V on the pair encoding of the extended prefix, is
+  again polynomial-time. It is structural and does not decide P vs NP.
+sketch: |
+  Let s be the map of pnp-056 with s (pair x u) = pair x (u ++ [false]). Then z ↦ V (s z) is in P by
+  pnp-008 applied to V and s, and it is the required D after rewriting with the equation of pnp-056.
+dead: []
