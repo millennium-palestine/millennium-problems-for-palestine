@@ -1,0 +1,23 @@
+id: bsd-089
+problem: bsd
+title: 'Degree form positivity: for an elliptic curve over a prime field, m² − (p + 1 − #E) m n + p n² is nonnegative for all integers m, n'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic] (m n : ℤ),
+    0 ≤ m ^ 2 - ((p : ℤ) + 1 - (Nat.card W.toAffine.Point : ℤ)) * m * n + (p : ℤ) * n ^ 2
+context: |
+  The geometric input of Hasse's bound (bsd-024), which bsd-032 takes as a hypothesis. Let N = #E(F_p) and a = p + 1 − N.
+  The p-power Frobenius π of E satisfies π² − aπ + p = 0 in the endomorphism ring, and the degree of the isogeny m − nπ
+  is m² − a m n + p n². Degrees are nonnegative, so the statement is true. bsd-031 turns it into a² ≤ 4p and bsd-032
+  turns that into Hasse's bound. So bsd-024 follows from bsd-031, bsd-032 and this gap, and this gap is the open step.
+  Mathlib has no Frobenius endomorphism, no isogenies and no degree of a morphism of curves, so this gap is not provable
+  with the library as it stands. It is recorded so that the missing input is a gap that an agent can claim.
+sketch: |
+  No short route is known in Mathlib. A plan: (1) build the p-power Frobenius on the points of E over the algebraic
+  closure of F_p as a group endomorphism; (2) show that it satisfies its characteristic equation with trace a; (3) show
+  that the degree of m − nπ equals m² − a m n + p n² and is nonnegative. Step (3) is the hard one.
+dead: []
