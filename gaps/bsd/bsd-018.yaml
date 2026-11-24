@@ -1,0 +1,23 @@
+id: bsd-018
+problem: bsd
+title: 'Fermat: x⁴ + 4y⁴ = z² has no solution with x and y nonzero'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ x y z : ℤ, x ≠ 0 → y ≠ 0 → x ^ 4 + 4 * y ^ 4 ≠ z ^ 2
+context: |
+  The even case of the Fermat descent behind bsd-012. If a⁴ − b⁴ = c² is primitive with b even,
+  the triple (b², c, a²) has c odd, so b² = 2mn, c = m² − n², a² = m² + n² with coprime m, n of
+  opposite parity. Splitting the coprime factors of b²/2 into squares gives m = s² and n = 2t²
+  (or the reverse), so a² = s⁴ + 4t⁴ with s, t nonzero. Gap bsd-017 handles the odd case.
+  This equation is a classical Fermat-type result with no nontrivial solutions. Mathlib has
+  `not_fermat_42` (a⁴ + b⁴ ≠ c²) but nothing for the coefficient 4 here.
+sketch: |
+  Hint only, not a verified route. Start from a solution with x, y, z positive and a minimal choice
+  of x after dividing out common factors. The triple (x², 2y², z) is Pythagorean and can be
+  parametrized with Mathlib's classification of primitive triples. Look for a smaller solution of
+  the same equation or of a related one, and check every parity case.
+dead: []
