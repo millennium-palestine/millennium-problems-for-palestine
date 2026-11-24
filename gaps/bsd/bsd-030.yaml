@@ -1,0 +1,29 @@
+id: bsd-030
+problem: bsd
+title: 'A real recurrence with a² ≤ 4p has coefficients at most (k + 1) p^(k/2) in absolute value'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-028
+- bsd-029
+statement: |
+  ∀ (p : ℕ) (a : ℝ) (c : ℕ → ℝ), 0 < p → a ^ 2 ≤ 4 * (p : ℝ) → c 0 = 1 → c 1 = a →
+    (∀ k : ℕ, c (k + 2) = a * c (k + 1) - (p : ℝ) * c k) →
+    ∀ k : ℕ, |c k| ≤ ((k : ℝ) + 1) * Real.sqrt (p : ℝ) ^ k
+context: |
+  The prime-power step of bsd-016. For an elliptic curve with good reduction at p, the local factor is
+  1 − a_p T + p T² with a_p an integer, and Hasse's bound (bsd-024) gives a_p² ≤ 4p. The coefficients
+  c_k of its inverse satisfy exactly the recurrence in this statement, so the bound |c_k| ≤ (k+1) p^(k/2)
+  holds for every good prime power. This is the sharp form needed for d(n)√n = Π (k+1) p^(k/2).
+  Hasse's bound is taken as the hypothesis a² ≤ 4p, so the lemma is curve-free and real-algebraic.
+  Proof: rescale d_k = c_k / √p^k, which satisfies d_{k+2} = (a/√p) d_{k+1} − d_k. If sin θ ≠ 0 for
+  cos θ = a / (2√p), use bsd-029 and bsd-028. If sin θ = 0 then a = ±2√p and d_k = (±1)^k (k+1).
+sketch: |
+  Put r = √p > 0, so a² ≤ 4r². Set d k := c k / r^k and derive the recurrence for d with ratio a / r.
+  Let θ = arccos (a / (2r)), which is defined because |a/(2r)| ≤ 1; then cos θ = a / (2r) and
+  sin θ ≥ 0. Case sin θ ≠ 0: bsd-029 gives d k · sin θ = sin((k+1)θ), and bsd-028 gives
+  |d k| ≤ k + 1, hence |c k| ≤ (k+1) r^k. Case sin θ = 0: then cos θ = ±1, so a = ±2r and d k = (±1)^k (k+1)
+  by induction. Lemmas: `Real.arccos`, `Real.cos_arccos`, `Real.sin_arccos`, `pow_abs`.
+dead: []

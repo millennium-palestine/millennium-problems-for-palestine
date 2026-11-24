@@ -1,0 +1,24 @@
+id: bsd-029
+problem: bsd
+title: 'The Chebyshev-type recurrence with ratio 2 cos θ has closed form sin((k+1)θ) / sin θ'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (θ : ℝ) (c : ℕ → ℝ), Real.sin θ ≠ 0 → c 0 = 1 → c 1 = 2 * Real.cos θ →
+    (∀ k : ℕ, c (k + 2) = 2 * Real.cos θ * c (k + 1) - c k) →
+    ∀ k : ℕ, c k * Real.sin θ = Real.sin (((k : ℝ) + 1) * θ)
+context: |
+  Closed form for the middle step of bsd-030. The local factor coefficients of an elliptic curve at a
+  good prime satisfy c_{k+2} = a c_{k+1} − p c_k. After rescaling c_k by p^(−k/2) and writing
+  a = 2√p cos θ, the rescaled sequence satisfies the recurrence in this statement. Its closed form is
+  the Chebyshev identity c_k = sin((k+1)θ) / sin θ, valid when sin θ ≠ 0. The case sin θ = 0 (a = ±2√p)
+  is handled separately in bsd-030. No elliptic curve appears here.
+sketch: |
+  Strong induction on k, proving the claim for k and k + 1 together (the statement is about all k,
+  so use `Nat.strong_induction_on` or a two-step `induction` on the pair). The step uses
+  sin((k+3)θ) + sin((k+1)θ) = 2 sin((k+2)θ) cos θ, which follows from `Real.sin_add` and
+  `Real.sin_sub` applied to (k+2)θ ± θ. Multiply the recurrence by sin θ and substitute the hypothesis.
+dead: []
