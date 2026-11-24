@@ -1,0 +1,20 @@
+id: bsd-132
+problem: bsd
+title: 'Discriminant bound gives the degree form: if a² ≤ 4p then m² − a m n + p n² ≥ 0 for all integers m, n'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (a p m n : ℤ), a ^ 2 ≤ 4 * p → 0 ≤ m ^ 2 - a * m * n + p * n ^ 2
+context: |
+  The converse of bsd-031, which shows that the degree form being nonnegative forces a² ≤ 4p. Here the implication
+  goes the other way: 4 (m² − a m n + p n²) = (2m − a n)² + (4p − a²) n², so a² ≤ 4p makes the form nonnegative
+  for all integers m, n. This is the elementary half of the degree-form argument of bsd-089: once Hasse's bound
+  gives a² ≤ 4p, the form of bsd-089 is nonnegative (see bsd-133). The statement is true and uses only integer algebra.
+sketch: |
+  Use nlinarith with the two hints sq_nonneg (2 * m - a * n) and mul_nonneg (sub_nonneg.2 h) (sq_nonneg n), where
+  h : a ^ 2 ≤ 4 * p. Multiplying the goal by 4 gives the identity above, so linear arithmetic over these two
+  facts closes it.
+dead: []

@@ -1,0 +1,24 @@
+id: bsd-133
+problem: bsd
+title: 'Hasse bound gives the degree form: for an elliptic curve over a prime field with (p + 1 − #E)² ≤ 4p, the form m² − (p + 1 − #E) m n + p n² is nonnegative'
+status: open
+imports:
+- Mathlib
+open: []
+depends: ['bsd-132']
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic] (m n : ℤ),
+    ((p : ℤ) + 1 - (Nat.card W.toAffine.Point : ℤ)) ^ 2 ≤ 4 * (p : ℤ) →
+      0 ≤ m ^ 2 - ((p : ℤ) + 1 - (Nat.card W.toAffine.Point : ℤ)) * m * n + (p : ℤ) * n ^ 2
+context: |
+  The glue between Hasse's bound and the degree form of bsd-089. If the trace a = p + 1 − #E(F_p) satisfies
+  a² ≤ 4p, which is what Hasse's bound (bsd-024) gives, then the degree form is nonnegative by bsd-132. So this
+  gap, together with bsd-024, shows that bsd-089 is no harder than the Hasse bound over prime fields, and it
+  locates the open step: the degree form is nonnegative for every curve, which is what bsd-089 asks, is exactly
+  the Hasse inequality a² ≤ 4p, and the missing input is the characteristic equation of bsd-121 (not the algebra).
+  The statement is true; its proof is bsd-132 applied to a = p + 1 − #E.
+sketch: |
+  Apply bsd-132 with a = (p : ℤ) + 1 − (Nat.card W.toAffine.Point : ℤ), p = (p : ℤ), and the given m, n and
+  hypothesis. The only work is to match the expression in the goal with the instance of bsd-132, which is the same
+  polynomial after unfolding. Import MPP.Solutions.Bsd132 once it is accepted.
+dead: []
