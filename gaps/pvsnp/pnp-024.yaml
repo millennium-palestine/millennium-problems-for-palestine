@@ -1,0 +1,36 @@
+id: pnp-024
+problem: pvsnp
+title: NP is closed under polynomial-time many-one reductions
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-008
+- pnp-022
+- pnp-023
+statement: |
+  ∀ S L : Lang, InNP S →
+    (∃ f : List Bool → List Bool,
+        Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) ∧
+        ∀ x, L x = S (f x)) →
+    InNP L
+context: |
+  Downward closure of NP under polynomial-time reductions, the standard fact that makes
+  NP-hardness meaningful for NP-complete problems (pnp-019 uses NP membership of S, and the
+  Cook–Levin route needs closure in the other direction as well). The verifier for L is V composed
+  with the transport map of pnp-022, which is in P by pnp-008. The witness bound is the composite
+  polynomial using the output bound of pnp-023. It is a structural lemma and does not decide P vs
+  NP.
+sketch: |
+  Let V, p witness InNP S, and f witness the reduction. Let r come from pnp-022 applied to f, and
+  let q bound the output length of f from pnp-023. Take the verifier V' = fun z => V (r z), which
+  is in P by pnp-008 applied to InP V and r. Take the polynomial p.comp q for the witness bound.
+  Since p has natural coefficients it is monotone, so a witness of length at most p (|f x|) is
+  one of length at most (p.comp q) |x|. Then L x = true iff some w with |w| ≤ p |f x| has
+  V (pair (f x) w) = true, iff some w has V' (pair x w) = true with the bound, using r (pair x w)
+  = pair (f x) w.
+dead: []
