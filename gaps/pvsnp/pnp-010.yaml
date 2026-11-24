@@ -1,0 +1,23 @@
+id: pnp-010
+problem: pvsnp
+title: P is closed under disjunction
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+depends:
+- pnp-006
+- pnp-009
+statement: |
+  ∀ L M : Lang, InP L → InP M → InP (fun x => L x || M x)
+context: |
+  Disjunction counterpart of the conjunction and complement gaps. Together with
+  `pnp-004` (complement) it gives the Boolean closure of P. Proposed in issue #32.
+sketch: |
+  Run the machine for `L` and the machine for `M` on a copy of the input (the tupling
+  lemma, `pnp-009`), then combine the two output bits with `||`. The `||` step is a
+  one-stack machine on two bits, the same shape as `negComp` in `pnp-004`. Composition
+  is `pnp-006`.
+dead: []
