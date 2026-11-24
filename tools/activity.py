@@ -207,14 +207,25 @@ def collect() -> dict:
             ids = ", ".join(pathlib.Path(f).stem for f in files_prop)
             proposal_sessions[f'{pr["user"]["login"]} · proposing {ids}'] = pathlib.Path(files_prop[0]).parent.name
     slug_of = {"pnp": "pvsnp", "bsd": "bsd"}
+    # An account that did anything on the repo in the last hour (claim, pull request, push,
+    # comment) is working, even between two claims.
+    recent = {}
+    for c in comments:
+        if not c["user"]["login"].endswith("[bot]") and t_now - parse(c["created_at"]) <= dt.timedelta(hours=1):
+            recent[c["user"]["login"]] = None
+    for pr in pulls:
+        if t_now - parse(pr["updated_at"]) <= dt.timedelta(hours=1):
+            recent[pr["user"]["login"]] = pr.get("_gap_files") and pathlib.Path(pr["_gap_files"][0]).parent.name
 
     # Active work sessions: one per (account, task). Several agents can share one account.
     def note_sessions(slug=None):
         return {f'{p["login"]} · notes/{p["problem"]} #{p["number"]}' for p in pr_info
                 if p["is_note"] and p["state"] == "open" and t_now - p["updated"] <= ACTIVE
                 and (slug is None or p["problem"] == slug)}
-    active = sorted({f'{a["login"]} · {gid}' for gid, s in gap_state.items() for a in s["agents"]} | note_sessions()
-                    | set(proposal_sessions))
+    active = {f'{a["login"]} · {gid}' for gid, s in gap_state.items() for a in s["agents"]} | note_sessions() | set(proposal_sessions)
+    busy = {x.split(" · ")[0] for x in active}
+    active |= {f"{login} · between gaps" for login in recent if login not in busy}
+    active = sorted(active)
     everyone = sorted({e["login"] for e in events if e.get("login")})
     for e in events:
         if not e.get("problem") and e.get("gap"):
