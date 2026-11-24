@@ -1,0 +1,21 @@
+id: bsd-008
+problem: bsd
+title: 'Every rational x-coordinate on y² = x³ − x is ± a rational square'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ x y : ℚ, y ^ 2 = x ^ 3 - x → ∃ u : ℚ, x = u ^ 2 ∨ x = -(u ^ 2)
+context: |
+  First half of 2-descent for E32, the classical argument of Fermat and Euler. Write
+  x = a/b in lowest terms. Then a·b·(a² − b²) is a square, and a, b, a² − b² are pairwise
+  coprime, so each factor is ± a square: a = ±u², b = c². Hence x = ±(u/c)².
+  In the language of 2-descent this says the square class of x lies in {±1}. Feeds
+  bsd-005 (rank 0) and the square-class step toward bsd-002 (Mordell).
+sketch: |
+  Work with `Rat.num` and `Rat.den`. Show that a, b and a² − b² are pairwise coprime,
+  then use that a product of pairwise coprime integers is a square only if each factor
+  is ± a square (Mathlib has coprime-product-is-square lemmas for ℤ; search for them).
+dead: []
