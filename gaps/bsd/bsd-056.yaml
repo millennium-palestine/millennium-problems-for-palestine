@@ -1,0 +1,33 @@
+id: bsd-056
+problem: bsd
+title: 'Kernel of the Kummer map in the split case: on y² = (x − e₁)(x − e₂)(x − e₃) with distinct rational roots of sum zero, a rational point with y ≠ 0 and x − e_i all squares is twice a rational point'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-053
+- bsd-055
+statement: |
+  ∀ (e1 e2 e3 : ℚ) (E : WeierstrassCurve ℚ) [E.IsElliptic], e1 + e2 + e3 = 0 → e1 ≠ e2 → e1 ≠ e3 → e2 ≠ e3 →
+    E.a₁ = 0 → E.a₂ = 0 → E.a₃ = 0 → E.a₄ = e1 * e2 + e1 * e3 + e2 * e3 → E.a₆ = -(e1 * e2 * e3) →
+    ∀ (x y : ℚ) (h : E.toAffine.Nonsingular x y), y ≠ 0 →
+      (∃ a1 a2 a3 : ℚ, a1 ^ 2 + e1 = x ∧ a2 ^ 2 + e2 = x ∧ a3 ^ 2 + e3 = x) →
+        ∃ R : E.toAffine.Point, R + R = WeierstrassCurve.Affine.Point.some _ _ h
+context: |
+  Composite of bsd-053 (the halving identity) and bsd-055 (the doubling formula), for the kernel direction of the
+  Kummer map in bsd-036 (weak Mordell–Weil), in the case where all three roots e₁, e₂, e₃ are rational. If P = (x, y)
+  satisfies x − e_i = a_i² for rationals a_i, the point R₀ with x-coordinate x + a₁a₂ + a₂a₃ + a₃a₁ and
+  y-coordinate (a₁+a₂)(a₁+a₃)(a₂+a₃) is a rational point with 2R₀ = ±P. Replacing R₀ by −R₀ if needed gives
+  R + R = P. This is the proof that P lies in 2E(ℚ) when the Kummer image of P is trivial in the split case.
+  The distinctness of the roots gives a_i + a_j ≠ 0, so the y-coordinate of R₀ is nonzero and the doubling
+  formula applies. The non-split case (roots in L = ℚ[T]/(f)) and the full Kummer map are separate gaps.
+sketch: |
+  Let a_i be as in the hypothesis. Since e_i ≠ e_j, a_i + a_j ≠ 0 (otherwise a_j² = a_i² gives e_i = e_j). Put
+  xR = x + a₁a₂ + a₂a₃ + a₃a₁ and yR = (a₁+a₂)(a₁+a₃)(a₂+a₃) ≠ 0. The curve equation at (xR, yR) holds since
+  xR − e_i = (a_i + a_j)(a_i + a_k): substitute e_i = x − a_i² and x = (a₁² + a₂² + a₃²)/3 (from the sum) and use
+  `ring`. The point is nonsingular since it satisfies the equation (`equation_iff_nonsingular`, with IsElliptic).
+  Apply bsd-055 (Bsd055.main) to get the x-coordinate of 2R₀ as ((3xR² + p)/(2yR))² − 2xR, and bsd-053 (Bsd053.main)
+  to see that it equals x. Then `Y_eq_of_X_eq` gives y' = y or y' = negY x y; in the second case use −R₀ instead,
+  since (−R₀) + (−R₀) = −(R₀ + R₀) (`neg_add_rev`, `neg_neg`).
+dead: []

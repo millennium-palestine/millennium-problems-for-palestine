@@ -1,0 +1,26 @@
+id: bsd-059
+problem: bsd
+title: 'Denominators on an integral model: if y² = x³ + px + q with p, q integers and x, y rational, then the denominator of x is a square'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p q : ℤ) (x y : ℚ), y ^ 2 = x ^ 3 + (p : ℚ) * x + (q : ℚ) → ∃ r : ℕ, x.den = r ^ 2
+context: |
+  Denominator step of the finiteness argument for bsd-036 (weak Mordell–Weil). For a rational point (x, y) on an integral
+  model y² = x³ + px + q, write x = a/b in lowest terms and y = c/d. Clearing denominators in the equation gives
+  c²b³ = d²(a³ + pab² + qb³), and a³ + pab² + qb³ is prime to b because gcd(a, b) = 1. So b³ divides d² and d² divides
+  b³, hence b³ = d², and b is a square. Hence x = u/v² with v² = den(x), which is the form used by bsd-058 (valuation
+  parity) to put the square classes of x − e_i in a finite set. This is the standard fact that the denominator of an
+  affine point on an integral Weierstrass model is a square (Silverman, The Arithmetic of Elliptic Curves, VII.2).
+sketch: |
+  Write x = a/b and y = c/d with b = x.den, d = y.den, and use `Rat.num_div_den`, `Rat.reduced`, `Rat.den_nz`.
+  Multiply out the equation to get c²b³ = d²(a³ + pab² + qb³) in ℤ (`field_simp`, then `exact_mod_cast`). Then
+  IsCoprime a b (from `Int.isCoprime_iff_gcd_eq_one` and `x.reduced`) gives IsCoprime (a³ + pab² + qb³) b by
+  `IsCoprime.add_mul_left_left` after writing a³ + pab² + qb³ = a³ + b(pab + qb²). The two divisibilities b³ ∣ d² and d² ∣ b³
+  follow from `IsCoprime.dvd_of_dvd_mul_right` and `IsCoprime.dvd_of_dvd_mul_left` (with IsCoprime c d from y.reduced).
+  Then b³ = d² by `Int.dvd_antisymm`. Finally b is the square of d/b in ℚ, so IsSquare (b : ℚ) and `Rat.isSquare_natCast_iff`
+  gives b = r · r in ℕ.
+dead: []

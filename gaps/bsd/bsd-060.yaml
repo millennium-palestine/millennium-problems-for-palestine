@@ -1,0 +1,36 @@
+id: bsd-060
+problem: bsd
+title: 'Finiteness of the split Kummer image: for integer roots e₁, e₂, e₃ of sum zero, the square classes of x − e₁ over points of y² = (x − e₁)(x − e₂)(x − e₃) lie in a finite set'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-040
+- bsd-058
+- bsd-059
+statement: |
+  ∀ (e1 e2 e3 : ℤ), e1 + e2 + e3 = 0 → e1 ≠ e2 → e1 ≠ e3 → e2 ≠ e3 →
+    ∃ D : Finset ℤ, ∀ (x y : ℚ), y ^ 2 = (x - e1) * (x - e2) * (x - e3) → x ≠ e1 →
+      ∃ d ∈ D, ∃ u : ℚ, x - e1 = (d : ℚ) * u ^ 2
+context: |
+  Finiteness of the image of the Kummer map for the fully split case of bsd-036 (weak Mordell–Weil). The statement
+  says that the square class of x − e₁, for every rational point with x ≠ e₁, is one of finitely many classes. The
+  image of the Kummer map is then finite once the classes of x − e₂ and x − e₃ are handled the same way (the same
+  argument with the roles of the roots permuted).
+
+  The proof combines four facts. (1) Denominators: x = n/v² in lowest terms, by bsd-059. (2) Valuation parity: the
+  factors n − e_i v² have even ℓ-adic valuation for every prime ℓ not dividing D = (e₁−e₂)(e₁−e₃)(e₂−e₃), by bsd-058
+  applied with s = yv³ (an integer, since its square is the integer (n − e₁v²)(n − e₂v²)(n − e₃v²)). (3) The
+  squarefree representative d of x − e₁ from bsd-041 has prime factors dividing n − e₁v² (not v, since v-primes have
+  even valuation in x − e₁ and d is squarefree), and such primes divide D by (2). (4) The finite set D is the set of
+  squarefree integers with prime factors dividing D, from bsd-040.
+sketch: |
+  Let S be the finite set of primes dividing (e1 − e2)(e1 − e3)(e2 − e3), and let D be the finite set of squarefree
+  integers with all prime factors in S (bsd-040, `Set.Finite.toFinset`). Given x ≠ e1 on the curve, take the
+  squarefree representative d and u from bsd-041 applied to q = x − e1. Show every prime ℓ dividing d lies in S:
+  if ℓ | d then ℓ divides num(q) or den(q) (bsd-041). If ℓ | den(q) = v², then the valuation of q at ℓ is even, so the
+  squarefree d has no factor ℓ, a contradiction. So ℓ | num(q) = n − e1v² with ℓ ∤ v, and the valuation of n − e1v² at ℓ
+  is odd. By bsd-058 this forces ℓ | D, hence ℓ ∈ S. The denominator of x is a square by bsd-059, which gives
+  x = n/v², and y v³ is an integer since its square is.
+dead: []
