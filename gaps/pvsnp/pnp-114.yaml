@@ -1,0 +1,33 @@
+id: pnp-114
+problem: pvsnp
+title: Run locality for a finite-label TM2 machine, with a window size that depends only on the machine
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- Computability
+- Turing
+depends:
+- pnp-112
+- pnp-113
+statement: |
+  ∀ (K : Type) [DecidableEq K] (Γ : K → Type) (Λ σ : Type) [Fintype Λ] (M : Λ → TM2.Stmt Γ Λ σ),
+    ∃ b : ℕ, ∀ (t n : ℕ) (c c' : TM2.Cfg Γ Λ σ), c.l = c'.l → c.var = c'.var →
+      (∀ k, (c.stk k).take (n + t * b + 1) = (c'.stk k).take (n + t * b + 1)) →
+      ((fun o : Option (TM2.Cfg Γ Λ σ) => o.bind (TM2.step M))^[t] (some c)).map
+          (fun d => (d.l, d.var, fun k => (d.stk k).take (n + 1))) =
+        ((fun o : Option (TM2.Cfg Γ Λ σ) => o.bind (TM2.step M))^[t] (some c')).map
+          (fun d => (d.l, d.var, fun k => (d.stk k).take (n + 1)))
+context: |
+  Machine-level form of pnp-112 that a tableau needs. pnp-112 takes the pop bound b of the machine as an
+  argument. pnp-113 gives such a b for every machine with a finite label type, which is the case for
+  every FinTM2 machine. Together they say that one window size, depending only on the machine, controls
+  the dependence of the run: the top n + 1 cells after t steps are determined by the top n + t b + 1 cells
+  at the start. This is the locality used to cut a tableau of a fixed verifier into windows. It does not
+  decide P vs NP, and the Cook–Levin gap pnp-100 still needs the formula construction for an arbitrary
+  verifier, which is not part of this gap.
+sketch: |
+  Take b from pnp-113 applied to M. The statement then follows from pnp-112 with this b, applied to the
+  same t, n, c and c' and the three hypotheses. Only the instantiation is needed.
+dead: []

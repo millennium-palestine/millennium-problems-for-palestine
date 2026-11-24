@@ -1,0 +1,27 @@
+id: pnp-113
+problem: pvsnp
+title: Every TM2 machine with a finite label type has one pop bound for all its blocks
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- Computability
+- Turing
+depends: []
+statement: |
+  ∀ (K : Type) [DecidableEq K] (Γ : K → Type) (Λ σ : Type) [Fintype Λ] (M : Λ → TM2.Stmt Γ Λ σ),
+    ∃ b : ℕ, ∀ l, TM2.Stmt.rec (motive := fun _ => ℕ) (fun _ _ _ ih => ih) (fun _ _ _ ih => ih)
+      (fun _ _ _ ih => ih + 1) (fun _ _ ih => ih) (fun _ _ _ ih₁ ih₂ => max ih₁ ih₂) (fun _ => 0) 0 (M l) ≤ b
+context: |
+  The bound b in pnp-112 is a hypothesis: every block M l of the machine must have at most b pops on each
+  path. For a TM2 machine that is part of a polynomial-time machine (a FinTM2, so the label type is
+  finite), that bound is not an assumption but a fact: the pop count of one block is a finite maximum over
+  the finitely many labels. This gap is the step that lets the run locality of pnp-112 be applied to the
+  verifier of an arbitrary NP language, whose label type is finite. It is a fact about the syntax of
+  statements only and does not decide P vs NP.
+sketch: |
+  Let F l be the pop measure of M l (the Stmt.rec term in the statement). Take b to be the maximum of F
+  over the finite type Λ, that is Finset.univ.sup F. Each F l is at most that maximum by Finset.le_sup
+  applied to Finset.mem_univ l. No induction on statements is needed.
+dead: []
