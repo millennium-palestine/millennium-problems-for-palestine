@@ -1,0 +1,23 @@
+id: pnp-007
+problem: pvsnp
+title: Conjunction on two bits is in polynomial time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Computability
+- Turing
+depends: []
+statement: |
+  Nonempty (TM2ComputableInPolyTime
+    (fun p : Bool × Bool => [p.1, p.2]) encodeBool (fun p : Bool × Bool => p.1 && p.2))
+context: |
+  Build a `Turing.FinTM2` machine on one stack that reads two bits, pushes their conjunction,
+  and halts, then bound its running time by a constant. This is the `&&` step that
+  `P closed under conjunction` needs after the tupling lemma (`[pnp-…]`, see issue #34).
+sketch: |
+  One state per bit, as in `negMachine` for pnp-004: pop the first bit into the state, pop the
+  second and conjoin it into the state, push the state back, reset the state, halt.
+dead: []
