@@ -1,0 +1,26 @@
+id: pnp-036
+problem: pvsnp
+title: P is closed under polynomial-time many-one reductions
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-008
+statement: |
+  ∀ (S L : Lang) (f : List Bool → List Bool),
+    InP S → TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f →
+      (∀ x, L x = S (f x)) → InP L
+context: |
+  Downward closure of P under polynomial-time many-one reductions: if S is in P and L reduces to S
+  by a polynomial-time map f, then L is in P. It is the converse direction of the NP closure gap
+  pnp-024, and it is the form in which P is used to transfer membership along a reduction. The proof
+  is the pullback form pnp-008 followed by rewriting L with the reduction equation. It is a
+  structural lemma and does not decide P vs NP.
+sketch: |
+  Apply pnp-008 to S and f to get InP (fun x => S (f x)). Since L x = S (f x) for every x, the two
+  languages are equal as functions, so rewrite with funext to conclude InP L.
+dead: []
