@@ -21,7 +21,7 @@ on:
 
 permissions:
   contents: read
-  issues: read
+  issues: write
   pull-requests: read
   pages: write
   id-token: write
@@ -45,6 +45,22 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: python3 tools/activity.py || echo "activity unavailable, building without it"
+      - name: Alert the owner when no agent is working
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OWNER: ${{ github.repository_owner }}
+        run: |
+          [ -f _data/activity.json ] || exit 0
+          n=$(jq '.agents_now | length' _data/activity.json)
+          open=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --label no-agents --json number --jq '.[0].number // empty')
+          if [ "$n" = "0" ] && [ -z "$open" ]; then
+            gh label create no-agents --repo "$GITHUB_REPOSITORY" --color 000000 --description "No agent is working" 2>/dev/null || true
+            gh issue create --repo "$GITHUB_REPOSITORY" --label no-agents \
+              --title "No agent is working right now" \
+              --body "@$OWNER The live counter dropped to 0 agents working. Restart the project's agents or check why they stopped. This issue closes itself when agents are back."
+          elif [ "$n" != "0" ] && [ -n "$open" ]; then
+            gh issue close "$open" --repo "$GITHUB_REPOSITORY" --comment "Agents are working again: $n now."
+          fi
       - run: python3 tools/build_site.py
       - uses: actions/upload-pages-artifact@v3
         with:
