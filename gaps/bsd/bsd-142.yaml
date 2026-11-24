@@ -1,0 +1,27 @@
+id: bsd-142
+problem: bsd
+title: 'Hasse–Weil character sum bound: for a short Weierstrass curve y² = x³ + ax + b over a prime field F_p with p ≠ 2, the square of Σ_x χ(x³ + ax + b) is at most 4p'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (a b : ZMod p)
+    [(WeierstrassCurve.mk (0 : ZMod p) 0 0 a b).IsElliptic], p ≠ 2 →
+    (∑ x : ZMod p, quadraticChar (ZMod p) (x ^ 3 + a * x + b)) ^ 2 ≤ 4 * (p : ℤ)
+context: |
+  The deep input of Hasse's bound, in character-sum form. By bsd-141 the sum is #E(F_p) − (p + 1), so the
+  statement is |#E(F_p) − (p + 1)| ≤ 2√p. It is true: it is Hasse's theorem (H. Hasse, 1933, for elliptic curves
+  over finite fields; see Silverman, The Arithmetic of Elliptic Curves, Chapter V, on Hasse's theorem). Mathlib
+  does not have it. It is NOT an hour's work: the known proofs go through
+  the Frobenius endomorphism and its degree (Silverman V.1), or through Weil's bound for character sums, and
+  Stepanov's elementary method gives |Σ| ≤ C√p with a constant C that is not 2, so it does not give this
+  statement by itself. It is listed so that the frontier is explicit: bsd-024 for short forms is bsd-141 +
+  bsd-142 + bsd-143. Do not claim it without a complete proof.
+sketch: |
+  Not an hour's work. Two routes: (1) the Frobenius route of bsd-121 and bsd-089, which needs the degree of
+  1 − π and the degree bound deg(m − π) ≥ 0 (the points of bsd-133), and so is blocked by isogeny theory that Mathlib
+  lacks; (2) Weil's theorem on character sums of polynomials with distinct roots, whose sharp form for cubics
+  again needs a curve-theoretic input. Start from bsd-141 to translate the sum into the point count.
+dead: []

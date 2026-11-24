@@ -1,0 +1,29 @@
+id: bsd-143
+problem: bsd
+title: 'Hasse bound for short forms from the point count: for a short Weierstrass curve y² = x³ + ax + b over a prime field with p ≠ 2, if the character sum squared is at most 4p then |#E(F_p) − (p + 1)| ≤ 2√p'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-141
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (a b : ZMod p)
+    [(WeierstrassCurve.mk (0 : ZMod p) 0 0 a b).IsElliptic], p ≠ 2 →
+    (∑ x : ZMod p, quadraticChar (ZMod p) (x ^ 3 + a * x + b)) ^ 2 ≤ 4 * (p : ℤ) →
+    |((Nat.card (WeierstrassCurve.mk (0 : ZMod p) 0 0 a b).toAffine.Point : ℕ) : ℝ) - ((p : ℝ) + 1)| ≤
+      2 * Real.sqrt (p : ℝ)
+context: |
+  Glue that closes bsd-024 for short forms once the character-sum bound is known. The hypothesis (the squared
+  sum at most 4p) is exactly bsd-142, kept as an assumption so that this step can be proved now. By bsd-141 the
+  integer D = #E(F_p) − (p + 1) equals the character sum. From D² ≤ 4p one gets |D| ≤ √(4p) = 2√p, since
+  x ↦ √x is monotone and √(D²) = |D|. The point count is cast from ℕ to ℝ, and the integer identity from bsd-141
+  is cast to ℝ with Int.cast. This is the form of bsd-024 used by bsd-016 and bsd-006 (through bsd-110 and
+  bsd-109), restricted to short forms; the general Weierstrass case needs a change of variables and is not
+  covered here. The statement does not decide anything about Millennium problems.
+sketch: |
+  Let S be the character sum and N = Nat.card (...). Take hD from bsd-141: (N : ℤ) = p + 1 + S. Then the real
+  difference N − (p + 1) equals (S : ℝ), by cast lemmas (push_cast, linarith with the cast of hD). The hypothesis
+  S² ≤ 4p in ℤ gives (S : ℝ)² ≤ 4p. Then |S| = √(S²) ≤ √(4p) = 2√p, using Real.sqrt_le_sqrt, Real.sqrt_sq_eq_abs
+  and Real.sqrt_mul (or Real.sqrt_mul_self) with 4 = 2². Use abs_le or abs_le_of_sq_le... in the final step.
+dead: []
