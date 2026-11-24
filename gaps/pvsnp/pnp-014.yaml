@@ -1,0 +1,22 @@
+id: pnp-014
+problem: pvsnp
+title: The complement of a language in P is in NP
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+depends:
+- pnp-002
+- pnp-004
+statement: |
+  ∀ L : Lang, InP L → InNP (fun x => !L x)
+context: |
+  Combines pnp-004 (P is closed under complement) with pnp-002 (P is contained in NP).
+  It is the easy half of "P is contained in NP and in co-NP": the complement of a P
+  language is again a P language, hence in NP.
+sketch: |
+  Apply pnp-004 to get InP (fun x => !L x), then pnp-002 to conclude InNP of the same
+  language. No new machine is needed.
+dead: []

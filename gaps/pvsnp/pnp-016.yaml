@@ -1,0 +1,22 @@
+id: pnp-016
+problem: pvsnp
+title: Under P = NP, NP is closed under conjunction
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+depends:
+- pnp-002
+- pnp-011
+statement: |
+  PEqualsNP → ∀ L M : Lang, InNP L → InNP M → InNP (fun x => L x && M x)
+context: |
+  Conditional statement: it assumes PEqualsNP and does not claim it. Under that
+  assumption, NP languages are P languages, P is closed under conjunction (pnp-011),
+  and P is contained in NP (pnp-002). The conjunction counterpart of pnp-015.
+sketch: |
+  Unfold PEqualsNP to get InP L and InP M from InNP L and InNP M. Apply pnp-011 to get
+  InP (fun x => L x && M x), then pnp-002 to conclude InNP of the same language.
+dead: []
