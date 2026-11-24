@@ -1,0 +1,37 @@
+id: bsd-043
+problem: bsd
+title: 'Naive doubling inequality: on any elliptic curve over ℚ, h(2P) ≥ 4h(P) − D for h(P) = log(1 + max(|num x|, den x))'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-035
+statement: |
+  ∀ (E : WeierstrassCurve ℚ) [E.IsElliptic] (H : E.toAffine.Point → ℝ),
+    (∀ P : E.toAffine.Point, H P = match P with
+      | WeierstrassCurve.Affine.Point.zero => 0
+      | WeierstrassCurve.Affine.Point.some x _ _ =>
+          Real.log (1 + max (x.num.natAbs : ℝ) (x.den : ℝ))) →
+    ∃ D : ℝ, ∀ P : E.toAffine.Point, 4 * H P - D ≤ H (2 • P)
+context: |
+  Doubling input for the naive-height proof of bsd-038 (weak Mordell–Weil and height, Silverman, The
+  Arithmetic of Elliptic Curves, Ch. VIII, the naive height and its comparison with the canonical height).
+  The height of a point is the logarithm of 1 + the naive height of its x-coordinate. The claim is that the
+  height of 2P is at least four times the height of P up to a constant. It follows from the duplication
+  formula bsd-037: x(2P) = F(a, d) / (d · G(a, d)) for x = a/d in lowest terms, where
+  F = a⁴ − b₄a²d² − 2b₆ad³ − b₈d⁴ and G = 4a³ + b₂a²d + 2b₄ad² + b₆d³. The two binary forms F and dG have no
+  common zero in ℙ¹ because the curve is nonsingular, so there are polynomial identities U·F + V·dG = R·a⁷ and
+  U'·F + V'·dG = R'·d⁷ with R, R' nonzero (resultant), and the reduced numerator and denominator of x(2P) are
+  at least a constant times the fourth power of max(|a|, d). The points with 2P = O have bounded height
+  (there are at most four of them), which is absorbed in D.
+  Together with bsd-044 (the parallelogram inequality) and bsd-035 (Northcott on points), this gives bsd-038.
+sketch: |
+  Reduce to the case of a point with x = a/d in lowest terms, d > 0, and use the formula of bsd-037 for x(2P).
+  Write M = max(|a|, d). Use the resultant identities for the binary forms F and dG to get
+  max(|F|, |dG|) ≥ c · M⁴ for coprime (a, d), with c > 0 independent of the point (split on whether M = |a|
+  or M = d). The reduced denominator and numerator of x(2P) divide F and dG up to a common factor dividing R,
+  so the naive height of x(2P) is at least max(|F|, |dG|) / |R|. Then log(1 + H(2P)) ≥ 4 log M − const and
+  log(1 + M) ≤ log M + log 2 for M ≥ 1. The case 2P = O is the finite set of 2-torsion points, handled by
+  taking D at least 4 times their maximal height.
+dead: []
