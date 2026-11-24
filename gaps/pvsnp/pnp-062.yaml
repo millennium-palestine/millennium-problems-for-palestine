@@ -1,0 +1,21 @@
+id: pnp-062
+problem: pvsnp
+title: Iterating a map that appends one symbol adds one to the length at each step
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ s : List Bool → List Bool, (∀ z : List Bool, (s z).length = z.length + 1) →
+    ∀ (k : ℕ) (z : List Bool), (s^[k] z).length = z.length + k
+context: |
+  Bookkeeping for pnp-061. When the search of pnp-058 runs a one-bit extension step k times, the
+  string grows by exactly one symbol per step, so after k steps its length is the starting length plus k.
+  This length formula is what keeps the total running time polynomial in the iteration. It is pure
+  logic about lists and does not use machines.
+sketch: |
+  Induction on k, generalising z. For k = 0 the iterate is z itself. For k + 1 use
+  Function.iterate_succ_apply to write s^[k+1] z = s^[k] (s z), apply the induction hypothesis to s z,
+  and use the length hypothesis for s z, which gives (s z).length + k = z.length + (k + 1).
+dead: []

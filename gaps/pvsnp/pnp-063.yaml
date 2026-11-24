@@ -1,0 +1,28 @@
+id: pnp-063
+problem: pvsnp
+title: A fixed number of iterations of a polynomial-time map is polynomial-time
+status: open
+imports:
+- Mathlib
+open:
+- Turing
+depends: []
+statement: |
+  ∀ s : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) s) →
+    ∀ k : ℕ, ∃ T : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) T) ∧
+      ∀ z : List Bool, T z = s^[k] z
+context: |
+  The constant-count case of the iteration in pnp-061. Here the number of iterations k is a fixed
+  natural number, not a function of the input, so the iterate is a composition of k copies of s.
+  Composition is pnp-006, and the identity is pnp-037. This lemma is provable with the existing
+  composition machinery; pnp-061 is the harder case where the number of iterations is p(|z|) and
+  must be read from the input. It is structural and does not decide P vs NP.
+sketch: |
+  Induction on k. For k = 0, the iterate s^[0] z = z, so take T = id, which is polynomial-time by
+  pnp-037. For k + 1, use Function.iterate_succ_apply' to write s^[k+1] z = s (s^[k] z). Take
+  T' = s ∘ T, where T is the map given by the induction hypothesis, and use pnp-006 with the
+  polynomial-time machine for T and the machine for s. The equation T' z = s^[k+1] z follows from the
+  induction hypothesis by rewriting.
+dead: []
