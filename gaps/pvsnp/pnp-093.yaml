@@ -1,0 +1,26 @@
+id: pnp-093
+problem: pvsnp
+title: The unary count of ones is polynomial-time computable
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) (fun x : List Bool => List.replicate (x.count true) true : List Bool → List Bool))
+context: |
+  The number of ones of a binary string, written in unary as a run of true symbols. Counting satisfied
+  literals or clauses in unary is the usual primitive when a counting argument is encoded as a
+  polynomial-time map, so this is a step of a Cook–Levin-style route to pnp-001. It is a utility and
+  does not decide P vs NP. Compare pnp-091 (parity of the ones), which uses the same one-symbol-per-step
+  shape with a single bit of state.
+sketch: |
+  A two-stack machine: the input stack is 0 and the output stack is 1. Label 0 pops one input symbol.
+  If it is true, push true onto the output and repeat; if it is false, repeat without pushing. On the
+  empty input, halt. Each input symbol costs one or two machine steps, and the total number of steps
+  is at most 2|x| + 2, so the time bound is affine. Correctness is by induction on the input, with the
+  output equal to replicate (count of ones) true.
+dead: []
