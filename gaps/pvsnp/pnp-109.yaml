@@ -14,9 +14,9 @@ statement: |
     TM2.Stmt.rec (motive := fun _ => ℕ) (fun _ _ _ ih => ih) (fun _ _ _ ih => ih)
       (fun _ _ _ ih => ih + 1) (fun _ _ ih => ih) (fun _ _ _ ih₁ ih₂ => max ih₁ ih₂) (fun _ => 0) 0 q ≤ b →
     ∀ (v : σ) (S S' : ∀ k, List (Γ k)), (∀ k, (S k).take (b + 1) = (S' k).take (b + 1)) →
-      ∃ (L : ∀ k, List (Γ k)) (m : ∀ k, ℕ), (∀ k, m k ≤ b) ∧
-        ∀ k, (TM2.stepAux q v S).stk k = L k ++ (S k).drop (m k) ∧
-          (TM2.stepAux q v S').stk k = L k ++ (S' k).drop (m k)
+      ∀ k, ∃ (L : List (Γ k)) (m : ℕ), m ≤ b ∧
+        (TM2.stepAux q v S).stk k = L ++ (S k).drop m ∧
+        (TM2.stepAux q v S').stk k = L ++ (S' k).drop m
 context: |
   Stack-shape lemma for the Cook–Levin tableau of pnp-100, the stack part of the window that pnp-108
   starts. pnp-108 says that a block with at most b pops per path has the same next label, next variable
@@ -32,8 +32,8 @@ sketch: |
   unchanged. Goto and halt: L = empty and m = 0. Branch: the test f v is the same for both runs, so
   the induction hypothesis of the chosen side applies, with budget max ≤ b. Push k f q: the stack k
   becomes f v :: S k on both sides, and take b of the tails agree, so the hypothesis is used at the same
-  b on the updated stacks; if the returned m k is 0 put f v in front of L k, otherwise m k - 1 is the
-  shift on S k. Pop k f q: the depth gives PD q + 1 ≤ b, so b ≥ 1, and the continuation runs at budget
+  b on the updated stacks; if the returned m is 0, the prefix is L ++ [f v] and the shift is 0; if the
+  returned m is m₀ + 1, the prefix is L and the shift is m₀, since drop (m₀ + 1) (f v :: S k) = drop m₀ (S k). Pop k f q: the depth gives PD q + 1 ≤ b, so b ≥ 1, and the continuation runs at budget
   b - 1 on the updated stacks (update S k tail), whose take b agree; the result for S k is L k with
   m k + 1, since drop m (tail) = drop (m + 1) on the original stack.
 dead: []
