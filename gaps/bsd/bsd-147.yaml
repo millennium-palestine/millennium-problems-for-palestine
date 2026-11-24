@@ -1,0 +1,25 @@
+id: bsd-147
+problem: bsd
+title: 'Cube map is bijective when p ≢ 1 mod 3: for a curve y² = x³ + b over a prime field with p ≠ 2 and p % 3 ≠ 1, the character sum of x³ + b is zero'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (b : ZMod p), p ≠ 2 → p % 3 ≠ 1 →
+    ∑ x : ZMod p, quadraticChar (ZMod p) (x ^ 3 + (0 : ZMod p) * x + b) = 0
+context: |
+  Elementary first case of the j = 0 split of bsd-142 (the Hasse–Weil character sum bound for short forms with a = 0).
+  When p ≢ 1 mod 3 the map x ↦ x³ is a bijection of F_p, because gcd(3, p − 1) = 1 (for p = 3 it is the identity
+  x³ = x by Fermat). So the sum reindexes to Σ_y χ(y + b), which is zero by Mathlib's quadraticChar_sum_zero
+  (needs ringChar ≠ 2, i.e. p ≠ 2). The statement is true and is the only part of bsd-142 with a = 0 that needs no
+  deep input. The case p ≡ 1 mod 3 is bsd-148. Together they give the bsd-142 bound for a = 0, without a change
+  of variables. It says nothing about the general short form (a ≠ 0) and nothing about Millennium problems.
+sketch: |
+  Injectivity of x ↦ x³ on ZMod p when p % 3 ≠ 1: if x³ = y³ with x ≠ y, use that x ↦ x^k, where 3k = 2p − 1
+  (possible when p % 3 = 2), inverts the cube map on nonzero elements via ZMod.pow_card_sub_one_eq_one. For p = 3
+  use x³ = x (ZMod.pow_card). Then the finite injective map is bijective (Finite.injective_iff_surjective or
+  Function.Injective.bijective_of_finite), giving Equiv.ofBijective. Rewrite the sum with Equiv.sum_comp, simplify
+  0 * x and x³ + b, reindex by Equiv.addRight b, and close with quadraticChar_sum_zero (ringChar (ZMod p) = p ≠ 2).
+dead: []
