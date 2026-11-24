@@ -1,0 +1,33 @@
+id: pnp-026
+problem: pvsnp
+title: Pair encoding of two polynomial-time maps is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  ∀ f g : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) →
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) g) →
+    ∃ h : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) h) ∧
+      ∀ z : List Bool, h z = pair (f z) (g z)
+context: |
+  Combines two polynomial-time maps on the same input into one pair encoding. Together with
+  pnp-006 (composition), pnp-021 (decoder) and pnp-025 (witness part), it gives the transport
+  of pnp-022: a polynomial-time map on the instance part of the pair encoding. The composite map
+  is built by running f and g on the same input (as in pnp-009) and then doubling the bits of
+  f z and appending the separator [false, true] and g z. It is a structural lemma and does not
+  decide P vs NP.
+sketch: |
+  Keep a copy of the input on a spare stack while f runs (pnp-009 does this for two Boolean
+  answers; here the outputs are lists). Run f on the first stack, then run g on the copy. Then
+  push each output symbol of f twice onto the result, followed by false and true, and then the
+  output of g. Each machine has a polynomial time bound and the doubling pass is linear in the
+  output of f, so the total time is a polynomial. The equation h z = pair (f z) (g z) is then by
+  unfolding pair.
+dead: []
