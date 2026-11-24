@@ -1,0 +1,40 @@
+id: pnp-066
+problem: pvsnp
+title: Iterating a polynomial-time one-bit extension on a unary count is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  ∀ s : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) s) →
+    (∀ z : List Bool, (s z).length = z.length + 1) →
+    ∃ T : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) T) ∧
+      ∀ z : List Bool, ∀ k : ℕ, T (pair z (List.replicate k false)) = s^[k] z
+context: |
+  Machine core of pnp-061, the loop that the one-bit extension search needs. Pnp-061 asks for a
+  machine that applies s p(|z|) times, with the count read from the input length. Only the loop
+  is new; this gap is the single hard
+  machine lemma on that route; pnp-061 follows from it by the reduction of pnp-067. The count is
+  given in unary after the pair encoding, so the
+  machine does not need to compute the count, only to iterate while the counter is nonempty.
+  The length hypothesis gives that after j rounds the data has length |z| + j, so the total cost
+  is polynomial in |z| + k, which is polynomial in the input length 2|z| + 2 + k. It is structural
+  and does not decide P vs NP.
+sketch: |
+  Decode the pair encoding with pnp-021 to get z and the count, then run a loop with three stacks:
+  a data stack holding the current string, a counter stack holding the remaining unary count, and
+  the internal stacks of a machine for s. Each round pops one counter symbol (the decrement of
+  pnp-064 and the zero test of pnp-065 are the loop guard), runs the machine for s on the data
+  stack, moves its output back to the data stack, and cleans its internal stacks, using the
+  composition and cleanup of pnp-006. A goto from the end of a round back to the start of the
+  round gives the loop. The invariant after j rounds is that the data stack holds s^[j] z and the
+  counter holds k - j symbols; the time of each round is polynomial in |z| + k by the length
+  hypothesis, so the total is polynomial in the input length. Induction on the number of
+  remaining rounds gives the equation.
+dead: []

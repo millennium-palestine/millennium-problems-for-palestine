@@ -1,0 +1,43 @@
+id: pnp-067
+problem: pvsnp
+title: The loop lemma of pnp-066 gives pnp-061 (iteration with a count read from the input length)
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-006
+- pnp-026
+- pnp-033
+- pnp-037
+statement: |
+  (∀ s : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) s) →
+    (∀ z : List Bool, (s z).length = z.length + 1) →
+    ∃ T : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) T) ∧
+      ∀ z : List Bool, ∀ k : ℕ, T (pair z (List.replicate k false)) = s^[k] z) →
+  ∀ s : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) s) →
+    (∀ z : List Bool, (s z).length = z.length + 1) →
+    ∀ p : Polynomial ℕ, ∃ T : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) T) ∧
+      ∀ z : List Bool, T z = s^[p.eval z.length] z
+context: |
+  Reduction that splits pnp-061. The hypothesis is the loop lemma pnp-066, stated for the pair
+  encoding of a string and a unary count. The conclusion is pnp-061, the iteration of a one-bit
+  extension p(|z|) times. The reduction is pure composition: the map z ↦ pair z (replicate p(|z|)
+  false) is polynomial-time by pnp-033 (the unary string of length p(|z|)) and pnp-026 (the pair
+  encoding of two polynomial-time maps), and composing it with the loop machine by pnp-006 gives
+  the machine for pnp-061. It is structural and does not decide P vs NP.
+sketch: |
+  Intro the hypothesis and s, s is poly-time with the length hypothesis, and p. Take g from pnp-033
+  for p, so g x = replicate (p.eval |x|) false. Take h from pnp-026 applied to id and g, so
+  h z = pair z (g z), and h is polynomial-time since id is by pnp-037. Apply the hypothesis to get
+  T. Then T ∘ h is polynomial-time by pnp-006, and (T ∘ h) z = T (pair z (replicate (p.eval |z|)
+  false)) = s^[p.eval |z|] z by the equation of the hypothesis. In Lean the proof is a short
+  rewrite after obtaining T, h and g from the four cited lemmas.
+dead: []
