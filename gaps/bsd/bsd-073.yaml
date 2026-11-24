@@ -1,0 +1,29 @@
+id: bsd-073
+problem: bsd
+title: 'Finiteness of the one-root Kummer image: for an integer root e of y² = x³ + px + q with 3e² + p ≠ 0, the square classes of x − e over points with x ≠ e lie in a finite set'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-059
+statement: |
+  ∀ (e p : ℤ), 3 * e ^ 2 + p ≠ 0 →
+    ∃ D : Finset ℤ, ∀ (x y : ℚ), y ^ 2 = x ^ 3 + (p : ℚ) * x + (-(e : ℚ) ^ 3 - (p : ℚ) * e) →
+      x ≠ (e : ℚ) → ∃ d ∈ D, ∃ u : ℚ, x - (e : ℚ) = (d : ℚ) * u ^ 2
+context: |
+  One-root analogue of bsd-060, for the non-split case of bsd-036 (weak Mordell–Weil) when the cubic x³ + px + q has an
+  integer root e. Then x³ + px + q = (x − e)(x² + ex + e² + p), and P ↦ x(P) − e gives a map from the rational points
+  with x ≠ e into ℚ*/ℚ*². The hypothesis 3e² + p ≠ 0 says that e is a simple root, that is, the cubic has nonzero
+  discriminant. It cannot be dropped: for p = −3e² the cubic is (x − e)²(x + 2e), and the points (t² − 2e, t(t² − 3e))
+  give x − e = t² − 3e, which has infinitely many square classes.
+  This statement covers only the image of the first factor; the quadratic factor and the kernel are not covered.
+sketch: |
+  Write x = n/v² in lowest terms, by bsd-059 (the denominator is a square). Put A = n − e v² and
+  Q = n² + e n v² + (e² + p) v⁴. Then x − e = A/v² and x² + ex + e² + p = Q/v⁴, so y² v⁶ = A·Q. Hence s = y v³ is an
+  integer, since its square A·Q is. Modulo A we have n ≡ e v², so Q ≡ (3e² + p) v⁴. Let d be the squarefree part of A,
+  so A = d b² (Nat.sq_mul_squarefree on |A|). If a prime ℓ divides d and ℓ does not divide 3e² + p, then ℓ does not
+  divide v (since ℓ | A and gcd(n, v) = 1 gives ℓ ∤ v), so ℓ ∤ Q and the ℓ-adic valuation of A·Q is that of A. Hence
+  v_ℓ(A) = v_ℓ(s²) is even, while d squarefree gives v_ℓ(A) odd. So every prime of d divides 3e² + p, and since d is
+  squarefree, d divides 3e² + p. Take D to be the set of integers dividing 3e² + p, which is finite since 3e² + p ≠ 0.
+dead: []
