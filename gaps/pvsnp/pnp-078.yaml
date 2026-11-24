@@ -1,0 +1,34 @@
+id: pnp-078
+problem: pvsnp
+title: Under P = NP, every NP language has an exact-length verifier with a polynomial-time least-witness finder
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-044
+- pnp-072
+statement: |
+  PEqualsNP → ∀ L : Lang, InNP L →
+    ∃ (V : Lang) (p : Polynomial ℕ), InP V ∧
+      (∀ x : List Bool, L x = true ↔ ∃ w : List Bool, w.length = p.eval x.length ∧ V (pair x w) = true) ∧
+      ∃ f : List Bool → List Bool,
+        Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) ∧
+        ∀ x : List Bool, L x = true →
+          (f x).length = p.eval x.length ∧ V (pair x (f x)) = true ∧
+          ∀ w : List Bool, w.length = p.eval x.length → V (pair x w) = true → ¬ (w < f x)
+context: |
+  A lift of pnp-072 from verifiers to languages. pnp-044 turns an NP language into an
+  exact-length verifier, and under P = NP pnp-072 gives a polynomial-time map returning the
+  lexicographically least accepted witness of that exact length. Thus the search version of P = NP
+  holds for every NP language, not only for the verifiers of the form in pnp-072. This is a
+  corollary of P = NP, not a decision of it: the hypothesis PEqualsNP is as open as the conclusion.
+sketch: |
+  intro hP L hL. Obtain V, hV, p and the characterisation hLV from pnp-044 applied to L and hL.
+  Then obtain f with its properties from pnp-072 applied to V, p, hV and hP. Provide V, p, hV, hLV,
+  and f with hf; for the last clause, given L x = true, the characterisation hLV x turns it into
+  an existential witness, which the minimality part of pnp-072 handles.
+dead: []
