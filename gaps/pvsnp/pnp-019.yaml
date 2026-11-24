@@ -1,0 +1,25 @@
+id: pnp-019
+problem: pvsnp
+title: If an NP-hard language in NP is not in P, then P ≠ NP
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  ∀ S : Lang, InNP S → (∀ L : Lang, InNP L → ∃ f : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) ∧
+      ∀ x, L x = S (f x)) → ¬ InP S → ¬ PEqualsNP
+context: |
+  Contrapositive use of pnp-018 for an NP-complete language. If S is in NP and every NP language
+  reduces to S in polynomial time, then PEqualsNP would put S in P. So a language S that is in NP,
+  NP-hard, and outside P witnesses P ≠ NP. This is the form in which the NP-complete approach
+  would settle pnp-000. The statement is easy, but finding such an S is exactly the open problem:
+  the gap reduces P ≠ NP to exhibiting an NP-complete language outside P. It is not a proof of it.
+sketch: |
+  Intro S, hS, hard, hnot and hPNP. Apply hPNP to hS to get InP S, which contradicts hnot.
+  No polynomial-time machine is needed.
+dead: []
