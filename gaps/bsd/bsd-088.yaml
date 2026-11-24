@@ -1,0 +1,27 @@
+id: bsd-088
+problem: bsd
+title: 'Coefficients bounded by d(n) √n give an absolutely convergent Dirichlet series for Re s > 3/2'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-087
+statement: |
+  ∀ (a : ℕ → ℂ) (s : ℂ), 3 / 2 < s.re →
+    (∀ n : ℕ, 0 < n → ‖a n‖ ≤ (n.divisors.card : ℝ) * Real.sqrt (n : ℝ)) →
+    LSeriesSummable a s
+context: |
+  The summability half of bsd-006, stated for an arbitrary coefficient sequence, so it does not depend
+  on the curve. Together with the coefficient bound of bsd-016 (|a_n| ≤ d(n)√n) it gives bsd-006: the
+  L-series of an elliptic curve over ℚ converges absolutely for Re s > 3/2. The proof compares the terms:
+  for n > 0, ‖a_n / n^s‖ ≤ d(n) n^(1/2 − Re s) = d(n) n^(−u) with u = Re s − 1/2 > 1, and the divisor
+  series converges for Re u > 1 by bsd-087. It is true because the sum over n of d(n) n^(−u) converges
+  for u > 1.
+sketch: |
+  Put u = s − 1/2, so Re u > 1. Compare with the divisor-count series of bsd-087 at u: for n > 0,
+  ‖term a s n‖ = ‖a n‖ / n^(Re s) ≤ d(n) √n / n^(Re s) = d(n) / n^(Re s − 1/2), using
+  `Real.sqrt_eq_rpow` and `Real.rpow_natCast`/`Real.rpow_sub`. Then use `LSeriesSummable.of_norm_bounded`
+  (or `Summable.of_norm_bounded` on `term` with the summable bound from bsd-087 at u, whose terms are
+  d(n) / n^u since `LSeries.term` divides by n^s). The n = 0 term is 0 on both sides (`LSeries.term_zero`).
+dead: []

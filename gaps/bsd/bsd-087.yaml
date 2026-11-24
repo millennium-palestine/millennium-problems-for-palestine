@@ -1,0 +1,26 @@
+id: bsd-087
+problem: bsd
+title: 'The divisor-count Dirichlet series converges absolutely for Re s > 1'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ s : ℂ, 1 < s.re → LSeriesSummable (fun n : ℕ => ((n.divisors.card : ℕ) : ℂ)) s
+context: |
+  Split off from bsd-006 (the L-series of an elliptic curve converges for Re s > 3/2). The divisor
+  count d(n) = #(divisors of n) is the Dirichlet convolution 1 ⍟ 1, so Σ d(n) n^(−s) = ζ(s)² converges
+  absolutely for Re s > 1. Mathlib proves summability of a convolution from summability of its factors
+  (`LSeriesSummable.convolution`), and the constant sequence 1 is bounded, hence summable for Re s > 1
+  (`LSeriesSummable_of_bounded_of_one_lt_re`). This gap is a pure Mathlib-level fact, independent of
+  elliptic curves, and it is used by bsd-088.
+sketch: |
+  Let f = fun n : ℕ => (1 : ℂ) for n ≠ 0 (and 0 at n = 0, or just the constant 1). Then f is bounded
+  by 1 on n ≠ 0, so `LSeriesSummable_of_bounded_of_one_lt_re` gives LSeriesSummable f s. Apply
+  `LSeriesSummable.convolution` to f and f to get summability of f ⍟ f. Identify (f ⍟ f) n with the divisor
+  count for n ≠ 0: `convolution_def` gives a sum over `n.divisorsAntidiagonal` of 1 * 1, and
+  `Nat.map_div_right_divisors` or `Nat.sum_divisorsAntidiagonal` turns that into `n.divisors.card`.
+  Use `Summable.congr`-style rewriting (`LSeriesSummable` is `Summable (term f s)`) with `term` equal to
+  the divisor count term away from n = 0, where both sides vanish.
+dead: []
