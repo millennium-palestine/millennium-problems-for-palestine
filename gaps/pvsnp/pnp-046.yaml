@@ -1,0 +1,29 @@
+id: pnp-046
+problem: pvsnp
+title: The input paired with the all-false witness of polynomial length is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-026
+- pnp-033
+- pnp-037
+statement: |
+  ∀ p : Polynomial ℕ, ∃ f : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) ∧
+    ∀ x : List Bool, f x = pair x (List.replicate (p.eval x.length) false)
+context: |
+  Witness generation for the NP-complete route. A verifier is run on the pair of the input and a
+  candidate witness, and the candidate has the polynomial length that the NP definition allows.
+  Taking the all-false candidate of that length is polynomial-time in the input, so a reduction can
+  build the verifier's input from the input alone. This is a structural lemma; it does not decide
+  P vs NP.
+sketch: |
+  Take g from pnp-033 with g x = replicate (p.eval |x|) false, and the identity from pnp-037. Apply
+  pnp-026 to the identity and g to get h with h z = pair (id z) (g z) = pair z (replicate ...).
+  Then f := h.
+dead: []
