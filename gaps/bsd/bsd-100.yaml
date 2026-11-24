@@ -1,0 +1,32 @@
+id: bsd-100
+problem: bsd
+title: 'Finitely many representatives with S: for every number field K and every finite set S of finite primes there is a finite set D ⊆ K such that every x ≠ 0 whose valuations outside S are all even is d·w² for some d in D and some w in K'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-091
+- bsd-092
+statement: |
+  ∀ (K : Type) [Field K] [NumberField K]
+    (S : Set (IsDedekindDomain.HeightOneSpectrum (NumberField.RingOfIntegers K))),
+    S.Finite → ∃ D : Finset K, ∀ x : K, x ≠ 0 →
+      (∀ v : IsDedekindDomain.HeightOneSpectrum (NumberField.RingOfIntegers K), v ∉ S →
+        ∃ n : ℤ, v.valuation K x = WithZero.exp (2 * n)) →
+      ∃ d ∈ D, ∃ w : K, x = d * w ^ 2
+context: |
+  The S-version of bsd-094, the representatives of the 2-Selmer group. Mathlib's selmerGroup K⟮S, 2⟯ is a subgroup of
+  K^× / (K^×)² whose elements are the classes with trivial valuation at every prime outside S (IsDedekindDomain.selmerGroup).
+  By bsd-091 and bsd-092 this group is finite for every finite S. Choosing one representative in K^× for each of its
+  finitely many elements gives the finite set D. The statement is the form in which the S-unit part of a 2-descent is
+  used: an element with even valuations outside S is, modulo squares, one of finitely many representatives. It is the
+  input of the cubic case (bsd-075), which needs the cubic field L = ℚ[X]/(f) and a finite S. Only the inclusion of the
+  classes of such x into K⟮S, 2⟯ and the choice of representatives are new.
+sketch: |
+  Easy once the Selmer group is finite. (a) For x ≠ 0 with all valuations outside S even, the class of x in K/2 lies in
+  selmerGroup S 2: its valuationOfNeZeroMod is trivial at each v ∉ S, which follows from valuation evenness by the
+  computation in bsd-092 (the converse direction of the ZMod computation). (b) Since the selmer group is finite, it has
+  finitely many elements; for each one choose a unit representing it, and let D be the finite set of those
+  representatives. (c) For x, the class of x is one of these, so x = d·w² with w in K, as the classes agree in K^×/squares.
+dead: []

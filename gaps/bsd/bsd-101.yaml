@@ -1,0 +1,34 @@
+id: bsd-101
+problem: bsd
+title: 'Valuation parity for the irreducible cubic: for an irreducible f = X³ + pX + q over ℚ with root θ in L = ℚ[X]/(f), there is a finite set S of primes of L such that for every rational point (x, y) of y² = x³ + px + q with x ≠ θ, the element x − θ has even valuation at every prime outside S'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-074
+statement: |
+  ∀ (p q : ℚ) (f : Polynomial ℚ) [Fact (Irreducible f)],
+    f = Polynomial.X ^ 3 + Polynomial.C p * Polynomial.X + Polynomial.C q →
+    ∃ S : Set (IsDedekindDomain.HeightOneSpectrum (NumberField.RingOfIntegers (AdjoinRoot f))),
+      S.Finite ∧ ∀ x y : ℚ, y ^ 2 = x ^ 3 + p * x + q →
+        algebraMap ℚ (AdjoinRoot f) x ≠ AdjoinRoot.root f →
+        ∀ v : IsDedekindDomain.HeightOneSpectrum (NumberField.RingOfIntegers (AdjoinRoot f)), v ∉ S →
+          ∃ n : ℤ, v.valuation (AdjoinRoot f) (algebraMap ℚ (AdjoinRoot f) x - AdjoinRoot.root f) =
+            WithZero.exp (2 * n)
+context: |
+  The arithmetic half of the cubic case of bsd-036 (finite square classes for the irreducible cubic, bsd-075), and the one
+  that is not formal. Let S be the primes of L above 2 and above the discriminant of f, a finite set. For a prime 𝔓 of
+  L outside S, the roots θ = θ₁, θ₂, θ₃ of f are distinct modulo 𝔓, so at most one of the factors x − θᵢ over a splitting
+  field can be divisible by a prime above 𝔓. Since the product of the three factors is y², that factor has even valuation
+  there, and 𝔓 is unramified in the splitting field, so v_𝔓(x − θ) is even. Combined with the finite S-unit input
+  (bsd-100) this gives bsd-075. The gap statement uses L = AdjoinRoot f with its number field structure
+  (NumberField (AdjoinRoot f) needs Fact (Irreducible f)), and the hypothesis x − θ ≠ 0 is needed because the valuation
+  of 0 is not of the form exp(2n).
+sketch: |
+  Hard. (a) Identify the finite set S with the primes above 2 and the discriminant, which is finite by Mathlib's finiteness
+  of prime ideals containing a nonzero element of a Dedekind domain. (b) For x, y rational with y² = f(x), the norm of
+  x − θ is y², which is bsd-074. (c) Parity at a prime 𝔓 outside S: this is the valuation argument above, and it needs
+  either the splitting field with its ramification or a direct argument in L; neither is in Mathlib in usable form. The
+  split of (c) into prime-by-prime local statements is the open question.
+dead: []
