@@ -17,18 +17,21 @@ statement: |
           ∃ n : ℤ, v.valuation (AdjoinRoot f) (algebraMap ℚ (AdjoinRoot f) x - AdjoinRoot.root f) =
             WithZero.exp (2 * n)
 context: |
-  The arithmetic half of the cubic case of bsd-036 (finite square classes for the irreducible cubic, bsd-075), and the one
-  that is not formal. Let S be the primes of L above 2 and above the discriminant of f, a finite set. For a prime 𝔓 of
-  L outside S, the roots θ = θ₁, θ₂, θ₃ of f are distinct modulo 𝔓, so at most one of the factors x − θᵢ over a splitting
-  field can be divisible by a prime above 𝔓. Since the product of the three factors is y², that factor has even valuation
-  there, and 𝔓 is unramified in the splitting field, so v_𝔓(x − θ) is even. Combined with the finite S-unit input
-  (bsd-100) this gives bsd-075. The gap statement uses L = AdjoinRoot f with its number field structure
-  (NumberField (AdjoinRoot f) needs Fact (Irreducible f)), and the hypothesis x − θ ≠ 0 is needed because the valuation
-  of 0 is not of the form exp(2n).
+  The arithmetic half of the cubic case of bsd-036 (finite square classes for the irreducible cubic, bsd-075). Together
+  with the finite representatives bsd-100 it gives bsd-075. The key point is an identity in L: with α = x − θ and
+  β = x² + xθ + θ² + p one has α·β = f(x) = y², so the valuations of α and β multiply to an even exponent, and a prime
+  dividing both α and β must divide f'(θ) = β − α(x + 2θ), which is a nonzero element with finitely many primes of small
+  valuation. The gap statement uses L = AdjoinRoot f with its number field structure (NumberField (AdjoinRoot f) needs
+  Fact (Irreducible f)), and the hypothesis x − θ ≠ 0 is needed because the valuation of 0 is not of the form exp(2n).
 sketch: |
-  Hard. (a) Identify the finite set S with the primes above 2 and the discriminant, which is finite by Mathlib's finiteness
-  of prime ideals containing a nonzero element of a Dedekind domain. (b) For x, y rational with y² = f(x), the norm of
-  x − θ is y², which is bsd-074. (c) Parity at a prime 𝔓 outside S: this is the valuation argument above, and it needs
-  either the splitting field with its ramification or a direct argument in L; neither is in Mathlib in usable form. The
-  split of (c) into prime-by-prime local statements is the open question.
+  Elementary once the right identity is used; no splitting field is needed. Let α = x − θ and β = x² + xθ + θ² + p in L.
+  Since f(θ) = 0, f(x) = α·β = y², and f'(θ) = 3θ² + p = β − α(x + 2θ). Let S be the finite set of primes v of L where
+  one of p, q, θ is not integral, together with the primes where v(f'(θ)) < 1 (f'(θ) ≠ 0 because θ is a simple root of
+  f, so this set is finite). For v ∉ S:
+  (a) if v(x) > 1, then v(α) = v(x) and v(β) = v(x)², and v(α)·v(β) = v(y)² gives 3·e = 2·e' for the exponents, so the
+  exponent of v(α) is even;
+  (b) if v(x) ≤ 1, then α, β, x + 2θ are integral; if v(α) < 1 and v(β) < 1 then f'(θ) = β − α(x + 2θ) has v < 1, which
+  is excluded for v ∉ S. So v(α) = 1 or v(β) = 1, and v(α)·v(β) = v(y)² gives an even exponent for v(α).
+  The only Mathlib inputs are the valuation of a product and of a power, and the finiteness of the set of primes at which
+  a fixed nonzero element has valuation below 1. The norm form of bsd-074 is not needed here.
 dead: []
