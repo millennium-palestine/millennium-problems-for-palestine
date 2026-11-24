@@ -1,0 +1,25 @@
+id: bsd-015
+problem: bsd
+title: 'A Dirichlet series with coefficients at most d(n)√n converges for Re s > 3/2'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (a : ℕ → ℂ) (s : ℂ), (∀ n : ℕ, 0 < n → ‖a n‖ ≤ (n.divisors.card : ℝ) * Real.sqrt (n : ℝ)) →
+    3 / 2 < s.re → LSeriesSummable a s
+context: |
+  Analytic half of bsd-006 (convergence of the L-series for Re s > 3/2). The coefficient
+  bound itself is the Hasse bound plus multiplicativity (gap bsd-016, for elliptic curves).
+  This gap is the purely analytic step. For n > 0 the term has norm at most
+  d(n) · n^(1/2 − Re s). With u = Re s − 1/2 > 1 it is at most d(n) · n^(−u), and
+  Σ d(n) n^(−u) = ζ(u)² converges for u > 1. (A bound d(n) ≤ C·√n is too weak here, so use
+  the Dirichlet-series identity or a divisor-pair count.)
+sketch: |
+  Bound the norm of `LSeries.term a s n` for n > 0 by d(n) · n^(−u), u = Re s − 1/2. Then show
+  Σ d(n) n^(−u) is summable for u > 1: d(n) counts pairs (i, j) with i·j = n, so the sum is at most
+  Σ_i Σ_j (i·j)^(−u), a product of two convergent p-series. Check Mathlib for `Real.summable_nat_rpow`
+  and for summability of divisor sums (`ArithmeticFunction.sigma` or `σ` Dirichlet series).
+  `LSeries.term` is 0 at n = 0.
+dead: []
