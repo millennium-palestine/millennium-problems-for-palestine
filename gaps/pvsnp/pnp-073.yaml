@@ -1,0 +1,30 @@
+id: pnp-073
+problem: pvsnp
+title: If some polynomial-time verifier has no polynomial-time witness finder, then P ≠ NP
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-069
+statement: |
+  ∀ (V : Lang) (p : Polynomial ℕ), InP V →
+    (¬ ∃ f : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) ∧
+      ∀ x : List Bool, (∃ w : List Bool, w.length = p.eval x.length ∧ V (pair x w) = true) →
+        (f x).length = p.eval x.length ∧ V (pair x (f x)) = true) →
+    ¬ PEqualsNP
+context: |
+  The contrapositive of pnp-069: under P = NP, every polynomial-time verifier V with a polynomial
+  bound p has a polynomial-time map f that returns a witness of exact length p(|x|) whenever one
+  exists. So the failure of such a map for one verifier already refutes P = NP. This turns the
+  separation into a statement about searching for witnesses, which is a more concrete target than
+  P ≠ NP itself. The lemma is structural: it does not decide P vs NP, and its hypothesis is open.
+sketch: |
+  Assume PEqualsNP and the hypothesis that no such f exists. pnp-069 applied to V, p, InP V and
+  PEqualsNP gives an f with the required properties, which contradicts the hypothesis. In Lean:
+  intro V p hV hno hPNP, then apply hno to the witness of MPP.Solutions.Pnp069.main V p hV hPNP.
+dead: []
