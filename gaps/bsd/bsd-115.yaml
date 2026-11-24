@@ -1,0 +1,28 @@
+id: bsd-115
+problem: bsd
+title: 'Finite square classes for the one-root quadratic factor: for an irreducible g = X² + eX + (e² + p) over ℚ with root θ in L = ℚ[X]/(g), the elements x − θ over rational points (x, y) of y² = (x − e)(x² + ex + e² + p) lie in finitely many square classes of L'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-100
+- bsd-108
+statement: |
+  ∀ (p e : ℚ) (g : Polynomial ℚ), g = Polynomial.X ^ 2 + Polynomial.C e * Polynomial.X + Polynomial.C (e ^ 2 + p) →
+    Irreducible g → ∃ D : Finset (AdjoinRoot g), ∀ x y : ℚ, y ^ 2 = (x - e) * (x ^ 2 + e * x + (e ^ 2 + p)) →
+      ∃ d ∈ D, ∃ u : AdjoinRoot g, algebraMap ℚ (AdjoinRoot g) x - AdjoinRoot.root g = d * u ^ 2
+context: |
+  The quadratic factor of the one-root case of bsd-036 (weak Mordell–Weil), the analogue of bsd-075 for the cubic. When the
+  cubic x³ + px + q has the rational root e, it factors as (X − e)·g(X) with g = X² + eX + e² + p. The Kummer map of that case
+  has two components: the class of x − e in ℚ*/ℚ*² (bsd-073), and the class of x − θ in L = ℚ[X]/(g). This gap is the second
+  component. Its valuation parity outside a finite set of primes is bsd-108, and the finitely many square classes with that
+  parity are bsd-100 (applied to L and the finite set). The statement is exactly the output of that combination, in the form
+  used by the fibre argument of bsd-113 and bsd-036.
+sketch: |
+  Copy the proof of bsd-075 with g in place of f and bsd-108 in place of bsd-101. (a) g has degree 2, so an element x of ℚ
+  with g(x) = 0 is impossible: if it were, the irreducible g would have a root in ℚ and degree 1, a contradiction. Hence
+  algebraMap x − θ ≠ 0. (b) Take the finite set S from bsd-108 (applied with the instance Fact (Irreducible g)). (c) Take D
+  from bsd-100 applied to K = L and S. (d) For a rational point, the parity hypothesis of bsd-100 is bsd-108's conclusion.
+  The element d and the square u are those of bsd-100.
+dead: []
