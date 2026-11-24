@@ -1,0 +1,27 @@
+id: pnp-025
+problem: pvsnp
+title: The witness part of the pair encoding is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  ∃ e : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) e) ∧
+    ∀ x w : List Bool, e (pair x w) = w
+context: |
+  The other half of the pair decoder (pnp-021 recovers the instance x). A polynomial-time map that
+  returns the witness w from pair x w is needed to rebuild a verifier input for f x and w
+  (pnp-022). It is the same scan as pnp-021: skip the doubled bits and the separator [false, true],
+  then copy what remains. It is a structural lemma and does not decide P vs NP.
+sketch: |
+  Same machine as the decoder of pnp-021 for the first phase: pop two symbols per step, and stop
+  at the first unequal pair or when the input runs out. Then, instead of discarding the remaining
+  input, move every remaining symbol from the input stack to the output stack, one per step. The
+  output is then the suffix after the separator, which is w. The running time is at most a linear
+  function of the input length, so the time polynomial is affine.
+dead: []
