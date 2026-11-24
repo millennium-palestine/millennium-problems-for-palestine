@@ -1,0 +1,25 @@
+id: pnp-097
+problem: pvsnp
+title: Pairs whose instance and witness both have an even number of ones are polynomial-time decidable
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+depends:
+- pnp-011
+- pnp-092
+- pnp-096
+statement: |
+  ∃ L : Lang, InP L ∧ ∀ x w : List Bool,
+    L (pair x w) = (decide (x.count true % 2 = 0) && decide (w.count true % 2 = 0))
+context: |
+  Conjunction of the two parity conditions of pnp-096 (on the instance) and pnp-092 (on the witness)
+  on the pair encoding. It shows that the polynomial-time languages on pairs are closed under the
+  conjunction of two such conditions, via the closure gap pnp-011. It does not decide P vs NP.
+sketch: |
+  Let L1 be the language of pnp-096 and L2 the language of pnp-092. Both are in P, so L1 && L2 is in
+  P by pnp-011, applied to the two machines. On a pair, (L1 && L2) (pair x w) is the conjunction of
+  the two parity decisions, which is the claimed right-hand side.
+dead: []

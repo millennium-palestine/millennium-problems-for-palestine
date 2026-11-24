@@ -1,0 +1,23 @@
+id: pnp-096
+problem: pvsnp
+title: Pairs whose instance has an even number of ones are polynomial-time decidable
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+depends:
+- pnp-021
+- pnp-091
+statement: |
+  ∃ L : Lang, InP L ∧ ∀ x w : List Bool, L (pair x w) = decide (x.count true % 2 = 0)
+context: |
+  Mirror of pnp-092 on the instance part of the pair encoding instead of the witness part. The
+  instance extractor of pnp-021 recovers x from pair x w, and pnp-091 gives the parity of its ones.
+  The language ignores the witness w. It is a composition exercise and does not decide P vs NP.
+sketch: |
+  Let d be the polynomial-time decoder of pnp-021, so d (pair x w) = x, and let L be the parity
+  language of pnp-091. Put L' = L ∘ d, which is in P by pnp-008 (applied to the decoder and L).
+  Then L' (pair x w) = L x = decide (x.count true % 2 = 0).
+dead: []
