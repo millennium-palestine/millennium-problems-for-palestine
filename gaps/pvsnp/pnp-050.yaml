@@ -1,0 +1,33 @@
+id: pnp-050
+problem: pvsnp
+title: Padding the witness part of the pair encoding to a polynomial length is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-021
+- pnp-025
+- pnp-026
+- pnp-033
+statement: |
+  ∀ p : Polynomial ℕ, ∃ f : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) ∧
+    ∀ x w : List Bool, f (pair x w) = pair x (w ++ List.replicate (p.eval x.length - w.length) false)
+context: |
+  Padding map for the converse of the exact-length normalisation (pnp-049). Given a pair
+  encoding of an input x and a witness w, it appends false bits to w until the witness part has
+  length p(|x|). If w is already at least that long, nothing is appended (truncated subtraction),
+  and the length check of pnp-027 rejects it. The map is computed on the input stack, using
+  the decoders of pnp-021 and pnp-025 and a unary counter of length p(|x|) as in pnp-033. It is a
+  structural lemma; it does not decide P vs NP.
+sketch: |
+  Let u = the unary string of length p(|x|) from pnp-033, computed from x alone. Compare the
+  witness part w with u one bit at a time while pushing false bits: each step either moves a bit
+  of w to the output or, once w is exhausted, pushes one false bit and consumes one symbol of u.
+  The running time is linear in the input length plus p(|x|), so polynomial. The equation follows
+  by induction on the length of w, since each step appends exactly one bit.
+dead: []

@@ -7,17 +7,26 @@ imports:
 - MPP.Defs.PvsNP
 open:
 - MPP.PvsNP
-depends: []
+depends:
+- pnp-008
+- pnp-011
+- pnp-027
+- pnp-050
 statement: |
   ∀ L : Lang, (∃ V : Lang, InP V ∧ ∃ p : Polynomial ℕ, ∀ x : List Bool,
     (L x = true ↔ ∃ w : List Bool, w.length = p.eval x.length ∧ V (pair x w) = true)) → InNP L
 context: |
-  Converse direction of the exact-length normalisation of pnp-044. A verifier whose witnesses
-  have exactly the bound length p(|x|) is in particular one whose witnesses have length at most
-  p(|x|), which is the definition of InNP in MPP/Defs/PvsNP.lean. The direction proved here is
-  the easy one; the other direction is pnp-044. It is a structural lemma; it does not decide
-  P vs NP.
+  Converse of the exact-length normalisation of pnp-044. The NP definition of
+  MPP/Defs/PvsNP.lean accepts witnesses of length at most p(|x|), while this form accepts only
+  witnesses of length exactly p(|x|). Shorter witnesses are handled by padding them with false
+  bits up to the bound (pnp-050) and checking the length bound (pnp-027). The padding is needed:
+  a shorter witness cannot be used directly, since the exact-length hypothesis says nothing about it.
+  It is a structural lemma; it does not decide P vs NP.
 sketch: |
-  Take V and p from the hypothesis, keep the same verifier and polynomial, and convert each
-  witness equation w.length = p.eval |x| into w.length ≤ p.eval |x| by le_of_eq.
+  Take V and p from the hypothesis. Let C be the length-bound checker of pnp-027 for p, and f the
+  padding map of pnp-050, so f (pair x w) = pair x (w ++ replicate (p|x| − |w|) false). Define
+  V'(y) = C y && V (f y). InP V' by pnp-011 (conjunction) and pnp-008 (preprocessing by f).
+  (→) An exact witness w has |w| = p|x|, so f (pair x w) = pair x w and V' accepts pair x w.
+  (←) A witness w with |w| ≤ p|x| makes C accept, and the padded word has length exactly p|x|
+  and V accepts it, so L x holds by the hypothesis.
 dead: []
