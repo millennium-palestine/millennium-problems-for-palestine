@@ -1,0 +1,21 @@
+id: bsd-031
+problem: bsd
+title: 'Degree form to discriminant: if m² − a m n + p n² ≥ 0 for all integers m, n, then a² ≤ 4p'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (a p : ℤ), (∀ m n : ℤ, 0 ≤ m ^ 2 - a * m * n + p * n ^ 2) → a ^ 2 ≤ 4 * p
+context: |
+  Arithmetic half of Hasse's bound (bsd-024). For an elliptic curve E over a finite field F_p with trace
+  a = p + 1 − #E(F_p), the degree of the isogeny m − nπ is m² − a m n + p n² for integers m, n, and degrees
+  are nonnegative. Hasse's bound |a| ≤ 2√p is exactly the statement that this form is nonnegative
+  implies a² ≤ 4p. This gap is the integer part of that step, with no curve in it, and it is provable now.
+  Warning: taking n = 1 alone is not enough (for p = 2, a = 3 every integer m gives m² − 3m + 2 ≥ 0).
+  The proof must use n = 2, m = a, which gives 4p − a² ≥ 0.
+sketch: |
+  Specialize the hypothesis at m = a and n = 2: 0 ≤ a² − 2a² + 4p = 4p − a², so a² ≤ 4p. In Lean:
+  `have h := hyp a 2`, then `nlinarith [h]` or `linarith` after `ring_nf at h`.
+dead: []
