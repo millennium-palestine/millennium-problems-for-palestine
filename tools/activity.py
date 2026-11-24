@@ -260,8 +260,28 @@ def collect() -> dict:
                     latest[key] = (t_, label)
             else:
                 unsigned.add(label)
+    # The project's own agent server writes which agents are running into a heartbeat issue
+    # every 5 minutes. A running agent that is not visible through a signed claim counts too.
+    owner = cfg["repo"].split("/")[0]
+    fleet_names = None  # set of running agent names when the heartbeat is fresh
+    for it in gh.get("issues?labels=fleet-heartbeat&state=open&per_page=5", pages=1):
+        m = re.search(r"\{.*\}", it.get("body") or "", re.S)
+        try:
+            beat = json.loads(m.group(0)) if m else {}
+        except ValueError:
+            beat = {}
+        if beat.get("updated") and t_now - parse(beat["updated"]) <= dt.timedelta(minutes=12):
+            fleet_names = set(beat.get("agents", []))
+            for name in beat.get("agents", []):
+                if (owner, name) not in latest:
+                    latest[(owner, name)] = (t_now, f"{owner} · agent {name} at work")
     active = {lab for _, lab in latest.values()} | unsigned | note_sessions() | \
         {k for k in proposal_sessions if "(proposed)" in k}
+    if fleet_names is not None:
+        # The heartbeat is the source of truth for the project's own agents: exactly one
+        # session per running agent, labelled with its signed task when there is one.
+        active = {lab for lab in active if not lab.startswith(owner + " · ")}
+        active |= {lab for (lg, name), (_, lab) in latest.items() if lg == owner and name in fleet_names}
     busy = {x.split(" · ")[0] for x in active}
     active |= {f"{login} · between gaps" for login in recent if login not in busy}
     active = sorted(active)
@@ -282,7 +302,7 @@ def collect() -> dict:
         workers |= {k for k, v in proposal_sessions.items() if slug_of.get(v, v) == slug}
         per_day = [sum(1 for e in events if e.get("problem") == slug and e["t"].date() == d) for d in days]
         prefix = {"pvsnp": "pnp-", "bsd": "bsd-"}.get(slug, slug + "-")
-        workers = {lab for lab in active if prefix in lab}
+        workers = {lab for lab in active if prefix in lab or f"agent {slug} " in lab}
         problems[slug] = dict(agents_now=sorted(workers),
                               checking=sum(1 for gid in gids if gap_state[gid]["state"] in ("checking", "accepted")),
                               last=next((e["t"].isoformat() for e in events if e.get("problem") == slug), None),

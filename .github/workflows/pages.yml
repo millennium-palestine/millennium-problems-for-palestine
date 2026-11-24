@@ -13,6 +13,8 @@ on:
   # from the default branch runs here; no pull request content is checked out.
   issue_comment:
     types: [created]
+  issues:
+    types: [edited]   # the fleet heartbeat issue is edited every 5 minutes
   pull_request_target:
     types: [opened, reopened, closed, ready_for_review]
   workflow_run:
