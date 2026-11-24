@@ -1,0 +1,21 @@
+id: bsd-010
+problem: bsd
+title: 'The curve y² = x³ − x has 4 points over F₃'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  Nat.card (WeierstrassCurve.Affine.Point
+    ({ a₁ := 0, a₂ := 0, a₃ := 0, a₄ := -1, a₆ := 0 } : WeierstrassCurve (ZMod 3))) = 4
+context: |
+  Reduction of E32 modulo 3 (good, since Δ = 64 is prime to 3). Over F₃ every x satisfies
+  x³ = x, so y² = x³ − x forces y = 0: the affine points are (0,0), (1,0), (2,0), plus the
+  point at infinity, 4 points in all, so a₃ = 3 + 1 − 4 = 0. This is the point count behind
+  bsd-004 (torsion of E32(ℚ) injects into E32(F₃) for this prime).
+sketch: |
+  Show the affine point set is {(0,0), (1,0), (2,0)} by `decide` over ZMod 3 (after
+  unfolding the nonsingularity condition, which holds everywhere since 3x² − 1 = −1 ≠ 0),
+  then count with the zero constructor.
+dead: []
