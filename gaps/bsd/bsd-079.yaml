@@ -1,0 +1,31 @@
+id: bsd-079
+problem: bsd
+title: 'Weak Mordell–Weil reduces to short form: if E(ℚ)/2E(ℚ) is finite for every curve y² = x³ + px + q over ℚ, then it is finite for every elliptic curve over ℚ'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-069
+- bsd-072
+statement: |
+  ∀ (E : WeierstrassCurve ℚ) [E.IsElliptic],
+    (∀ (E' : WeierstrassCurve ℚ) [E'.IsElliptic] (p q : ℚ), E'.a₁ = 0 → E'.a₂ = 0 → E'.a₃ = 0 →
+        E'.a₄ = p → E'.a₆ = q →
+        ∃ s : Finset E'.toAffine.Point, ∀ P : E'.toAffine.Point, ∃ Q ∈ s, ∃ R : E'.toAffine.Point, P = Q + 2 • R) →
+      ∃ s : Finset E.toAffine.Point, ∀ P : E.toAffine.Point, ∃ Q ∈ s, ∃ R : E.toAffine.Point, P = Q + 2 • R
+context: |
+  Reduction step for bsd-036 (weak Mordell–Weil) and, through bsd-027 and bsd-002, Mordell's theorem. The Kummer work of
+  bsd-052 to bsd-077 is for the short form y² = x³ + px + q, and every elliptic curve over ℚ is changed to this form by a
+  rational change of variables (bsd-069). bsd-072 says that the change of variables is a group isomorphism of rational
+  points. The finiteness of E(ℚ)/2E(ℚ) is invariant under a group isomorphism: a finite set of representatives for the
+  short form, pulled back along the inverse map, is a finite set of representatives for E. This gap is that transfer, with
+  the short-form statement as a hypothesis. It contains no Kummer argument, so it can be proved independently of the
+  remaining work on the square classes.
+sketch: |
+  Given E, take p, q, C from bsd-069 and f, bijective and additive, from bsd-072 for E and C. Apply the hypothesis to
+  the curve C • E (an instance, `WeierstrassCurve.VariableChange` gives IsElliptic) with the coefficients from bsd-069,
+  to get a finite set s' with f P = Q' + 2 • R'. Take s = s'.map e.symm.toEmbedding, where e = Equiv.ofBijective f,
+  and for a point P use Q = e.symm Q' and R = e.symm R'. Since f is additive, f (Q + 2 • R) = f Q + 2 • f R, and f is
+  injective, so P = Q + 2 • R. The additivity for 2 • R is `map_nsmul` for `AddMonoidHom.mk'` built from f.
+dead: []
