@@ -1,0 +1,29 @@
+id: bsd-098
+problem: bsd
+title: 'Finitely many primes of bounded norm: for every n, only finitely many height-one primes of the integers of ℚ have natural generator at most n'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ n : ℕ, {v : IsDedekindDomain.HeightOneSpectrum (NumberField.RingOfIntegers ℚ) |
+    Rat.HeightOneSpectrum.natGenerator v ≤ n}.Finite
+context: |
+  Finiteness input for the Euler product of E.LFunction. The Euler product in Mathlib (`eulerProduct`, used by
+  `WeierstrassCurve.LFunction`) is a `tprod` over all height-one primes, and the partial-product argument of
+  `ArithmeticFunction.tendsTo_eulerProduct_of_tendsTo` needs, for each n, that all but finitely many factors have
+  value 1 at n. The local factor at a prime v takes a value other than 1 at n ≥ 2 only when n is a power of the
+  residue cardinality of v, which is at least natGenerator v (bsd-099), so only primes of small natural generator
+  can matter. This gap says there are finitely many of them. It is true because `Rat.HeightOneSpectrum.primesEquiv`
+  identifies the height-one primes of the integers of ℚ with the primes of ℕ, and `natGenerator` is the inverse
+  of that identification (`Rat.HeightOneSpectrum.span_natGenerator`, `prime_natGenerator`), so the set is the
+  preimage of the finite set of primes at most n.
+sketch: |
+  `Set.Finite.preimage` applied to the finite set {p : ℕ | p.Prime ∧ p ≤ n} (`Set.finite_Iic` intersected with the
+  primes, or `Nat.primesBelow`), with the map natGenerator injective on height-one primes. Injectivity: if
+  natGenerator v = natGenerator w then the ideals are both span {p} (`Rat.HeightOneSpectrum.span_natGenerator`),
+  so v = w (`IsDedekindDomain.HeightOneSpectrum.ext` or the uniqueness of the ideal). Surjectivity onto the primes
+  is not needed; the image lies in the primes ≤ n, which is finite. Use `Set.Finite.subset` with the image
+  `natGenerator '' ...` if the direct preimage argument is awkward.
+dead: []

@@ -1,0 +1,32 @@
+id: bsd-099
+problem: bsd
+title: 'Residue field of the local integers at a height-one prime of ℚ: its cardinality is the natural generator of the prime'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ v : IsDedekindDomain.HeightOneSpectrum (NumberField.RingOfIntegers ℚ),
+    Nat.card (IsLocalRing.ResidueField (v.adicCompletionIntegers ℚ)) =
+      Rat.HeightOneSpectrum.natGenerator v
+context: |
+  Identifies the residue cardinality q in Mathlib's local factor. `WeierstrassCurve.localPolynomial` and
+  `localEulerFactor` use q = Nat.card (IsLocalRing.ResidueField R) for R the local integers, and the
+  Euler factor of E.LFunction at a prime v is `ArithmeticFunction.ofPowerSeries q` of the local power series. The
+  prime-power identification of bsd-016 needs q to be the prime p = natGenerator v, so that
+  `ArithmeticFunction.ofPowerSeries_apply_pow` reads the k-th coefficient at p^k. Mathlib's
+  `Rat.HeightOneSpectrum.adicCompletionIntegers.padicIntEquiv` (in Mathlib/NumberTheory/Padics/HeightOneSpectrum.lean)
+  gives a ring isomorphism from the local integers at v onto the p-adic integers ℤ_[p] with p = primesEquiv v.
+  The residue field of ℤ_[p] has p elements. It is true, and it is the standard fact that the residue field of
+  ℚ_p at its valuation ring is 𝔽_p.
+sketch: |
+  Transport along the ring isomorphism `Rat.HeightOneSpectrum.adicCompletionIntegers.padicIntEquiv v` (or the
+  `RingEquiv` version of it) to ℤ_[p]. A ring equivalence of local rings induces a ring equivalence of residue
+  fields (`IsLocalRing.ResidueField.mapEquiv` or `RingEquiv.residueField`-type lemmas; search Mathlib for
+  `ResidueField.mapEquiv`), so the cardinalities agree. Then the residue field of ℤ_[p] is ZMod p, which has
+  cardinality p (`Nat.card_zmod`, `Nat.card_eq_fintype_card`), and natGenerator v = primesEquiv v as a natural
+  number (`Rat.HeightOneSpectrum.primesEquiv` and `Rat.HeightOneSpectrum.prime_natGenerator`). Search Mathlib for
+  the residue field of `PadicInt` (`PadicInt.residueField`, `PadicInt.card_residueField` or similar) before
+  proving it from scratch.
+dead: []
