@@ -1,0 +1,32 @@
+id: bsd-085
+problem: bsd
+title: 'Kernel of the Kummer map for the one-root cubic: a rational point with y ≠ 0 whose x-coordinate minus the rational root is a square, and whose x-coordinate minus the quadratic root is a square in the quadratic algebra, is twice a rational point'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-084
+statement: |
+  ∀ (p q e x y : ℚ) (E : WeierstrassCurve ℚ) [E.IsElliptic],
+    E.a₁ = 0 → E.a₂ = 0 → E.a₃ = 0 → E.a₄ = p → E.a₆ = q → e ^ 3 + p * e + q = 0 →
+    ∀ (h : E.toAffine.Nonsingular x y), y ≠ 0 →
+      (∃ a u v : ℚ, a ^ 2 = x - e ∧ u ^ 2 - v ^ 2 * (e ^ 2 + p) = x ∧ 2 * u * v - e * v ^ 2 = -1) →
+      ∃ R : E.toAffine.Point, R + R = WeierstrassCurve.Affine.Point.some _ _ h
+context: |
+  Kernel direction of the Kummer map of bsd-036 (weak Mordell–Weil) in the one-root case: f has the rational root e and
+  two conjugate roots in the quadratic algebra K' = ℚ[θ]/(θ² + eθ + e² + p). The hypothesis says that x − e is a square in
+  ℚ (witness a) and that x − θ is a square in K' (witness β = u + vθ, written as its two coefficient equations). This is
+  the one-root analogue of bsd-082 (irreducible cubic) and of bsd-056 (split case). The proof is the same as for bsd-082,
+  with the candidate point R of bsd-084 in place of the irreducible one: R has rational coordinates, x(2R) = x, so
+  2R = ±P, and R or −R doubles to P. The nonsingularity and y_R ≠ 0 arguments use E.IsElliptic exactly as in bsd-082.
+  The statement is true; irreducibility of the quadratic is not needed. It does not give finiteness of the image, which
+  for the quadratic part is a separate S-unit input.
+sketch: |
+  Let (a, u, v) be the witnesses. Put xR = x + (a(2u − ev) + N) and yR = (a + 2u − ev)(a(2u − ev) + N) − aN, with
+  N = u² − euv + v²(e² + p), as in bsd-084, and get the curve equation and the doubling identity from bsd-084. Then copy the
+  argument of bsd-082 verbatim from "yR ≠ 0" onwards: yR = 0 would make (3xR² + p)² = 0 and xR³ + pxR + q = 0, which forces
+  4p³ + 27q² = 0, contradicting E.Δ ≠ 0 (E.Δ = −16(4p³ + 27q²) when a₁ = a₂ = a₃ = 0, a₄ = p, a₆ = q). Then R = (xR, yR) is
+  nonsingular, slope and addX give x(R + R) = ((3xR² + p)/(2yR))² − 2xR = x, and Y_eq_of_X_eq decides between R + R = P and
+  R + R = −P, with −R in the second case.
+dead: []
