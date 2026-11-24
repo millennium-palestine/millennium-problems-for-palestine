@@ -1,0 +1,21 @@
+id: pnp-041
+problem: pvsnp
+title: P ≠ NP is the existence of an NP language outside P
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+depends: []
+statement: |
+  ¬ PEqualsNP ↔ ∃ L : Lang, InNP L ∧ ¬ InP L
+context: |
+  Unfolding of the definition of PEqualsNP in MPP/Defs/PvsNP.lean: PEqualsNP says every NP
+  language is in P, so its negation says some NP language is not in P. This is pure logic and
+  says nothing about which language, if any, separates the two classes. It is recorded so that
+  pnp-000 can be read as an existence claim, which is the form that the NP-complete approach
+  (pnp-019) needs.
+sketch: |
+  Unfold PEqualsNP and use push_neg, or the classical equivalence not_forall and not_imp.
+dead: []

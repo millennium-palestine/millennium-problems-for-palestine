@@ -1,0 +1,30 @@
+id: pnp-040
+problem: pvsnp
+title: A language is in P exactly when it is decided by an empty-witness verifier in P
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-008
+- pnp-021
+- pnp-039
+statement: |
+  ∀ L : Lang, InP L ↔ ∃ V : Lang, InP V ∧ ∀ x : List Bool, L x = V (pair x [])
+context: |
+  Characterisation of P inside the NP definition of MPP/Defs/PvsNP.lean: the languages in P are
+  exactly those that an NP-style verifier with witness bound zero decides. The direction from
+  right to left is the degenerate empty-witness case (pnp-039). The direction from left to right
+  uses the decoder of the pair encoding (pnp-021): the verifier V reads the pair, decodes its
+  first component and runs the decider of L on it. It is a structural lemma. It does not decide
+  P vs NP, because the question is about witnesses of nonzero length, which this gap never
+  mentions.
+sketch: |
+  Forward: from InP L and the decoder d of pnp-021 (polynomial-time, with d (pair x w) = x), the
+  map d is polynomial-time, so pnp-008 gives InP (fun y => L (d y)). Take V to be that function.
+  Then V (pair x []) = L (d (pair x [])) = L x by the decoder equation.
+  Backward: pnp-039 applied to L and the given V.
+dead: []
