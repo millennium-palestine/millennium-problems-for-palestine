@@ -1,0 +1,43 @@
+id: bsd-122
+problem: bsd
+title: 'Kummer homomorphism for the split cubic: for y² = x³ + px + q over ℚ with three distinct rational roots e1, e2, e3 of sum zero, the map sending O to 0, an affine point with x ≠ e1 to the square class of x − e1, and (e1, 0) to the square class of (e1 − e2)(e1 − e3), is a homomorphism E(ℚ) → (ℚˣ/squares)'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-065
+- bsd-119
+- bsd-120
+statement: |
+  ∀ (p q e1 e2 e3 : ℚ) (E : WeierstrassCurve ℚ) [E.IsElliptic],
+    E.a₁ = 0 → E.a₂ = 0 → E.a₃ = 0 → E.a₄ = p → E.a₆ = q →
+    e1 + e2 + e3 = 0 → p = e1 * e2 + e1 * e3 + e2 * e3 → q = -(e1 * e2 * e3) →
+    e1 ≠ e2 → e1 ≠ e3 →
+    ∃ κ : E.toAffine.Point →+ Additive (ℚˣ ⧸ (powMonoidHom (2 : ℕ) : ℚˣ →* ℚˣ).range),
+      ∀ (x y : ℚ) (h : E.toAffine.Nonsingular x y),
+        (x ≠ e1 → ∃ u : ℚˣ, (u : ℚ) = x - e1 ∧
+          κ (WeierstrassCurve.Affine.Point.some x y h) = Additive.ofMul (QuotientGroup.mk u)) ∧
+        (x = e1 → ∃ u : ℚˣ, (u : ℚ) = (e1 - e2) * (e1 - e3) ∧
+          κ (WeierstrassCurve.Affine.Point.some x y h) = Additive.ofMul (QuotientGroup.mk u))
+context: |
+  The split case of the Kummer map for bsd-036 (weak Mordell–Weil), in the analogue of bsd-116 (one-root) and bsd-103
+  (irreducible). Here the three roots are rational, so the Kummer map takes values in ℚˣ/squares, and the 2-torsion
+  point T1 = (e1, 0) has no value x − e1 = 0. The standard fix is to send T1 to the class of (e1 − e2)(e1 − e3), which
+  is a nonzero rational because the roots are distinct. With this convention the map is a homomorphism on all of E(ℚ),
+  with no defect. Its kernel description (bsd-056) and finiteness (bsd-107 after integral scaling) are separate gaps.
+  The chord case is bsd-065 (x3 − e1 = (x1 − e1)(x2 − e1)r²), the translation by T1 is bsd-119 (the identity
+  (x3 − e1)(x − e1) = (e1 − e2)(e1 − e3)), and the doubling is bsd-120 (x(2P) − e1 is a square when y ≠ 0).
+sketch: |
+  Define κ on Mathlib points by recursion on the point: κ(O) = 0, κ(x, y) = class(x − e1) when x ≠ e1, and κ(x, y) =
+  class(c) with c = (e1 − e2)(e1 − e3) when x = e1 (then y = 0 by the curve equation). Use AddMonoidHom.mk' and check
+  κ(P + Q) = κ(P) + κ(Q) on all cases, with ℚˣ/squares written additively, so the sign is irrelevant. Cases:
+  (a) P = O or Q = O: trivial. (b) P = Q = T1: 2c = c² is a square. (c) P = T1, Q ≠ T1 (or symmetric): bsd-119 gives
+  x3 − e1 with (x3 − e1)(x − e1) = c, so class(x3 − e1) = class(c(x − e1)) because 1/a and a have the same class. Note
+  x3 ≠ e1 since otherwise 0 = c. (d) P = −Q with x1 = x2: κ(P) + κ(−P) = 2 class(x − e1) = 0. (e) P = Q ≠ T1, y ≠ 0:
+  bsd-120 gives x(2P) − e1 = square, so κ(2P) = 0 = 2κ(P) if 2P ≠ T1; if 2P = T1, then (x − e1)² = c by bsd-120, so c is
+  a square, and κ(2P) = c = 0. (f) P ≠ ±Q, neither T1: bsd-065 gives x3 − e1 = (x1 − e1)(x2 − e1)r². If r ≠ 0 the
+  classes add. If x3 = e1, the sum is T1, and Q = T1 − P is handled by (c): κ(Q) = class(c(x1 − e1)), so
+  κ(P) + κ(Q) = class(c) = κ(T1). Only ring identities, field_simp and elementary square-class facts (a and a⁻¹ have the
+  same class; a·a has trivial class) are needed.
+dead: []
