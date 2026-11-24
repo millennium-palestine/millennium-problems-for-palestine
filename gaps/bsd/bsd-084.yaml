@@ -1,0 +1,34 @@
+id: bsd-084
+problem: bsd
+title: 'Halving identity for the one-root cubic: with a² = x − e, β = u + vθ and β² = x − θ in ℚ[θ]/(θ² + eθ + e² + p), the explicit point x + s₂, s₁s₂ − s₃ lies on y² = x³ + px + q and doubles to x-coordinate x'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p q e x a u v xR yR : ℚ),
+    e ^ 3 + p * e + q = 0 →
+    a ^ 2 = x - e →
+    u ^ 2 - v ^ 2 * (e ^ 2 + p) = x →
+    2 * u * v - e * v ^ 2 = -1 →
+    xR = x + (a * (2 * u - e * v) + (u ^ 2 - e * u * v + v ^ 2 * (e ^ 2 + p))) →
+    yR = (a + (2 * u - e * v)) * (a * (2 * u - e * v) + (u ^ 2 - e * u * v + v ^ 2 * (e ^ 2 + p))) -
+      a * (u ^ 2 - e * u * v + v ^ 2 * (e ^ 2 + p)) →
+    yR ^ 2 = xR ^ 3 + p * xR + q ∧ (3 * xR ^ 2 + p) ^ 2 = 4 * yR ^ 2 * (x + 2 * xR)
+context: |
+  Core identity of the kernel of the Kummer map of bsd-036 (weak Mordell–Weil) in the one-root case, the case with
+  f = X³ + pX + q = (X − e)(X² + eX + e² + p) with e rational. The square root of x − e is the rational a, and the square
+  root of x − θ in the quadratic algebra K' = ℚ[θ]/(θ² + eθ + e² + p) is β = u + vθ. Comparing coefficients of β² = x − θ
+  gives u² − v²(e² + p) = x and 2uv − ev² = −1. The roots of f are then a₁ = a, a₂ = β, a₃ = β̄ (the conjugate), with
+  Tr β = 2u − ev and N(β) = u² − euv + v²(e² + p). The elementary symmetric functions s₁ = a + Tr β, s₂ = a Tr β + N β
+  and s₃ = a N β are rational, and s₁² − 2s₂ = a² + β² + β̄² = 3x (using a² = x − e). The statement is the one-root analogue
+  of bsd-081 (irreducible cubic) and bsd-053 (split). It is the identity that makes the candidate R = (x + s₂, s₁s₂ − s₃) a
+  rational point with 2R = ±P. It was checked symbolically (sympy): with u and p solved from the two coefficient equations
+  and x = a² + e, both residuals vanish identically. Irreducibility of the quadratic is not used.
+sketch: |
+  v ≠ 0 (else 0 = −1 from the last hypothesis). Rewrite x = a² + e, and solve u = (ev² − 1)/(2v) from the last hypothesis.
+  Solve p from the second hypothesis (after the substitution) as p = (u² − x − e²v²)/v² and q from the first, q = −e³ − pe.
+  Substitute x, u, p, q (`subst`), then `field_simp` and `ring` for both conjuncts. Alternatively, keep the substitution
+  for x and u and use `linear_combination` with the coefficient equations.
+dead: []
