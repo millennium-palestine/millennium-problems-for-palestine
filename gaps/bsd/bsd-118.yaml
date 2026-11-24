@@ -1,0 +1,32 @@
+id: bsd-118
+problem: bsd
+title: 'Weak Mordell–Weil for the one-root short form: for y² = x³ + px + q over ℚ with a rational root e and g = X² + eX + (e² + p) irreducible, E(ℚ) modulo twice itself is finite'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-113
+- bsd-115
+- bsd-116
+- bsd-117
+statement: |
+  ∀ (p q e : ℚ) (g : Polynomial ℚ) (E : WeierstrassCurve ℚ) [E.IsElliptic],
+    E.a₁ = 0 → E.a₂ = 0 → E.a₃ = 0 → E.a₄ = p → E.a₆ = q → e ^ 3 + p * e + q = 0 →
+    g = Polynomial.X ^ 2 + Polynomial.C e * Polynomial.X + Polynomial.C (e ^ 2 + p) → Irreducible g →
+    ∃ s : Finset E.toAffine.Point, ∀ P : E.toAffine.Point, ∃ Q ∈ s, ∃ R : E.toAffine.Point, P = Q + 2 • R
+context: |
+  The one-root case of bsd-036 (weak Mordell–Weil), for curves in short form whose cubic has the rational root e and an
+  irreducible quadratic factor g. It is assembled from the Kummer homomorphism κ of bsd-116 (x − θ in L = ℚ[X]/(g), which is
+  defined and additive on all of E(ℚ), including the 2-torsion point (e, 0)), the finite image of bsd-115, the kernel
+  description of bsd-117 (for points with y ≠ 0; the points with y = 0 are the single point (e, 0), handled as a finite
+  defect), and the fibre argument with a finite defect set of bsd-113. Together with bsd-103 (irreducible cubic) and the
+  split case, this covers bsd-036 once the reduction to short form (bsd-079) is in place.
+sketch: |
+  Get κ from bsd-116. The image is in {0} ∪ F(D), where D is the finite set of bsd-115 and F sends d ∈ D to the class of d
+  (units only). For a point (x, y), the class of x − θ equals the class of some d ∈ D, since x − θ = d w² by bsd-115 and the
+  class of w² is trivial. The kernel: if κ(P) = κ(Q) then S = P − Q has κ(S) = 0. Either S = O, or y(S) = 0 (then S lies in
+  the subsingleton set of points (x, 0), since x = e is forced by g(x) ≠ 0 and the curve equation), or y(S) ≠ 0 and the
+  trivial class gives β with β² = x − θ, so bsd-117 gives S = R + R. In each case P = Q + d + 2R with d in the finite defect
+  set {O} ∪ {points with y = 0}. Then bsd-113 gives the finite set of representatives.
+dead: []
