@@ -1,0 +1,32 @@
+id: bsd-126
+problem: bsd
+title: 'Integral split roots by a rational change of variables: for a curve y² = x³ + px + q over ℚ whose cubic has distinct rational roots e1, e2, e3 of sum zero, some rational change of variables C gives a curve C·E of the same form whose cubic has three distinct integer roots f1, f2, f3 of sum zero'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-125
+statement: |
+  ∀ (p q e1 e2 e3 : ℚ) (E : WeierstrassCurve ℚ) [E.IsElliptic],
+    E.a₁ = 0 → E.a₂ = 0 → E.a₃ = 0 → E.a₄ = p → E.a₆ = q →
+    e1 + e2 + e3 = 0 → p = e1 * e2 + e1 * e3 + e2 * e3 → q = -(e1 * e2 * e3) →
+    e1 ≠ e2 → e1 ≠ e3 → e2 ≠ e3 →
+    ∃ (C : WeierstrassCurve.VariableChange ℚ) (f1 f2 f3 : ℤ), f1 + f2 + f3 = 0 ∧ f1 ≠ f2 ∧ f1 ≠ f3 ∧
+      f2 ≠ f3 ∧ (C • E).a₁ = 0 ∧ (C • E).a₂ = 0 ∧ (C • E).a₃ = 0 ∧
+      (C • E).a₄ = (f1 : ℚ) * (f2 : ℚ) + (f1 : ℚ) * (f3 : ℚ) + (f2 : ℚ) * (f3 : ℚ) ∧
+      (C • E).a₆ = -((f1 : ℚ) * (f2 : ℚ) * (f3 : ℚ))
+context: |
+  The change of variables that makes the split roots integral, for the rational split case of bsd-036 (weak
+  Mordell–Weil). Take the integer d of bsd-125 with d²e_i = f_i and the change of variables with u = 1/d and r = s = t = 0,
+  which is x′ = d²x, y′ = d³y. Mathlib's variable change gives a4′ = d⁴ a4 and a6′ = d⁶ a6, and the identities
+  d⁴(e1e2 + e1e3 + e2e3) = Σ f_i f_j and d⁶ e1e2e3 = f1f2f3 turn the new coefficients into the form of bsd-124. The
+  distinctness of the f_i follows from that of the e_i, since d ≠ 0. The change of variables preserves the elliptic
+  property (Mathlib instance). The transport of the rational points along C is bsd-072 and is not needed here.
+sketch: |
+  (a) Get d and integers f_i with d²e_i = f_i from bsd-125. (b) Take C with u = Units.mk0 (d⁻¹), r = s = t = 0; its
+  inverse unit has value d. (c) The new coefficients: rewrite with the variable change lemmas for a1, a2, a3, a4, a6
+  (they are rfl in Mathlib), with r = s = t = 0; then a4′ = d⁴ p and a6′ = d⁶ q. (d) Rewrite f_i as d²e_i and close each
+  equation with linear_combination against the sum and product hypotheses. (e) Distinctness: f1 = f2 gives
+  d²(e1 − e2) = 0, contradicting d ≠ 0 and e1 ≠ e2.
+dead: []
