@@ -1,0 +1,34 @@
+id: pnp-111
+problem: pvsnp
+title: A pop-bounded TM2 block maps configurations agreeing on the first b + n cells to ones agreeing on the first n cells, with the same label and variable
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- Computability
+- Turing
+depends: []
+statement: |
+  ∀ (K : Type) [DecidableEq K] (Γ : K → Type) (Λ σ : Type) (q : TM2.Stmt Γ Λ σ) (b n : ℕ),
+    TM2.Stmt.rec (motive := fun _ => ℕ) (fun _ _ _ ih => ih) (fun _ _ _ ih => ih)
+      (fun _ _ _ ih => ih + 1) (fun _ _ ih => ih) (fun _ _ _ ih₁ ih₂ => max ih₁ ih₂) (fun _ => 0) 0 q ≤ b →
+    ∀ (v : σ) (S S' : ∀ k, List (Γ k)), (∀ k, ∀ j, j ≤ b + n → (S k)[j]? = (S' k)[j]?) →
+      (TM2.stepAux q v S).l = (TM2.stepAux q v S').l ∧
+      (TM2.stepAux q v S).var = (TM2.stepAux q v S').var ∧
+      ∀ k, ∀ i, i ≤ n → ((TM2.stepAux q v S).stk k)[i]? = ((TM2.stepAux q v S').stk k)[i]?
+context: |
+  Configuration-level locality for the Cook–Levin tableau of pnp-100, the combined form of pnp-108 and
+  pnp-110. Two configurations of a TM2 machine whose stacks agree on their first b + n cells (cells are
+  read from the top, and b is the pop bound of the block) reach, after one block, the same next label
+  and next variable, and their stacks agree on their first n cells. So a tableau row of n cells is
+  determined by the previous row together with a window of b more cells on each stack, and this does
+  not depend on how the stacks are represented beyond that. It is a fact about one block, not about any
+  language, and it does not decide P vs NP.
+sketch: |
+  Since b ≤ b + n, the hypothesis gives agreement at indices 0, …, b on every stack. Turning this into
+  take (b + 1) equality is extensionality on lists (List.ext_getElem? and List.getElem?_take). With that,
+  pnp-108 gives the equal next label and
+  next variable. For the stacks, pnp-110 applied to stack k and index i ≤ n uses the hypothesis at
+  indices j ≤ b + i ≤ b + n, which is available. Both conclusions are then immediate.
+dead: []
