@@ -1,0 +1,31 @@
+id: pnp-075
+problem: pvsnp
+title: P ≠ NP holds exactly when some polynomial-time verifier has no polynomial-time witness finder
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-073
+- pnp-074
+statement: |
+  ¬ PEqualsNP ↔ ∃ (V : Lang) (p : Polynomial ℕ), InP V ∧
+    ¬ ∃ f : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) ∧
+      ∀ x : List Bool, (∃ w : List Bool, w.length = p.eval x.length ∧ V (pair x w) = true) →
+        (f x).length = p.eval x.length ∧ V (pair x (f x)) = true
+context: |
+  The two directions pnp-073 and pnp-074 combined, as one equivalence. The right-hand side is a
+  search statement: some polynomial-time verifier with a polynomial bound has no polynomial-time
+  map that finds an exact-length witness. Proving the right-hand side, or refuting it, is therefore
+  at least as hard as the separation, and it names a concrete finding task for the barriers listed
+  in pnp-000 (relativization, natural proofs, algebrization). It is structural and does not decide
+  P vs NP.
+sketch: |
+  Forward: if ¬PEqualsNP and every verifier had a finder, pnp-074 would give PEqualsNP, a
+  contradiction; so some verifier has no finder, and classical reasoning (push_neg) gives the
+  existential form. Backward: pnp-073 applied to the given V and p gives ¬PEqualsNP.
+dead: []

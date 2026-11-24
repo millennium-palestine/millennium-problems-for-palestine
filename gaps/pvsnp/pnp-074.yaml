@@ -1,0 +1,36 @@
+id: pnp-074
+problem: pvsnp
+title: If every polynomial-time verifier has a polynomial-time witness finder, then P = NP
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-008
+- pnp-026
+- pnp-044
+statement: |
+  (∀ (V : Lang) (p : Polynomial ℕ), InP V →
+    ∃ f : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) ∧
+      ∀ x : List Bool, (∃ w : List Bool, w.length = p.eval x.length ∧ V (pair x w) = true) →
+        (f x).length = p.eval x.length ∧ V (pair x (f x)) = true) →
+    PEqualsNP
+context: |
+  The converse of pnp-073. If every polynomial-time verifier with a polynomial bound admits a
+  polynomial-time map that finds an exact-length witness, then every NP language is in P. The
+  proof takes an NP language, replaces its verifier by one whose witnesses have exactly the bound
+  length (pnp-044), and decides the language by running the finder and then the verifier on the
+  pair of the input and the found witness. Together with pnp-073 it shows that P ≠ NP is
+  equivalent to the failure of witness search for some verifier (pnp-075). It is structural and
+  does not decide P vs NP.
+sketch: |
+  Let L be in NP. pnp-044 gives a polynomial-time verifier V and a polynomial p with L x = true
+  exactly when some witness of length p(|x|) makes V accept pair x w. Apply the hypothesis to V
+  and p to get f. Then L x = V (pair x (f x)) for every x: if L x holds, the witness guarantee of f
+  gives V (pair x (f x)) = true; if V (pair x (f x)) = true, then f x is a witness, so L x holds.
+  The map x ↦ pair x (f x) is polynomial-time by pnp-026, so L is in P by pnp-008.
+dead: []
