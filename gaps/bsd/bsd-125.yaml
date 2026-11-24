@@ -1,0 +1,25 @@
+id: bsd-125
+problem: bsd
+title: 'Integral roots after scaling: for distinct rationals e1, e2, e3 of sum zero there is a nonzero integer d such that d²e1, d²e2 and d²e3 are integers'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (e1 e2 e3 : ℚ), e1 + e2 + e3 = 0 → e1 ≠ e2 → e1 ≠ e3 → e2 ≠ e3 →
+    ∃ d : ℤ, d ≠ 0 ∧ ∃ f1 f2 f3 : ℤ, (d : ℚ) ^ 2 * e1 = (f1 : ℚ) ∧ (d : ℚ) ^ 2 * e2 = (f2 : ℚ) ∧
+      (d : ℚ) ^ 2 * e3 = (f3 : ℚ)
+context: |
+  The scaling step of the rational split case of the weak Mordell–Weil theorem bsd-036. For a curve y² = x³ + px + q
+  whose cubic has the rational roots e1, e2, e3, the rational change of variables x′ = d²x, y′ = d³y (that is, with
+  u = 1/d in the notation of bsd-070) gives the short form y′² = x′³ + p′x′ + q′ whose roots are d²e_i. Choosing d so
+  that these are integers puts the curve into the integer-root case of bsd-124, and bsd-072 transports the rational
+  points along the change of variables. This gap is only the arithmetic: a common denominator d of the three roots
+  makes d²e_i = d·(d e_i) an integer, because d·e_i is an integer when d is a multiple of each denominator of e_i.
+sketch: |
+  Write each e_i = n_i / m_i with m_i ≥ 1 (Rat.num and Rat.den). Let d = m1 · m2 · m3 (a nonzero integer). Then
+  d · e_i is an integer, since m_i divides d, so d² e_i = d · (d e_i) is an integer f_i. Use the sum-zero and distinctness
+  hypotheses only to note that d ≠ 0 (it is a product of positive integers). The identity d² e_i = f_i is then
+  `Rat.mul_den_eq_num`-style arithmetic. No point of any curve appears.
+dead: []
