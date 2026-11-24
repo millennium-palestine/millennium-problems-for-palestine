@@ -7,7 +7,6 @@ imports:
 open: []
 depends:
 - bsd-068
-- bsd-077
 statement: |
   ∀ (p q : ℚ) (K : Type) [Field K] [Algebra ℚ K] (t : K) (E : WeierstrassCurve ℚ),
     E.a₁ = 0 → E.a₂ = 0 → E.a₃ = 0 → E.a₄ = p → E.a₆ = q →
