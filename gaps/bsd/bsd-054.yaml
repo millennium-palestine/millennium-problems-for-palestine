@@ -1,0 +1,31 @@
+id: bsd-054
+problem: bsd
+title: 'Chord formula on y² = x³ + px + q: for affine points with x₁ ≠ x₂, the sum has x-coordinate ((y₁ − y₂)/(x₁ − x₂))² − x₁ − x₂'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p q : ℚ) (E : WeierstrassCurve ℚ), E.a₁ = 0 → E.a₂ = 0 → E.a₃ = 0 → E.a₄ = p → E.a₆ = q →
+    ∀ (x1 y1 x2 y2 : ℚ) (h1 : E.toAffine.Nonsingular x1 y1) (h2 : E.toAffine.Nonsingular x2 y2),
+      x1 ≠ x2 →
+      ∃ (x3 y3 : ℚ) (h3 : E.toAffine.Nonsingular x3 y3),
+        WeierstrassCurve.Affine.Point.some _ _ h1 + WeierstrassCurve.Affine.Point.some _ _ h2 =
+          WeierstrassCurve.Affine.Point.some _ _ h3 ∧
+        x3 = ((y1 - y2) / (x1 - x2)) ^ 2 - x1 - x2
+context: |
+  Bridge from the Kummer identity (bsd-052) to Mathlib's group law, for the homomorphism part of the Kummer
+  map in bsd-036 (weak Mordell–Weil). On a curve y² = x³ + px + q (the Weierstrass form with a₁ = a₂ = a₃ = 0,
+  a₄ = p, a₆ = q) the chord through two affine points with different x-coordinates has slope (y₁ − y₂)/(x₁ − x₂),
+  and the sum P + Q is the reflection of the third intersection, with x-coordinate λ² − x₁ − x₂. Mathlib proves the
+  chord case as `add_of_X_ne` with the slope given by `slope_of_X_ne`; this gap asks for the explicit formula in the
+  form used by bsd-052. The general Weierstrass curve over ℚ reduces to this form by a change of variables, which is
+  a separate gap. The case x₁ = x₂ (doubling, or P + Q = O) is handled by bsd-055 and the zero point separately.
+sketch: |
+  Apply `WeierstrassCurve.Affine.Point.add_of_X_ne` with hx := hne to rewrite the sum as the point with coordinates
+  (addX x1 x2 (slope x1 x2 y1 y2), ...), which is nonsingular by `nonsingular_add`. Take x3 to be that addX, and
+  use `slope_of_X_ne` for the slope. With a₁ = a₂ = 0 the addX formula reduces to ℓ² − x₁ − x₂ (`simp` with the
+  hypotheses on the coefficients, `WeierstrassCurve.Affine.addX`). The equation x3 = ((y1 − y2)/(x1 − x2))² − x1 − x2
+  is then `rfl` up to the simp normal form.
+dead: []
