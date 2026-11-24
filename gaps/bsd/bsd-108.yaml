@@ -1,0 +1,40 @@
+id: bsd-108
+problem: bsd
+title: 'Valuation parity for the one-root cubic: for g = X² + eX + e² + p irreducible over ℚ with root θ in L = ℚ[X]/(g), there is a finite set S of primes of L such that for every rational x and y with y² = (x − e)(x² + ex + e² + p), the element x − θ has even valuation at every prime outside S'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p e : ℚ) (g : Polynomial ℚ) [Fact (Irreducible g)],
+    g = Polynomial.X ^ 2 + Polynomial.C e * Polynomial.X + Polynomial.C (e ^ 2 + p) →
+    ∃ S : Set (IsDedekindDomain.HeightOneSpectrum (NumberField.RingOfIntegers (AdjoinRoot g))),
+      S.Finite ∧ ∀ x y : ℚ, y ^ 2 = (x - e) * (x ^ 2 + e * x + (e ^ 2 + p)) →
+        ∀ v : IsDedekindDomain.HeightOneSpectrum (NumberField.RingOfIntegers (AdjoinRoot g)), v ∉ S →
+          ∃ n : ℤ, v.valuation (AdjoinRoot g) (algebraMap ℚ (AdjoinRoot g) x - AdjoinRoot.root g) =
+            WithZero.exp (2 * n)
+context: |
+  The quadratic part of the one-root case of bsd-036 (weak Mordell–Weil). When the cubic x³ + px + q has the rational
+  root e, it factors as (X − e)·g(X) with g = X² + eX + e² + p, and q = −e³ − pe. The Kummer map of the one-root case
+  has two components: the class of x − e in ℚ*/ℚ*², which bsd-073 makes finite for integer data, and the class of
+  x − θ in the quadratic field L = ℚ[X]/(g). bsd-085 says that the quadratic component needs a separate S-unit input,
+  and this gap is that input: the valuation parity of x − θ outside a finite set of primes. Together with the finite
+  representatives of bsd-100 (applied to L with the finite set S), it gives finitely many square classes of x − θ.
+  The statement is the one-root analogue of bsd-101 (irreducible cubic). The key identity is that with
+  β = x + e + θ (the conjugate of x − θ is x − (−e − θ), since the roots of g sum to −e) one has
+  (x − θ)(x + e + θ) = g(x) and (x − θ) − β = −(2θ + e), with (2θ + e)² = −3e² − 4p.
+sketch: |
+  Let S be the union of the finite sets of primes v with v(θ) > 1, with v(e) > 1, with v(e − θ) < 1 and with
+  v(2θ + e) < 1. Each is finite: θ and e are nonzero or integral data, and bsd-100-style finiteness of primes at which a
+  fixed nonzero element has valuation below 1 applies to e − θ and 2θ + e, which are nonzero because θ is not rational
+  (an irreducible quadratic has no rational root). For v outside S: θ, e, 2θ + e and e − θ have valuation at most 1, and
+  v(e − θ) = 1. Put α = x − θ, β = x + e + θ, c = x − e. Then αβc = y² in L, because g(θ) = 0. Cases on v(α):
+  (a) v(α) = 1: take n = 0.
+  (b) v(α) > 1: then v(θ) < v(x), so v(x) = v(α) = v(β) = v(c) (using v(e), v(θ) ≤ 1), and the identity gives
+  3m = 2k for the exponents of v(x) and v(y), so m is even and n = k − m works.
+  (c) v(α) < 1: β = α + D with D = 2θ + e of valuation 1, so v(β) = 1. Also c = α + (θ − e) with v(θ − e) = 1 > v(α),
+  so v(c) = 1. Then v(α) = v(y)², so v(α) = exp(2k) and n = k. y ≠ 0 since α ≠ 0.
+  Only Mathlib's valuation lemmas (map_mul, map_pow, map_add_eq_of_lt_left/right, map_sub_eq_of_lt_left) and the
+  finiteness of primes from bsd-101's proof are used.
+dead: []

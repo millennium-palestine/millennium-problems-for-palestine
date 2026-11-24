@@ -1,0 +1,29 @@
+id: bsd-107
+problem: bsd
+title: 'Split Kummer image is finite in all three coordinates: for distinct integer roots e1, e2, e3 of sum zero, the square classes of x − e1, x − e2 and x − e3 over points of y² = (x − e1)(x − e2)(x − e3) lie in one finite set'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-060
+statement: |
+  ∀ (e1 e2 e3 : ℤ), e1 + e2 + e3 = 0 → e1 ≠ e2 → e1 ≠ e3 → e2 ≠ e3 →
+    ∃ D : Finset ℤ, ∀ (x y : ℚ), y ^ 2 = (x - e1) * (x - e2) * (x - e3) →
+      (x ≠ e1 → ∃ d ∈ D, ∃ u : ℚ, x - e1 = (d : ℚ) * u ^ 2) ∧
+      (x ≠ e2 → ∃ d ∈ D, ∃ u : ℚ, x - e2 = (d : ℚ) * u ^ 2) ∧
+      (x ≠ e3 → ∃ d ∈ D, ∃ u : ℚ, x - e3 = (d : ℚ) * u ^ 2)
+context: |
+  Split-case image of the Kummer map for bsd-036 (weak Mordell–Weil), in all three coordinates. The kernel
+  direction and the fibre argument are separate. bsd-060 gives the finiteness of the square classes of x − e1 for
+  integer roots e1, e2, e3 with sum zero and distinct. The statement here asks for the same finiteness for x − e2
+  and x − e3 as well, with one finite set D for all three, so that the map P ↦ (class of x − e1, class of x − e2,
+  class of x − e3) has a finite image on the points away from the three roots. This is a pure assembly of bsd-060
+  applied to the three orderings of the roots, and it is the finiteness input of the split case.
+sketch: |
+  Apply bsd-060 to (e1, e2, e3), to (e2, e1, e3) and to (e3, e1, e2), each of which satisfies the hypotheses (sum
+  zero and distinct). This gives finite sets D1, D2, D3 of integers. Take D = D1 ∪ D2 ∪ D3 (Finset union). For the
+  second and third conjuncts, the curve equation is rewritten by ring into the ordering that bsd-060 uses, for example
+  y² = (x − e2)(x − e1)(x − e3), and the membership d ∈ D2 gives d ∈ D by Finset.mem_union. The square-class
+  conclusion is unchanged by the reordering.
+dead: []
