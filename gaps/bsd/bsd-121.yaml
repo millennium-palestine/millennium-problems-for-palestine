@@ -1,0 +1,29 @@
+id: bsd-121
+problem: bsd
+title: 'Frobenius characteristic equation: on the points of an elliptic curve over a prime field, the p-power Frobenius φ satisfies φ² − a φ + p = 0 with a = p + 1 − #E(F_p)'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] [DecidableEq (AlgebraicClosure (ZMod p))] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic]
+    (P : (W.baseChange (AlgebraicClosure (ZMod p))).toAffine.Point),
+    let φ := WeierstrassCurve.Affine.Point.map (W' := W)
+      (FiniteField.frobeniusAlgHom (ZMod p) (AlgebraicClosure (ZMod p)))
+    φ (φ P) - (((p : ℤ) + 1 - (Nat.card W.toAffine.Point : ℤ)) • φ P) + (p : ℤ) • P = 0
+context: |
+  The first step of Hasse's bound (bsd-024) that Mathlib does not have, and the input of the open gap bsd-089
+  (degree form positivity), which bsd-032 takes as a hypothesis. φ is the p-power Frobenius on the points over the
+  algebraic closure of F_p, given by raising the coordinates to the p-th power. Mathlib already provides it as an
+  additive map: `WeierstrassCurve.Affine.Point.map` along `FiniteField.frobeniusAlgHom`, so the statement elaborates
+  (checked with `lake env lean`). The content is the characteristic equation π² − aπ + p = 0 of Silverman,
+  The Arithmetic of Elliptic Curves, Theorem V.2.3.1, with a = p + 1 − #E(F_p) = the trace of Frobenius. It is true.
+  Its proof is not elementary: it needs the degree of isogenies (or the count of points over F_{p^n}) and is far
+  larger than one hour.
+sketch: |
+  Standard route (Silverman V.2.3): show that φ² − aφ + p kills the points of E over F̄_p by comparing the
+  kernels with the degree of 1 − φ, which equals #E(F_p) in the sense of the counts over F_p. Mathlib has no
+  isogeny degree, so the first sub-gap should be the count #E(F_p) = #ker(1 − φ) on the F_p-points, then the
+  identity φ² − aφ + p = 0 on the full group, which is the step that needs the degree.
+dead: []
