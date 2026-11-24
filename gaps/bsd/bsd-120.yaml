@@ -1,0 +1,31 @@
+id: bsd-120
+problem: bsd
+title: 'Doubling in the split cubic: for y² = (x − e1)(x − e2)(x − e3) with e1 + e2 + e3 = 0 and a point (x, y) with y ≠ 0, the x-coordinate of 2P satisfies x(2P) − e1 = ((x − e1)² − (e1 − e2)(e1 − e3))² / (2y)²'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p q e1 e2 e3 : ℚ) (E : WeierstrassCurve ℚ) [E.IsElliptic],
+    E.a₁ = 0 → E.a₂ = 0 → E.a₃ = 0 → E.a₄ = p → E.a₆ = q →
+    e1 + e2 + e3 = 0 → p = e1 * e2 + e1 * e3 + e2 * e3 → q = -(e1 * e2 * e3) →
+    ∀ (x y x3 y3 : ℚ) (h : E.toAffine.Nonsingular x y) (h3 : E.toAffine.Nonsingular x3 y3),
+      WeierstrassCurve.Affine.Point.some x y h + WeierstrassCurve.Affine.Point.some x y h =
+        WeierstrassCurve.Affine.Point.some x3 y3 h3 → y ≠ 0 →
+      x3 - e1 = (((x - e1) ^ 2 - (e1 - e2) * (e1 - e3)) / (2 * y)) ^ 2
+context: |
+  The doubling formula of the split case of bsd-036 (weak Mordell–Weil). The Kummer map of the split cubic sends a point to the
+  class of x − e1 modulo squares, and its value at T1 = (e1, 0) is the class of (e1 − e2)(e1 − e3). For the map to be a
+  homomorphism, the doubling case must show that when 2P = T1, the product (e1 − e2)(e1 − e3) is a square. This gap is the
+  identity that does it: x(2P) − e1 is a square times the square ((x − e1)² − (e1 − e2)(e1 − e3))², so 2P = T1 forces
+  (x − e1)² = (e1 − e2)(e1 − e3). For points with x(2P) ≠ e1 it also gives the square class of x(2P) − e1 directly.
+  Proof by the doubling formula of Mathlib (slope (3x² + p)/(2y), a₁ = a₂ = a₃ = 0) and the identity
+  (3x² + p)² − (2x + e1)·4y² = ((x − e1)² − (e1 − e2)(e1 − e3))², which holds once y² = (x − e1)(x − e2)(x − e3) and the
+  three root relations are used.
+sketch: |
+  The points P and P are added with the non-vertical case: y ≠ −y since y ≠ 0, so add_some applies, and the slope is
+  (3x² + 2a₂x + a₄ − a₁y)/(2y) = (3x² + p)/(2y). The x-coordinate is λ² − 2x. Clearing denominators, the claim reduces to
+  (3x² + p)² = (2x + e1)·4y² + ((x − e1)² − (e1 − e2)(e1 − e3))². Substitute e3 = −e1 − e2 and p = e1e2 + e1e3 + e2e3, then
+  linear_combination with the curve equation y² = (x − e1)(x − e2)(x − e3) multiplied by −4(2x + e1).
+dead: []
