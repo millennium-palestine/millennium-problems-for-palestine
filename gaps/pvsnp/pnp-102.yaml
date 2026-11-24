@@ -1,0 +1,30 @@
+id: pnp-102
+problem: pvsnp
+title: Polynomial-time machines halt within their time bound
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Computability
+- Turing
+depends: []
+statement: |
+  ∀ L : Lang, InP L → ∃ T : TM2ComputableInPolyTime (id : List Bool → List Bool) encodeBool L,
+    ∀ x : List Bool, ∃ n : ℕ, n ≤ T.time.eval x.length ∧
+      ∃ c : TM2.Cfg T.tm.Γ T.tm.Λ T.tm.σ,
+        (fun o : Option (TM2.Cfg T.tm.Γ T.tm.Λ T.tm.σ) => o.bind (TM2.step T.tm.m))^[n]
+          (some (initList T.tm (List.map T.inputAlphabet.invFun x))) = some c ∧ c.l = Option.none
+context: |
+  Termination for the tableau of a polynomial-time machine. The Cook–Levin sketch in pnp-100 needs the
+  run of the verifier on (x, w) to reach a halting configuration within p(|x|) + |x| steps, so that the
+  tableau has a last row with the accept bit. The definition of TM2ComputableInPolyTime already gives
+  this for every input through outputsFun. This gap records it as a statement about the step
+  function, so that the tableau construction can cite it. It does not decide P vs NP.
+sketch: |
+  Take T from InP L. For x, outputsFun gives an EvalsToInTime from the initial configuration to
+  Option.map (haltList T.tm) (some _) in steps ≤ time.eval |x| steps. Take n to be its step count and
+  c = haltList T.tm _, whose label is Option.none by definition. The iterate equation is the
+  evals_in_steps field, which is the form (fun o => o.bind (TM2.step T.tm.m))^[n] (some _) = _.
+dead: []
