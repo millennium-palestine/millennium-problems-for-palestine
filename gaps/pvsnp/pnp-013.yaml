@@ -1,0 +1,20 @@
+id: pnp-013
+problem: pvsnp
+title: 'The language "the first bit is 1" is in P'
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+depends: []
+statement: |
+  InP (fun x => x.headD false)
+context: |
+  Exercise in reading the input stack. The machine looks at the first symbol of the input,
+  writes the answer and halts; on the empty input it answers false. It is a sibling of
+  pnp-003 (the trivial language) and shows the TM2 machinery can inspect the input.
+sketch: |
+  Build a `Turing.FinTM2` machine whose first step pops the head of the input stack, then
+  bound its running time by a constant. Compare with the trivial machine of pnp-003.
+dead: []
