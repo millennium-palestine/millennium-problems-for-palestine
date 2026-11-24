@@ -1,0 +1,32 @@
+id: bsd-117
+problem: bsd
+title: 'Kernel of the one-root Kummer map away from the 2-torsion point: a rational point with y ≠ 0 whose x-coordinate minus the root θ of the irreducible quadratic g is a square in ℚ[X]/(g) is twice a rational point'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-085
+- bsd-112
+- bsd-114
+statement: |
+  ∀ (p q e : ℚ) (g : Polynomial ℚ) (E : WeierstrassCurve ℚ) [E.IsElliptic],
+    E.a₁ = 0 → E.a₂ = 0 → E.a₃ = 0 → E.a₄ = p → E.a₆ = q → e ^ 3 + p * e + q = 0 →
+    g = Polynomial.X ^ 2 + Polynomial.C e * Polynomial.X + Polynomial.C (e ^ 2 + p) → Irreducible g →
+    ∀ (x y : ℚ) (h : E.toAffine.Nonsingular x y), y ≠ 0 →
+      ∀ β : AdjoinRoot g, β ^ 2 = AdjoinRoot.of g x - AdjoinRoot.root g →
+        ∃ R : E.toAffine.Point, R + R = WeierstrassCurve.Affine.Point.some x y h
+context: |
+  The kernel direction of the one-root case of bsd-036 (weak Mordell–Weil), in the form the fibre argument needs. If the
+  class of x − θ in L = ℚ[X]/(g) is trivial, then x − θ = β² for some β in L. The rational component x − e is then also a
+  square, without any extra hypothesis: the curve equation gives y² = (x − e)·g(x), and the norm identity of bsd-114 gives
+  g(x) = N² for the rational N = u² − euv + v²(e² + p) (where β = u + vθ by bsd-112). Since g has no rational root,
+  N ≠ 0, so x − e = (y/N)². Then bsd-085 gives R with R + R = P. The only point of the kernel not covered here is the
+  2-torsion point (e, 0), which has y = 0 and is handled by the defect set of bsd-113.
+sketch: |
+  Get u, v from bsd-112 applied to β (rewriting AdjoinRoot.of to algebraMap via AdjoinRoot.algebraMap_eq). The identity of
+  bsd-114 gives g(x) = N². The curve equation, after substituting a₁ = a₂ = a₃ = 0, a₄ = p, a₆ = q, reads
+  y² = x³ + px + q, which equals (x − e)·g(x) by e³ + pe + q = 0 (linear_combination). If N = 0 then g(x) = 0, so x is a
+  rational root of the irreducible quadratic g, which is impossible (degree argument). Hence x − e = (y/N)², and bsd-085
+  (the one-root kernel) applied with a = y/N gives R. Only ring identities and division by N ≠ 0 are needed.
+dead: []
