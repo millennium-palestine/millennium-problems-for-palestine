@@ -1,0 +1,30 @@
+id: bsd-094
+problem: bsd
+title: 'Finitely many representatives for the unramified 2-Selmer group: for every number field K there is a finite set D ⊆ K such that every x ≠ 0 with all valuations even is d·w² for some d in D and some w in K'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-090
+statement: |
+  ∀ (K : Type) [Field K] [NumberField K],
+    ∃ D : Finset K, ∀ x : K, x ≠ 0 →
+      (∀ v : IsDedekindDomain.HeightOneSpectrum (NumberField.RingOfIntegers K),
+        ∃ n : ℤ, v.valuation K x = WithZero.exp (2 * n)) →
+      ∃ d ∈ D, ∃ w : K, x = d * w ^ 2
+context: |
+  The covering step of bsd-092, the unramified 2-Selmer group. By bsd-093 each such x has principal fractional ideal
+  equal to J², where J has a class in the finite class group (Mathlib: Fintype (ClassGroup (𝓞 K))). Choose one element
+  x_c for each class c that occurs. If J_x and J_{x_c} have the same class, then J_x = β·J_{x_c} for some β ≠ 0 in K, so
+  the principal ideal of x / (x_c·β²) is trivial and x / (x_c·β²) is a unit of 𝓞 K. The unit is one of finitely many
+  square classes by bsd-090, so the finite set D is formed from the x_c and the unit representatives. It is elementwise
+  and does not use a homomorphism to the class group. bsd-092 follows from this gap through the Selmer quotient.
+sketch: |
+  Let T be the finite set of classes of the fractional ideals J_x (over the class group, which is a Fintype), and for
+  each class c in T choose x_c with that class (Classical.choose). Let U be the finite set of unit square-class
+  representatives from bsd-090 (applied to the units of 𝓞 K). Take D to be the image of T × U under (c, u) ↦ x_c · u.
+  For x, pick c = [J_x]; the equality of classes gives β with J_x = β·J_{x_c} (ClassGroup.mk0_eq_mk0_iff, after clearing
+  to a fractional ideal), so spanSingleton(x) = β²·spanSingleton(x_c) and spanSingleton(x / (x_c β²)) = ⊤, which makes
+  x / (x_c β²) a unit. Write it as u·v² with u in U, and absorb v into w.
+dead: []
