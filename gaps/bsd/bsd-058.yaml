@@ -1,0 +1,29 @@
+id: bsd-058
+problem: bsd
+title: 'Valuation parity on a split cubic: if the product of u − e_i v² is a square and ℓ does not divide the root differences, each factor has even ℓ-adic valuation'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (u v s e1 e2 e3 : ℤ) (ℓ : ℕ), Nat.Prime ℓ → Int.gcd u v = 1 →
+    ¬ (ℓ : ℤ) ∣ (e1 - e2) → ¬ (ℓ : ℤ) ∣ (e1 - e3) → ¬ (ℓ : ℤ) ∣ (e2 - e3) →
+    (u - e1 * v ^ 2) * (u - e2 * v ^ 2) * (u - e3 * v ^ 2) = s ^ 2 →
+      Even (padicValInt ℓ (u - e1 * v ^ 2)) ∧ Even (padicValInt ℓ (u - e2 * v ^ 2)) ∧
+        Even (padicValInt ℓ (u - e3 * v ^ 2))
+context: |
+  Valuation step of the finiteness argument in bsd-036 (weak Mordell–Weil), for the split Kummer image. Let P = (u/v², y)
+  be a rational point on y² = (x − e₁)(x − e₂)(x − e₃) with integer roots and gcd(u, v) = 1. Then
+  (u − e₁v²)(u − e₂v²)(u − e₃v²) = (y v³)² is a square. For a prime ℓ not dividing e_i − e_j, the three factors are
+  divisible by ℓ at most one at a time: if ℓ divides two of them, then ℓ divides (e_i − e_j)v², hence v, hence u,
+  contradicting gcd(u, v) = 1. So the ℓ-adic valuation of each factor is even. Consequently the square class of
+  u − e_iv² has only prime factors dividing the root differences, which is the finiteness used with bsd-042 and bsd-057.
+  The hypothesis that the product is a square is in the form s² with s an integer (take s = y v³ after scaling).
+sketch: |
+  Work with the three factors A, B, C. First show: ℓ cannot divide two of them. If ℓ | A and ℓ | B then ℓ | B − A =
+  (e1 − e2)v², so ℓ | v (`Prime.dvd_or_dvd`, `Prime.dvd_of_dvd_pow`), so ℓ | u = A + e1v², contradicting `Int.gcd u v = 1`
+  (`Int.dvd_gcd`). Then for each factor: if ℓ ∤ it, its valuation is 0 (`padicValInt.eq_zero_of_not_dvd`). If ℓ | A and
+  A ≠ 0, the other two are nonzero and prime to ℓ, so ABC = s² gives vA = 2·v_ℓ(s) by `padicValInt.mul`. The case A = 0
+  is trivial since then B and C are prime to ℓ. The same argument applies to B and C.
+dead: []
