@@ -1,0 +1,32 @@
+id: pnp-081
+problem: pvsnp
+title: Complementing the witness part of the pair encoding is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-006
+- pnp-021
+- pnp-025
+statement: |
+  ∃ r : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) r) ∧
+    ∀ x w : List Bool, r (pair x w) = pair x (w.map (fun b => !b))
+context: |
+  Bitwise negation of the witness, with the instance kept fixed. If r is polynomial-time, then a
+  verifier V for a language can be turned into V' z := V (r z), which accepts (x, w) exactly when V
+  accepts (x, complement of w). This is the transport step used to pass from least witnesses to
+  greatest witnesses in pnp-083. It is a plain copy-and-negate scan of the witness part, so it
+  uses the same decoding and parallel composition as pnp-022. It does not decide P vs NP.
+sketch: |
+  Let e z be the suffix of z after the separator [false, true] (pnp-025 is polynomial-time) and
+  d z the instance part (pnp-021). Set r z = pair (d z) ((e z).map not). The map z ↦ (e z).map not
+  is one pass over the witness part that writes each bit negated onto a second stack, so it is
+  polynomial-time with a bound linear in |z|. Compose it with the decoder d and the concatenation
+  with the separator as in pnp-022. The equation r (pair x w) = pair x (w.map not) follows from
+  d (pair x w) = x and e (pair x w) = w.
+dead: []
