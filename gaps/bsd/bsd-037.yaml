@@ -1,0 +1,33 @@
+id: bsd-037
+problem: bsd
+title: 'Prime-power reduction: the L-coefficient bound at every n follows from its prime-power case'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-020
+- bsd-022
+- bsd-023
+statement: |
+  ∀ (E : WeierstrassCurve ℚ) [E.IsElliptic],
+    (∀ p k : ℕ, p.Prime →
+      ‖((E.LFunction (p ^ k) : ℤ) : ℂ)‖ ≤ ((p ^ k).divisors.card : ℝ) * Real.sqrt ((p ^ k : ℕ) : ℝ)) →
+    ∀ n : ℕ, 0 < n → ‖((E.LFunction n : ℤ) : ℂ)‖ ≤ (n.divisors.card : ℝ) * Real.sqrt (n : ℝ)
+context: |
+  Reduction of bsd-016 to its prime-power case. The coefficient bound d(n)√n in bsd-016 is needed
+  for every n, but the local-factor analysis only gives prime powers: good primes via Hasse's bound
+  (bsd-024, still open) and bad primes with |c| ≤ 1. This gap says that the prime-power bound
+  already implies the general one, using multiplicativity of the L-coefficients (bsd-020) and of
+  d(n)√n (bsd-022) together with the transfer lemma bsd-023. Nothing about Hasse or reduction
+  appears here, so it can be proved now. What remains open for bsd-016 is the prime-power bound
+  itself at good and bad primes.
+sketch: |
+  Apply the transfer lemma of bsd-023 to c n = ‖(E.LFunction n : ℂ)‖ and f n = d(n)√n (both as real
+  functions). Multiplicativity of c: from `IsMultiplicative` of `E.LFunction` (bsd-020), take the
+  norm of the cast. Multiplicativity of f is bsd-022. f 1 = 1 by `Nat.divisors_one` and
+  `Real.sqrt_one`, and c 1 = 1 from `map_one`. Nonnegativity of f (p^k) is `positivity`. The
+  hypothesis |c (p^k)| ≤ f (p^k) is the given prime-power bound, with `abs_of_nonneg` for c. The
+  conclusion |c n| ≤ f n is the statement after `abs_of_nonneg` again. The solution file may import
+  the accepted solutions MPP.Solutions.Bsd020, MPP.Solutions.Bsd022 and MPP.Solutions.Bsd023.
+dead: []
