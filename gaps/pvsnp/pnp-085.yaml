@@ -1,0 +1,27 @@
+id: pnp-085
+problem: pvsnp
+title: Deciding whether the witness equals the instance is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  ∃ L : Lang, InP L ∧ ∀ x w : List Bool, L (pair x w) = decide (w = x)
+context: |
+  Equality of the witness part of the pair encoding with the instance part, as a polynomial-time
+  language. This is a plain comparison of two binary strings, the basic check a verifier needs when
+  a witness must match a stored string. It is not a step towards deciding P vs NP by itself.
+  The statement is proved by one machine on three stacks, in the style of pnp-081.
+sketch: |
+  Three stacks: input, accumulator 1, accumulator 2. Phase 0 reads the input two symbols at a time.
+  A pair of equal symbols is a doubled instance bit: push it onto accumulator 1, which then holds the
+  instance reversed. A mismatched pair is the separator [false, true]: go to phase 1. Phase 1 moves
+  accumulator 1 onto accumulator 2, which restores the order of the instance. Phase 2 reads the
+  remaining input bit by bit and pops accumulator 2 in step: a mismatch, or a leftover on one side,
+  gives false, and both sides ending together gives true. Each symbol is handled in a constant
+  number of steps, so the running time is linear in the input length.
+dead: []

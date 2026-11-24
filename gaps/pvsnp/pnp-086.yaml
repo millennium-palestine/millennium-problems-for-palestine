@@ -1,0 +1,23 @@
+id: pnp-086
+problem: pvsnp
+title: Deciding whether the witness differs from the instance is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-004
+- pnp-085
+statement: |
+  ∃ L : Lang, InP L ∧ ∀ x w : List Bool, L (pair x w) = decide (w ≠ x)
+context: |
+  The complement of pnp-085, obtained from the closure of P under complement (pnp-004). A
+  verifier can use it to require that a witness differs from the instance. It does not decide
+  P vs NP.
+sketch: |
+  Take L from pnp-085 and apply pnp-004 to get the language z ↦ !(L z). Its value on pair x w is
+  !(decide (w = x)), which equals decide (w ≠ x) by the simp lemmas for decide and negation.
+dead: []
