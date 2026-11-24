@@ -1,0 +1,27 @@
+id: pnp-052
+problem: pvsnp
+title: Flattening a nested pair, appending the outer witness to the inner witness
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  ∃ r : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) r) ∧
+    ∀ x u w : List Bool, r (pair (pair x u) w) = pair x (u ++ w)
+context: |
+  Search-to-decision step: a verifier for L that is given the instance x and a prefix u must be
+  run on a pair x (u ++ w) whose witness is the prefix followed by a free suffix w. The input
+  is the nested pair pair (pair x u) w, so the witness part has to be re-spliced into the
+  second component. This is a structural lemma and does not decide P vs NP.
+sketch: |
+  The string pair (pair x u) w is dbl(dbl x ++ [F,T] ++ u) ++ [F,T] ++ w, where dbl doubles every bit.
+  Read the outer doubled block as aligned bit pairs, stopping at the first unequal pair (the outer
+  separator). Those pairs carry dbl x ++ [F,T] ++ u. Then output the first half dbl x, the
+  separator [F,T], the second half u, and finally the witness w verbatim. Machine composition is
+  pnp-006, the copy steps are the tupling of pnp-009.
+dead: []
