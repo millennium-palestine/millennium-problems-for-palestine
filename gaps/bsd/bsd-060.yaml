@@ -7,8 +7,6 @@ imports:
 open: []
 depends:
 - bsd-040
-- bsd-041
-- bsd-042
 - bsd-058
 - bsd-059
 statement: |
