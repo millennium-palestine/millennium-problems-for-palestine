@@ -1,0 +1,29 @@
+id: pnp-021
+problem: pvsnp
+title: Decoding the pair encoding is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  ∃ d : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) d) ∧
+    ∀ x w : List Bool, d (pair x w) = x
+context: |
+  Inverse direction of the pair encoding (pnp-005 gives injectivity, pnp-012 the length). A
+  polynomial-time machine that reads a string z and returns the first component of pair x w = z
+  is what lets a verifier recover the instance x from a witness-carrying string. The first
+  component is recovered by reading doubled bits [b, b] until the first pair [false, true] that is
+  not doubled, which is the separator, since a doubled bit never equals [false, true]. This is a
+  structural lemma: it does not decide P vs NP.
+sketch: |
+  Take d z to be the doubled-bit prefix of z before the first non-doubled pair, halved. A
+  one-stack machine scans the input two symbols at a time, copies the first symbol of each
+  doubled pair to the output, and stops at the first pair whose symbols differ. Its running time
+  is at most |z| steps, so the time polynomial is the identity. Then d (pair x w) = x by induction
+  on x, using that the separator [false, true] is not a doubled pair.
+dead: []
