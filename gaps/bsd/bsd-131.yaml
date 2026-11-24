@@ -1,0 +1,25 @@
+id: bsd-131
+problem: bsd
+title: 'Finite point count: on an elliptic curve over a prime field the points form a finite group with at most p² + 1 elements'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic],
+    Finite W.toAffine.Point ∧ Nat.card W.toAffine.Point ≤ p * p + 1
+context: |
+  The finiteness half of the count #E(F_p) in bsd-121 and bsd-122. Those statements use Nat.card, which is 0 on an
+  infinite type, so the count only means something once the group of F_p-points is known to be finite. Over F_p
+  every affine point has coordinates in ZMod p, so there are at most p * p affine points, plus the point at
+  infinity. The statement is true. Its proof is elementary: send the point at infinity to none and an affine point
+  (x, y) to some (x, y) in Option (ZMod p × ZMod p), which has p * p + 1 elements, and check the map is injective.
+  This is the input for the finiteness of the kernel of 1 − φ that the degree argument of bsd-121 needs.
+sketch: |
+  Build an injection from W.toAffine.Point into Option (ZMod p × ZMod p) (a finite type with Fintype.card
+  = p * p + 1 by `Option.card` and `ZMod.card`). The map sends `zero` to none and `some x y h` to some (x, y), and it is
+  injective by case analysis on the two points (`WeierstrassCurve.Affine.Point` has constructors zero and some).
+  Conclude with `Finite.of_injective`, and bound the cardinality with `Nat.card_le_card_of_injective` (or
+  `Finite.card_le_of_injective`) followed by `Nat.card_eq_fintype_card`, `Option.card` and `ZMod.card`.
+dead: []

@@ -1,0 +1,29 @@
+id: bsd-130
+problem: bsd
+title: 'Frobenius is injective on the points: on an elliptic curve over a prime field, the p-power Frobenius on the points over the algebraic closure has trivial kernel'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] [DecidableEq (AlgebraicClosure (ZMod p))] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic]
+    (P Q : (W.baseChange (AlgebraicClosure (ZMod p))).toAffine.Point),
+    WeierstrassCurve.Affine.Point.map (W' := W)
+      (FiniteField.frobeniusAlgHom (ZMod p) (AlgebraicClosure (ZMod p))) P =
+    WeierstrassCurve.Affine.Point.map (W' := W)
+      (FiniteField.frobeniusAlgHom (ZMod p) (AlgebraicClosure (ZMod p))) Q → P = Q
+context: |
+  A second sub-step of the characteristic equation of Frobenius (bsd-121). The p-power Frobenius φ on the points
+  over the algebraic closure K of F_p is an additive endomorphism, and the degree-theoretic proof of bsd-121 uses
+  that it is purely inseparable of degree p, in particular that its kernel is trivial. Here only the injectivity
+  is claimed. The raising of coordinates to the p-th power is an injective field map, because K is a field, so
+  the map on points is injective. Mathlib provides `WeierstrassCurve.Affine.Point.map_injective` for an injective
+  map of coefficient fields, so this should be a short argument. It is true: x ↦ x^p is injective on K.
+sketch: |
+  Apply `WeierstrassCurve.Affine.Point.map_injective` to the field homomorphism
+  `FiniteField.frobeniusAlgHom (ZMod p) (AlgebraicClosure (ZMod p))`, whose injectivity holds because it is a
+  homomorphism of fields (`RingHom.injective`). If Mathlib's lemma is stated for a different form (for example
+  with the map on the base change instead of the curve), unfold `Point.map` on the `zero` and `some` cases and use
+  injectivity of x ↦ x^p on K (`frobenius` is injective on a field) together with `Point.some.injEq`.
+dead: []
