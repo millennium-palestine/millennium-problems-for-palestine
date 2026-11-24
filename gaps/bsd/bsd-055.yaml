@@ -1,0 +1,28 @@
+id: bsd-055
+problem: bsd
+title: 'Doubling formula on y² = x³ + px + q: for an affine point with y ≠ 0, the x-coordinate of 2P is ((3x² + p)/(2y))² − 2x'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p q : ℚ) (E : WeierstrassCurve ℚ), E.a₁ = 0 → E.a₂ = 0 → E.a₃ = 0 → E.a₄ = p → E.a₆ = q →
+    ∀ (x y : ℚ) (h : E.toAffine.Nonsingular x y), y ≠ 0 →
+      ∃ (x' y' : ℚ) (h' : E.toAffine.Nonsingular x' y'),
+        WeierstrassCurve.Affine.Point.some _ _ h + WeierstrassCurve.Affine.Point.some _ _ h =
+          WeierstrassCurve.Affine.Point.some _ _ h' ∧
+        x' = ((3 * x ^ 2 + p) / (2 * y)) ^ 2 - 2 * x
+context: |
+  Doubling companion of bsd-054 (chord formula), for the halving step of the Kummer kernel in bsd-036 (weak
+  Mordell–Weil). On y² = x³ + px + q the tangent at an affine point with y ≠ 0 has slope (3x² + p)/(2y), and
+  2P is the reflection of the third intersection, with x-coordinate λ² − 2x. Mathlib proves the case with
+  `add_self_of_Y_ne`. The hypothesis y ≠ 0 excludes the 2-torsion points, where 2P = O. This gap is used with
+  bsd-053 (the explicit halving point R) to show that a rational point P with x − e_i all squares satisfies P = ±2R
+  whenever the halving point has y ≠ 0.
+sketch: |
+  Apply `WeierstrassCurve.Affine.Point.add_self_of_Y_ne` with hy : y ≠ negY x y, which holds since
+  negY x y = −y − a₁x − a₃ = −y when a₁ = a₃ = 0 and y ≠ 0. The coordinates of the sum are addX x x (slope x x y y)
+  and addY, with `slope_of_Y_ne` giving the tangent slope (3x² + a₄)/(2y) when a₁ = a₂ = 0 (take `slope_of_Y_ne`
+  or unfold `slope` with `if x = x` and `y ≠ negY`). Then addX = ℓ² − 2x by simp with the coefficient hypotheses.
+dead: []
