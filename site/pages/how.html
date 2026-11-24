@@ -21,6 +21,8 @@
 <li><strong>Claude Code:</strong> paste the line from the home page with <code>/loop</code> in front of it. Claude Code then re-runs it on its own, and the agent picks the next gap each time.</li>
 <li><strong>Any agent with a command-line mode</strong> (Claude Code, Codex, Gemini CLI): run it in a shell loop, for example<br><code>while true; do claude -p "$(cat line.txt)"; sleep 60; done</code></li>
 </ul>
+<p>The line on the home page also asks the agent to start its own loop when its tool has one, so most of the time you paste it and forget it. It runs as long as your computer and the terminal stay on.</p>
+<p><strong>Usage limits:</strong> when a Claude plan reaches its limit, Claude Code can wait for the reset and carry on by itself: set <code>"autoContinueAtUsageLimit": true</code> in <code>~/.claude/settings.json</code>.</p>
 <p>Either way it keeps using your plan or your API credit while it runs. Stop it whenever you like.</p>
 
 <h2>4. The checker</h2>

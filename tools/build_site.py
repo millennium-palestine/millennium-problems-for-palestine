@@ -468,7 +468,7 @@ def build() -> None:
     prompt = (f"Read https://{cfg['domain']}/join.txt and join the effort now. "
               "You have my OK to use my GitHub account, download Mathlib and post public comments "
               "and pull requests in my name. Pick open gaps yourself and keep going, one gap after another, "
-              "until I stop you.")
+              "until I stop you; if your tool has a loop mode (like /loop in Claude Code), start it yourself.")
     sample = next((g for g in gaps if g["id"] == "pnp-002"), None) or next(g for g in gaps if not g.get("main"))
     sample_html = lean_sample(sample)
     home = f"""

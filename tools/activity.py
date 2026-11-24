@@ -122,7 +122,18 @@ def collect() -> dict:
 
     pr_info = []
     for p in pulls:
-        files = [f["filename"] for f in gh.get(f"pulls/{p['number']}/files?per_page=100", pages=1)]
+        recent_pr = p["state"] == "open" or t_now - parse(p["updated_at"]) <= dt.timedelta(hours=6)
+        if recent_pr:
+            files = [f["filename"] for f in gh.get(f"pulls/{p['number']}/files?per_page=100", pages=1)]
+        else:  # older pull requests: read the gap id from the title, to stay within API limits
+            m = GAP_IN_TITLE.search(p["title"])
+            gid = m.group(1) if m else None
+            if gid and "(gap)" in p["title"]:
+                files = [f"gaps/{ {'pnp': 'pvsnp'}.get(gid.split('-')[0], gid.split('-')[0]) }/{gid}.yaml"]
+            elif gid in by_id:
+                files = [f"lean/MPP/Solutions/{by_id[gid]['module']}.lean"]
+            else:
+                files = []
         gap, problem = None, None
         sol = [f for f in files if re.fullmatch(r"lean/MPP/Solutions/\w+\.lean", f)]
         if sol:
