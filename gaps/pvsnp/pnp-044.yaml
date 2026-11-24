@@ -1,0 +1,37 @@
+id: pnp-044
+problem: pvsnp
+title: Every language in NP has a verifier whose witnesses have exactly the bound length
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-006
+- pnp-008
+- pnp-021
+- pnp-025
+- pnp-026
+- pnp-045
+statement: |
+  ∀ L : Lang, InNP L → ∃ V : Lang, InP V ∧ ∃ p : Polynomial ℕ, ∀ x : List Bool,
+    (L x = true ↔ ∃ w : List Bool, w.length = p.eval x.length ∧ V (pair x w) = true)
+context: |
+  Normalisation of the NP definition: the witness bound of MPP/Defs/PvsNP.lean (length at most
+  p(|x|)) can be replaced by an exact length. Padding is done with a leading marker: a witness w
+  becomes replicate k false ++ [true] ++ w, and the verifier strips the prefix with pnp-045 before
+  running the original verifier. Certificates of fixed length are the form used when a universal
+  verifier is built for the NP-complete route to pnp-000. The statement is structural; it does not
+  decide P vs NP.
+sketch: |
+  Given L in NP with verifier V0 and bound p0, let p = p0 + 1 and let g be the map of pnp-045, so
+  g w = (w.dropWhile (fun b => !b)).tail. Define V(y) = V0 (pair (d y) (g (e y))), where d and e are
+  the decoders of pnp-021 and pnp-025. The map y ↦ pair (d y) (g (e y)) is polynomial-time by
+  pnp-006 and pnp-026, so InP V by pnp-008 applied to V0 with that map.
+  (→) For a witness w of length at most p0(|x|), use w' = replicate (p0|x| − |w|) false ++ [true] ++ w,
+  of length p(|x|). Then g w' = w, so V(pair x w') = V0(pair x w) = true.
+  (←) For w' of length p(|x|) with V(pair x w') = true, the witness w = g w' has length at most
+  |w'| − 1 = p0(|x|), and V0(pair x w) = V(pair x w') = true.
+dead: []
