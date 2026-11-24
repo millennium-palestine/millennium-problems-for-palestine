@@ -1,0 +1,29 @@
+id: pnp-032
+problem: pvsnp
+title: Unary multiplication on the pair encoding is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  ∃ M : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) M) ∧
+    ∀ u v : List Bool, M (pair u v) = List.replicate (u.length * v.length) false
+context: |
+  Unary multiplication. Given the pair encoding of two strings, it writes a unary string whose
+  length is the product of their lengths. It is the step that multiplies unary numbers in the
+  polynomial evaluation of pnp-033, which needs powers of the input length. It is a structural
+  lemma and does not decide P vs NP.
+sketch: |
+  Three stacks: the input, a stack U of counts, a stack V holding a copy of v, and a temporary
+  stack T. Phase 1: pop the doubled bits of u two symbols at a time, pushing one symbol onto U
+  per doubled pair, until the separator. Then move the rest of the input, which is v, onto V.
+  Phase 2: while U is nonempty, pop one symbol from U, and then for each symbol of V, pop it,
+  push false to the output, and push it onto T. Then move T back onto V, so that V is restored
+  for the next round. The output holds |u| blocks of |v| falses, which is |u| * |v| symbols. The
+  time is polynomial in the input length.
+dead: []
