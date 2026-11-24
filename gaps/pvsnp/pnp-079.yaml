@@ -1,0 +1,39 @@
+id: pnp-079
+problem: pvsnp
+title: Under P = NP, a polynomial-time map returns the shortlex-least witness of length at most p(|x|)
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-072
+- pnp-066
+statement: |
+  ∀ (V : Lang) (p : Polynomial ℕ), InP V → PEqualsNP →
+    ∃ f : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) ∧
+      ∀ x : List Bool, (∃ w : List Bool, w.length ≤ p.eval x.length ∧ V (pair x w) = true) →
+        (f x).length ≤ p.eval x.length ∧ V (pair x (f x)) = true ∧
+        ∀ w : List Bool, w.length ≤ p.eval x.length → V (pair x w) = true →
+          ¬ (w.length < (f x).length ∨ (w.length = (f x).length ∧ w < f x))
+context: |
+  pnp-072 returns the lexicographically least accepted witness among those of one exact length
+  p(|x|). Witnesses of shorter length are not covered. Here the witness is chosen shortlex:
+  shortest first, then lexicographically least (false < true). This is the search form that a
+  bounded NP definition with "length at most" needs, and it is a genuine step beyond pnp-072.
+  Under P = NP the map exists, by a loop over the at most p(|x|) + 1 lengths k, each tested with
+  the exact-length finder of pnp-072 applied to a verifier that is in P. The statement is a
+  consequence of P = NP and does not decide P vs NP.
+sketch: |
+  Assume PEqualsNP and InP V. For each length k, the language "some accepted witness has length
+  exactly k" is decided in polynomial time when k is given in unary (from pnp-072, pnp-069 and
+  pnp-033). Loop over k = 0, 1, ..., p(|x|) and stop at the first k that has an accepted witness.
+  The length k is not a fixed polynomial, so pnp-072 must be run with its length count read from
+  the unary input, as the loop of pnp-066 does, not as a constant bound. The minimality clause
+  follows because no shorter length has a witness and, at length k, the witness is
+  lexicographically least by the argument of pnp-071. The loop has polynomially many steps, each
+  polynomial, so the composite is polynomial-time by pnp-061 and pnp-006.
+dead: []
