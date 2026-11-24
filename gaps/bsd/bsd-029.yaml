@@ -1,0 +1,30 @@
+id: bsd-029
+problem: bsd
+title: 'Bad reduction: the local power series of a Weierstrass curve without good reduction has coefficients of absolute value at most 1'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (R : Type) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] (K : Type) [Field K]
+    [Algebra R K] [IsFractionRing R K] (W : WeierstrassCurve K),
+    ¬ (W.minimal R).HasGoodReduction R →
+      ∀ k : ℕ, |PowerSeries.coeff k (W.localPowerSeries R)| ≤ 1
+context: |
+  Bad-reduction step of bsd-016 (the coefficient bound d(n)√n for an elliptic curve over ℚ). Mathlib
+  defines `WeierstrassCurve.localPolynomial` by cases: 1 − aT + qT² at good reduction, and otherwise
+  1 − T (split multiplicative), 1 + T (nonsplit multiplicative), or 1 (additive). The local power series
+  is its inverse, so its coefficients are 1, ±1 or 0 at the bad primes. Hence the prime-power
+  coefficients at a bad prime have |c_k| ≤ 1 ≤ (k+1) p^(k/2), and the bound of bsd-016 holds there with
+  no Hasse input. This gap is the case split of `localPolynomial` together with the inverse of 1 ∓ T.
+  The good-reduction case is handled by bsd-028 (recurrence) and bsd-024 (Hasse's bound, still open).
+sketch: |
+  Unfold `WeierstrassCurve.localPolynomial` (the `letI`s are definitional) and use `split_ifs` on the four
+  conditions. In the good-reduction branch the hypothesis is false. In the other three, the polynomial
+  is 1 − X, 1 + X or 1, with `Polynomial.coe` to `PowerSeries ℤ` (`Polynomial.coe_sub`, `Polynomial.coe_X`,
+  `Polynomial.coe_one`, or `simp`). For a power series f = 1 + εX with ε ∈ {1, −1}, the coefficients of
+  `PowerSeries.invOfUnit f 1` are ε^k: check that `PowerSeries.mk (fun k => ε ^ k)` times f is 1 by
+  comparing coefficients, then use `PowerSeries.invOfUnit` uniqueness (`PowerSeries.eq_inv_of_mul_eq_one`
+  or the defining property `PowerSeries.mul_invOfUnit`). The absolute value of ±1 is 1.
+dead: []
