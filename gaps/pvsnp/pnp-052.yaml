@@ -1,0 +1,25 @@
+id: pnp-052
+problem: pvsnp
+title: Concatenating the two components of the pair encoding is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  ∃ C : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) C) ∧
+    ∀ u w : List Bool, C (pair u w) = u ++ w
+context: |
+  Concatenation is the one machine step missing for search-to-decision. A verifier for a language
+  needs its witness written as a prefix u followed by a free suffix w, so the two parts have to be
+  joined into one string. This is a structural lemma and does not decide P vs NP.
+sketch: |
+  Adapt the decoder of pnp-021. The doubled first component is read pair by pair, and each bit is
+  pushed on an accumulator stack. At the separator the machine stops reading the doubled part and
+  copies the rest of the input, the witness w, onto the same accumulator. Moving the accumulator
+  onto the output reverses it once, giving u ++ w. Time is linear in the input length.
+dead: []
