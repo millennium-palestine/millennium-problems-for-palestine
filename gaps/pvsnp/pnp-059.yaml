@@ -1,0 +1,32 @@
+id: pnp-059
+problem: pvsnp
+title: Prefix extension of an exact-length witness predicate extends by one bit
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+depends: []
+statement: |
+  ∀ (V : Lang) (x : List Bool) (N : ℕ) (E : List Bool → Bool),
+    (∀ u : List Bool, E u = true ↔
+      ∃ w : List Bool, w.length = N ∧ (∃ t : List Bool, w = u ++ t) ∧ V (pair x w) = true) →
+    (∃ w : List Bool, w.length = N ∧ V (pair x w) = true) →
+    E [] = true ∧
+      ∀ u : List Bool, u.length < N → E u = true → E (u ++ [false]) = true ∨ E (u ++ [true]) = true
+context: |
+  The hypotheses of pnp-058, for the prefix predicate of an exact-length verifier. Here E u says that
+  some witness w of length exactly N extends the prefix u and is accepted by V on the pair encoding of
+  x and w. Exact length is the normal form of pnp-044: for a language in NP with verifier V, the
+  statement L x ↔ ∃ w of length N with V (pair x w) = true is the one used. The lemma says that E holds
+  at the empty prefix whenever some accepted witness exists, and that a prefix below length N with E
+  extends by false or true. Both facts are immediate from the definition of E: the witness w that
+  extends u has a next bit, and that bit is false or true. The statement is structural; it does not
+  decide P vs NP.
+sketch: |
+  From the existence hypothesis get w0 with length N and V (pair x w0) = true; then E [] holds by the
+  iff with t = w0. For the extension, take the witness w of E u. Since w = u ++ t and u.length < N =
+  w.length, t is nonempty, so t = b :: t' for some bit b. Then w = (u ++ [b]) ++ t', so E (u ++ [b])
+  holds with the same witness. Case on b: if b = false the left disjunct holds, otherwise the right one.
+dead: []
