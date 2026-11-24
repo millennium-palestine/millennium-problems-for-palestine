@@ -1,0 +1,42 @@
+id: pnp-035
+problem: pvsnp
+title: NP is closed under disjunction
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-004
+- pnp-006
+- pnp-008
+- pnp-010
+- pnp-011
+- pnp-012
+- pnp-013
+- pnp-021
+- pnp-025
+- pnp-026
+- pnp-027
+statement: |
+  ∀ L M : Lang, InNP L → InNP M → InNP (fun x => L x || M x)
+context: |
+  Unconditional closure of NP under disjunction. The witness for the disjunction is the pair
+  encoding of a one-bit tag and the witness of the chosen disjunct. The tag is read from the
+  decoded witness part, and the verifier runs the verifier of the tagged language, with its own
+  length check. Unlike pnp-015, it does not assume P = NP. It is a structural lemma and does not
+  decide P vs NP.
+sketch: |
+  Let V1, p1 and V2, p2 witness the two NP memberships, and let C1, C2 be the length checks of
+  pnp-027. For a pair z let d be the decoder of pnp-021 and e the witness part of pnp-025. The
+  tag is t z = (d (e z)).headD false, which is in P by pnp-013 composed with d (e z). Let
+  h z = pair (d z) (e (e z)), the instance paired with the rest of the witness. Take
+  W z = (t z && V2 (h z) && C2 (h z)) || (!(t z) && V1 (h z) && C1 (h z)), in P by pnp-004,
+  pnp-008, pnp-010 and pnp-011. The witness bound is q = p1 + p2 + 4: a witness for the disjunct
+  of tag b is pair [b] w', of length 4 + |w'| by pnp-012, and |w'| ≤ p1 + p2. If L x holds, take
+  tag false and the witness pair [false] w1; if M x holds, take tag true and the witness
+  pair [true] w2. Conversely W (pair x w) forces one disjunct, whose length check gives the bound
+  for its witness.
+dead: []
