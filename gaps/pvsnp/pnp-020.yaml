@@ -1,0 +1,35 @@
+id: pnp-020
+problem: pvsnp
+title: NP-hardness is transitive under polynomial-time reductions
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-006
+statement: |
+  ∀ S T : Lang,
+    (∀ L : Lang, InNP L → ∃ f : List Bool → List Bool,
+        Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) ∧
+        ∀ x, L x = S (f x)) →
+    (∃ g : List Bool → List Bool,
+        Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) g) ∧
+        ∀ x, S x = T (g x)) →
+    (∀ L : Lang, InNP L → ∃ f : List Bool → List Bool,
+        Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) ∧
+        ∀ x, L x = T (f x))
+context: |
+  Splitting step for the NP-complete route to pnp-000 and pnp-001. The standard way to show a
+  language T is NP-hard is to reduce a known NP-hard language S to T; this gap says that works.
+  If every NP language reduces to S, and S reduces to T, both by polynomial-time maps, then every
+  NP language reduces to T. The composite map is polynomial-time because a composition of two
+  polynomial-time computable functions is polynomial-time (pnp-006). This is a structural lemma:
+  it does not exhibit any NP-hard language, and it does not decide P vs NP.
+sketch: |
+  Intro S T hS ⟨g, hg, hSg⟩ L hL. From hS get f with hf : TM2ComputableInPolyTime id id f and
+  hLf : ∀ x, L x = S (f x). Apply pnp-006 (Pnp006.main) to hf and hg to get a machine for g ∘ f.
+  Then L x = S (f x) = T (g (f x)) = T ((g ∘ f) x), using hSg (f x).
+dead: []
