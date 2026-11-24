@@ -1,0 +1,40 @@
+id: pnp-071
+problem: pvsnp
+title: The greedy string of a prefix-extendable predicate is lexicographically least among the witnesses of its length
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-058
+- pnp-059
+- pnp-069
+statement: |
+  ∀ (A : List Bool → Prop) (N : ℕ) (E : List Bool → Bool) (step : List Bool → List Bool),
+    (∀ u : List Bool, E u = true ↔
+      ∃ w : List Bool, w.length = N ∧ (∃ t : List Bool, w = u ++ t) ∧ A w) →
+    (∀ u : List Bool, step u = if E (u ++ [false]) = true then u ++ [false] else u ++ [true]) →
+    ∀ w : List Bool, w.length = N → A w → ¬ (w < step^[N] [])
+context: |
+  The lexicographic half of the canonical witness. pnp-058 builds a witness bit by bit, choosing
+  false whenever some completion of the prefix is accepted, and pnp-069 makes that search
+  polynomial-time under P = NP. The greedy string is also the least witness of exact length N in
+  the lexicographic order on lists of equal length (false < true): if some accepted w of length N
+  were smaller, its first difference from the greedy string would be a position where the greedy
+  chose true although the prefix extended by false is a prefix of w, so E would hold there, which
+  the greedy would not have allowed. The statement is generic in A, E and step, so it does not
+  mention machines and does not decide P vs NP. A canonical-witness version of pnp-069 follows by
+  combining this lemma with the construction of pnp-069.
+sketch: |
+  Let g be step^[N] []. Suppose w has length N, A w, and w < g. Lists of equal length compare
+  at their first difference j, where w_j = false and g_j = true, and the common prefix is
+  u = step^[j] [] (the greedy string is built by appending, so each step^[k] [] is a prefix of
+  step^[N] [] for k ≤ N). At u the step appended true, so E (u ++ [false]) = false by the
+  definition of step. But w = u ++ [false] ++ rest with length N and A w, so E (u ++ [false])
+  = true by the iff hypothesis, a contradiction. In Lean: induction on N, or a lemma that
+  step^[k] [] is a prefix of step^[m] [] for k ≤ m, together with List.Lex-style first-difference
+  decomposition of the strict order on lists.
+dead: []
