@@ -1,0 +1,27 @@
+id: bsd-096
+problem: bsd
+title: 'Local factor at another prime vanishes at positive powers of p: for primes q ≠ p and k ≥ 1, the arithmetic function of a power series over q is zero at p^k'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (q p k : ℕ) (f : PowerSeries ℤ), q.Prime → p.Prime → q ≠ p → 0 < k →
+    ArithmeticFunction.ofPowerSeries q f (p ^ k) = 0
+context: |
+  Second curve-free input for the prime-power case of bsd-016. Mathlib's `WeierstrassCurve.localEulerFactor` at a
+  prime ideal with residue field of cardinality q is `ArithmeticFunction.ofPowerSeries q` of the local power
+  series. Such a function is supported on the powers of q (`ArithmeticFunction.ofPowerSeries_apply`), so at p^k
+  with k ≥ 1 and q ≠ p it vanishes. Together with bsd-095 this says that, in the Euler product defining
+  E.LFunction, the factors at the other primes do not contribute at p^k. It is true by unique factorisation:
+  p^k = q^j would force p = q, since p divides q^j and so p divides q. The proof is short and does not use
+  elliptic curves. It is the other half of the prime-power identification of bsd-016.
+sketch: |
+  Rewrite with `ArithmeticFunction.ofPowerSeries_apply` (the hypothesis 1 < q comes from q.Prime, `Nat.Prime.one_lt`),
+  which gives `Function.extend` of `fun j ↦ coeff j f` along `fun j ↦ q ^ j` evaluated at p^k. Use
+  `Function.extend_apply'` to see that the value is 0 unless p^k ∉ range (q ^ ·). If p^k = q^j then
+  p ∣ q^j, so p ∣ q by `Nat.Prime.dvd_of_dvd_pow`, so p = q by `(Nat.prime_dvd_prime_iff_eq hp hq).mp`,
+  contradicting q ≠ p. The same pattern is in the proof of `ArithmeticFunction.ofPowerSeries_apply_pow` in
+  Mathlib, so the file's own style (`simp_rw`, `contrapose!`) is a model.
+dead: []
