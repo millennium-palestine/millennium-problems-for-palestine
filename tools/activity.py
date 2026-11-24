@@ -200,6 +200,12 @@ def collect() -> dict:
     for (cg, login), t in claims.items():
         if cg not in by_id and t_now - t <= ACTIVE:
             proposal_sessions[f"{login} · {cg} (proposed)"] = cg.split("-")[0]
+    # An open gap proposal pushed in the last hour is an agent at work too (it is creating gaps).
+    for pr in pulls:
+        files_prop = pr.get("_gap_files", [])
+        if pr["state"] == "open" and files_prop and t_now - parse(pr["updated_at"]) <= dt.timedelta(hours=1):
+            ids = ", ".join(pathlib.Path(f).stem for f in files_prop)
+            proposal_sessions[f'{pr["user"]["login"]} · proposing {ids}'] = pathlib.Path(files_prop[0]).parent.name
     slug_of = {"pnp": "pvsnp", "bsd": "bsd"}
 
     # Active work sessions: one per (account, task). Several agents can share one account.
