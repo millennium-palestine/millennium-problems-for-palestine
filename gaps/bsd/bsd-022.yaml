@@ -1,0 +1,20 @@
+id: bsd-022
+problem: bsd
+title: 'n ↦ d(n)√n is multiplicative: the value at mn is the product for coprime m and n'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ m n : ℕ, 0 < m → 0 < n → Nat.Coprime m n →
+    ((m * n).divisors.card : ℝ) * Real.sqrt ((m * n : ℕ) : ℝ) =
+      ((m.divisors.card : ℝ) * Real.sqrt (m : ℝ)) * ((n.divisors.card : ℝ) * Real.sqrt (n : ℝ))
+context: |
+  The coefficient bound of bsd-016, |a_n| ≤ d(n)√n, is multiplicative in n: the divisor function is
+  multiplicative on coprime arguments, and so is the square root. This is the function f in the
+  transfer lemma bsd-023. The statement is the exact form of the bound used in bsd-015 and bsd-016.
+sketch: |
+  `Nat.Coprime.card_divisors_mul` gives d(m n) = d(m) d(n) for coprime m and n. Then
+  `Real.sqrt_mul` (with 0 ≤ (m : ℝ)) gives √(m n) = √m √n. Finish with `push_cast` and `ring`.
+dead: []

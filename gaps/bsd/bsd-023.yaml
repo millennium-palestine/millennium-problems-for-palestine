@@ -1,0 +1,28 @@
+id: bsd-023
+problem: bsd
+title: 'A multiplicative sequence bounded by a multiplicative function on prime powers is bounded everywhere'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (c f : ℕ → ℝ), c 1 = 1 → f 1 = 1 →
+    (∀ m n : ℕ, Nat.Coprime m n → c (m * n) = c m * c n) →
+    (∀ m n : ℕ, Nat.Coprime m n → f (m * n) = f m * f n) →
+    (∀ p k : ℕ, p.Prime → 0 ≤ f (p ^ k)) →
+    (∀ p k : ℕ, p.Prime → |c (p ^ k)| ≤ f (p ^ k)) →
+    ∀ n : ℕ, 0 < n → |c n| ≤ f n
+context: |
+  Transfer step for bsd-016. The L-coefficients c_n are multiplicative (bsd-020), and f = d(n)√n is
+  multiplicative (bsd-022). The bound on prime powers then holds for all n, which is what bsd-006 needs
+  through bsd-015. The prime-power hypothesis is the output of the local-factor analysis (bsd-016:
+  good primes via Hasse's bound, bad primes give |c| ≤ 1), so this lemma is stated for general
+  sequences and can be proved without any elliptic curve.
+sketch: |
+  Prove the statement for all n by strong induction on n, factoring n as a product of a prime power
+  and a coprime cofactor. For the factorization, `Nat.exists_prime_and_dvd` or
+  `Nat.recOnPosPrimePosCoprime` is convenient. Then |c (p^k * r)| = |c (p^k)| · |c r| ≤ f (p^k) · f r =
+  f (p^k * r), using multiplicativity and the induction hypothesis for r < n. The fact that f is
+  nonnegative everywhere follows from the prime-power hypothesis and multiplicativity.
+dead: []

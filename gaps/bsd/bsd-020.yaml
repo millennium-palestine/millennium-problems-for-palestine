@@ -1,0 +1,23 @@
+id: bsd-020
+problem: bsd
+title: 'The L-coefficients of an elliptic curve over ℚ form a multiplicative function'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (E : WeierstrassCurve ℚ) [E.IsElliptic], ArithmeticFunction.IsMultiplicative (WeierstrassCurve.LFunction E)
+context: |
+  First reduction in bsd-016. The coefficients n ↦ E.LFunction n are the Euler product of the local
+  factors of E (Mathlib, AlgebraicGeometry/EllipticCurve/LFunction.lean). A bound for prime powers
+  only transfers to all n if these coefficients are multiplicative, so this is needed before the
+  prime-power step. The statement is true because a formal Euler product of multiplicative factors is
+  multiplicative.
+sketch: |
+  Unfold `WeierstrassCurve.LFunction` (it is `ArithmeticFunction.eulerProduct` of the local Euler
+  factors over the height-one primes) and apply `ArithmeticFunction.isMultiplicative_eulerProduct`
+  (Mathlib, NumberTheory/ArithmeticFunction/LFunction.lean). What is left is that each local factor,
+  `localEulerFactor`, is multiplicative. Search for an `IsMultiplicative` lemma for `ofPowerSeries`
+  in that file, which is the form of the local factor.
+dead: []
