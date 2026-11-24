@@ -1,0 +1,35 @@
+id: pnp-050
+problem: pvsnp
+title: The witness part of the pair encoding has exactly the polynomial length of the input
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-008
+- pnp-011
+- pnp-021
+- pnp-025
+- pnp-026
+- pnp-028
+- pnp-033
+- pnp-051
+statement: |
+  ∀ p : Polynomial ℕ, ∃ E : Lang, InP E ∧
+    ∀ x w : List Bool, E (pair x w) = true ↔ w.length = p.eval x.length
+context: |
+  Exact-length test for the converse of the normalisation (pnp-049). Given the input x and the
+  witness part w of a pair, it accepts exactly when w has length p(|x|). It is built from the
+  length-comparison test of pnp-028 (|w| ≤ |u|) and its reverse of pnp-051 (|u| ≤ |w|), applied
+  to the unary string of length p(|x|) from pnp-033. It is a structural lemma; it does not decide
+  P vs NP.
+sketch: |
+  Let d and e be the decoders of pnp-021 and pnp-025 and U the unary map of pnp-033. Let P1 be
+  the map z ↦ pair (U (d z)) (e z), in P by pnp-026 and pnp-006. Let C1 be the test of pnp-028
+  and C2 the test of pnp-051. Put E = (fun y => C1 y && C2 y) ∘ P1, in P by pnp-011 and pnp-008.
+  On z = pair x w, P1 z = pair (replicate (p|x|) false) w, so C1 accepts iff |w| ≤ p|x| and C2
+  accepts iff p|x| ≤ |w|; together, E accepts iff |w| = p|x|.
+dead: []
