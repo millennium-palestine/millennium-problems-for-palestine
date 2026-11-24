@@ -1,0 +1,25 @@
+id: bsd-011
+problem: bsd
+title: 'Rational points on y² = x³ − x with y ≠ 0 give a solution of a⁴ − b⁴ = c²'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-008
+statement: |
+  ∀ x y : ℚ, y ^ 2 = x ^ 3 - x → y ≠ 0 →
+    ∃ a b c : ℤ, a ≠ 0 ∧ b ≠ 0 ∧ c ≠ 0 ∧ a ^ 4 - b ^ 4 = c ^ 2
+context: |
+  Reduction step toward bsd-005 (rank 0 of y² = x³ − x). It needs bsd-008 but no descent.
+  By bsd-008, x = u² or x = −u² for some u ∈ ℚ, and u ≠ 0 because y ≠ 0. Put w = y/u.
+  In the case x = u² we have w² = u⁴ − 1; in the case x = −u² we have w² = 1 − u⁴.
+  Write u = a/b in lowest terms with b > 0 and set c = w·b². Then c² = a⁴ − b⁴ in the first
+  case and c² = b⁴ − a⁴ in the second. Since c² is an integer, c is an integer.
+  In the second case the roles of a and b are swapped to get the stated form.
+sketch: |
+  Case-split on the two branches of bsd-008. Take a := u.num and b := (u.den : ℤ), so that
+  u = a / b (`Rat.num_div_den`). Define c := (y / u) * b ^ 2 and check c ^ 2 by `field_simp`
+  and the curve equation. Integrality of c: c is rational and c ^ 2 is an integer, so its
+  denominator is 1. Nonvanishing: a ≠ 0 because u ≠ 0, and c ≠ 0 because y ≠ 0.
+dead: []
