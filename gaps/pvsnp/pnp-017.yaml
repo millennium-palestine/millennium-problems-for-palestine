@@ -1,0 +1,22 @@
+id: pnp-017
+problem: pvsnp
+title: Under P = NP, the complement of an NP language is in NP
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+depends:
+- pnp-014
+statement: |
+  PEqualsNP → ∀ L : Lang, InNP L → InNP (fun x => !L x)
+context: |
+  Conditional statement: it assumes PEqualsNP and does not claim it. Under that assumption every
+  NP language is a P language, and the complement of a P language is in NP (pnp-014). So NP is closed
+  under complement. This is the complement counterpart of pnp-015 and pnp-016, and it is a one-step
+  consequence of pnp-014, so it is a small lemma rather than a route to pnp-000 or pnp-001.
+sketch: |
+  Intro the hypothesis hPNP and L with hL : InNP L. Unfold PEqualsNP and apply it to hL to get InP L.
+  Then pnp-014 applied to that gives InNP (fun x => !L x).
+dead: []
