@@ -1,0 +1,21 @@
+id: pnp-065
+problem: pvsnp
+title: The empty string is decided in polynomial time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+depends: []
+statement: |
+  ∃ Z : Lang, InP Z ∧ ∀ z : List Bool, Z z = true ↔ z = []
+context: |
+  Zero test for a unary counter. In the loop of pnp-061 the iteration stops when the remaining count is
+  zero, so the loop needs a polynomial-time test for the empty string. This is the simplest language in P
+  after the trivial language of pnp-003, and it is needed as the stopping condition. It is structural and
+  does not decide P vs NP.
+sketch: |
+  Use a machine that reads the first input symbol. If there is none, it accepts; otherwise it rejects. The
+  running time is constant, and the answer is correct on both cases by case analysis on the list.
+dead: []
