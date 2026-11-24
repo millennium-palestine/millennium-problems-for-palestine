@@ -1,0 +1,26 @@
+id: bsd-127
+problem: bsd
+title: 'Distinct roots from ellipticity: for an elliptic curve y² = x³ + px + q over ℚ whose cubic has rational roots e1, e2, e3 of sum zero, the roots are pairwise distinct'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p q e1 e2 e3 : ℚ) (E : WeierstrassCurve ℚ) [E.IsElliptic],
+    E.a₁ = 0 → E.a₂ = 0 → E.a₃ = 0 → E.a₄ = p → E.a₆ = q →
+    e1 + e2 + e3 = 0 → p = e1 * e2 + e1 * e3 + e2 * e3 → q = -(e1 * e2 * e3) →
+    e1 ≠ e2 ∧ e1 ≠ e3 ∧ e2 ≠ e3
+context: |
+  Needed for the rational split case of bsd-036. A curve whose cubic splits into three linear factors over ℚ has distinct
+  roots exactly when it is elliptic, because the discriminant of y² = x³ + px + q is −16(4p³ + 27q²) and this equals
+  16 · (e1 − e2)²(e1 − e3)²(e2 − e3)² when e1 + e2 + e3 = 0 and p, q are the elementary symmetric functions. Ellipticity
+  means the discriminant is a unit, hence nonzero. So the pairwise differences of the roots are nonzero. This is the
+  step that lets the split lemmas of bsd-119 to bsd-124 (which assume distinct roots) apply to every split curve.
+sketch: |
+  (a) From E.IsElliptic get E.Δ ≠ 0 (isUnit_iff_ne_zero on the discriminant). (b) Compute E.Δ for a1 = a2 = a3 = 0,
+  a4 = p, a6 = q with the b-invariants: Δ = −16(4p³ + 27q²) (unfold WeierstrassCurve.Δ and the b-invariants, then ring).
+  (c) Substitute p and q: 4p³ + 27q² = −(e1 − e2)²(e1 − e3)²(e2 − e3)² when e1 + e2 + e3 = 0 (linear_combination with the
+  sum relation, or substitute e3 = −e1 − e2 and use ring). (d) Hence the product (e1 − e2)(e1 − e3)(e2 − e3) is nonzero,
+  so each factor is nonzero (mul_ne_zero). Only ring identities and the discriminant formula are needed.
+dead: []
