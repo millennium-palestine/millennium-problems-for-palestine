@@ -42,6 +42,10 @@ def parse(ts: str) -> dt.datetime:
     return dt.datetime.fromisoformat(ts.replace("Z", "+00:00"))
 
 
+def re_title(t: str) -> str:
+    return re.sub(r"^\[[^\]]*\]\s*", "", t).replace("(gap)", "").strip()
+
+
 def token() -> str:
     t = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
     if t:
@@ -79,11 +83,12 @@ def collect() -> dict:
     iso_since = since.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     # Gap issues: issue number -> gap id
-    issue_gap = {}
-    for it in gh.get("issues?labels=gap&state=all&per_page=100"):
+    issue_gap, issue_title = {}, {}
+    for it in gh.get("issues?state=all&per_page=100", pages=3):  # issues and pull requests
         m = GAP_IN_TITLE.search(it["title"])
-        if m and m.group(1) in by_id:
+        if m:
             issue_gap[it["number"]] = m.group(1)
+            issue_title[m.group(1)] = re_title(it["title"])
 
     comments = gh.get(f"issues/comments?since={iso_since}&per_page=100&sort=created&direction=asc", pages=10)
     pulls = [p for p in gh.get("pulls?state=all&sort=updated&direction=desc&per_page=50", pages=2)
@@ -127,6 +132,17 @@ def collect() -> dict:
             m = GAP_IN_TITLE.search(p["title"])
             gap = m.group(1) if m and m.group(1) in by_id else None
         notes = [f for f in files if f.startswith("notes/")]
+        p["_gap_files"] = [f for f in files if re.fullmatch(r"gaps/[a-z0-9-]+/[a-z]+-[0-9]{3}[a-z]?\.yaml", f)]
+        if p["_gap_files"] and not sol:
+            ids = ", ".join(pathlib.Path(f).stem for f in p["_gap_files"])
+            events.append(dict(t=parse(p["created_at"]), kind="pr", login=p["user"]["login"], gap=None,
+                               problem=pathlib.Path(p["_gap_files"][0]).parent.name,
+                               text=f'{p["user"]["login"]} proposed a new gap: {ids} (PR #{p["number"]})', url=p["html_url"]))
+            if p.get("merged_at"):
+                events.append(dict(t=parse(p["merged_at"]), kind="merged", login=p["user"]["login"], gap=None,
+                                   problem=pathlib.Path(p["_gap_files"][0]).parent.name,
+                                   text=f"New gap {ids} accepted", url=p["html_url"]))
+            continue
         if notes and not sol:
             continue  # the paper track is closed; its notes are not part of the record
         if gap:
@@ -180,15 +196,23 @@ def collect() -> dict:
                               prs=[dict(number=p["number"], url=p["url"], login=p["login"], verdict=p["verdict"])
                                    for p in open_prs])
 
+    proposal_sessions = {}  # session label -> problem
+    for (cg, login), t in claims.items():
+        if cg not in by_id and t_now - t <= ACTIVE:
+            proposal_sessions[f"{login} · {cg} (proposed)"] = cg.split("-")[0]
+    slug_of = {"pnp": "pvsnp", "bsd": "bsd"}
+
     # Active work sessions: one per (account, task). Several agents can share one account.
     def note_sessions(slug=None):
         return {f'{p["login"]} · notes/{p["problem"]} #{p["number"]}' for p in pr_info
                 if p["is_note"] and p["state"] == "open" and t_now - p["updated"] <= ACTIVE
                 and (slug is None or p["problem"] == slug)}
-    active = sorted({f'{a["login"]} · {gid}' for gid, s in gap_state.items() for a in s["agents"]} | note_sessions())
+    active = sorted({f'{a["login"]} · {gid}' for gid, s in gap_state.items() for a in s["agents"]} | note_sessions()
+                    | set(proposal_sessions))
     everyone = sorted({e["login"] for e in events if e.get("login")})
     for e in events:
-        e["problem"] = e.get("problem") or (by_id[e["gap"]]["problem"] if e.get("gap") else None)
+        if not e.get("problem") and e.get("gap"):
+            e["problem"] = by_id[e["gap"]]["problem"] if e["gap"] in by_id else {"pnp": "pvsnp"}.get(e["gap"].split("-")[0], e["gap"].split("-")[0])
     events.sort(key=lambda e: e["t"], reverse=True)
 
     # Per-problem summary: who is working now, what is being checked, activity per day.
@@ -199,6 +223,7 @@ def collect() -> dict:
         gids = [g["id"] for g in gaps if g["problem"] == slug]
         workers = {f'{a["login"]} · {gid}' for gid in gids for a in gap_state[gid]["agents"]}
         workers |= note_sessions(slug)
+        workers |= {k for k, v in proposal_sessions.items() if slug_of.get(v, v) == slug}
         per_day = [sum(1 for e in events if e.get("problem") == slug and e["t"].date() == d) for d in days]
         problems[slug] = dict(agents_now=sorted(workers),
                               checking=sum(1 for gid in gids if gap_state[gid]["state"] in ("checking", "accepted")),
