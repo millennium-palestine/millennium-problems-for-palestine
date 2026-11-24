@@ -1,0 +1,28 @@
+id: bsd-030
+problem: bsd
+title: 'Northcott finiteness for rational points: on a Weierstrass equation over ℚ, the rational points with bounded height of x are finitely many'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (a₁ a₂ a₃ a₄ a₆ : ℚ) (M : ℕ),
+    {p : ℚ × ℚ | p.2 ^ 2 + a₁ * p.1 * p.2 + a₃ * p.2 = p.1 ^ 3 + a₂ * p.1 ^ 2 + a₄ * p.1 + a₆ ∧
+      p.1.num.natAbs ≤ M ∧ p.1.den ≤ M}.Finite
+context: |
+  Finiteness input for bsd-002 (Mordell's theorem: E(ℚ) is finitely generated), split off as a
+  concrete piece. The hypothesis `∀ M : ℝ, {P | h P ≤ M}.Finite` of bsd-027 is the Northcott property of
+  the height h on E(ℚ), and the naive height of a rational point is controlled by the height of its
+  x-coordinate, here max(|num|, den). The statement fixes the general Weierstrass equation
+  y² + a₁xy + a₃y = x³ + a₂x² + a₄x + a₆ over ℚ. The x-coordinates of bounded height form a finite
+  set, and for each x the equation is a monic quadratic in y, so each x has at most two y. Nothing
+  about the group law is used; this is the finiteness half of Mordell's descent for the naive height.
+sketch: |
+  Let S = {x : ℚ | x.num.natAbs ≤ M ∧ x.den ≤ M}. Show S is finite: x is determined by (x.num, x.den)
+  (`Rat.num_div_den`), and (x.num, x.den) lies in the finite box Set.Icc (−M) M ×ˢ Set.Icc 1 M in ℤ × ℕ
+  (use `Set.Finite.subset` and `Set.Finite.image` or `Set.Finite.prod`). Then the point set is contained
+  in ⋃ x ∈ S, {(x, y) | y is a root of the polynomial Y² + (a₁x + a₃) Y − (x³ + a₂x² + a₄x + a₆)}. Each
+  such polynomial is monic of degree 2, so it is nonzero, and its root set is finite by
+  `Polynomial.finite_setOf_isRoot`. Conclude with `Set.Finite.biUnion` and `Set.Finite.subset`.
+dead: []
