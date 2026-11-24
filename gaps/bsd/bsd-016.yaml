@@ -1,0 +1,28 @@
+id: bsd-016
+problem: bsd
+title: 'The L-coefficients of an elliptic curve over ℚ are at most d(n)√n in absolute value'
+status: open
+imports:
+- Mathlib
+- MPP.Defs.BSD
+open:
+- MPP.BSD
+depends: []
+statement: |
+  ∀ (E : WeierstrassCurve ℚ) [E.IsElliptic] (n : ℕ), 0 < n →
+    ‖((E.LFunction n : ℤ) : ℂ)‖ ≤ (n.divisors.card : ℝ) * Real.sqrt (n : ℝ)
+context: |
+  Coefficient half of bsd-006. `WeierstrassCurve.LFunction` (Mathlib, LFunction.lean) is the Euler
+  product of the local factors. Three facts give the bound. (1) Multiplicativity: LFunction is
+  multiplicative, and d(n)√n is multiplicative, so it suffices to check prime powers p^k.
+  (2) Good reduction at p: the local factor is 1 − a_p T + p T², so the prime power coefficients
+  c_k satisfy c_k = a_p c_{k−1} − p c_{k−2}, and Hasse's bound |a_p| ≤ 2√p gives
+  |c_k| ≤ (k+1) p^(k/2). (3) Bad primes: the local factor is 1 ∓ T or 1, so |c_k| ≤ 1.
+  Hasse's bound is not in Mathlib (the bsd-006 context says so), so a proof must either prove
+  it or find it in Mathlib under another name. Then d(n)√n = Π (k+1) p^(k/2) matches.
+sketch: |
+  Reduce to prime powers with `ArithmeticFunction.IsMultiplicative` and the Euler product
+  (`eulerProduct` lemmas in Mathlib). For a prime power, induct on k with the recurrence from the
+  local power series, using |a_p| ≤ 2√p. Bad primes give coefficients in {0, ±1}. Keep the
+  curve-independent Hasse input as a separate lemma; it can be split out as its own gap.
+dead: []
