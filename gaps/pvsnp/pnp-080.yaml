@@ -1,0 +1,28 @@
+id: pnp-080
+problem: pvsnp
+title: Under P = NP, a polynomial-time map returns an accepted witness of length at most p(|x|) whenever one exists
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-079
+statement: |
+  ∀ (V : Lang) (p : Polynomial ℕ), InP V → PEqualsNP →
+    ∃ f : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) ∧
+      ∀ x : List Bool, (∃ w : List Bool, w.length ≤ p.eval x.length ∧ V (pair x w) = true) →
+        (f x).length ≤ p.eval x.length ∧ V (pair x (f x)) = true
+context: |
+  The search form of an NP certificate: a witness of length at most p(|x|) is found by a
+  polynomial-time map, not only shown to exist. pnp-079 already gives the shortlex-least such
+  witness under P = NP, so this is its projection onto the first two conjuncts. It is listed
+  as a named step because the NP definition in MPP.Defs.PvsNP asks for existence only.
+  The statement is a consequence of P = NP and does not decide P vs NP.
+sketch: |
+  Take f from pnp-079 for V and p. The length bound and acceptance of f x are its first two
+  conjuncts, applied under the existence hypothesis. The proof is a direct projection.
+dead: []
