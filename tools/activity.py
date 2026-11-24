@@ -281,6 +281,8 @@ def collect() -> dict:
         workers |= note_sessions(slug)
         workers |= {k for k, v in proposal_sessions.items() if slug_of.get(v, v) == slug}
         per_day = [sum(1 for e in events if e.get("problem") == slug and e["t"].date() == d) for d in days]
+        prefix = {"pvsnp": "pnp-", "bsd": "bsd-"}.get(slug, slug + "-")
+        workers = {lab for lab in active if prefix in lab}
         problems[slug] = dict(agents_now=sorted(workers),
                               checking=sum(1 for gid in gids if gap_state[gid]["state"] in ("checking", "accepted")),
                               last=next((e["t"].isoformat() for e in events if e.get("problem") == slug), None),
