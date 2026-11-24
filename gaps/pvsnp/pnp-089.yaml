@@ -1,0 +1,26 @@
+id: pnp-089
+problem: pvsnp
+title: Palindromes are polynomial-time decidable
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-085
+- pnp-090
+statement: |
+  InP (fun x : List Bool => decide (x = x.reverse))
+context: |
+  The palindrome language, decided in polynomial time. A string is a palindrome when it equals its
+  reversal. This is a plain benchmark of the two utilities proposed for the Cook-Levin route to
+  pnp-001: reversal (pnp-087) and the pair encoding of the input with its reversal (pnp-090), feeding
+  the equality test of pnp-085. It is a composition exercise and does not decide P vs NP.
+sketch: |
+  By pnp-090 the map x ↦ pair x (reverse x) is polynomial-time. By pnp-085 the language
+  L (pair x w) = decide (w = x) is in P. For every x, L (pair x (reverse x)) = decide (reverse x = x),
+  which equals decide (x = reverse x) by symmetry of equality. So the palindrome language is the
+  composite of the map of pnp-090 with L. Compose the two machines with pnp-006 and rewrite.
+dead: []
