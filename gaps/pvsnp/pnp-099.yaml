@@ -1,0 +1,20 @@
+id: pnp-099
+problem: pvsnp
+title: Pairs whose witness has an odd number of ones are polynomial-time decidable
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+depends:
+- pnp-092
+statement: |
+  ∃ L : Lang, InP L ∧ ∀ x w : List Bool, L (pair x w) = decide (w.count true % 2 ≠ 0)
+context: |
+  Complement of the witness-parity language of pnp-092 on the pair encoding. It is the odd-parity
+  counterpart of pnp-092 and does not decide P vs NP.
+sketch: |
+  Let L92 be the language of pnp-092. Put L = fun z => !L92 z, which is in P by pnp-004. Then
+  L (pair x w) = !decide (w.count true % 2 = 0), which is decide (w.count true % 2 ≠ 0).
+dead: []

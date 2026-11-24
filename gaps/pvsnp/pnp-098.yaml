@@ -1,0 +1,22 @@
+id: pnp-098
+problem: pvsnp
+title: Strings with an odd number of ones are polynomial-time decidable
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+depends:
+- pnp-004
+- pnp-091
+statement: |
+  InP (fun x : List Bool => decide (x.count true % 2 ≠ 0))
+context: |
+  Complement of the even-parity language of pnp-091. Complementing a polynomial-time language is
+  pnp-004. It is a utility and does not decide P vs NP.
+sketch: |
+  Apply the complement gap pnp-004 to the parity language of pnp-091. Its complement is
+  fun x => !decide (x.count true % 2 = 0), which equals decide (x.count true % 2 ≠ 0) by
+  the Boolean identity !decide p = decide (¬ p) and parity of a natural number.
+dead: []
