@@ -1,0 +1,28 @@
+id: bsd-086
+problem: bsd
+title: 'Fibre argument for weak Mordell–Weil: a homomorphism whose kernel is twice the group and whose image lies in a finite set has a finite set of representatives modulo twice the group'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (G H : Type) [AddCommGroup G] [AddCommGroup H] (κ : G →+ H) (s : Set H), s.Finite →
+    (∀ P : G, κ P ∈ s) → (∀ P Q : G, κ P = κ Q → ∃ R : G, P = Q + 2 • R) →
+    ∃ t : Finset G, ∀ P : G, ∃ Q ∈ t, ∃ R : G, P = Q + 2 • R
+context: |
+  The last step of the proof of bsd-036 (weak Mordell–Weil), in the form the sketch of bsd-036 describes: choose one point in
+  each nonempty fibre of the Kummer map κ over its finite image. The Kummer map is a homomorphism from E(ℚ) to the square
+  classes (bsd-036 sketch, bsd-067 to bsd-079 for its homomorphism property), its kernel is 2E(ℚ) (bsd-056 in the split case,
+  bsd-082 and bsd-085 in the irreducible and one-root cases), and its image lies in a finite set (bsd-073, bsd-075 and the
+  quadratic analogue). This gap is the purely group-theoretic step that turns these three facts into a finite set of
+  representatives for E(ℚ)/2E(ℚ). It is stated for an arbitrary additive group and homomorphism, so it does not depend on the
+  curve, and it is true: pick a preimage Q_c for each c in the image with κ(Q_c) = c, and for P take c = κ(P); then κ(P) = κ(Q_c)
+  gives P = Q_c + 2R by the kernel hypothesis.
+sketch: |
+  Use classical choice to pick, for every c : H, a preimage when one exists: `choose` applied to
+  ∀ c : H, ∃ Q : G, (∃ P, κ P = c) → κ Q = c, which holds by cases on ∃ P, κ P = c (use 0 otherwise). Let the finite
+  set be `hs.toFinset.image pick`, which is a Finset G because hs.toFinset is a Finset H. For P, apply the kernel hypothesis
+  to P and pick (κ P), using κ P = κ (pick (κ P)) from the choice property with the witness ⟨P, rfl⟩. The membership
+  `pick (κ P)` in the image holds because κ P ∈ s, via `Set.Finite.mem_toFinset` and `Finset.mem_image`.
+dead: []
