@@ -1,0 +1,30 @@
+id: bsd-014
+problem: bsd
+title: 'E32 has finitely many rational points'
+status: open
+imports:
+- Mathlib
+- MPP.Defs.BSD
+open:
+- MPP.BSD
+depends:
+- bsd-011
+- bsd-012
+- bsd-013
+statement: |
+  Finite E32.toAffine.Point
+context: |
+  Finiteness of E32(ℚ) for E32 : y² = x³ − x. An affine point with y ≠ 0 cannot exist:
+  bsd-011 would give a solution of a⁴ − b⁴ = c² with a, b, c nonzero, which bsd-012 forbids.
+  So every affine point has y = 0, and bsd-013 gives x ∈ {0, 1, −1}. Hence the point type
+  has at most four elements: zero and the three affine points of order 2. A finite group has
+  rank 0, so this statement, plus the fact that finite groups have rank 0, closes bsd-005.
+  The points are `Point.zero` and `Point.some x y h`; the proof `h` is irrelevant, so
+  two points with the same x and y are equal.
+sketch: |
+  Show that every point lies in the finite set {zero} ∪ {some 0 0 _, some 1 0 _, some (-1) 0 _}.
+  For `some x y h`, use `h` to get the curve equation, then bsd-011, bsd-012, bsd-013 to pin
+  down x and y. Conclude with `Set.Finite.subset` on a finite set of points, or with
+  `Finite.of_injective` into a finite type. The three nonsingularity proofs are concrete
+  computations (`norm_num` or `decide` after unfolding E32).
+dead: []
