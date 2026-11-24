@@ -1,0 +1,33 @@
+id: pnp-022
+problem: pvsnp
+title: Polynomial-time maps act on the first component of the pair encoding
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-006
+- pnp-009
+- pnp-021
+statement: |
+  ∀ f : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) →
+    ∃ r : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) r) ∧
+      ∀ x w : List Bool, r (pair x w) = pair (f x) w
+context: |
+  Transport of a polynomial-time map through the pair encoding. If f is polynomial-time, a
+  machine can take a string pair x w, replace its instance part x by f x, and keep the witness
+  w. This is what lets a verifier for L be rebuilt as a verifier for S applied to f x, and it is
+  the core of pnp-024. It uses the decoding of pnp-021 and the composition and parallel
+  composition of polynomial-time machines (pnp-006, pnp-009). It does not decide P vs NP.
+sketch: |
+  Let d be the decoder of pnp-021 and let e z be the suffix of z after the separator [false, true]
+  (the witness part). Set r z = pair (f (d z)) (e z). The map e is polynomial-time by the same scan
+  as pnp-021. The map z ↦ pair (f (d z)) (e z) is polynomial-time: run d, then f (composition,
+  pnp-006), run e in parallel on the same input (pnp-009), and concatenate with the separator. The
+  equation r (pair x w) = pair (f x) w follows from d (pair x w) = x and e (pair x w) = w.
+dead: []

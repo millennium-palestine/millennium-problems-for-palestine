@@ -1,0 +1,26 @@
+id: pnp-023
+problem: pvsnp
+title: Polynomial-time maps have polynomially bounded output
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- Turing
+depends: []
+statement: |
+  ∀ f : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) →
+    ∃ q : Polynomial ℕ, ∀ x : List Bool, (f x).length ≤ q.eval x.length
+context: |
+  Size control for polynomial-time maps. A polynomial-time map cannot output more symbols than it
+  runs steps, and its running time is bounded by a polynomial in the input length. So the output
+  length is bounded by a polynomial too. This is needed to bound the witness length when a
+  reduction is composed with an NP verifier (pnp-024). It is a structural lemma and does not
+  decide P vs NP.
+sketch: |
+  Take q to be the time polynomial of the machine. By outputsFun, the machine halts with output
+  eb (f x) in at most time.eval |x| steps. Each step pushes at most one symbol onto the output
+  stack, so the output has at most as many symbols as steps. The encoding is one symbol per Bool,
+  so |f x| = length of the output, and |f x| ≤ time.eval |x|.
+dead: []
