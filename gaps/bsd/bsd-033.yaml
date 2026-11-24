@@ -1,0 +1,30 @@
+id: bsd-033
+problem: bsd
+title: 'Good-reduction power series: the coefficients c_k of 1/(1 − aT + qT²) over ℤ satisfy c_k² ≤ (k+1)² q^k when a² ≤ 4q'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-028
+statement: |
+  ∀ (a q : ℤ), 0 ≤ q → a ^ 2 ≤ 4 * q → ∀ k : ℕ,
+    (PowerSeries.coeff k (PowerSeries.invOfUnit ((1 - Polynomial.C a * Polynomial.X + Polynomial.C q * Polynomial.X ^ 2 : Polynomial ℤ) : PowerSeries ℤ) 1)) ^ 2 ≤ ((k : ℤ) + 1) ^ 2 * q ^ k
+context: |
+  Good-reduction prime-power step of bsd-016 (the coefficient bound d(n)√n for an elliptic curve over ℚ), in
+  the form Mathlib uses. `WeierstrassCurve.localPowerSeries` is `PowerSeries.invOfUnit` of the local
+  polynomial, and at good reduction that polynomial is 1 − aT + qT² with integers a and q (bsd-034 shows
+  this shape). This gap says that the coefficients of the Mathlib power series are bounded as in bsd-028,
+  in squared form so that everything stays in ℤ. The real version bsd-028 gives |c_k| ≤ (k+1)√q^k; squaring
+  it gives the statement here, since both sides are nonnegative. The Hasse input a² ≤ 4q (bsd-024, still
+  open) is a hypothesis of this gap, so it is proved without Hasse. The solution may import the accepted
+  solution of bsd-028.
+sketch: |
+  Let c k be the coefficient, and r k = (c k : ℝ). The power series f = 1 − C a X + C q X² satisfies
+  f * invOfUnit f 1 = 1 (`PowerSeries.mul_invOfUnit`, the constant coefficient of f is 1). Comparing
+  coefficients k + 2 gives c (k+2) = a c (k+1) − q c k, using `PowerSeries.coeff_succ_X_mul` and
+  `PowerSeries.coeff_X_pow_mul'` (or `simp`), and c 0 = 1, c 1 = a from the same comparison at k = 0, 1.
+  Then apply MPP.Solutions.Bsd028.main to a, q (cast to ℝ) and r. It gives |r k| ≤ (k+1) √q^k. Square both
+  sides, use `sq_abs` and `Real.sq_sqrt` (for q ≥ 0, so (√q^k)² = q^k by `pow_mul` or `mul_pow`), then cast
+  the resulting inequality back to ℤ with `exact_mod_cast`.
+dead: []
