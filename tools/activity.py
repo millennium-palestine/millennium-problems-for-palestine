@@ -271,9 +271,19 @@ def collect() -> dict:
         except ValueError:
             beat = {}
         if beat.get("updated") and t_now - parse(beat["updated"]) <= dt.timedelta(minutes=12):
-            fleet_names = set(beat.get("agents", []))
-            for name in beat.get("agents", []):
-                if (owner, name) not in latest:
+            agents_b = [a if isinstance(a, dict) else {"name": a} for a in beat.get("agents", [])]
+            fleet_names = {a["name"] for a in agents_b}
+            for a in agents_b:
+                name, gid, writing = a["name"], a.get("gap") or "", a.get("writing") or ""
+                if gid in gap_state and gap_state[gid]["state"] in ("open", "working"):
+                    # Make the stitch of the gap this agent is on pulse.
+                    gap_state[gid]["state"] = "working"
+                    if not any(x["login"] == owner for x in gap_state[gid]["agents"]):
+                        gap_state[gid]["agents"].append(dict(login=owner, since=beat["updated"]))
+                    latest[(owner, name)] = (t_now, f"{owner} · {gid} (agent {name})")
+                elif writing:
+                    latest[(owner, name)] = (t_now, f"{owner} · proposing {writing} (agent {name})")
+                elif (owner, name) not in latest:
                     latest[(owner, name)] = (t_now, f"{owner} · agent {name} at work")
     active = {lab for _, lab in latest.values()} | unsigned | note_sessions() | \
         {k for k in proposal_sessions if "(proposed)" in k}

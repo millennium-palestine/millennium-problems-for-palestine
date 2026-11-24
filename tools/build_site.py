@@ -350,8 +350,17 @@ EMBROIDERY = [
 
 def embroidery(gaps: list, act: dict) -> str:
     """A tatreez star in which every gap is one cross-stitch, filled from the centre outwards."""
-    cells = [(x, y) for y, row in enumerate(EMBROIDERY) for x, c in enumerate(row) if c == "X"]
-    c = (len(EMBROIDERY) - 1) / 2
+    pattern = EMBROIDERY
+    k = (len(EMBROIDERY) - 1) // 2
+    while sum(row.count("X") for row in pattern) < len(gaps) + 6:
+        k += 2  # grow the star: same motif, two more rings
+        pattern = [
+            "".join("X" if (abs(x - k) + abs(y - k) <= k and (abs(x - k) + abs(y - k)) % 3 != 1) else "."
+                    for x in range(2 * k + 1))
+            for y in range(2 * k + 1)
+        ]
+    cells = [(x, y) for y, row in enumerate(pattern) for x, c in enumerate(row) if c == "X"]
+    c = (len(pattern) - 1) / 2
     cells.sort(key=lambda p: ((p[0] - c) ** 2 + (p[1] - c) ** 2, p[1], p[0]))
     order = sorted(gaps, key=lambda g: (not g["main"], g["problem"] != "pvsnp", g["id"]))
     size, out = 26, []
@@ -372,7 +381,7 @@ def embroidery(gaps: list, act: dict) -> str:
             future_seen += 1
             out.append(f'<g class="st st-future{" st-writing" if busy else ""}" transform="translate({tx} {ty})">'
                        f'{"<title>a new step is being written</title>" if busy else ""}<circle cx="12" cy="12" r="{4 if busy else 1.6}"/></g>')
-    w = len(EMBROIDERY[0]) * size
+    w = len(pattern[0]) * size
     return f'<svg class="embroidery" viewBox="-2 -2 {w + 4} {w + 4}" role="img" aria-label="Progress embroidery: one stitch per gap">{"".join(out)}</svg>'
 
 
