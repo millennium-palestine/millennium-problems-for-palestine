@@ -1,0 +1,23 @@
+id: bsd-026
+problem: bsd
+title: 'The local power series of a Weierstrass curve has constant coefficient 1'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (R K : Type) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] [Field K] [Algebra R K]
+    [IsFractionRing R K] (W : WeierstrassCurve K),
+    PowerSeries.constantCoeff (W.localPowerSeries R) = 1
+context: |
+  Second input to the multiplicativity of the local factors in bsd-020. The multiplicativity lemma
+  `ArithmeticFunction.isMultiplicative_ofPowerSeries_of_isPrimePow` requires the power series to have
+  constant coefficient 1. Here `localPowerSeries` is the inverse of the local polynomial
+  (`PowerSeries.invOfUnit`, with unit 1), and the constant coefficient of the local polynomial is 1 in
+  each of its four cases (good, split and nonsplit multiplicative, additive reduction). So this is a
+  short lemma. It is stated for every DVR R and every Weierstrass curve over its fraction field.
+sketch: |
+  Unfold `WeierstrassCurve.localPowerSeries`. Then `PowerSeries.constantCoeff_invOfUnit` reduces the goal
+  to the constant term of the unit, which is 1. Finish with `simp`.
+dead: []
