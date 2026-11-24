@@ -1,0 +1,24 @@
+id: pnp-092
+problem: pvsnp
+title: Pairs whose witness has an even number of ones are polynomial-time decidable
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+depends:
+- pnp-025
+- pnp-091
+statement: |
+  ∃ L : Lang, InP L ∧ ∀ x w : List Bool, L (pair x w) = decide (w.count true % 2 = 0)
+context: |
+  Composition of pnp-025 (the witness part of the pair encoding is polynomial-time) with pnp-091
+  (parity of the ones). The language ignores the instance x and checks the parity of the witness w,
+  as a verifier of a witness-parity property would. It is a composition exercise and does not decide
+  P vs NP.
+sketch: |
+  Let e be the polynomial-time witness extractor of pnp-025 and let L be the parity language of
+  pnp-091. Put L' = L ∘ e, which is in P by pnp-008. Then L' (pair x w) = L w by e (pair x w) = w,
+  which is decide (w.count true % 2 = 0).
+dead: []

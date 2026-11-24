@@ -1,0 +1,23 @@
+id: pnp-091
+problem: pvsnp
+title: Strings with an even number of ones are polynomial-time decidable
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+depends: []
+statement: |
+  InP (fun x : List Bool => decide (x.count true % 2 = 0))
+context: |
+  Parity of the number of ones in a binary string, decided by a one-bit counter. The machine reads
+  the input symbol by symbol, keeps the parity of the ones seen so far in its state, and writes the
+  negated parity at the end. It is the parity analogue of pnp-013 and pnp-087: a state that depends
+  on the input, one step per symbol. It is a utility and does not decide P vs NP.
+sketch: |
+  State: the last popped symbol (an option) and the parity of the ones read so far. Each input symbol
+  is popped in one machine step and xor-ed into the parity. On the empty input, push the negated
+  parity onto the output stack and halt, returning the state to the initial one. The number of
+  steps is the input length plus two, so the time bound is affine.
+dead: []
