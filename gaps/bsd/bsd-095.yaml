@@ -1,0 +1,33 @@
+id: bsd-095
+problem: bsd
+title: 'Euler product at a prime power: if every factor other than one has trivial values at p, p², …, p^k, the Euler product at p^k is the remaining factor at p^k'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (ι : Type) (f : ι → ArithmeticFunction ℤ) (i₀ : ι) (p k : ℕ), p.Prime →
+    (∀ i, i ≠ i₀ → ∀ j, j ≤ k → f i (p ^ j) = (1 : ArithmeticFunction ℤ) (p ^ j)) →
+    (∀ n : ℕ, ∀ᶠ i in Filter.cofinite, f i n = (1 : ArithmeticFunction ℤ) n) →
+    ArithmeticFunction.eulerProduct f (p ^ k) = f i₀ (p ^ k)
+context: |
+  Curve-free Euler-product step for the prime-power case of bsd-016. Mathlib's `WeierstrassCurve.LFunction`
+  is `ArithmeticFunction.eulerProduct` over the primes of the ring of integers of ℚ, and the value at p^k
+  must be read off from the one local factor at p. This gap isolates that step with an arbitrary index type:
+  when all factors except f i₀ have value 1 at p^j for j ≤ k, the Euler product at p^k equals f i₀ (p^k).
+  Mathlib's `ArithmeticFunction.tendsTo_eulerProduct_of_tendsTo` gives the value at n as the eventual value
+  of the finite partial products, so the statement reduces to finite products. It is true: the value at p^k of
+  a Dirichlet convolution only sees the values at the divisors p^j, j ≤ k. The second hypothesis is the
+  convergence condition that Mathlib needs to define the Euler product. Used by the identification of
+  E.LFunction at p^k with the local power series (the next step of bsd-016).
+sketch: |
+  For a finite set s of indices, let h = ∏ i ∈ s, f i over i ≠ i₀ (i.e. over s.erase i₀). Induction on the
+  finset shows h (p^j) = (1 : ArithmeticFunction ℤ) (p^j) for all j ≤ k: a divisor of p^j is p^m with m ≤ j
+  (`Nat.dvd_prime_pow`), and `ArithmeticFunction.mul_apply` sums over the divisors, so only the values at
+  powers of p matter. Then for s ∋ i₀, (∏ i ∈ s, f i) (p^k) = (f i₀ * h) (p^k) = Σ_{m ≤ k} f i₀ (p^m) * h (p^(k−m)),
+  and h (p^(k−m)) = 0 unless m = k, so the sum is f i₀ (p^k) * h 1 = f i₀ (p^k), using h 1 = 1 from the
+  hypothesis at j = 0. Finally `ArithmeticFunction.tendsTo_eulerProduct_of_tendsTo` says the value at p^k of the
+  partial products is eventually the Euler product, and `Filter.eventually_ge_atTop {i₀}` on Finset ι gives an s ∋ i₀
+  inside that eventual set. Note `ArithmeticFunction.eulerProduct` is a `tprod`; the proof works at one n only.
+dead: []
