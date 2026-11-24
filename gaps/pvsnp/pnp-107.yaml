@@ -1,0 +1,33 @@
+id: pnp-107
+problem: pvsnp
+title: A pop-free TM2 block only prepends to each stack, with a prefix fixed by the input tops
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- Computability
+- Turing
+depends: []
+statement: |
+  ∀ (K : Type) [DecidableEq K] (Γ : K → Type) (Λ σ : Type) (q : TM2.Stmt Γ Λ σ),
+    TM2.Stmt.rec (motive := fun _ => Prop) (fun _ _ _ ih => ih) (fun _ _ _ ih => ih)
+      (fun _ _ _ _ => False) (fun _ _ ih => ih) (fun _ _ _ ih₁ ih₂ => ih₁ ∧ ih₂) (fun _ => True) True q →
+    ∀ (v : σ) (S S' : ∀ k, List (Γ k)), (∀ k, (S k).head? = (S' k).head?) →
+      ∀ k, ∃ L : List (Γ k), (TM2.stepAux q v S).stk k = L ++ S k ∧
+        (TM2.stepAux q v S').stk k = L ++ S' k
+context: |
+  Second window lemma for the Cook–Levin tableau of pnp-100, next to pnp-106. For a TM2 statement
+  block with no pop (the predicate in the hypothesis), each stack after the block is the old stack
+  with a list of symbols pushed on top. The pushed list depends only on the input variable and the top
+  symbols of the stacks, so two runs whose stacks have the same tops push the same list. This is the
+  pushes-only half of the stack behaviour that the tableau needs, and it is a fact about one block, not
+  about any language. It does not decide P vs NP.
+sketch: |
+  Induction on q, generalising v, S and S' (the pop case is absurd). For push k f q put S1 = update S k
+  (f v :: S k) and S1' likewise; the tops of S1 and S1' agree, so the induction hypothesis gives one
+  prefix L for S1 and S1'. If j = k the prefix for S is L ++ [f v], since L ++ (f v :: S k) equals
+  (L ++ [f v]) ++ S k; if j ≠ k then the prefix is L, since update does not change stack j. For peek
+  the continuation gets f v (S k).head?, equal for S and S' by hypothesis. Branch and load pass the
+  variable on, and goto and halt leave the stacks unchanged, so the empty prefix works.
+dead: []

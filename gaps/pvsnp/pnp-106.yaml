@@ -1,0 +1,34 @@
+id: pnp-106
+problem: pvsnp
+title: A pop-free TM2 block has control and top-of-stack output determined by the input tops
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- Computability
+- Turing
+depends: []
+statement: |
+  ∀ (K : Type) [DecidableEq K] (Γ : K → Type) (Λ σ : Type) (q : TM2.Stmt Γ Λ σ),
+    TM2.Stmt.rec (motive := fun _ => Prop) (fun _ _ _ ih => ih) (fun _ _ _ ih => ih)
+      (fun _ _ _ _ => False) (fun _ _ ih => ih) (fun _ _ _ ih₁ ih₂ => ih₁ ∧ ih₂) (fun _ => True) True q →
+    ∀ (v : σ) (S S' : ∀ k, List (Γ k)), (∀ k, (S k).head? = (S' k).head?) →
+      (TM2.stepAux q v S).l = (TM2.stepAux q v S').l ∧
+      (TM2.stepAux q v S).var = (TM2.stepAux q v S').var ∧
+      ∀ k, ((TM2.stepAux q v S).stk k).head? = ((TM2.stepAux q v S').stk k).head?
+context: |
+  First window lemma for the Cook–Levin tableau of pnp-100. A TM2 statement block runs in one step
+  through TM2.stepAux. The predicate in the hypothesis holds exactly when the block contains no pop
+  (push, peek, load, branch, goto and halt are allowed, pop is not). For such a block, the next label,
+  the next internal variable and the top symbol of every stack are determined by the input variable
+  and the top symbols of the input stacks. This is the depth-one case of the window relation that the
+  tableau needs, and it is a fact about one block, not about any language. It does not decide P vs NP.
+sketch: |
+  Induction on q, generalising v, S and S' (the hypothesis on q is the pop-free predicate, and the
+  pop case is absurd). A push k f q changes stack k to f v :: S k in both runs, and the two updated
+  stacks still agree on their top symbols, so the induction hypothesis applies. A peek k f q calls
+  the continuation with f v (S k).head?, which is equal for S and S' by the hypothesis at k. A load
+  and a branch pass the same variable into the subblocks. For goto and halt the stepAux result is
+  ⟨some (f v), v, S⟩ or ⟨none, v, S⟩, so the claim is the hypothesis itself.
+dead: []

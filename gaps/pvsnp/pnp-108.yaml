@@ -1,0 +1,35 @@
+id: pnp-108
+problem: pvsnp
+title: A TM2 block with at most b pops per path has its next label, variable and stack tops fixed by the top b+1 symbols
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- Computability
+- Turing
+depends: []
+statement: |
+  ∀ (K : Type) [DecidableEq K] (Γ : K → Type) (Λ σ : Type) (q : TM2.Stmt Γ Λ σ) (b : ℕ),
+    TM2.Stmt.rec (motive := fun _ => ℕ) (fun _ _ _ ih => ih) (fun _ _ _ ih => ih)
+      (fun _ _ _ ih => ih + 1) (fun _ _ ih => ih) (fun _ _ _ ih₁ ih₂ => max ih₁ ih₂) (fun _ => 0) 0 q ≤ b →
+    ∀ (v : σ) (S S' : ∀ k, List (Γ k)), (∀ k, (S k).take (b + 1) = (S' k).take (b + 1)) →
+      (TM2.stepAux q v S).l = (TM2.stepAux q v S').l ∧
+      (TM2.stepAux q v S).var = (TM2.stepAux q v S').var ∧
+      ∀ k, ((TM2.stepAux q v S).stk k).head? = ((TM2.stepAux q v S').stk k).head?
+context: |
+  General window lemma for the Cook–Levin tableau of pnp-100, and the version that pnp-106 specialises
+  (b = 0). A TM2 statement block may pop at most b times along any path; the depth is computed by the
+  recursion in the hypothesis (pop adds one, branch takes the maximum, the rest add nothing). If two
+  stacks agree on their top b+1 symbols, then the block gives the same next label and the same next
+  variable, and the same top symbol on every stack. The tableau window of a machine is then a fixed
+  window whose width is the maximum pop depth over its finitely many labels. This does not decide
+  P vs NP.
+sketch: |
+  Induction on q, generalising b, v, S and S'. Peek reads the head, which agrees because the top
+  symbol agrees whenever b + 1 ≥ 1. Push k f q prepends f v to stack k, which keeps the top b + 1
+  symbols in agreement, so the budget b is unchanged. Pop k f q has PD = PD q + 1 ≤ b, so b ≥ 1;
+  the continuation runs with budget b - 1 on the tails, and the tails agree on their top b symbols
+  because the stacks agree on their top b + 1. Load and branch keep the budget (branch uses the
+  maximum). Goto and halt leave the stacks unchanged, so the heads agree by the top-symbol hypothesis.
+dead: []
