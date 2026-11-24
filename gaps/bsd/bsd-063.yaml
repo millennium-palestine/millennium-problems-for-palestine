@@ -1,0 +1,25 @@
+id: bsd-063
+problem: bsd
+title: 'Kummer multiplicativity on a tangent: on y² = x³ + px + q with a rational root e, if x ≠ e and λ(2y) = 3x² + p, then x(2P) − e is a rational square, where x(2P) = λ² − 2x'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p q e : ℚ), e ^ 3 + p * e + q = 0 →
+    ∀ (x y lam x3 : ℚ), y ^ 2 = x ^ 3 + p * x + q → x ≠ e → lam * (2 * y) = 3 * x ^ 2 + p →
+      x3 = lam ^ 2 - 2 * x → ∃ r : ℚ, x3 - e = r ^ 2
+context: |
+  Doubling case of the Kummer map for bsd-036 (weak Mordell–Weil), at a rational root e. For a point P = (x, y) with
+  x ≠ e, the tangent at P meets the curve again at x(2P) = λ² − 2x with λ = (3x² + p)/(2y). The tangent identity
+  f(X) − (λX + ν)² = (X − x)²(X − x(2P)), with ν = y − λx and f(e) = 0, gives (x − e)²(x(2P) − e) = (y − λ(x − e))².
+  So the class of x(2P) − e in ℚ*/ℚ*² is trivial, which is the statement that the Kummer map kills the doubled point
+  in the square-class coordinate at e. It is the tangent counterpart of bsd-062 (chord multiplicativity). The identity is
+  purely algebraic and uses only the curve equation, the tangent slope and f(e) = 0. The statement is self-contained.
+sketch: |
+  Put D = (x − e)²(x3 − e) − (y − λ(x − e))² with x3 = λ² − 2x. Expanding, the λ² terms cancel and the rest is
+  −(y² − f(x)) + (x − e)(2λy − (3x² + p)) − f(e). So the goal is `linear_combination` of the curve equation (coefficient −1),
+  the slope relation (coefficient x − e) and the root relation he (coefficient −1), after rewriting x3. Then
+  x3 − e = ((y − λ(x − e))/(x − e))² from the identity and x − e ≠ 0; take r = (y − λ(x − e))/(x − e).
+dead: []
