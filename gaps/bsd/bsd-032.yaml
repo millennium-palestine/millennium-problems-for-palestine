@@ -1,0 +1,25 @@
+id: bsd-032
+problem: bsd
+title: 'Hasse from the degree form: a degree-form positivity hypothesis on an elliptic curve over a prime field gives Hasse''s bound'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic],
+    (∀ m n : ℤ, 0 ≤ m ^ 2 - ((p : ℤ) + 1 - (Nat.card W.toAffine.Point : ℤ)) * m * n + (p : ℤ) * n ^ 2) →
+      |((Nat.card W.toAffine.Point : ℕ) : ℝ) - ((p : ℝ) + 1)| ≤ 2 * Real.sqrt (p : ℝ)
+context: |
+  Reduction of Hasse's bound (bsd-024) to its geometric input. Let N = #E(F_p) and a = p + 1 − N. The
+  geometric input is that the degree form m² − a m n + p n² is nonnegative on integers m, n, which comes
+  from the Frobenius endomorphism π of E and the degree of m − nπ. Mathlib has no Frobenius, isogenies or
+  degree, so that input is not stated here: this gap takes it as a hypothesis and proves the rest. With
+  it, bsd-031 gives a² ≤ 4p, hence |a| ≤ 2√p, and |N − (p + 1)| = |a|. So bsd-024 is equivalent to this
+  gap together with the positivity of the degree form, and the positivity is the part still open.
+sketch: |
+  Let a := (p : ℤ) + 1 − N. The hypothesis at m = a, n = 2 gives a² ≤ 4p in ℤ (see bsd-031), and cast it
+  to ℝ with `exact_mod_cast`. Then |N − (p + 1)| = |(a : ℝ)| by `push_cast` and `abs_sub_comm`. Finally
+  |x| ≤ 2√p from x² ≤ 4p: use `Real.sqrt_le_sqrt` with `Real.sqrt_sq_eq_abs` (or `Real.abs_le_sqrt`), and
+  `Real.sqrt (4 * p) = 2 * Real.sqrt p`.
+dead: []
