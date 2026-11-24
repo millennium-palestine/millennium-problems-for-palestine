@@ -1,0 +1,32 @@
+id: bsd-044
+problem: bsd
+title: 'Naive parallelogram inequality: on any elliptic curve over ℚ, h(P + Q) ≤ 2h(P) + 2h(Q) + C for h(P) = log(1 + max(|num x|, den x))'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (E : WeierstrassCurve ℚ) [E.IsElliptic] (H : E.toAffine.Point → ℝ),
+    (∀ P : E.toAffine.Point, H P = match P with
+      | WeierstrassCurve.Affine.Point.zero => 0
+      | WeierstrassCurve.Affine.Point.some x _ _ =>
+          Real.log (1 + max (x.num.natAbs : ℝ) (x.den : ℝ))) →
+    ∃ C : ℝ, ∀ P Q : E.toAffine.Point, H (P + Q) ≤ 2 * H P + 2 * H Q + C
+context: |
+  Parallelogram input for the naive-height proof of bsd-038 (Silverman, The Arithmetic of Elliptic Curves,
+  Ch. VIII, Néron–Tate height). The canonical height ĥ satisfies ĥ(P+Q) + ĥ(P−Q) = 2ĥ(P) + 2ĥ(Q) and
+  ĥ ≥ 0, and the naive height h differs from ĥ by a bounded amount on E(ℚ). Hence
+  h(P+Q) ≤ ĥ(P+Q) + c ≤ 2ĥ(P) + 2ĥ(Q) + c ≤ 2h(P) + 2h(Q) + C. The statement is the one needed for bsd-038
+  with the same height as bsd-043, so that bsd-038 follows from bsd-035, bsd-043 and bsd-044.
+  An elementary route avoids the canonical height: the sum and product of x(P+Q) and x(P−Q) are rational
+  functions of x(P) and x(Q) alone (the classical addition formulas), so both x-coordinates are roots of a
+  quadratic with coefficients of controlled height.
+sketch: |
+  Let h = log(1 + H(x)) as in the statement. Option 1 (canonical height): cite the parallelogram law for ĥ and
+  the boundedness of ĥ − h, as in the context. Option 2 (elementary): for x(P) ≠ x(Q), write u = x(P+Q) and
+  v = x(P−Q); then u + v and u·v are explicit rational functions of x(P), x(Q) with denominator (x(P) − x(Q))²
+  (Mathlib: `WeierstrassCurve.Affine.addX`, `slope_of_X_ne`, `addX_eq_addX_negY_sub`). Bound the height of u
+  from those of u + v and u·v, and use the case x(P) = x(Q) (then Q = ±P) separately. The constant C absorbs
+  the finitely many exceptional cases, which are handled by bsd-035.
+dead: []
