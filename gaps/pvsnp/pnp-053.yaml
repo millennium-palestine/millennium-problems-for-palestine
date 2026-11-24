@@ -1,0 +1,38 @@
+id: pnp-053
+problem: pvsnp
+title: Flattening a nested pair, appending the outer witness to the inner second component
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+- MPP.Solutions.Pnp006
+- MPP.Solutions.Pnp021
+- MPP.Solutions.Pnp025
+- MPP.Solutions.Pnp026
+- MPP.Solutions.Pnp052
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-006
+- pnp-021
+- pnp-025
+- pnp-026
+- pnp-052
+statement: |
+  ∃ r : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) r) ∧
+    ∀ x u w : List Bool, r (pair (pair x u) w) = pair x (u ++ w)
+context: |
+  Search-to-decision step. A verifier that is run on the instance x and a prefix u, and then on a
+  free suffix w, is applied to the pair x (u ++ w). The input is the nested pair
+  pair (pair x u) w, so the witness has to be re-spliced into the second component. This is
+  the lemma that lets pnp-054 build the prefix-extension verifier. It is structural and does not
+  decide P vs NP.
+sketch: |
+  Let d be the first-component decoder of pnp-021, e the witness decoder of pnp-025, and C the
+  concatenation of pnp-052. Take K y = pair (e (d y)) (e y) by pnp-026 applied to e ∘ d and e, and
+  then the map y ↦ pair (d (d y)) (C (K y)) by pnp-026 applied to d ∘ d and C ∘ K. Composition is
+  pnp-006. On y = pair (pair x u) w we have d (d y) = x, e (d y) = u and e y = w, so the output is
+  pair x (C (pair u w)) = pair x (u ++ w).
+dead: []
