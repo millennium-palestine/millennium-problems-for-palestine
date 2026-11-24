@@ -1,0 +1,29 @@
+id: pnp-058
+problem: pvsnp
+title: Greedy bit-by-bit construction of a witness from a prefix-extendable predicate
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (E : List Bool → Bool) (N : ℕ) (step : List Bool → List Bool),
+    E [] = true →
+    (∀ u : List Bool, u.length < N → E u = true → E (u ++ [false]) = true ∨ E (u ++ [true]) = true) →
+    (∀ u : List Bool, step u = if E (u ++ [false]) = true then u ++ [false] else u ++ [true]) →
+    (step^[N] []).length = N ∧ E (step^[N] []) = true
+context: |
+  Pure combinatorics behind the search-to-decision route used in pnp-055 and pnp-057. Suppose E is a
+  Boolean predicate on prefixes that holds at the empty prefix and such that every prefix u of length
+  below N with E u extends by one bit (false or true) to a prefix with E. Then the greedy map step, which
+  appends false when E allows it and true otherwise, produces after N iterations a string of length N
+  with E true. Applied to E u = "some witness of exact length N extends u and is accepted", this is the
+  bit-by-bit search that would turn a polynomial-time decision of the extension language into a witness.
+  The statement is pure logic about lists; it does not use machines and does not decide P vs NP.
+sketch: |
+  Induction on k ≤ N, claiming that step^[k] [] has length k and satisfies E. The step uses
+  Function.iterate_succ_apply' to write step^[k+1] [] = step (step^[k] []). With u = step^[k] [] and
+  k < N, unfold the equation for step: if E (u ++ [false]) holds, the new prefix is u ++ [false];
+  otherwise the hypothesis gives E (u ++ [true]), and the new prefix is u ++ [true]. Either way the
+  length is k + 1 and E holds. Take k = N.
+dead: []
