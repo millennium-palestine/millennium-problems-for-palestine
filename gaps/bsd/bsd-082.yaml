@@ -1,0 +1,38 @@
+id: bsd-082
+problem: bsd
+title: 'Kernel of the Kummer map for an irreducible cubic: a rational point with y ≠ 0 whose x-coordinate minus a root is a square in ℚ[θ] is twice a rational point'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-081
+statement: |
+  ∀ (p q x y : ℚ) (E : WeierstrassCurve ℚ) [E.IsElliptic],
+    E.a₁ = 0 → E.a₂ = 0 → E.a₃ = 0 → E.a₄ = p → E.a₆ = q →
+    ∀ (h : E.toAffine.Nonsingular x y), y ≠ 0 →
+      (∃ u v w : ℚ, u ^ 2 - 2 * q * v * w = x ∧ 2 * u * v - 2 * p * v * w - q * w ^ 2 = -1 ∧
+        v ^ 2 + 2 * u * w - p * w ^ 2 = 0) →
+      ∃ R : E.toAffine.Point, R + R = WeierstrassCurve.Affine.Point.some _ _ h
+context: |
+  Kernel direction of the Kummer map of bsd-036 (weak Mordell–Weil) in the case with no rational root, where the
+  roots of X³ + pX + q lie in L = ℚ[θ] and L is a cubic field. The hypothesis says that x − θ is a square in L: the
+  element β = u + vθ + wθ² has β² = x − θ, written as the three coefficient equations (see bsd-083, which derives them
+  from a square root in AdjoinRoot). This is the analogue of bsd-056 (split case, where the three roots are rational).
+  The proof produces the explicit candidate R of bsd-081, shows x(2R) = x there, and then 2R = ±P, so R or −R
+  doubles to P. Two points need care: the candidate's y-coordinate is nonzero (if it were zero, R would be 2-torsion,
+  so its x-coordinate would be a double root of X³ + pX + q, contradicting E.IsElliptic), and the candidate is
+  nonsingular (same discriminant argument). The statement is true. It does not cover the case where f has exactly one
+  rational root, which is a separate gap, and the finiteness of the image (bsd-075) is separate too.
+sketch: |
+  Let (u, v, w) be the witnesses. Put xR = x + ((3u − 2pw)² − 3x)/2 and yR = s₁s₂ − N, as in bsd-081, and get the curve
+  equation and the doubling identity from bsd-081. yR ≠ 0: otherwise (3xR² + p)² = 0 from the second conjunct, so
+  3xR² + p = 0 and xR³ + pxR + q = 0, which forces 4p³ + 27q² = 0, contradicting IsElliptic (`WeierstrassCurve.IsElliptic`
+  gives `E.Δ ≠ 0`, and `E.Δ = -16(4p³ + 27q²)` once a₁ = a₂ = a₃ = 0, a₄ = p, a₆ = q, via `WeierstrassCurve.Δ` and `ring`).
+  The point R = (xR, yR) is nonsingular because the curve equation holds and the partial derivatives 2yR and 3xR² + p
+  cannot both vanish (same discriminant argument). Then Mathlib's `WeierstrassCurve.Affine.Point.add_self_of_Y_ne`
+  (with the hypothesis yR ≠ negY xR yR, i.e. yR ≠ −yR) and `addX` give the x-coordinate of R + R as
+  ((3xR² + p)/(2yR))² − 2xR, which equals x by the second conjunct of bsd-081 divided by (2yR)². Then
+  `WeierstrassCurve.Affine.Y_eq_of_X_eq` decides between R + R = P and R + R = −P; in the second case take −R, since
+  (−R) + (−R) = −(R + R) (`neg_add_rev`, `neg_neg`).
+dead: []

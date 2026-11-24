@@ -1,0 +1,37 @@
+id: bsd-081
+problem: bsd
+title: 'Halving identity for an irreducible cubic: the explicit point with x-coordinate x + s₂ and y-coordinate s₁s₂ − N(β) lies on y² = x³ + px + q and doubles to ±P'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p q x u v w xR yR : ℚ),
+    u ^ 2 - 2 * q * v * w = x →
+    2 * u * v - 2 * p * v * w - q * w ^ 2 = -1 →
+    v ^ 2 + 2 * u * w - p * w ^ 2 = 0 →
+    xR = x + ((3 * u - 2 * p * w) ^ 2 - 3 * x) / 2 →
+    yR = (3 * u - 2 * p * w) * (((3 * u - 2 * p * w) ^ 2 - 3 * x) / 2) -
+      (p ^ 2 * u * w ^ 2 - p * q * v * w ^ 2 - 2 * p * u ^ 2 * w + p * u * v ^ 2 +
+        q ^ 2 * w ^ 3 + 3 * q * u * v * w - q * v ^ 3 + u ^ 3) →
+    yR ^ 2 = xR ^ 3 + p * xR + q ∧ (3 * xR ^ 2 + p) ^ 2 = 4 * yR ^ 2 * (x + 2 * xR)
+context: |
+  Core identity of the non-split kernel for bsd-036 (weak Mordell–Weil), the irreducible-cubic analogue of bsd-053
+  (split halving) and bsd-055 (doubling). Let θ be a root of f = X³ + pX + q, and let β = u + vθ + wθ² in L = ℚ[θ]
+  (over ℚ, with θ³ = −pθ − q). Reducing β² = x − θ modulo f gives the three coefficient equations of the hypotheses
+  (1, θ and θ² parts). Let β₁, β₂, β₃ be the conjugates of β (over a splitting field), so β_i² = x − θ_i. Their
+  elementary symmetric functions are rational: s₁ = Tr β = 3u − 2pw, s₂ = (s₁² − Tr β²)/2 = (s₁² − 3x)/2, and
+  s₃ = N(β), which is the determinant of multiplication by β, equal to the polynomial in the statement. The point with
+  x-coordinate x + s₂ and y-coordinate s₁s₂ − s₃ = (β₁+β₂)(β₁+β₃)(β₂+β₃) is the candidate R. The statement says R is on
+  the curve and that the doubling formula gives x-coordinate x, so 2R = ±P. The hypotheses do not force w ≠ 0 by
+  themselves, but they do: w = 0 gives v = 0 and then 0 = −1. Irreducibility of f is not used. The statement was checked
+  symbolically (u and q solved from the two linear equations, x from the first) and numerically at several rational
+  points, both residuals zero.
+sketch: |
+  First w ≠ 0: if w = 0 then the third hypothesis gives v² = 0, so v = 0, and the second gives 0 = −1. Then solve the
+  third hypothesis for u = (p w² − v²)/(2w) and the second for q = (1 + 2uv − 2pvw)/w², and the first for x. Substitute
+  (`subst` on u, then q, and x from the first hypothesis), clear the denominators with `field_simp`, and close both
+  conjuncts with `ring`. Both identities are rational identities in p, v, w once u, q, x are substituted. If `ring` is
+  slow, split the two conjuncts and prove them separately with `linear_combination` plus the coefficient equations.
+dead: []

@@ -1,0 +1,28 @@
+id: bsd-083
+problem: bsd
+title: 'Square roots in ℚ[X]/(X³ + pX + q) in coordinates: if β² = x − θ for β in the cubic algebra, then β = u + vθ + wθ² with the three coefficient equations'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p q x : ℚ) (f : Polynomial ℚ), f = Polynomial.X ^ 3 + Polynomial.C p * Polynomial.X + Polynomial.C q →
+    ∀ β : AdjoinRoot f, β ^ 2 = algebraMap ℚ (AdjoinRoot f) x - AdjoinRoot.root f →
+      ∃ u v w : ℚ, u ^ 2 - 2 * q * v * w = x ∧ 2 * u * v - 2 * p * v * w - q * w ^ 2 = -1 ∧
+        v ^ 2 + 2 * u * w - p * w ^ 2 = 0
+context: |
+  Bridge between the cubic algebra L = ℚ[X]/(f) used by bsd-074, bsd-075 and the Kummer map of bsd-036, and the coordinate
+  form of bsd-081 and bsd-082. Since f is monic of degree 3, the powers 1, θ, θ² of θ = AdjoinRoot.root f form a ℚ-basis of
+  AdjoinRoot f, so every β has the form u + vθ + wθ². Expanding β² = x − θ and reducing with θ³ = −pθ − q (from f(θ) = 0)
+  gives the three coefficient equations: the constant term u² − 2qvw = x, the θ term 2uv − 2pvw − qw² = −1, and the θ²
+  term v² + 2uw − pw² = 0. Irreducibility of f is not needed. The statement is true as written. Proof route: use
+  `AdjoinRoot.powerBasis` (for a monic polynomial of degree 3) and the basis representation, or write β as
+  `AdjoinRoot.mk f g` and reduce g modulo f, and compare coefficients of the basis.
+sketch: |
+  Let g ∈ ℚ[X] with β = AdjoinRoot.mk f g, and reduce it modulo f: g = u + vX + wX² + f·k (`Polynomial.modByMonic`, with
+  `Polynomial.modByMonic_add_div`). Then β = mk(u + vθ + wθ²). From β² = x − θ, mk(u + vX + wX² squared − (x − X)) = 0, so
+  f divides the difference h = (u + vX + wX²)² − x + X. Reduce h modulo f (`Polynomial.modByMonic`, `AdjoinRoot.mk_eq_zero`)
+  and read off the coefficients of the remainder, which must vanish. Those coefficients are the three equations, after
+  substituting X³ = −pX − q. Alternatively use `AdjoinRoot.powerBasis` and the basis coordinates `Basis.repr`.
+dead: []
