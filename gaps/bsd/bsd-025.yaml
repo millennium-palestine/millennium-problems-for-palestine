@@ -1,0 +1,27 @@
+id: bsd-025
+problem: bsd
+title: 'The residue field of the adic completion of the integers of ℚ at a prime is finite'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ p : IsDedekindDomain.HeightOneSpectrum (NumberField.RingOfIntegers ℚ),
+    Finite (IsLocalRing.ResidueField (p.adicCompletionIntegers ℚ))
+context: |
+  Finiteness step for bsd-020. The local Euler factor of `WeierstrassCurve.localEulerFactor` is
+  `ArithmeticFunction.ofPowerSeries q f`, and the multiplicativity lemma
+  `ArithmeticFunction.isMultiplicative_ofPowerSeries_of_isPrimePow` needs q = Nat.card of the residue
+  field to be a prime power. That requires the residue field to be finite. Mathlib has
+  `Finite (R ⧸ p.asIdeal)` for the ring of integers R of ℚ, but no lemma identifies the residue field
+  of the completed integers `p.adicCompletionIntegers ℚ` with R ⧸ p.asIdeal. The statement is true:
+  the residue field of a nonarchimedean completion of a number field at p is the finite field R/p.
+  Here p ranges over all height-one primes of the integers of ℚ.
+sketch: |
+  The inclusion R → adicCompletionIntegers ℚ p sends p.asIdeal into the maximal ideal of the completed
+  integers, so it induces a map R ⧸ p.asIdeal → ResidueField. Show this map is a ring isomorphism
+  (surjective because R is dense in the completed integers; injective because the maximal ideal is the
+  completion of p). Search Mathlib for `adicCompletionIntegers` together with `IsLocalRing.ResidueField`
+  and `Quotient` first. Once the identification exists, `Finite` transfers along it (`Finite.of_equiv`).
+dead: []
