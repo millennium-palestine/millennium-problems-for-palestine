@@ -1,0 +1,29 @@
+id: bsd-135
+problem: bsd
+title: 'Characteristic equation on the F_p-points: on an elliptic curve over a prime field, the Frobenius identity φ² − aφ + p = 0 holds at every point fixed by φ, with a = p + 1 − #E(F_p)'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] [DecidableEq (AlgebraicClosure (ZMod p))] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic]
+    (P : (W.baseChange (AlgebraicClosure (ZMod p))).toAffine.Point),
+    let φ := WeierstrassCurve.Affine.Point.map (W' := W)
+      (FiniteField.frobeniusAlgHom (ZMod p) (AlgebraicClosure (ZMod p)))
+    φ P = P → φ (φ P) - (((p : ℤ) + 1 - (Nat.card W.toAffine.Point : ℤ)) • φ P) + (p : ℤ) • P = 0
+context: |
+  The restriction of the characteristic equation of Frobenius (bsd-121) to its fixed points, which are the F_p-rational
+  points (bsd-122). Here the identity φ² − aφ + p = 0 reduces, since φ P = P, to (1 − a + p) P = #E(F_p) · P, and this
+  is zero because P is a point of the finite group E(F_p) of order #E(F_p) (Lagrange's theorem). So the statement is
+  true and the proof needs no degree theory. It is the case of bsd-121 that the Mathlib tools can reach today, and it
+  shows which part of bsd-121 is the genuinely new one: the identity at points that are not F_p-rational.
+sketch: |
+  From φ P = P get φ (φ P) = P by rewriting twice. Then the goal is P − (a • P) + p • P = 0 with a = p + 1 − N, so the
+  left side is (1 − a + p) • P = N • P (use `sub_smul`, `add_smul`, `one_smul`, and the ring identity 1 − a + p = N in ℤ).
+  It remains that N • P = 0. Use bsd-122 (fixed points of φ are the F_p-points, which is `Point` on the curve over ZMod p
+  embedded by `baseChange`) to see that P lies in the image of E(F_p), a finite group with Nat.card = N, and then
+  `orderOf_dvd_natCard` or `card_nsmul_eq_zero` on that subgroup. The transfer of `Nat.card` between E(F_p) and the
+  subgroup of K-points is the step that needs care; `Nat.card_congr` with the equivalence from the fixed points, as in
+  the bsd-131 solution, is the tool.
+dead: []
