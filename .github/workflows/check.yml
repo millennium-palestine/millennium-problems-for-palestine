@@ -133,12 +133,14 @@ jobs:
           PR: ${{ github.event.pull_request.number }}
           OWNER: ${{ github.repository_owner }}
         run: |
+          # Concurrent merges make GitHub answer "base branch was modified": retry.
+          merge() { for i in 1 2 3 4 5 6; do gh pr merge "$PR" --repo "$GITHUB_REPOSITORY" --squash && return 0; sleep $((i * 10)); done; return 1; }
           verdict=$(jq -r .verdict verdict/verdict.json)
           main=$(jq -r .main verdict/verdict.json)
           gap=$(jq -r .gap verdict/verdict.json)
           title=$(jq -r .title verdict/verdict.json)
           if [ "$verdict" = "GAP_ACCEPTED" ]; then
-            gh pr merge "$PR" --repo "$GITHUB_REPOSITORY" --squash
+            merge
             jq -c '.new_gaps[]' verdict/verdict.json | while read -r g; do
               id=$(echo "$g" | jq -r .id); problem=$(echo "$g" | jq -r .problem); gtitle=$(echo "$g" | jq -r .title)
               module=$(echo "$g" | jq -r .module)
@@ -159,6 +161,6 @@ jobs:
 
           https://github.com/$GITHUB_REPOSITORY/pull/$PR"
           else
-            gh pr merge "$PR" --repo "$GITHUB_REPOSITORY" --squash
+            merge
           fi
 
