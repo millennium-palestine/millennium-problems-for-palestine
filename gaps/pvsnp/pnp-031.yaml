@@ -1,0 +1,26 @@
+id: pnp-031
+problem: pvsnp
+title: Unary addition on the pair encoding is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  ∃ E : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) E) ∧
+    ∀ u v : List Bool, E (pair u v) = List.replicate (u.length + v.length) false
+context: |
+  Unary addition. Given the pair encoding of two strings, it writes a unary string whose length
+  is the sum of their lengths. It is the step that adds two unary numbers in the polynomial
+  evaluation of pnp-033. It is a structural lemma and does not decide P vs NP.
+sketch: |
+  Two phases over the single input stack. Phase 1: while the input starts with a doubled bit,
+  pop two symbols and push false onto the output, one per doubled bit of u. At the separator
+  [false, true], pop both symbols and move on. Phase 2: while the input is nonempty, pop one
+  symbol of v and push false onto the output. The output then holds |u| + |v| falses. The time is
+  linear in the input length.
+dead: []

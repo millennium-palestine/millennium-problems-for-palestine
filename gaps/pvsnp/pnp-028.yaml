@@ -1,0 +1,27 @@
+id: pnp-028
+problem: pvsnp
+title: Length comparison on the pair encoding is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  ∃ C : List Bool → Bool, InP C ∧
+    ∀ u w : List Bool, C (pair u w) = true ↔ w.length ≤ u.length
+context: |
+  Length test used by pnp-027: the witness length bound w.length ≤ p(|x|) is reduced to a
+  length comparison between w and a unary string of length p(|x|). This gap is the comparison
+  itself, on the pair encoding, with the first component as the bound. It uses only symbol
+  moves and no arithmetic. It is a structural lemma and does not decide P vs NP.
+sketch: |
+  Phase 1: pop the doubled bits of u two symbols at a time, as in pnp-021, and push one symbol
+  onto a spare stack per doubled pair. Stop at the separator [false, true]. Phase 2: while both
+  the spare stack and the remaining witness stack are nonempty, pop one from each. Accept exactly
+  when the witness stack is empty at the end. The spare stack then has length |u| minus |w|
+  when |w| ≤ |u|, so acceptance is w.length ≤ u.length. Each phase takes at most |u| + |w| + 2
+  steps.
+dead: []

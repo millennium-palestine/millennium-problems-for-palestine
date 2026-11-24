@@ -1,0 +1,38 @@
+id: pnp-033
+problem: pvsnp
+title: Unary evaluation of a polynomial of the input length is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-026
+- pnp-006
+- pnp-029
+- pnp-030
+- pnp-031
+- pnp-032
+statement: |
+  ∀ p : Polynomial ℕ, ∃ g : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) g) ∧
+    ∀ x : List Bool, g x = List.replicate (p.eval x.length) false
+context: |
+  Arithmetic core of pnp-027. For a fixed polynomial p with natural coefficients, the unary string
+  of length p(|x|) is computed in polynomial time. It is proved by induction on p. A monomial a X^n
+  is handled by n multiplications by the unary length of x (pnp-032), and the coefficient a by
+  a constant unary string (pnp-030). Sums are handled by unary addition (pnp-031). The pair
+  encoding of pnp-026 and composition of pnp-006 combine the pieces. It is a structural lemma and
+  does not decide P vs NP.
+sketch: |
+  Use Polynomial.induction_on' on p. Sum case: from g_p and g_q, the map x ↦ pair (g_p x) (g_q x)
+  is polynomial-time by pnp-026, and composing it with the addition map of pnp-031 gives a
+  unary string of length p(|x|) + q(|x|). Monomial case a X^n: let G_0 x = replicate 1 false, the
+  constant map of pnp-030 with c = 1, and G_{k+1} x = M (pair (G_k x) (unary length of x)),
+  with M from pnp-032 and the unary length from pnp-029. Then G_n x has length |x|^n. Finally
+  the monomial is M (pair (constant a of pnp-030) (G_n x)), of length a * |x|^n. Each step is a
+  composition of polynomial-time maps, so the result is polynomial-time by pnp-006, and the
+  length identities follow from List.length_replicate and Polynomial.eval_add, eval_monomial.
+dead: []

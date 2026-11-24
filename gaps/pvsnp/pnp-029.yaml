@@ -1,0 +1,22 @@
+id: pnp-029
+problem: pvsnp
+title: The unary string of the input length is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- Turing
+depends: []
+statement: |
+  ∃ g : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) g) ∧
+    ∀ x : List Bool, g x = List.replicate x.length false
+context: |
+  Unary length map. It is the first arithmetic step of pnp-027: the length of the instance is
+  written in unary, so that later steps can work on lengths as lists. It is a structural lemma
+  and does not decide P vs NP.
+sketch: |
+  One stack loop. While the input stack is nonempty, pop one symbol and push false onto the
+  output. The output then holds exactly |x| symbols, all false. The loop takes |x| + 1 steps.
+dead: []

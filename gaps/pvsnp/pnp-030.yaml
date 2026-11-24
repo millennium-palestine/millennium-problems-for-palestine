@@ -1,0 +1,23 @@
+id: pnp-030
+problem: pvsnp
+title: Constant unary strings are polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- Turing
+depends: []
+statement: |
+  ∀ c : ℕ, ∃ g : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) g) ∧
+    ∀ x : List Bool, g x = List.replicate c false
+context: |
+  Constant unary maps. They supply the coefficients of a polynomial in pnp-033, where the unary
+  string of length c is written for each fixed c. It is a structural lemma and does not decide
+  P vs NP.
+sketch: |
+  For fixed c, use a machine with c + 1 labels. Labels 0 to c-1 each push one false and move to
+  the next label, and the last label halts. The input is ignored. The time bound is c + 1, a
+  constant, so it is polynomial.
+dead: []
