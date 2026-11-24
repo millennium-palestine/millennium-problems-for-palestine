@@ -1,0 +1,23 @@
+id: bsd-057
+problem: bsd
+title: 'Pairwise coprime integers with square product: each of the three is ± a square'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (a b c s : ℤ), Int.gcd a b = 1 → Int.gcd a c = 1 → Int.gcd b c = 1 → a * b * c = s ^ 2 →
+    (∃ r : ℤ, a = r ^ 2 ∨ a = -r ^ 2) ∧ (∃ r : ℤ, b = r ^ 2 ∨ b = -r ^ 2) ∧
+      (∃ r : ℤ, c = r ^ 2 ∨ c = -r ^ 2)
+context: |
+  Finiteness step for bsd-036 (weak Mordell–Weil). On a split curve y² = (x − e₁)(x − e₂)(x − e₃), the three factors
+  x − e_i are multiplied to the square y². When the factors have pairwise coprime numerators (away from finitely many
+  primes dividing the differences of the roots), each factor is ± a square, so its square class is ±1 and the image of
+  the Kummer map is finite. This is the elementary lemma behind that valuation argument: a product of pairwise coprime
+  integers is a square exactly when each factor is ± a square. It is Mathlib's `Int.sq_of_gcd_eq_one` applied three times.
+sketch: |
+  Let a·(b·c) = s². Since gcd(a, b) = gcd(a, c) = 1, gcd(a, b·c) = 1 (`Int.isCoprime_iff_gcd_eq_one`,
+  `IsCoprime.mul_right`). Then `Int.sq_of_gcd_eq_one` gives a = ±r². Do the same for b with gcd(b, a·c) = 1 and for c
+  with gcd(c, a·b) = 1, using `IsCoprime.symm` for the reversed pairs. The product rearrangement is `ring`.
+dead: []
