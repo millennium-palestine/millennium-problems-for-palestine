@@ -1,0 +1,34 @@
+id: pnp-101
+problem: pvsnp
+title: Polynomial-time machines keep every stack polynomially short
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Computability
+- Turing
+depends:
+- pnp-023
+statement: |
+  ∀ L : Lang, InP L → ∃ T : TM2ComputableInPolyTime (id : List Bool → List Bool) encodeBool L,
+    ∃ q : Polynomial ℕ, ∀ (x : List Bool) (n : ℕ) (c : TM2.Cfg T.tm.Γ T.tm.Λ T.tm.σ),
+      n ≤ T.time.eval x.length →
+      (fun o : Option (TM2.Cfg T.tm.Γ T.tm.Λ T.tm.σ) => o.bind (TM2.step T.tm.m))^[n]
+        (some (initList T.tm (List.map T.inputAlphabet.invFun x))) = some c →
+      ∀ k : T.tm.K, (c.stk k).length ≤ q.eval x.length
+context: |
+  Space control for the tableau of a polynomial-time machine. pnp-100 (Cook–Levin) is sketched as a
+  circuit that simulates a verifier for p(|x|) + |x| steps and whose size is polynomial. pnp-023 bounds
+  only the output, not the stacks: a machine can hold many symbols on a work stack, and the tableau
+  needs every stack, at every step, to be polynomially short. This is the space half of that size
+  bound. It is a structural lemma about one machine and does not decide P vs NP.
+sketch: |
+  Take T from InP L and q = C · time + X, where C bounds the number of pushes onto any stack by any
+  one statement of T.tm.m (a finite sum over stacks and labels, since T.tm.K is a Fintype). Reuse
+  MPP.Solutions.Pnp023.run_length: from the initial configuration, after n steps stack k has length at
+  most (initial length on k) + C·n. The initial configuration has length at most |x| on the input stack
+  and 0 elsewhere (initList_stk_length in pnp-023). With n ≤ time.eval |x| this gives the bound
+  |x| + C·time.eval |x| = q.eval |x|.
+dead: []
