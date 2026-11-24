@@ -1,0 +1,25 @@
+id: pnp-038
+problem: pvsnp
+title: Pairing a string with the empty witness is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-026
+- pnp-030
+- pnp-037
+statement: |
+  Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) (fun x : List Bool => pair x []))
+context: |
+  The map x ↦ pair x [] sends an instance to its pair encoding with the empty witness. It is the
+  reduction used to read an NP definition with witness bound zero as a P membership test. It is a
+  structural lemma and does not decide P vs NP.
+sketch: |
+  Apply pnp-026 with f the identity (pnp-037) and g the constant empty string (pnp-030 with c = 0).
+  The result h satisfies h z = pair z [], which is the claim after simplifying `id z` and
+  `List.replicate 0 false = []`.
+dead: []

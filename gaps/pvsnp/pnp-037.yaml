@@ -1,0 +1,22 @@
+id: pnp-037
+problem: pvsnp
+title: The identity map on binary strings is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) (id : List Bool → List Bool))
+context: |
+  Base case for the pair-encoding maps. Pairing a string with a fixed second part is a
+  polynomial-time map only once the identity is known to be one, because pnp-026 needs both
+  components as polynomial-time maps. The identity is the simplest such map. It is a structural
+  lemma and does not decide P vs NP.
+sketch: |
+  Use a machine that copies the input from the input stack to the output stack symbol by symbol
+  and halts. Each step moves one symbol, so the running time is linear in the input length.
+dead: []

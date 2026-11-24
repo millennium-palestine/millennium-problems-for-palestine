@@ -1,0 +1,26 @@
+id: pnp-039
+problem: pvsnp
+title: A language defined from a P language by the empty witness is in P
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-008
+- pnp-038
+statement: |
+  ∀ L : Lang, (∃ V : Lang, InP V ∧ ∀ x : List Bool, L x = V (pair x [])) → InP L
+context: |
+  If an NP-style verifier has witness bound zero, then the language it decides is a polynomial-time
+  preprocessing of a P language, so it is in P. This is the degenerate case of the NP definition
+  in MPP/Defs/PvsNP.lean, where the witness is forced to be empty. It is a structural lemma and does
+  not decide P vs NP: the real difficulty is witnesses of nonzero length, which this gap does not
+  touch.
+sketch: |
+  Take V with InP V and L x = V (pair x []). Apply pnp-008 to V and the map x ↦ pair x [], which is
+  polynomial-time by pnp-038, to get InP (fun x => V (pair x [])). Rewrite L as that function with
+  funext, using the hypothesis, and conclude InP L.
+dead: []
