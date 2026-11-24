@@ -1,0 +1,27 @@
+id: bsd-138
+problem: bsd
+title: 'Iterated Frobenius fixed points: on an elliptic curve over a prime field, a point over the algebraic closure is fixed by the n-th iterate of the p-power Frobenius exactly when both coordinates satisfy x^(p^n) = x and y^(p^n) = y'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] [DecidableEq (AlgebraicClosure (ZMod p))] (W : WeierstrassCurve (ZMod p)) (n : ℕ)
+    (x y : AlgebraicClosure (ZMod p)) (h : (W.baseChange (AlgebraicClosure (ZMod p))).toAffine.Nonsingular x y),
+    ((fun P => WeierstrassCurve.Affine.Point.map (W' := W)
+        (FiniteField.frobeniusAlgHom (ZMod p) (AlgebraicClosure (ZMod p))) P)^[n]
+      (WeierstrassCurve.Affine.Point.some x y h) = WeierstrassCurve.Affine.Point.some x y h) ↔
+      (x ^ (p ^ n) = x ∧ y ^ (p ^ n) = y)
+context: |
+  A stepping stone toward the characteristic equation bsd-121, which needs the iterates of Frobenius. The p-power
+  Frobenius φ raises both coordinates of an affine point to the p-th power, so its n-th iterate raises them to the
+  p^n-th power. Hence a point over the algebraic closure K of F_p is fixed by φ^n exactly when its coordinates lie in
+  F_{p^n}. This generalizes bsd-122 (the case n = 1). The statement is true (the case n = 0 is trivial, since then
+  both sides hold). Its proof is an elementary induction on n, with no isogeny theory.
+sketch: |
+  Induction on n. Frobenius sends `some x y h` to `some (x^p) (y^p) _` by `WeierstrassCurve.Affine.Point.map_some`, so
+  the n-th iterate is `some (x^(p^n)) (y^(p^n)) _` (the step uses `Function.iterate_succ_apply'` and x^(p^(n+1)) =
+  (x^(p^n))^p). Then the fixed point condition is equality of the two `some` points, which is equality of coordinates
+  by `WeierstrassCurve.Affine.Point.some.inj`, and the converse by congruence in the nonsingularity proof.
+dead: []

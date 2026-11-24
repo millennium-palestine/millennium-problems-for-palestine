@@ -1,0 +1,28 @@
+id: bsd-139
+problem: bsd
+title: 'Fixed points of the n-th Frobenius iterate: for n at least 1, an elliptic curve over a prime field has at most (p^n)^2 + 1 points over the algebraic closure fixed by the n-th iterate of the p-power Frobenius'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] [DecidableEq (AlgebraicClosure (ZMod p))] (W : WeierstrassCurve (ZMod p)) (n : ℕ),
+    0 < n →
+    Nat.card {P : (W.baseChange (AlgebraicClosure (ZMod p))).toAffine.Point //
+      (fun P => WeierstrassCurve.Affine.Point.map (W' := W)
+        (FiniteField.frobeniusAlgHom (ZMod p) (AlgebraicClosure (ZMod p))) P)^[n] P = P} ≤ (p ^ n) ^ 2 + 1
+context: |
+  The finiteness input for the kernel of φ^n − 1, the n-th iterate analogue of the count #E(F_p) of bsd-122 and of the
+  finite point count bsd-131. A point fixed by φ^n has both coordinates satisfying x^(p^n) = x (bsd-138), so the
+  coordinates lie in the p^n roots of X^(p^n) − X, which gives at most (p^n)^2 affine fixed points, plus the point at
+  infinity. The statement is true, and the hypothesis 0 < n is needed because for n = 0 the fixed set is the whole
+  (infinite) group. Its proof is elementary: count the roots of X^(p^n) − X over the algebraic closure and inject the
+  fixed points into the options of pairs of roots. The degree of φ^n − 1 is not used.
+sketch: |
+  Let S be the finset of roots of X^(p^n) − X over the algebraic closure K (nonzero polynomial, natDegree p^n by
+  `FiniteField.X_pow_card_sub_X_natDegree_eq`), so `S.card ≤ p^n` by `Polynomial.card_roots'` and
+  `Multiset.toFinset_card_le`. Let U be `insert none` of the image of S ×ˢ S under `some`, so U.card ≤ (p^n)^2 + 1.
+  Send a fixed point to `none` (zero) or `some (x, y)` (affine), using bsd-138 to see that the coordinates lie in S;
+  this is injective, so the count is at most U.card by `Nat.card_le_card_of_injective`.
+dead: []
