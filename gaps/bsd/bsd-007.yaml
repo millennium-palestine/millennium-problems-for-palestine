@@ -1,0 +1,26 @@
+id: bsd-007
+problem: bsd
+title: 'Doubling on y² = x³ − x: the x-coordinate of 2P'
+status: open
+imports:
+- Mathlib
+- MPP.Defs.BSD
+open:
+- MPP.BSD
+depends: []
+statement: |
+  ∀ (x y : ℚ) (h : E32.toAffine.Nonsingular x y), y ≠ 0 →
+    ∃ (x' y' : ℚ) (h' : E32.toAffine.Nonsingular x' y'),
+      WeierstrassCurve.Affine.Point.some x y h + WeierstrassCurve.Affine.Point.some x y h =
+        WeierstrassCurve.Affine.Point.some x' y' h' ∧
+      x' = (x ^ 2 + 1) ^ 2 / (4 * y ^ 2)
+context: |
+  Explicit doubling on E32 (y² = x³ − x). With slope λ = (3x² − 1)/(2y), the x-coordinate
+  of 2P is λ² − 2x = (x² + 1)²/(4y²), because (3x² − 1)² − 8x(x³ − x) = (x² + 1)².
+  This is the doubling step behind 2-descent and the height estimate h(2P) ≈ 4h(P) used
+  for bsd-002 (Mordell) and bsd-005 (rank 0).
+sketch: |
+  Case-split on the doubling branch of `WeierstrassCurve.Affine.Point.add` (both points
+  equal, y ≠ 0). Unfold the slope, use the curve equation y² = x³ − x to replace y² in the
+  numerator, then `field_simp` and `ring`.
+dead: []
