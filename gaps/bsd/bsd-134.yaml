@@ -1,0 +1,32 @@
+id: bsd-134
+problem: bsd
+title: 'Frobenius is surjective on the points: on an elliptic curve over a prime field, every point over the algebraic closure is the Frobenius image of a point'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] [DecidableEq (AlgebraicClosure (ZMod p))] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic]
+    (Q : (W.baseChange (AlgebraicClosure (ZMod p))).toAffine.Point),
+    ∃ P : (W.baseChange (AlgebraicClosure (ZMod p))).toAffine.Point,
+      WeierstrassCurve.Affine.Point.map (W' := W)
+        (FiniteField.frobeniusAlgHom (ZMod p) (AlgebraicClosure (ZMod p))) P = Q
+context: |
+  The surjectivity half of the statement that the p-power Frobenius φ on the points over the algebraic closure K of F_p
+  is a bijection (bsd-130 is the injectivity half). Silverman, The Arithmetic of Elliptic Curves, II.2.11 and III.4.10,
+  uses this bijectivity when it identifies the Frobenius as an isogeny of degree p, which is the input of the
+  characteristic equation (bsd-121). It is true: K is a perfect field, so every x in K has a p-th root x' in K, and
+  the equation of the curve has coefficients in F_p, which are fixed by the p-th power. The p-th power of the curve
+  equation at (x', y') is the equation at (x, y), so the point (x', y') lies on the curve. Non-singularity is also
+  preserved, because the partial derivatives at (x', y') are the p-th roots of the partials at (x, y).
+sketch: |
+  Case Q = 0: take P = 0 (`Point.map_zero`). Case Q = some x y h: choose x' with x' ^ p = x and y' with y' ^ p = y in
+  K (K is perfect, see `PerfectField` for the algebraic closure of a finite field, or `FiniteField.frobenius_surjective`
+  / `IsAlgClosed` with `PerfectField.frobenius_surjective`). Then show W.baseChange K evaluated at (x', y') satisfies
+  the equation and nonsingularity: the coefficients a_i of W lie in ZMod p, so `(ZMod.pow_card a_i)` gives a_i ^ p = a_i,
+  and `frobenius` is additive, so the equation at (x', y') raised to the p-th power is the equation at (x, y) = 0,
+  and injectivity of x ↦ x ^ p on K gives the equation itself. Use `WeierstrassCurve.Affine.Point.some` and the
+  equation lemma `WeierstrassCurve.Affine.equation_iff_nonsingular` (or the constructor for `some` with the proofs).
+  The image point is then `Point.map` of `some x' y' h'`, which equals `some x y h` by `Point.some.injEq`.
+dead: []
