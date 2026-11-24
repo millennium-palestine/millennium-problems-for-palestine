@@ -1,6 +1,6 @@
 id: pnp-052
 problem: pvsnp
-title: Flattening a nested pair, appending the outer witness to the inner witness
+title: Concatenating the two components of the pair encoding is polynomial-time
 status: open
 imports:
 - Mathlib
@@ -10,18 +10,16 @@ open:
 - Turing
 depends: []
 statement: |
-  ∃ r : List Bool → List Bool,
-    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) r) ∧
-    ∀ x u w : List Bool, r (pair (pair x u) w) = pair x (u ++ w)
+  ∃ C : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) C) ∧
+    ∀ u w : List Bool, C (pair u w) = u ++ w
 context: |
-  Search-to-decision step: a verifier for L that is given the instance x and a prefix u must be
-  run on a pair x (u ++ w) whose witness is the prefix followed by a free suffix w. The input
-  is the nested pair pair (pair x u) w, so the witness part has to be re-spliced into the
-  second component. This is a structural lemma and does not decide P vs NP.
+  Concatenation is the one machine step missing for search-to-decision. A verifier for a language
+  needs its witness written as a prefix u followed by a free suffix w, so the two parts have to be
+  joined into one string. This is a structural lemma and does not decide P vs NP.
 sketch: |
-  The string pair (pair x u) w is dbl(dbl x ++ [F,T] ++ u) ++ [F,T] ++ w, where dbl doubles every bit.
-  Read the outer doubled block as aligned bit pairs, stopping at the first unequal pair (the outer
-  separator). Those pairs carry dbl x ++ [F,T] ++ u. Then output the first half dbl x, the
-  separator [F,T], the second half u, and finally the witness w verbatim. Machine composition is
-  pnp-006, the copy steps are the tupling of pnp-009.
+  Adapt the decoder of pnp-021. The doubled first component is read pair by pair, and each bit is
+  pushed on an accumulator stack. At the separator the machine stops reading the doubled part and
+  copies the rest of the input, the witness w, onto the same accumulator. Moving the accumulator
+  onto the output reverses it once, giving u ++ w. Time is linear in the input length.
 dead: []
