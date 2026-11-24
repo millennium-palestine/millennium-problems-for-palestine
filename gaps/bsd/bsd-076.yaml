@@ -1,0 +1,30 @@
+id: bsd-076
+problem: bsd
+title: 'Kummer doubling over a field: for y² = x³ + px + q over ℚ and a field K over ℚ with a root t of X³ + pX + q, the doubled point has x₃ − t a square in K whenever x₁ is not at t'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p q : ℚ) (K : Type) [Field K] [Algebra ℚ K] (t : K),
+    t ^ 3 + algebraMap ℚ K p * t + algebraMap ℚ K q = 0 →
+    ∀ (x y lam x3 : ℚ), y ^ 2 = x ^ 3 + p * x + q → algebraMap ℚ K x ≠ t →
+      lam * (2 * y) = 3 * x ^ 2 + p → x3 = lam ^ 2 - 2 * x →
+      ∃ r : K, algebraMap ℚ K x3 - t = r ^ 2
+context: |
+  Doubling case of the Kummer map of bsd-036 (weak Mordell–Weil) over a field K containing a root t of the cubic
+  f = X³ + pX + q. It is the field version of bsd-063 (where K = ℚ and t = e), and the tangent counterpart of bsd-067
+  (chord multiplicativity over K). For a point with x₁ ≠ t, the tangent slope λ = (3x₁² + p)/(2y₁) gives
+  x(2P) = λ² − 2x₁, and the identity (x₁ − t)²(x(2P) − t) = (y₁ − λ(x₁ − t))² holds in K. So the class of x(2P) − t
+  in K*/K*² is trivial. Together with bsd-067 and the sign rule, this gives that the Kummer map on the affine points
+  with x ≠ t is a homomorphism to K*/K*². The statement is purely algebraic and does not need y ≠ 0: when y = 0 the
+  slope equation forces 3x² + p = 0 and the identity still holds.
+sketch: |
+  Map the hypotheses into K with `congrArg (algebraMap ℚ K)`, using `map_add`, `map_mul`, `map_pow`, `map_sub`,
+  `map_ofNat` as in bsd-068. Put a = algebraMap x, l = algebraMap lam, b = algebraMap y. The identity
+  (a − t)²(a₃ − t) = (b − l(a − t))², where a₃ = l² − 2a, follows from `linear_combination` of the mapped curve
+  equation (coefficient −1), the mapped slope relation (coefficient a − t) and the root relation ht (coefficient −1),
+  exactly as in bsd-063. Then a − t ≠ 0 by hypothesis, and r = (b − l(a − t))/(a − t) works, by `div_pow` and
+  `eq_div_iff` as in bsd-063.
+dead: []
