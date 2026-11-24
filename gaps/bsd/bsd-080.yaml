@@ -1,0 +1,23 @@
+id: bsd-080
+problem: bsd
+title: 'Root points are 2-torsion: for y² = x³ + px + q over ℚ and a field K over ℚ with a root t of X³ + pX + q, a rational point whose x-coordinate is t in K has y = 0'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p q : ℚ) (K : Type) [Field K] [Algebra ℚ K] (t : K),
+    t ^ 3 + algebraMap ℚ K p * t + algebraMap ℚ K q = 0 →
+    ∀ (x y : ℚ), y ^ 2 = x ^ 3 + p * x + q → algebraMap ℚ K x = t → y = 0
+context: |
+  Degenerate case of the Kummer map of bsd-036 (weak Mordell–Weil). The map P ↦ x(P) − t is defined only on the affine
+  points whose x-coordinate avoids t, and bsd-068, bsd-077 and bsd-078 all assume this. This gap says that the only
+  affine points left out are those with y = 0, that is the points of order 2 (x = t is a root of the cubic). It is
+  purely algebraic: in K, y² = (x − t)(x² + tx + t² + p), so y² = 0, and then y = 0 in ℚ since ℚ → K is injective.
+sketch: |
+  Map the curve equation into K with `congrArg (algebraMap ℚ K)`, rewrite `algebraMap ℚ K x = t`, and use the root
+  relation ht to get (algebraMap y)^2 = 0 by `linear_combination`. Then `pow_eq_zero_iff` gives algebraMap y = 0, and
+  `(algebraMap ℚ K).injective` (a ring map out of a field is injective, `RingHom.injective` for fields) with `map_zero`
+  gives y = 0.
+dead: []
