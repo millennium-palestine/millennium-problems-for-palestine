@@ -1,0 +1,39 @@
+id: pnp-056
+problem: pvsnp
+title: Appending the bit false to the second component of the pair encoding is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+- MPP.Solutions.Pnp006
+- MPP.Solutions.Pnp021
+- MPP.Solutions.Pnp025
+- MPP.Solutions.Pnp026
+- MPP.Solutions.Pnp030
+- MPP.Solutions.Pnp052
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-006
+- pnp-021
+- pnp-025
+- pnp-026
+- pnp-030
+- pnp-052
+statement: |
+  ∃ s : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) s) ∧
+    ∀ x u : List Bool, s (pair x u) = pair x (u ++ [false])
+context: |
+  One-bit extension step. A search for a witness goes bit by bit: to test whether a prefix u can be
+  extended by a 0 it is enough to look at the pair x (u ++ [false]). This lemma gives the map that
+  performs that extension on the pair encoding, so that a decision procedure can be composed with it
+  by pnp-008. It is structural and does not decide P vs NP.
+sketch: |
+  Let d be the first-component decoder of pnp-021, e the witness decoder of pnp-025, c the constant
+  map of pnp-030 with c = 1, which outputs [false], and C the concatenation of pnp-052. Build
+  g z = pair (e z) (c z) by pnp-026, then h = C ∘ g by pnp-006, then s z = pair (d z) (h z) by
+  pnp-026 again. On z = pair x u we have d z = x, e z = u and c z = [false], so
+  s z = pair x (C (pair u [false])) = pair x (u ++ [false]).
+dead: []
