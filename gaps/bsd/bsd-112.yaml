@@ -1,0 +1,26 @@
+id: bsd-112
+problem: bsd
+title: 'Square roots in the quadratic algebra in coordinates: for an irreducible g = X² + eX + (e² + p) over ℚ with root θ, if β² = x − θ for β in ℚ[X]/(g), then β = u + vθ with u² − v²(e² + p) = x and 2uv − ev² = −1'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p e : ℚ) (g : Polynomial ℚ), g = Polynomial.X ^ 2 + Polynomial.C e * Polynomial.X + Polynomial.C (e ^ 2 + p) →
+    Irreducible g → ∀ (x : ℚ) (β : AdjoinRoot g), β ^ 2 = algebraMap ℚ (AdjoinRoot g) x - AdjoinRoot.root g →
+      ∃ u v : ℚ, u ^ 2 - v ^ 2 * (e ^ 2 + p) = x ∧ 2 * u * v - e * v ^ 2 = -1
+context: |
+  The coordinate input of the one-root case of bsd-036 (weak Mordell–Weil), the quadratic analogue of bsd-083. The kernel
+  statement bsd-085 is phrased with the witnesses (u, v) of β = u + vθ; this gap produces them from a square root β of
+  x − θ in L = ℚ[X]/(g). Every element of L is u + vθ with u, v rational (L has the basis 1, θ), and the relation θ² = −eθ − (e² + p)
+  turns β² = x − θ into the two coefficient equations, since θ is not rational (g is irreducible, so has no rational root).
+  This is the only algebra fact the one-root kernel needs beyond bsd-085.
+sketch: |
+  (a) Write β = mk h, and reduce h modulo the monic g: h = (h %ₘ g) + g · (h /ₘ g), so β = mk (h %ₘ g). The remainder has
+  degree below 2, so it is C c₀ + C c₁ · X (Polynomial.eq_X_add_C_of_degree_le_one). Hence β = c₀ + c₁θ with c₀, c₁ rational.
+  (b) θ² + eθ + (e² + p) = 0 in L, from mk g g = 0. Expanding (c₀ + c₁θ)² = x − θ and reducing θ² gives A + Bθ = 0 with
+  A = c₀² − c₁²(e² + p) − x and B = 2c₀c₁ − ec₁² + 1, both in the image of ℚ.
+  (c) If B ≠ 0 then θ = −A/B is rational, contradicting irreducibility (a rational root of g would make g of degree 1). So
+  B = 0, and then A = 0 by injectivity of algebraMap. Take u = c₀ and v = c₁.
+dead: []
