@@ -1,0 +1,28 @@
+id: bsd-122
+problem: bsd
+title: 'Fixed points of the Frobenius: on an elliptic curve over a prime field, the points over the algebraic closure fixed by the p-power Frobenius are exactly the points over the prime field, so they number #E(F_p)'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] [DecidableEq (AlgebraicClosure (ZMod p))] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic],
+    Nat.card {P : (W.baseChange (AlgebraicClosure (ZMod p))).toAffine.Point //
+      WeierstrassCurve.Affine.Point.map (W' := W)
+        (FiniteField.frobeniusAlgHom (ZMod p) (AlgebraicClosure (ZMod p))) P = P} =
+      Nat.card W.toAffine.Point
+context: |
+  The first sub-step of the characteristic equation of Frobenius (bsd-121): with a = p + 1 − #E(F_p), the trace is
+  the count of the fixed points of φ, which is the F_p-points, so #ker(1 − φ) = #E(F_p). The Frobenius φ raises the
+  coordinates to the p-th power, so a point over the algebraic closure K of F_p is fixed exactly when both coordinates
+  satisfy x^p = x, i.e. lie in F_p. Mathlib gives the map from the points over F_p to the points over K as an injective
+  additive map (`WeierstrassCurve.Affine.Point.map_injective`), so the count is that of the F_p-points. The statement
+  is true and the proof is elementary but needs the prime subfield of the algebraic closure.
+sketch: |
+  Let g be the injective additive map from the F_p-points to the K-points given by base change
+  (`WeierstrassCurve.Affine.Point.map` along the algebra map of ZMod p into K, with W.map (algebraMap) = W). Show that
+  the fixed points of φ are exactly the range of g: for a point `some x y h` with φ = identity on it, x^p = x and y^p = y,
+  so x and y are in the image of ZMod p (the fixed set of x ↦ x^p in K is the prime field), and the point comes from an
+  F_p-point by `Point.map_some`. Then the count of the range is the count of the domain by `Nat.card_range_of_injective`.
+dead: []
