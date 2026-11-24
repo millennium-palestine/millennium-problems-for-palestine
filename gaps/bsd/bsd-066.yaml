@@ -1,0 +1,20 @@
+id: bsd-066
+problem: bsd
+title: 'Square classes in a field: in any field K, if a and b are nonzero and abc is a square, then c = ab·r² for some r in K'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (a b c s : K), a ≠ 0 → b ≠ 0 → a * b * c = s ^ 2 →
+    ∃ r : K, c = a * b * r ^ 2
+context: |
+  Field version of bsd-061, for the non-split case of bsd-036 (weak Mordell–Weil). When f has no rational root, bsd-064
+  says L = ℚ[T]/(f) is a field, and the chord identity of bsd-052 (over an arbitrary commutative ℚ-algebra) gives
+  (x₁ − t)(x₂ − t)(x₃ − t) = square in L. The multiplicativity of square classes in L then needs the statement over an
+  arbitrary field, not only over ℚ. This is the same one-line argument as bsd-061 (r = s/(ab)).
+sketch: |
+  Take r = s / (a * b). Then a * b * r ^ 2 = s ^ 2 / (a * b) by `div_pow` and `field_simp`, and c = s ^ 2 / (a * b) is
+  `eq_div_iff` applied to a * b ≠ 0 followed by `linear_combination` with the hypothesis.
+dead: []
