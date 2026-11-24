@@ -1,0 +1,28 @@
+id: pnp-094
+problem: pvsnp
+title: The unary count of the witness part of the pair encoding is polynomial-time computable
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-006
+- pnp-025
+- pnp-093
+statement: |
+  ∃ f : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) ∧
+      ∀ x w : List Bool, f (pair x w) = List.replicate (w.count true) true
+context: |
+  Composition of pnp-025 (the witness part of the pair encoding is polynomial-time) with pnp-093
+  (unary count of ones). The map ignores the instance x and returns the unary count of the ones in the
+  witness w. It is a composition exercise that checks the two utilities fit together, and it does not
+  decide P vs NP.
+sketch: |
+  Let e be the polynomial-time witness extractor of pnp-025 and let c be the unary counter of pnp-093.
+  Put f = c ∘ e. By pnp-006 f is polynomial-time, and f (pair x w) = c (e (pair x w)) = c w, which is
+  replicate (count of ones of w) true.
+dead: []
