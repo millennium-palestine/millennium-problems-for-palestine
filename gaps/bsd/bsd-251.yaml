@@ -1,0 +1,25 @@
+id: bsd-251
+problem: bsd
+title: 'Quadratic-form identity: in a commutative ring, if π + π′ = a and π π′ = p then (m − nπ)(m − nπ′) = m² − a m n + p n² for all integers m, n'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (R : Type) [CommRing R] (π π' : R) (a p m n : ℤ),
+    π + π' = (a : R) → π * π' = (p : R) →
+    ((m : R) - (n : R) * π) * ((m : R) - (n : R) * π') =
+      (m : R) ^ 2 - (a : R) * (m : R) * (n : R) + (p : R) * (n : R) ^ 2
+context: |
+  The algebraic core of bsd-161 (kernel count of m − nφ) and bsd-089 (degree form positivity). Let π be the p-power
+  Frobenius in the endomorphism ring of E over F_p-bar, with trace a = π + π′ and norm p = π π′, where π′ is the
+  conjugate root of the characteristic polynomial X² − aX + p. The degree of m − nπ is the product (m − nπ)(m − nπ′),
+  which is the quadratic form m² − a m n + p n² of bsd-089. This gap is the purely algebraic identity: it uses only
+  the two relations π + π′ = a and π π′ = p, in any commutative ring. It is the "quadratic form" step of the bsd-161
+  sketch, separated from separability and from the multiplicativity of degree, which stay open.
+sketch: |
+  Expand the left side: m² − m n (π + π′) + n² π π′ (commutativity of the ring). Substitute π + π′ = a and π π′ = p.
+  In Lean, `linear_combination (-(m : R) * (n : R)) * hsum + (n : R) ^ 2 * hprod` closes the goal, where hsum and
+  hprod are the two hypotheses. Push casts with `push_cast` first if needed.
+dead: []
