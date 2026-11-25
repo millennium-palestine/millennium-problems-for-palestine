@@ -1,0 +1,39 @@
+id: bsd-183
+problem: bsd
+title: 'Shaped independence for the level-set auxiliary family: for K = (p−1)/2 and any J, the polynomials X^(pj)·(r₀ⱼ + r₁ⱼ·f^((p−1)/2)) with deg r < K force all r = 0'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (a b : ZMod p), 2 < p → 4 * a ^ 3 + 27 * b ^ 2 ≠ 0 →
+    ∀ (J : ℕ) (r₀ r₁ : Fin J → Polynomial (ZMod p)),
+      (∀ j, (r₀ j).natDegree < (p - 1) / 2) → (∀ j, (r₁ j).natDegree < (p - 1) / 2) →
+      ∑ j : Fin J, (Polynomial.X : Polynomial (ZMod p)) ^ (p * (j : ℕ)) *
+        (r₀ j + r₁ j * (Polynomial.X ^ 3 + Polynomial.C a * Polynomial.X + Polynomial.C b) ^ ((p - 1) / 2)) = 0 →
+      ∀ j, r₀ j = 0 ∧ r₁ j = 0
+context: |
+  The nonvanishing step of Stepanov's method for the level-set bound (bsd-172), in the regime the earlier reports did not
+  try. Stepanov's auxiliary polynomial is R = Σ_{j<J} X^(p·j)·(r_{0j} + r_{1j}·g) with g = f^c, c = (p−1)/2, f = X³ + aX + b,
+  deg r_{ij} < K. The earlier failure report (bsd-172 analysis) used K above deg g = 3c, where the trivial relation
+  r_0 = −g·r_1, r_1 = 1 kills R. Here K = (p−1)/2 < 3c, so that relation is not available. With K = (p−1)/2, ℓ ≈ √p,
+  m ≈ p/2 + C√p, and J = ⌊ℓm/(2K)⌋ + 1, the unknowns 2JK exceed ℓm (so a nonzero r exists, given the vanishing
+  conditions of bsd-178/179/181), and the degree bound deg R ≤ p(J−1) + K − 1 + 3c then gives ℓ·|T| ≤ deg R with
+  |T| ≤ p/2 + O(√p). So this gap is the one missing input of that count: R ≠ 0 for every nonzero r.
+  Reduction (checked by hand): if B := Σ_j X^(pj) r_{1j} and A := Σ_j X^(pj) r_{0j}, then A + g·B = 0 forces
+  B and g·B to lie in the span V of the monomials whose exponent mod p is below K. Writing B = Σ_{t<K} X^t β_t(X^p),
+  and g = Σ_{s<p} g_s(X^p) X^s (here deg g < 2p, so g_s = c_s + d_s·Y with Y = X^p), the condition g·B ∈ V becomes
+  Σ_{t<K} g_{u−t}(Y) β_t(Y) = 0 for u with K ≤ u < p. The J-dependence disappears: the statement for all J is equivalent to the
+  K×K Toeplitz determinant det(g_{K+i−t}(Y))_{0≤i,t<K} being nonzero in F_p[Y]. Numerically this determinant is nonzero for
+  every nonsingular short cubic over F_p with p ≤ 23 (all pairs checked), and at one cubic for p ≤ 61. The coefficient
+  map has full rank for K = (p−1)/2 and J ≤ 10 at p = 23, 37, 41, and J ≤ 12 at p = 31. These are computer checks, not a proof.
+sketch: |
+  Step 1 (elementary): if A + gB = 0 with the degree bounds, then A and B lie in V and gB ∈ V; put B = Σ_{t<K} X^t β_t(X^p),
+  compare the coefficients of X^u for K ≤ u < p (no carries occur since t < K ≤ u), and get a linear system over F_p[Y].
+  If the K×K minor for rows u = K, ..., 2K−1 is nonzero at one point Y = y of F_p-bar, then β = 0 and B = 0, and then A = 0.
+  Step 2 (hard, open): show that the Toeplitz determinant of the symbol g_s(Y) = c_s + d_s·Y is nonzero for c = (p−1)/2.
+  A possible route is to specialise Y to a root y of f in F_p-bar: then g² f ≡ f(y) = 0 modulo (X^p − y), so g vanishes to order
+  c at y' = y^(1/p) modulo (X − y')^p. Not worked out here. In Lean, Step 1 is linear algebra over Polynomial (ZMod p) with
+  Polynomial.coeff and Polynomial.frobenius/ExpChar facts; Step 2 is the open part.
+dead: []
