@@ -1,0 +1,40 @@
+id: bsd-215
+problem: bsd
+title: 'Frobenius on the chord sum: over a field K of characteristic p, with the Weierstrass coefficients fixed by the p-th power, the sum of the Frobenius images of two nonsingular affine points with distinct x-coordinates is the Frobenius image of their sum'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (K : Type) [Field K] [CharP K p] [DecidableEq K] (W : WeierstrassCurve K),
+    W.a₁ ^ p = W.a₁ → W.a₂ ^ p = W.a₂ → W.a₃ ^ p = W.a₃ → W.a₄ ^ p = W.a₄ →
+    ∀ (x₁ y₁ x₂ y₂ : K), x₁ ≠ x₂ →
+      ∀ (h₁' : W.toAffine.Nonsingular (x₁ ^ p) (y₁ ^ p))
+        (h₂' : W.toAffine.Nonsingular (x₂ ^ p) (y₂ ^ p))
+        (h₃ : W.toAffine.Nonsingular
+          ((WeierstrassCurve.Affine.addX W x₁ x₂ (WeierstrassCurve.Affine.slope W x₁ x₂ y₁ y₂)) ^ p)
+          ((WeierstrassCurve.Affine.addY W x₁ x₂ y₁ (WeierstrassCurve.Affine.slope W x₁ x₂ y₁ y₂)) ^ p)),
+        (WeierstrassCurve.Affine.Point.some (x₁ ^ p) (y₁ ^ p) h₁' +
+          WeierstrassCurve.Affine.Point.some (x₂ ^ p) (y₂ ^ p) h₂' : W.toAffine.Point) =
+          WeierstrassCurve.Affine.Point.some
+            ((WeierstrassCurve.Affine.addX W x₁ x₂ (WeierstrassCurve.Affine.slope W x₁ x₂ y₁ y₂)) ^ p)
+            ((WeierstrassCurve.Affine.addY W x₁ x₂ y₁ (WeierstrassCurve.Affine.slope W x₁ x₂ y₁ y₂)) ^ p) h₃
+context: |
+  Chord case of the Frobenius as a group endomorphism of E over the algebraic closure of F_p, the step after the
+  coordinate identities bsd-211 (slope), bsd-212 (addX) and bsd-213 (addY). Mathlib's
+  WeierstrassCurve.Affine.Point.add_of_X_ne gives the sum of two points with distinct x-coordinates as the point with
+  coordinates addX and addY of the chord slope. Combined with the three coordinate identities, the p-th powers of the
+  coordinates of P + Q are the coordinates of (P)^(Frobenius) + (Q)^(Frobenius), which is the additivity of the
+  Frobenius on chords with distinct x-coordinates. This is part of the sketch of bsd-089 (the degree form positivity).
+  The gap does not cover the tangent case x₁ = x₂ (doubling) or the vertical case, and it does not prove that the
+  Frobenius is a homomorphism on all of the points, nor Hasse's bound. The nonsingularity of the Frobenius images is
+  taken as a hypothesis (h₁', h₂', h₃) because each of them is a Prop, so the statement only asserts the equality of
+  points. It is true for every field of characteristic p.
+sketch: |
+  Let hx' : x₁ᵖ ≠ x₂ᵖ from injectivity of x ↦ xᵖ (frobenius K p is injective, and frobenius_def is rfl). Rewrite the
+  left sum with WeierstrassCurve.Affine.Point.add_of_X_ne hx'. Then congr 1 on the two some-constructors, and
+  match the coordinates: the slope identity (bsd-211) for slope at (x₁ᵖ, x₂ᵖ, y₁ᵖ, y₂ᵖ), then the addX identity
+  (bsd-212) and the addY identity (bsd-213) at the slope. The addY identity uses the negY and negAddY unfolding with
+  map_neg on the Frobenius ring hom. Checked by hand, not in Lean.
+dead: []
