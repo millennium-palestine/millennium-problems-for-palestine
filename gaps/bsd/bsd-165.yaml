@@ -1,0 +1,31 @@
+id: bsd-165
+problem: bsd
+title: 'Stepanov derivative of a power: over a field, for a nonzero polynomial f and k ≤ c, the k-th Hasse derivative of f^c is f^(c−k) times a polynomial of degree at most k·deg f'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (f : Polynomial K), f ≠ 0 → ∀ c k : ℕ, k ≤ c →
+    ∃ Q : Polynomial K, Polynomial.hasseDeriv k (f ^ c) = f ^ (c - k) * Q ∧ Q.natDegree ≤ k * f.natDegree
+context: |
+  The derivative input of Stepanov's method for the weak Hasse–Weil bound (the bsd-142 chain, see the
+  auxiliary-polynomial and zero-count gaps bsd-159 and bsd-160). Stepanov's auxiliary polynomial is built
+  from the Hasse derivatives of g = f^c, where c = (p − 1)/2 and f is the cubic of a Weierstrass curve.
+  For those derivatives to be controlled one needs the form: the k-th Hasse derivative of f^c is divisible
+  by f^(c−k), and the cofactor has degree at most k·deg f (not k·deg f + c·deg f). This gap states exactly
+  that, over an arbitrary field, with no assumption on the characteristic. It is an algebraic identity of
+  Leibniz type. It does not use Hasse's bound and does not use the prime p.
+sketch: |
+  Step 1 (divisibility): by induction on c, generalising k, f^(c−k) divides hasseDeriv k (f^c). The
+  step is Polynomial.hasseDeriv_mul (Leibniz rule for Hasse derivatives) applied to f^(c+1) = f * f^c.
+  Each term hasseDeriv i f * hasseDeriv j (f^c) with i + j = k: if i = 0 use the induction hypothesis
+  at j = k and the factor f; if i ≥ 1 then j < k ≤ c, so the induction hypothesis at j gives f^(c−j), and
+  c+1−k ≤ c−j. Use Finset.dvd_sum, mul_dvd_mul_left, dvd_mul_of_dvd_right and pow_dvd_pow.
+  Step 2 (cofactor): take Q from the divisibility, hasseDeriv k (f^c) = f^(c−k) * Q. If Q = 0 there is
+  nothing to prove. Otherwise natDegree (f^(c−k) * Q) = (c−k)·deg f + deg Q (Polynomial.natDegree_mul,
+  natDegree_pow, no zero divisors since f ≠ 0 over a field), and by Polynomial.natDegree_hasseDeriv_le the
+  left side is at most c·deg f − k. Subtract to get deg Q ≤ k·deg f − k ≤ k·deg f. Use omega or nlinarith
+  after rewriting c·deg f = (c−k)·deg f + k·deg f.
+dead: []
