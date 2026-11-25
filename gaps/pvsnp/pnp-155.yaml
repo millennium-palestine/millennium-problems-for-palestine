@@ -1,0 +1,46 @@
+id: pnp-155
+problem: pvsnp
+title: A run of leaves and copies only pushes on the old stack and consumes one witness bit per leaf
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- pnp-154
+statement: |
+  ∀ (ps : List (Bool × Bool)) (s w : List Bool), (∀ q ∈ ps, q.1 = false) → ∃ (t : List Bool),
+    ((ps.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (s, w, none)).1
+      = t ++ s ∧ t.length = ps.length
+      ∧ ((ps.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (s, w, none)).2.1
+        = w.drop (ps.filter (fun q => !q.2)).length
+context: |
+  The pure-push part of the fan-out program of pnp-133. A pair (false, false) is a leaf, which pushes
+  the next witness bit, and a pair (false, true) is a copy, which pushes a copy of the top. Such a
+  run never pops, so it only adds a new top segment on the stack it starts from, one entry per
+  pair, and it takes exactly one witness bit per leaf. This is the piece of a dynamic programme or
+  pushdown argument for pnp-152 in which a segment of the program pushes values and leaves the
+  stack below it alone. It is decided by the program and does not involve a machine, a polynomial
+  or P. It is the analogue of pnp-154 for runs with no pops.
+sketch: |
+  Induction on ps, for every s and w. In the cons case the first pair is (false, b) with b the
+  second bit. A leaf gives the stack w.headD false :: s and witness w.drop 1; a copy gives
+  s.headD false :: s and witness w. In both cases the pending state is none. The induction
+  hypothesis for the rest, applied to the new stack and witness, gives t' with the stack
+  t' ++ (x :: s), which is (t' ++ [x]) ++ s, and the witness drop of the remaining leaves. Use
+  List.filter on a cons and List.drop_drop to match the counts, which add 1 exactly when the
+  first pair is a leaf.
+dead: []
