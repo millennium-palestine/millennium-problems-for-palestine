@@ -1,0 +1,34 @@
+id: bsd-154
+problem: bsd
+title: 'Weil''s trick, algebraic step: if a² > 4q, the trace sequence s_{k+2} = a s_{k+1} − q s_k with s₀ = 2, s₁ = a is not bounded by C q^(n/2) for every C'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (a q : ℝ) (s : ℕ → ℝ), 0 < q → 4 * q < a ^ 2 → s 0 = 2 → s 1 = a →
+    (∀ k : ℕ, s (k + 2) = a * s (k + 1) - q * s k) →
+    ∀ C : ℝ, ∃ n : ℕ, C ^ 2 * q ^ n < s n ^ 2
+context: |
+  Algebraic half of the route from weak to sharp Hasse bounds (Weil's trick, as in Silverman V and
+  Iwaniec–Kowalski). Let E be an elliptic curve over F_q and s_n = q^n + 1 − #E(F_{q^n}). Then
+  s_n = α^n + β^n where α, β are the Frobenius roots, α + β = a_q = s_1 and αβ = q, and the sequence
+  obeys s_{k+2} = a s_{k+1} − q s_k with s_0 = 2. Suppose one has a uniform weak bound
+  |s_n| ≤ C q^(n/2) for all n (Stepanov's method gives this with some constant C). This gap says such
+  a sequence forces 4q ≥ a², i.e. |a| ≤ 2√q, which is sharp Hasse. The converse direction, a² ≤ 4q
+  giving the bound with factor k + 1, is bsd-028. The uniform weak bound itself is NOT in this gap
+  and is the remaining wall, so this gap alone does not prove bsd-142. It is a true, self-contained
+  real-sequence statement, provable without curves.
+sketch: |
+  Let D = a² − 4q > 0, γ = (a + √D)/2, δ = (a − √D)/2. Then γ + δ = a, γδ = (a² − D)/4 = q, and
+  γ ≠ δ. Induction (two-step, on the pair (s n, s (n+1))) gives s n = γ^n + δ^n for all n.
+  Hence s_n² = γ^(2n) + δ^(2n) + 2 q^n ≥ γ^(2n), since γ^(2n) ≥ 0 and δ^(2n) ≥ 0 and 2q^n ≥ 0.
+  Set λ = γ/δ. Since γδ = q > 0, λ = γ²/q > 0. Since γ² − δ² = (γ − δ)(γ + δ) = √D · a ≠ 0
+  (a ≠ 0 because a² > 4q > 0), either γ² > δ² (then λ² > 1, so λ > 1) or δ² > γ² (then swap the roots,
+  i.e. replace λ by 1/λ and γ by δ; the statement is symmetric). In the first case γ^(2n) = λ^n q^n,
+  so s_n² ≥ λ^n q^n. Pick n with λ^n > C² (`pow_unbounded_of_one_lt`); since q^n > 0 this gives
+  C² q^n < λ^n q^n ≤ s_n². In Lean: `Real.sq_sqrt`, `Real.sqrt_pos` for √D, `pow_unbounded_of_one_lt`
+  for the choice of n, and `nlinarith` or `positivity` for the sign facts. Avoid the swap by proving
+  an auxiliary `∃ λ : ℝ, 1 < λ ∧ ∀ n, λ ^ n * q ^ n ≤ s n ^ 2` with a `rcases lt_or_gt` on γ² vs δ².
+dead: []
