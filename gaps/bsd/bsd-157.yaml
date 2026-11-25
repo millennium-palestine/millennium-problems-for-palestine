@@ -1,0 +1,23 @@
+id: bsd-157
+problem: bsd
+title: 'Hasse–Weil character sum bound on the singular short cubics: for p ≠ 2, 3 and a, b in F_p with 4a³ + 27b² = 0, the square of Σ_x χ(x³ + ax + b) is at most 4p'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-155
+- bsd-156
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (a b : ZMod p), p ≠ 2 → p ≠ 3 → 4 * a ^ 3 + 27 * b ^ 2 = 0 →
+    (∑ x : ZMod p, quadraticChar (ZMod p) (x ^ 3 + a * x + b)) ^ 2 ≤ 4 * (p : ℤ)
+context: |
+  Glue for the singular case of bsd-142. By bsd-155 the cubic is x³ + ax + b = x³ − 3e²x + 2e³ for some e, so by
+  bsd-156 the square of the sum is at most 1, and 1 ≤ 4p. This settles bsd-142 for every singular short form over
+  F_p with p ≠ 2, 3. It does NOT settle bsd-142: the nonsingular case 4a³ + 27b² ≠ 0 (where the sum is the Hasse
+  content, #E(F_p) − (p + 1)) is still open and is the frontier. It does not decide any Millennium problem.
+sketch: |
+  intro p _ a b hp2 hp3 hdisc. Obtain ⟨e, rfl, rfl⟩ from bsd-155 applied to p, a, b, hp2, hp3, hdisc. Rewrite the
+  polynomial with x³ + (−3e²)x + 2e³ (it is the same expression, so no change of variables is needed). Apply bsd-156
+  to get the square ≤ 1, then close 1 ≤ 4 * (p : ℤ) with (p : ℤ) ≥ 2 (Nat.Prime.two_le, Int.natCast_le / omega).
+dead: []
