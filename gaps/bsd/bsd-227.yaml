@@ -1,0 +1,27 @@
+id: bsd-227
+problem: bsd
+title: 'Odd nonvanishing of the universal elliptic divisibility sequence: for every odd integer k, normEDS in the three variables b, c, d is a nonzero polynomial'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ k : ℤ, Odd k →
+    normEDS (MvPolynomial.X 0 : MvPolynomial (Fin 3) ℤ) (MvPolynomial.X 1) (MvPolynomial.X 2) k ≠ 0
+context: |
+  The odd half of bsd-225. The even half is bsd-228. Together they give bsd-225, which is needed to cancel the
+  factor Y(m) in the induction for the n = 3 bracket (bsd-222) in the universal domain MvPolynomial (Fin 3) ℤ.
+  The odd case is the part that Mathlib already supports: for odd k the division polynomial is a polynomial in x
+  alone up to the curve equation, and its leading coefficient is k. The statement is true, since normEDS of an
+  odd index k is nonzero whenever k ≠ 0, and every odd k is nonzero.
+sketch: |
+  Transfer to a curve over ℚ, exactly as in Bsd214.main: take W = a curve over ℚ, apply MvPolynomial.aeval with
+  ![W.ψ₂, C W.Ψ₃, C W.preΨ₄] into Polynomial (Polynomial ℚ) and use map_normEDS, so that the image of
+  normEDS X0 X1 X2 k is W.ψ k. If the universal value were 0, then W.ψ k would be 0.
+  For odd k, W.Ψ k = C (W.preΨ k) by the definition of Ψ, and the coordinate-ring relation
+  Affine.CoordinateRing.mk_ψ says that W.ψ k and C (W.preΨ k) agree modulo the Weierstrass equation. Since
+  W.preΨ k has leading coefficient k by WeierstrassCurve.leadingCoeff_preΨ (needs (k : ℚ) ≠ 0), it is nonzero,
+  and a nonzero polynomial in x alone is not a multiple of the monic-in-y Weierstrass polynomial, so W.ψ k ≠ 0.
+  The degree argument in y (natDegree of a product with a monic quadratic) is the delicate step.
+dead: []

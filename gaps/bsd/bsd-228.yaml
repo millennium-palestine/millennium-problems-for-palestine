@@ -1,0 +1,25 @@
+id: bsd-228
+problem: bsd
+title: 'Even nonvanishing of the universal elliptic divisibility sequence: for every nonzero even integer k, normEDS in the three variables b, c, d is a nonzero polynomial'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ k : ℤ, Even k → k ≠ 0 →
+    normEDS (MvPolynomial.X 0 : MvPolynomial (Fin 3) ℤ) (MvPolynomial.X 1) (MvPolynomial.X 2) k ≠ 0
+context: |
+  The even half of bsd-225. The odd half is bsd-227. Together they give bsd-225, which is needed to cancel the
+  factor Y(m) in the induction for the n = 3 bracket (bsd-222) in the universal domain MvPolynomial (Fin 3) ℤ.
+  The even case is the hard part: for even k the division polynomial W.ψ k carries the extra factor ψ₂ = 2y + a₁x + a₃
+  (the relation Ψ(2m) ψ₂ = ... in Mathlib), so the leading-coefficient argument of the odd case does not apply
+  directly. The statement is true, since bsd-225 is true.
+sketch: |
+  Transfer to a curve over ℚ as in Bsd214.main, so that the universal value at an even k maps to W.ψ k.
+  For even k, W.Ψ k = C (W.preΨ k) * W.ψ₂ with leading coefficient k/2 for the preΨ factor, by
+  WeierstrassCurve.leadingCoeff_preΨ (needs (k : ℚ) ≠ 0). Nonvanishing then needs that the product C f * ψ₂ is not a
+  multiple of the Weierstrass polynomial, which Mathlib does not state. Alternative: the even recursion
+  W.ψ_even at index m gives W.ψ (2m) ψ₂ in terms of odd-index values, and an induction on m using bsd-227 may close it.
+  Check the exact Mathlib names (WeierstrassCurve.ψ_even, Affine.CoordinateRing.mk_ψ, leadingCoeff_preΨ) before use.
+dead: []
