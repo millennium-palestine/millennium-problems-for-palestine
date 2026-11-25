@@ -1,0 +1,24 @@
+id: bsd-243
+problem: bsd
+title: 'Lift of an x-coordinate: on an elliptic curve over an algebraically closed field of characteristic not 2, every x-coordinate is the x-coordinate of a nonsingular affine point'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [IsAlgClosed K] (W : WeierstrassCurve K) [W.IsElliptic] (x : K), (2 : K) ≠ 0 →
+    ∃ y : K, W.toAffine.Nonsingular x y
+context: |
+  Lift step of the ℓ = 3 count |E[3]| ≥ 9 (the case ℓ = 3 of the torsion lower bound bsd-193). Each root x0 of the
+  3-division polynomial (bsd-242) is the x-coordinate of a point of the curve over the algebraic closure: the curve
+  equation is a monic quadratic in y, and its discriminant (a₁x + a₃)² + 4(x³ + a₂x² + a₄x + a₆) has a square root in an
+  algebraically closed field, so y = (−(a₁x + a₃) + s)/2 solves it (2 ≠ 0). Nonsingularity holds at every point of an
+  elliptic curve (Mathlib: equation_iff_nonsingular for W.IsElliptic). This is the only place the lift needs algebraic
+  closedness; the point is then a candidate 3-torsion point once bsd-240 gives 3P = 0.
+sketch: |
+  Take s with s² = (a₁x + a₃)² + 4(x³ + a₂x² + a₄x + a₆) (IsAlgClosed.exists_pow_nat_eq). Put y = (−(a₁x + a₃) + s)/2.
+  The curve equation y² + a₁xy + a₃y = x³ + a₂x² + a₄x + a₆ follows from s² = discriminant, after clearing the
+  denominator 2 (field_simp, then linear_combination with s² = discriminant). Then Nonsingular from the equation by
+  WeierstrassCurve.Affine.equation_iff_nonsingular, which needs IsElliptic.
+dead: []
