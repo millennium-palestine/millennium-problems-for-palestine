@@ -1,0 +1,28 @@
+id: bsd-202
+problem: bsd
+title: 'Order-3 doubling: for a nonsingular affine point (x, y) with 3 • P = 0 and 2y + a₁x + a₃ ≠ 0, the doubling x-coordinate λ² + a₁λ − a₂ − 2x with λ = (3x² + 2a₂x + a₄ − a₁y)/(2y + a₁x + a₃) equals x'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-200
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) (x y : K)
+    (h : W.toAffine.Nonsingular x y),
+    3 • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) = 0 →
+    2 * y + W.a₁ * x + W.a₃ ≠ 0 →
+      ((3 * x ^ 2 + 2 * W.a₂ * x + W.a₄ - W.a₁ * y) / (2 * y + W.a₁ * x + W.a₃)) ^ 2 +
+        W.a₁ * ((3 * x ^ 2 + 2 * W.a₂ * x + W.a₄ - W.a₁ * y) / (2 * y + W.a₁ * x + W.a₃)) -
+        W.a₂ - 2 * x = x
+context: |
+  Step (2) of the 3-torsion case of bsd-198. If 3P = 0 then 2P = −P, which has the same x-coordinate as P.
+  The x-coordinate of 2P is the doubling formula of bsd-200, so the λ-expression equals x. This is the
+  group-law input; the algebra that turns it into Ψ₃(x) = 0 is bsd-203. Uses the doubling formula of
+  bsd-200 (if that gap has not merged, its proof can be inlined as a `have`).
+sketch: |
+  From 3 • P = 0, get 2 • P = −P (eq_neg_of_add_eq_zero_left, using 3 • P = 2 • P + P). Then the Point 2 • P
+  is some x₃ y₃ with x₃ = the doubling x-coordinate, by bsd-200 (two_nsmul gives P + P). Since −P =
+  some x (negY x y) by neg_some, injectivity of Point.some in the first coordinate gives x₃ = x.
+  The hypothesis 2y + a₁x + a₃ ≠ 0 is what bsd-200 needs.
+dead: []

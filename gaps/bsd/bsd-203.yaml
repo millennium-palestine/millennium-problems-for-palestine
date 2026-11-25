@@ -1,0 +1,31 @@
+id: bsd-203
+problem: bsd
+title: 'Order-3 division polynomial: on the curve y² + a₁xy + a₃y = x³ + a₂x² + a₄x + a₆, the doubling identity λ² + a₁λ − a₂ − 2x = x with λ = (3x² + 2a₂x + a₄ − a₁y)/(2y + a₁x + a₃) forces the 3-division polynomial to vanish at x (Ψ₃(x) = 0)'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (W : WeierstrassCurve K) (x y : K),
+    y ^ 2 + W.a₁ * x * y + W.a₃ * y = x ^ 3 + W.a₂ * x ^ 2 + W.a₄ * x + W.a₆ →
+    2 * y + W.a₁ * x + W.a₃ ≠ 0 →
+    ((3 * x ^ 2 + 2 * W.a₂ * x + W.a₄ - W.a₁ * y) / (2 * y + W.a₁ * x + W.a₃)) ^ 2 +
+        W.a₁ * ((3 * x ^ 2 + 2 * W.a₂ * x + W.a₄ - W.a₁ * y) / (2 * y + W.a₁ * x + W.a₃)) -
+        W.a₂ - 2 * x = x →
+      (W.preΨ' 3).eval x = 0
+context: |
+  Step (3), the algebra, of the 3-torsion case of bsd-198. Clearing the denominator D = 2y + a₁x + a₃ turns the
+  λ-identity into N² + a₁ N D − (a₂ + 3x) D² = 0 with N = 3x² + 2a₂x + a₄ − a₁y. Modulo the curve equation
+  this polynomial equals −Ψ₃(x) where Ψ₃ = 3x⁴ + b₂x³ + 3b₄x² + 3b₆x + b₈ (Mathlib's Ψ₃, and
+  preΨ' 3 = Ψ₃ by preΨ'_three). Checked with sympy: the remainder of N² + a₁ND − (a₂+3x)D² on division by the
+  curve equation (as a polynomial in y) is −Ψ₃(x), with quotient −(b₂ + 12x). So the identity is
+  Ψ₃ = −F + (−(b₂ + 12x))·E, where E is the curve equation (LHS − RHS) and F is the cleared identity.
+  Proof plan: field_simp at the hypothesis to get F = 0, then linear_combination with the curve equation.
+sketch: |
+  Expand W.preΨ' 3 with preΨ'_three and Ψ₃, and the b-invariants b₂ = a₁² + 4a₂, b₄ = 2a₄ + a₁a₃,
+  b₆ = a₃² + 4a₆, b₈ = a₁²a₆ + 4a₂a₆ − a₁a₃a₄ + a₂a₃² − a₄². Multiply the hypothesis by D² (field_simp with
+  the nonvanishing hypothesis) to get F = 0. Then the goal is a polynomial identity that holds modulo F = 0
+  and the curve equation, closed by linear_combination with coefficients −1 (for F) and −(b₂ + 12x) (for the
+  curve equation). Entirely polynomial, so an hour's work if the coefficients are as computed.
+dead: []
