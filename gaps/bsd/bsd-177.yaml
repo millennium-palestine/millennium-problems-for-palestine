@@ -1,4 +1,4 @@
-id: bsd-175
+id: bsd-177
 problem: bsd
 title: 'Stepanov parameter bound: for p ≥ 3 and m ≤ p with m > p/2 + C√p, some integers ℓ, J, K satisfy ℓm < 2JK and pJ + K + 3⌊(p−1)/2⌋ + 3ℓ < ℓm (the arithmetic of the Stepanov auxiliary polynomial)'
 status: open
