@@ -1,0 +1,40 @@
+id: pnp-162
+problem: pvsnp
+title: In a tagged run of the fan-out program the consumption arcs of wires do not cross
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (x : List Bool) (s : List ℕ × ℕ × Option Bool × List (ℕ × ℕ)),
+    x.foldl (fun (st : List ℕ × ℕ × Option Bool × List (ℕ × ℕ)) (b : Bool) =>
+      match st.2.2.1 with
+      | none => (st.1, st.2.1, some b, st.2.2.2)
+      | some a =>
+        if a then (if b then (st.2.1 :: st.1.drop 2, st.2.1 + 1, none,
+            ((st.1.take 2).filter (· != 0)).map (fun u => (u, st.2.1)) ++ st.2.2.2)
+          else (st.1, st.2.1, none, st.2.2.2))
+        else (if b then (st.1.headD 0 :: st.1, st.2.1, none, st.2.2.2)
+          else (st.2.1 :: st.1, st.2.1 + 1, none, st.2.2.2))) ([], 1, none, []) = s →
+    ∀ p ∈ s.2.2.2, ∀ q ∈ s.2.2.2, ¬ (p.1 < q.1 ∧ q.1 < p.2 ∧ p.2 < q.2)
+context: |
+  Stepping stone for pnp-152. The tagged run of pnp-161 records, for each NAND at time t, an arc
+  (u, t) from each real wire u it consumes (the default 0 is not a wire). The claim is that no two
+  arcs cross in creation order: there are no arcs (a1, b1) and (a2, b2) with a1 < a2 < b1 < b2. With
+  the one-page embedding of the arcs in the time line this gives the outerplanar shape of the sketch
+  of pnp-152, hence treewidth at most 2 for the circuit graph. The claim was checked by exhaustive
+  search over all fold programs of length up to 11 (a script, not Lean), and the graph reduction of
+  the sketch was checked on K4 and a 3x3 grid. It involves no machine and no P, and does not decide
+  P vs NP. The dynamic programme over the tree decomposition, which pnp-152 needs, is still open.
+sketch: |
+  Let (a1, b1) and (a2, b2) be arcs with a1 < a2 < b1 < b2, and let the NAND at time b1 consume a1.
+  The wire a2 is used at time b2 > b1, so an entry with id a2 is on the stack just before time b1
+  (a copy of a2 needs an entry of a2 already on the stack, and a2 entries are created only at time
+  a2 < b1). By pnp-161 the stack is non-increasing, so the a2 entries lie above every a1 entry. The
+  NAND pops the top two entries, which are a1 and one entry above it, so the single entry above the
+  a1 entry is the one with id a2 and it is popped at time b1. Everything left on the stack below the
+  popped entries has id at most a1 < a2, and no new entry with id a2 can appear after time b1, so the
+  wire a2 is not used at time b2, a contradiction. The one-page consequence is for the next gap, not
+  this one.
+dead: []

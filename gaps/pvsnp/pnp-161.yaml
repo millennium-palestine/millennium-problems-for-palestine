@@ -1,0 +1,39 @@
+id: pnp-161
+problem: pvsnp
+title: In a tagged run of the fan-out program the stack of wire ids is non-increasing from top to bottom and below the time
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (x : List Bool) (s : List ℕ × ℕ × Option Bool),
+    x.foldl (fun (st : List ℕ × ℕ × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then (st.2.1 :: st.1.drop 2, st.2.1 + 1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD 0 :: st.1, st.2.1, none)
+          else (st.2.1 :: st.1, st.2.1 + 1, none))) ([], 1, none) = s →
+    s.1.Pairwise (· ≥ ·) ∧ ∀ u ∈ s.1, u < s.2.1
+context: |
+  Stepping stone for pnp-152, the non-crossing step of its sketch. The tagged run is the fold of
+  pnp-152 with the witness removed: each stack entry is the creation time of the wire it carries
+  (a leaf or a NAND gate creates a wire at the current time, a copy carries the wire of the top
+  entry), and the time starts at 1 so that the default 0 of an empty stack is never a real wire.
+  The claim is the invariant that makes creation order a LIFO order on the stack: an entry is never
+  below an entry with a larger wire id. It is proved by induction on the input, with the four
+  transitions of pnp-159 and no machine. It involves no polynomial and no P, and it does not decide
+  P vs NP. It is the first link of the chain pnp-161 to pnp-162 for pnp-152.
+sketch: |
+  Induction on x, generalising the state, with the invariant of the statement as the hypothesis.
+  The initial state ([], 1, none) satisfies it. The cases of the step: a pending none stores the bit
+  (stack and time unchanged). A NAND pops two entries and pushes the time t, which is at least every
+  remaining id (all are below t) and then the time becomes t + 1, so the new id is below the new
+  time. A leaf pushes t in the same way. A copy pushes the top id u, which is at least every id of
+  the stack (the stack is non-increasing), and u is below the time; on an empty stack it pushes 0,
+  which is below the time since the time is at least 1. The drop of a non-increasing list is
+  non-increasing, and the time never decreases. The proof is a short case analysis on the pending
+  symbol and the bit.
+dead: []
