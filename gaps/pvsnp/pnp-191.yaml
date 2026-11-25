@@ -1,0 +1,25 @@
+id: pnp-191
+problem: pvsnp
+title: A walk on the integers that starts with a positive prefix sum and ends at zero first returns to zero at some step
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ d : List ℤ, 0 < d.length → (∀ j ≤ d.length, 0 ≤ (d.take j).sum) → d.sum = 0 →
+    ∃ m, 0 < m ∧ m ≤ d.length ∧ (d.take m).sum = 0 ∧ ∀ j, 0 < j → j < m → 0 < (d.take j).sum
+context: |
+  Discrete first-return lemma for the pnp-152 route, the companion of pnp-189. A pushdown run of the pnp-133 fold
+  has a stack height that moves by a walk with steps in {-1, 0, 1} (pnp-175). If a run never drops below its start
+  and ends at its start, then its prefix sums form a nonnegative walk returning to zero, and the first return to
+  zero splits the run into a primitive excursion followed by the rest. A context-free (CYK-style) decomposition of
+  the pnp-133 language uses this split. The statement is about integer lists only: no machine, no polynomial bound,
+  no P, and it does not decide P vs NP. Unlike pnp-189 it does not need the step bounds.
+sketch: |
+  Let P m be the predicate 0 < m ∧ (d.take m).sum = 0. It holds for m = d.length (by d.take d.length = d and the
+  hypothesis d.sum = 0), so the least such m exists (Nat.find) and is at most d.length (Nat.find_min'). Its
+  defining property gives 0 < m and the sum is zero. For 0 < j < m, the prefix sum of length j is nonnegative by
+  the hypothesis (j ≤ d.length), and it is not zero, since otherwise j would satisfy P and contradict minimality.
+  So it is positive. In Lean: classical, Nat.find_spec, Nat.find_min', Nat.find_min, then omega.
+dead: []
