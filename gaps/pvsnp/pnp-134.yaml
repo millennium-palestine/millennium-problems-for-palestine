@@ -1,0 +1,33 @@
+id: pnp-134
+problem: pvsnp
+title: Indexed lookup in the witness, at the index given by the count of ones in the instance, is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  ∃ L : Lang, InP L ∧ ∀ x w : List Bool, L (pair x w) = w.getD (x.count true) false
+context: |
+  Random access into the witness, as a polynomial-time language. The index is the number of true
+  bits of the instance, and the answer is the witness bit at that position (false when the position
+  is past the end of the witness). The last stuck report on pnp-100 (Cook–Levin) names indexed lookup
+  into the witness as the missing piece for a circuit that reads each gate's inputs by index. This
+  gap is only that piece. It does not build the circuit, does not simulate a TM2 verifier, and does
+  not decide P vs NP. The index is taken from the instance, so the witness is never copied in full
+  and the answer is read by consuming the witness one symbol per true instance bit.
+sketch: |
+  Four stacks: input (the pair encoding), accumulator, output, and a scratch stack. Phase 0 reads the
+  doubled instance two symbols at a time, exactly as in pnp-085: a pair of equal symbols is a doubled
+  instance bit, and a true bit pushes one mark onto the accumulator; the mismatched pair is the
+  separator [false, true], which ends the phase. After phase 0 the accumulator holds one mark per true
+  instance bit, and the input holds the witness with its first symbol on top. Phase 1 pops the
+  accumulator; for each mark it pops one symbol of the input and discards it, so the input is the
+  witness with the first count symbols removed. Phase 2 pops the input head into the state, which is
+  the answer (none if the witness is exhausted, so the answer is false), and discards the rest of the
+  input. Finally the answer bit is pushed onto the output stack and the machine halts. Each symbol is
+  handled in a constant number of steps, so the running time is linear in the length of the pair.
+dead: []
