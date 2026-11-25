@@ -1,0 +1,24 @@
+id: bsd-238
+problem: bsd
+title: 'Torsion prime-power bound from the first layer: for an additive commutative group in which multiplication by ℓ is surjective and whose ℓ-torsion has at least ℓ² points, the ℓ^e-torsion has at least (ℓ^e)² points for every e'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (G : Type) [AddCommGroup G] (ℓ : ℕ), (∀ x : G, ∃ y : G, ℓ • y = x) →
+    ℓ ^ 2 ≤ Nat.card {x : G // ℓ • x = 0} → ∀ e : ℕ, (ℓ ^ e) ^ 2 ≤ Nat.card {x : G // (ℓ ^ e) • x = 0}
+context: |
+  Bridge between bsd-237 (the tower count) and the prime-power case of the torsion lower bound bsd-193. For an
+  elliptic curve over an algebraically closed field F̄_p and a prime ℓ ≠ p, the prime-power bound (ℓ^e)² ≤ |E[ℓ^e]|
+  reduces to two inputs, each a separate gap: (S) multiplication by ℓ is surjective on E(F̄_p), and (L) |E[ℓ]| ≥ ℓ²
+  (separability of ψ_ℓ). This gap says these two inputs suffice, by induction on e: the base e = 0 is the trivial
+  1-torsion (one point), and the step multiplies the bound by ℓ² using bsd-237. The statement is self-contained and
+  true with the Nat.card convention: a finite bound at each layer forces each layer to be finite through bsd-237.
+sketch: |
+  Induction on e. Base: (ℓ^0)² = 1 ≤ |G[1]|, where G[1] = {0} (one point, nonempty and finite). Step: by bsd-237 with
+  surjectivity, |G[ℓ^(e+1)]| = |G[ℓ]| · |G[ℓ^e]| ≥ ℓ² · (ℓ^e)² = (ℓ^(e+1))² using the hypothesis on G[ℓ] and the
+  induction hypothesis (Nat.mul_le_mul, then mul_pow and pow_succ). Mathlib: pow_succ, mul_pow, Nat.mul_le_mul,
+  Nat.card_pos, Subsingleton of the 1-torsion (1 • x = 0 forces x = 0; use rwa [one_smul] at h, not simpa).
+dead: []
