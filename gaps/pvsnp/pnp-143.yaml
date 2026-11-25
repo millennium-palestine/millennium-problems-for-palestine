@@ -1,0 +1,34 @@
+id: pnp-143
+problem: pvsnp
+title: A copy gadget on the fan-out program duplicates the top value
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  ∀ (a : Bool) (rest w : List Bool),
+    ([false, true].foldl (fun (st : List Bool × List Bool × Option Bool) (c : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some c)
+      | some d =>
+        if d then (if c then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if c then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (a :: rest, w, none)).1
+      = a :: a :: rest
+context: |
+  Gadget lemma for the fan-out circuit language of pnp-132. The input pair (false, true) is the copy
+  instruction: it pushes a copy of the top value, so one gate value can feed several later gates. This
+  is the fan-out that pnp-124 lacks (without it the language lies in P, as the note on pnp-124 shows).
+  This gap states the effect of the copy on a nonempty stack, for every witness. It is a building block
+  for the hardness step pnp-141; it does not give that step, and it does not decide P vs NP.
+sketch: |
+  Unfold the fold on the two-element list. The first bit false sets the pending component to some false.
+  The second bit true with pending false takes the else branch with the true input, which pushes the
+  head of the work stack again. The head of a :: rest is a, so the result is a :: a :: rest, and the
+  witness is untouched. The proof is by simp, with no induction.
+dead: []
