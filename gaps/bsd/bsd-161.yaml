@@ -1,4 +1,4 @@
-id: bsd-159
+id: bsd-161
 problem: bsd
 title: 'Isogeny kernel count: for an elliptic curve over a prime field and integers m, n with p ∤ m, the kernel of m − nφ on the points over the algebraic closure has m² − a m n + p n² elements'
 status: open
