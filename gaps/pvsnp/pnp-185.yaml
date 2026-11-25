@@ -1,0 +1,56 @@
+id: pnp-185
+problem: pvsnp
+title: A run of pairs of the fan-out fold on a stack t ++ s leaves the bottom s untouched when t has at least as many cells as the NAND pairs plus two
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (ps : List (Bool × Bool)) (t s w : List Bool), (ps.filter fun q => q.1 && q.2).length + 2 ≤ t.length →
+    ((ps.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (t ++ s, w, none)).1
+    = (((ps.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (t, w, none)).1 ++ s)
+    ∧ ((ps.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (t ++ s, w, none)).2.1
+    = ((ps.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (t, w, none)).2.1
+context: |
+  Sharper form of pnp-184 for the pnp-152 route. A run of pairs pops a cell only at a NAND pair (true, true),
+  and a NAND pops two cells, the first of which lies in the run's own part of the stack. So a run that has
+  n NAND pairs needs only n + 2 cells in t for its bottom to be untouched, not one cell per pair as pnp-184
+  assumes. The number of NAND pairs is the number of cells a block of the fan-out program can read below its
+  start, the quantity that a pushdown or tree-decomposition argument uses. It does not use a machine, a
+  polynomial bound or P, and it does not decide P vs NP.
+sketch: |
+  Induction on the pair list, generalising t, as in pnp-184. Use the one-pair step of pnp-183 with the
+  bottom and the stack-length bound from pnp-184. A NAND pair shrinks the stack by one cell and lowers the
+  NAND count by one, so the hypothesis is kept for the tail. The other three pairs do not shrink the stack
+  (length lemma by case split on the pair), and they do not change the count. Both cases give the
+  hypothesis for the tail, so the induction goes through with the weaker assumption.
+dead: []
