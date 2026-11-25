@@ -1,0 +1,29 @@
+id: bsd-166
+problem: bsd
+title: 'Frobenius kills the Hasse derivatives of order below p: in characteristic p, for 0 < k < p the k-th Hasse derivative of X^(p·j) · h is X^(p·j) times the k-th Hasse derivative of h'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (K : Type) [Field K] [CharP K p] (j k : ℕ) (h : Polynomial K),
+    0 < k → k < p →
+    Polynomial.hasseDeriv k (Polynomial.X ^ (p * j) * h) = Polynomial.X ^ (p * j) * Polynomial.hasseDeriv k h
+context: |
+  The Frobenius step of Stepanov's method (the chain of bsd-159 and bsd-160, and the derivative input bsd-165).
+  In Stepanov's auxiliary polynomial the variable appears in powers X^(p·j), and the Hasse derivatives of
+  order below p of such a power are the binomial coefficients C(p·j, a), which vanish in characteristic p
+  for 0 < a < p. So the derivatives of order below p pass through the factor X^(p·j). This gap is the
+  characteristic-p identity behind that; it does not use the curve, Hasse's bound, or the prime p beyond
+  the characteristic. The characteristic is taken as CharP K p, with p prime.
+sketch: |
+  Step 1 (binomial vanishing): for 0 < a < p, the cast of (p·j).choose a to K is zero. Indeed
+  (1 + X)^(p·j) = ((1 + X)^p)^j = (1 + X^p)^j = expand p ((1 + X)^j) in K[X] by add_pow_char (the Frobenius
+  identity), and coeff_one_add_X_pow gives the left coefficient; coeff_expand says the right coefficient
+  at a is zero when p does not divide a (Nat.not_dvd_of_pos_of_lt).
+  Step 2: apply Polynomial.hasseDeriv_mul to X^(p·j) * h. Among the antidiagonal pairs (a, b) with a + b = k,
+  only (0, k) survives, because hasseDeriv a (X^(p·j)) = monomial (p·j − a) (choose (p·j) a) is zero for
+  0 < a ≤ k < p. Use Finset.sum_eq_single_of_mem, Polynomial.X_pow_eq_monomial, Polynomial.hasseDeriv_monomial,
+  and hasseDeriv_zero.
+dead: []
