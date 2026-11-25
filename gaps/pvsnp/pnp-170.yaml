@@ -1,0 +1,48 @@
+id: pnp-170
+problem: pvsnp
+title: The stack left by the fan-out program depends on the witness only through its leaf-count prefix
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (ps : List (Bool × Bool)) (s w w' : List Bool),
+    w.take (ps.countP fun q => !q.1 && !q.2) = w'.take (ps.countP fun q => !q.1 && !q.2) →
+    ((ps.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (s, w, none)).1
+    = ((ps.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (s, w', none)).1
+context: |
+  Witness dependence for the fan-out program of pnp-133. A pair (false, false) is a leaf: it pushes
+  the first remaining witness bit and drops it from the witness. Every other pair leaves the witness
+  alone. So a run of pairs reads exactly as many witness bits as it has leaves, and pnp-157 says what
+  witness remains. This gap says what the stack depends on: two witnesses that agree on the first
+  leaf-count bits give the same stack after the run.
+  This is what lets a dynamic programme over the program give each segment its own slice of the
+  witness, namely its leaves, without the slices of other segments changing its output. It is the
+  output-level counterpart of pnp-157, which is about the leftover witness. Nothing involves a
+  machine, a witness bound or P.
+sketch: |
+  Induction on ps, generalising s, w and w'. The leaf count of a cons is the count of the head plus
+  the count of the tail, by List.countP_cons. If the head pair is a leaf, its push reads w.headD
+  false and w'.headD false. These agree, because the leaf count is at least 1, so w.take 1 = w'.take 1
+  and hence the heads agree. The remaining witnesses are w.drop 1 and w'.drop 1, and their prefixes
+  of the tail's leaf count are equal, since (w.drop 1).take m = (w.take (m + 1)).drop 1. If the head
+  pair is not a leaf, the witnesses themselves are unchanged in the head step, and the tail's prefix
+  condition is the same. In both cases the stacks after one pair agree, and the induction
+  hypothesis gives equal results for the tail. The case with a pending bit, on a pair split into
+  two bits, is handled by the same instruction table as pnp-154.
+dead: []

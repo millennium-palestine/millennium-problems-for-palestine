@@ -1,0 +1,55 @@
+id: pnp-169
+problem: pvsnp
+title: Locality of the fan-out program on the top 2n stack cells, with the same new top segment and drop count
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (ps : List (Bool × Bool)) (s s' w : List Bool), s.take (2 * ps.length) = s'.take (2 * ps.length) →
+    ∃ (t : List Bool) (k : ℕ),
+    ((ps.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (s, w, none)).1
+      = t ++ s.drop k ∧
+    ((ps.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (s', w, none)).1
+      = t ++ s'.drop k ∧
+    t.length ≤ ps.length ∧ k ≤ 2 * ps.length
+context: |
+  Locality for the fan-out program of pnp-133, at the level of the fold. pnp-154 says that a run of
+  pairs from a stack s leaves the stack as a new top segment t on s with k entries removed, where t
+  and k are fixed by the program and by s, and only the top entries of s are ever read. This gap
+  says more: the new top segment t and the number k depend only on the top 2n entries of s, where n
+  is the number of pairs. So two stacks that agree on those entries have the same t and k, and
+  their runs differ only by the untouched suffixes s.drop k and s'.drop k.
+  This is the stack half of the locality statement behind a dynamic programme over the program: a
+  segment of n pairs sees only a window of 2n cells of the stack below it, and the window is what
+  the table of such a programme has to remember. It is the fold-level counterpart of the TM2
+  locality of pnp-112 and pnp-114. It does not give the table itself, so pnp-152 stays open.
+  Nothing involves a machine, a witness bound or P.
+sketch: |
+  Induction on ps, for all s, s' and w at once. For a single pair (a, b) the fold is one of four
+  instructions, and the new top segment and drop count are given by the first one or two entries
+  of the stack: leaf gives t0 = [w.headD false] and k0 = 0, copy gives t0 = [s.headD false] and
+  k0 = 0, NAND gives t0 = [!(s.headD false && (s.drop 1).headD false)] and k0 = 2, and no-op gives
+  t0 = [] and k0 = 0. Two stacks that agree on the first 2 entries agree on these, so one pair works
+  for s and s' with the same t0 and k0 and the same witness remainder.
+  For the step, the stacks after the first pair are t0 ++ s.drop k0 and t0 ++ s'.drop k0. These
+  agree on their first 2 (|ps|) entries, because t0 has at most one entry and k0 at most 2, and
+  the entries read are below index 2 |ps| of s and s'. Apply the induction hypothesis to get t' and
+  k' that serve both runs, then combine as in pnp-154: the new segment is t' ++ t0.drop k' and the
+  new drop count is k0 + (k' - t0.length), both independent of s and s'.
+dead: []
