@@ -1,0 +1,30 @@
+id: pnp-128
+problem: pvsnp
+title: A fixed number of copies of the input, concatenated, is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-037
+- pnp-126
+- pnp-127
+statement: |
+  ∀ k : ℕ, ∃ T : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) T) ∧
+    ∀ x : List Bool, T x = (List.replicate k x).flatten
+context: |
+  Gadget lemma for the tableau of a reduction: the window of a fixed verifier is laid out as a
+  fixed number of copies of the same block, and each copy of the input is needed as a separate
+  block. This lemma says that k copies of the input, for a fixed k, are a polynomial-time map.
+  It is a structural lemma about string outputs and does not decide P vs NP.
+sketch: |
+  Induction on k. For k = 0 the output is the empty string, a polynomial-time map by pnp-126
+  applied to the empty string. For the step, the map T' of pnp-127 applied to the map T of the
+  induction hypothesis and the identity of pnp-037 satisfies T' x = T x ++ x. Since
+  List.replicate (k + 1) x = List.replicate k x ++ [x] and the flattening of an append is the
+  append of the flattenings, T' x = (List.replicate (k + 1) x).flatten.
+dead: []
