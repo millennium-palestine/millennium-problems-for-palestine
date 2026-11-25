@@ -1,0 +1,31 @@
+id: bsd-205
+problem: bsd
+title: 'Doubling against the 3-division polynomial: for a nonsingular affine point (x, y) with ψ₂ = 2y + a₁x + a₃ ≠ 0, the double has x-coordinate x₃ with x₃ ψ₂² = x ψ₂² − Ψ₃(x)'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) (x y : K)
+    (h : W.toAffine.Nonsingular x y), 2 * y + W.a₁ * x + W.a₃ ≠ 0 →
+    ∃ (x₃ y₃ : K) (h₃ : W.toAffine.Nonsingular x₃ y₃),
+      (WeierstrassCurve.Affine.Point.some x y h + WeierstrassCurve.Affine.Point.some x y h :
+        W.toAffine.Point) = WeierstrassCurve.Affine.Point.some x₃ y₃ h₃ ∧
+      x₃ * (2 * y + W.a₁ * x + W.a₃) ^ 2 =
+        x * (2 * y + W.a₁ * x + W.a₃) ^ 2 -
+          (3 * x ^ 4 + W.b₂ * x ^ 3 + 3 * W.b₄ * x ^ 2 + 3 * W.b₆ * x + W.b₈)
+context: |
+  The base case n = 2 of the formula x(nP) ψ_n(P)² = φ_n(x) behind bsd-198 (the division polynomial vanishes on
+  m-torsion). Mathlib's DivisionPolynomial has φ₂ = X ψ₂² − Ψ₃ (Basic.lean, lemma φ_two, with Ψ₃ = 3X⁴ + b₂X³ + 3b₄X²
+  + 3b₆X + b₈), so this says x(2P) = φ₂(x)/ψ₂(x)², stated without division. It is the doubling formula of bsd-200 plus
+  the curve equation: with λ = N/D, N = 3x² + 2a₂x + a₄ − a₁y and D = 2y + a₁x + a₃, the identity reduces to
+  N² + a₁ND − (a₂ + 3x)D² + Ψ₃(x) = −(b₂ + 12x)·(y² + a₁xy + a₃y − x³ − a₂x² − a₄x − a₆), a polynomial identity
+  checked with sympy (quotient −(b₂ + 12x), remainder 0). The statement is the same identity that bsd-203 uses for
+  the 3-torsion case; here it holds for every point with D ≠ 0 and is not claimed to give torsion information by
+  itself. The general induction (x(nP) for all n, with the addition formula of bsd-199) is not part of this step.
+sketch: |
+  Doubling formula of bsd-200 gives x₃ = λ² + a₁λ − a₂ − 2x with λ = N/D. Multiply by D² and use λD = N
+  (div_mul_cancel). The remaining identity N² + a₁ND − (a₂ + 3x)D² + Ψ₃(x) = 0 holds modulo the curve equation with
+  quotient −(a₁² + 4a₂ + 12x). In Lean: linear_combination with the λD = N equation and the curve equation.
+dead: []
