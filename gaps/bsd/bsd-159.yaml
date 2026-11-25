@@ -1,0 +1,30 @@
+id: bsd-159
+problem: bsd
+title: 'Stepanov auxiliary polynomial: over ZMod p, if m·ℓ < D then some nonzero polynomial of degree < D has all Hasse derivatives of order < ℓ vanishing at each of m prescribed points'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (m ℓ D : ℕ) (xs : Fin m → ZMod p), m * ℓ < D →
+    ∃ g : Polynomial (ZMod p), g ≠ 0 ∧ g.natDegree < D ∧
+      ∀ i : Fin m, ∀ k : ℕ, k < ℓ → (Polynomial.hasseDeriv k g).eval (xs i) = 0
+context: |
+  First of two elementary ingredients of Stepanov's method, the route to the weak Hasse–Weil bound
+  |#E(F_q) − (q + 1)| ≤ C√q that bsd-142 needs (through bsd-154, Weil's trick, the uniform weak bound
+  is the missing input). Stepanov's method builds an auxiliary polynomial that vanishes to high order at
+  many points of a curve, and this gap is its linear-algebra step: the polynomials of degree < D form a
+  vector space of dimension D, and the conditions "the Hasse derivative of order k vanishes at x_i" for
+  i < m and k < ℓ are m·ℓ linear conditions over ZMod p. When m·ℓ < D the kernel is nonzero. This is an
+  honest ingredient, not the whole of Stepanov's method: the estimate that turns such a polynomial into
+  a bound on the number of points (the derivative computation for f^((q−1)/2) on the curve) is NOT in this
+  gap and remains the wall. Mathlib has the pieces: `Polynomial.degreeLTEquiv`, `Polynomial.hasseDeriv`,
+  `Polynomial.leval`, `LinearMap.ker_ne_bot_of_finrank_lt`.
+sketch: |
+  Let V = degreeLT (ZMod p) D, a space of dimension D (`degreeLTEquiv`). Define the linear map
+  L : V → (Fin m × Fin ℓ → ZMod p), L v (i, k) = (hasseDeriv k v).eval (xs i), as a `LinearMap.pi` of
+  compositions of `leval (xs i)`, `hasseDeriv k` and the subtype inclusion. Since the target has dimension
+  m·ℓ < D, `LinearMap.ker_ne_bot_of_finrank_lt` gives v ≠ 0 in the kernel. Then g = v has degree < D
+  (`mem_degreeLT`, `natDegree_lt_iff_degree_lt`), and each kernel condition is one coordinate of L v = 0.
+dead: []
