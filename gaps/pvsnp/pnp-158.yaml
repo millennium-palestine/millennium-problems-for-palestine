@@ -1,13 +1,13 @@
 id: pnp-158
 problem: pvsnp
-title: The stack and witness lengths after a run of pairs depend only on the input lengths
+title: The stack length after a run of pairs depends only on the input stack length
 status: open
 imports:
 - Mathlib
 open: []
 depends: []
 statement: |
-  ∀ (ps : List (Bool × Bool)) (s s' w w' : List Bool), s.length = s'.length → w.length = w'.length →
+  ∀ (ps : List (Bool × Bool)) (s s' w w' : List Bool), s.length = s'.length →
     ((ps.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
       match st.2.2 with
       | none => (st.1, st.2.1, some b)
@@ -24,34 +24,19 @@ statement: |
           else (st.1, st.2.1, none))
         else (if b then (st.1.headD false :: st.1, st.2.1, none)
           else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (s', w', none)).1.length
-    ∧ ((ps.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
-      match st.2.2 with
-      | none => (st.1, st.2.1, some b)
-      | some a =>
-        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
-          else (st.1, st.2.1, none))
-        else (if b then (st.1.headD false :: st.1, st.2.1, none)
-          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (s, w, none)).2.1.length
-      = ((ps.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
-      match st.2.2 with
-      | none => (st.1, st.2.1, some b)
-      | some a =>
-        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
-          else (st.1, st.2.1, none))
-        else (if b then (st.1.headD false :: st.1, st.2.1, none)
-          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (s', w', none)).2.1.length
 context: |
   Shape of the fan-out program of pnp-133. Whether a pair is a leaf, copy, NAND or no-op changes the
-  stack length by a fixed amount, and a leaf shortens the witness by one, but the values never change
-  a length. So the lengths of the stack and of the unused witness after a run of pairs are fixed by
-  the program and by the input lengths alone. A dynamic programme over the program can then fix its
-  table shape before looking at any value. This is the shape counterpart of the value lemmas pnp-154
-  and pnp-155. It involves no machine, no polynomial and no P.
+  stack length by a fixed amount that depends only on the old length: a leaf or copy adds one, a NAND
+  replaces two entries by one, and a no-op changes nothing. So the length of the stack after a run of
+  pairs is fixed by the program and by the input stack length alone, whatever the values and the
+  witness are. A dynamic programme over the program can then fix the shape of its table before it
+  looks at any value. This is the shape counterpart of the value lemmas pnp-154 and pnp-155. It
+  involves no machine, no polynomial and no P.
 sketch: |
-  Induction on ps, generalising s, s', w, w'. For a cons, the first pair takes the stack from s to a new
-  stack s1 and the witness from w to w1, and the pair step gives equal lengths for (s, w) and (s', w')
-  by cases on the four pairs: a leaf or copy adds one to the stack length and a NAND or no-op changes it
-  by a fixed amount that only uses the old length; the witness loses one bit on a leaf and nothing
-  otherwise, and List.length_drop turns that into a function of the old length. Then the induction
-  hypothesis applies to s1, s1', w1, w1'.
+  Induction on ps, generalising s, s', w, w'. For a cons, the first pair takes the stack from s to a
+  new stack s1 and from s' to s1'. By cases on the four pairs, the lengths of s1 and s1' agree when
+  |s| = |s'|: a leaf or copy gives length |s| + 1, and a NAND gives 1 + (|s| - 2) with natural
+  subtraction, using List.length_drop, while a no-op gives |s|. The witness is irrelevant, since the
+  stack length of a leaf does not read it. Then the induction hypothesis applies to s1, s1' and any
+  witnesses.
 dead: []
