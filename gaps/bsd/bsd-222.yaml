@@ -1,0 +1,27 @@
+id: bsd-222
+problem: bsd
+title: 'Bracket identity for the n = 3 case of the division polynomial addition formula: W(4) W(m)W(m+1)W(m−1) + W(2)³ W(m)W(m−2)W(m+2) = W(2) W(3) (W(m−1)² W(m+2) + W(m−2) W(m+1)²)'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (W : WeierstrassCurve K) (m : ℤ),
+    W.ψ 4 * (W.ψ m * W.ψ (m + 1) * W.ψ (m - 1)) + W.ψ 2 ^ 3 * (W.ψ m * W.ψ (m - 2) * W.ψ (m + 2)) =
+      W.ψ 2 * W.ψ 3 * (W.ψ (m - 1) ^ 2 * W.ψ (m + 2) + W.ψ (m - 2) * W.ψ (m + 1) ^ 2)
+context: |
+  The missing input of bsd-210 (the elliptic-net addition formula ψ_{m+n} ψ_{m−n} = ψ_{m+1} ψ_{m−1} ψ_n² − ψ_{n+1} ψ_{n−1} ψ_m²)
+  for the case n = 3. Writing the n = 3 instance as W.ψ(m+3) W.ψ(m−3) = W.ψ(m+1) W.ψ(m−1) W.ψ 3² − W.ψ 4 W.ψ 2 W.ψ m²,
+  and multiplying by W.ψ(m+1) W.ψ(m−1), the n = 2 instances (bsd-214, instantiated at m ± 1) turn it into exactly this
+  bracket times W.ψ m · W.ψ 2². So this statement is the n = 3 case of bsd-210 with the n = 2 instances already on main
+  and the cofactor made explicit. It is a relation among ψ_{m−2}, …, ψ_{m+2} only, with no half-index term.
+  Whether it follows from the rel_even and rel_odd relations of Mathlib by a fixed-window identity is not checked.
+  Checked numerically (not in Lean): with the short model y² = x³ + 2x + 3 over ℚ(y), the bracket holds for m ∈ [−3, 3],
+  and so does the n = 3 instance itself. Not checked against a Lean build here.
+sketch: |
+  Unfold ψ_{m±2}, ψ_{m±1} with the even and odd recursions (Mathlib: normEDS_even, normEDS_odd in
+  NumberTheory/EllipticDivisibilitySequence.lean, and the division-polynomial specialisation in
+  AlgebraicGeometry/EllipticCurve/DivisionPolynomial/Basic.lean). Each case split on the parity of m reduces the bracket to a
+  polynomial identity in ψ values at indices of one parity. Close with linear_combination. Not claimed here.
+dead: []
