@@ -1,0 +1,47 @@
+id: bsd-266
+problem: bsd
+title: 'Telescoping of the n = 4 bracket: with Y(m) = N(m−1) N(m) N(m+1) and B(s) the bracket of bsd-210 at n = 4, Y(m) B(m+1) = Y(m+1) B(m) whenever the n = 2 and n = 3 relations hold at the indices m−2, …, m+2'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (A : Type) [CommRing A] (b c d : A) (m : ℤ),
+    (∀ k : ℤ, m - 2 ≤ k → k ≤ m + 2 →
+      normEDS b c d (k + 2) * normEDS b c d (k - 2) - b ^ 2 * normEDS b c d (k + 1) * normEDS b c d (k - 1)
+        + c * normEDS b c d k ^ 2 = 0) →
+    (∀ k : ℤ, m - 2 ≤ k → k ≤ m + 2 →
+      normEDS b c d (k + 3) * normEDS b c d (k - 3) - c ^ 2 * normEDS b c d (k + 1) * normEDS b c d (k - 1)
+        + normEDS b c d 4 * b * normEDS b c d k ^ 2 = 0) →
+    normEDS b c d (m - 1) * normEDS b c d m * normEDS b c d (m + 1) *
+        (normEDS b c d (m + 1 + 4) * normEDS b c d (m + 1 - 4)
+          - normEDS b c d 4 ^ 2 * normEDS b c d (m + 1 + 1) * normEDS b c d (m + 1 - 1)
+          + normEDS b c d 5 * normEDS b c d 3 * normEDS b c d (m + 1) ^ 2) =
+      normEDS b c d m * normEDS b c d (m + 1) * normEDS b c d (m + 2) *
+        (normEDS b c d (m + 4) * normEDS b c d (m - 4)
+          - normEDS b c d 4 ^ 2 * normEDS b c d (m + 1) * normEDS b c d (m - 1)
+          + normEDS b c d 5 * normEDS b c d 3 * normEDS b c d m ^ 2)
+context: |
+  The n = 4 case of the telescoping step that the bsd-210 chain needs (the elliptic-net relation
+  ψ(m+n) ψ(m−n) = ψ(m+1) ψ(m−1) ψ(n)² − ψ(n+1) ψ(n−1) ψ(m)², written for normEDS). Its n = 3 analogue is
+  bsd-224, which uses the same multiplier Y(m) = N(m−1) N(m) N(m+1) and needs only the n = 2 relation at m and m+1.
+  Here the n = 4 bracket needs more: the hypotheses are the n = 2 relation (bsd-214 form) and the n = 3 relation
+  (bsd-223 form, with the constant N(4) N(2) written as N(4) b) at every index k with m−2 ≤ k ≤ m+2.
+  The identity is not a consequence of the n = 2 relations alone: the two relation families are both needed.
+  Evidence, not a proof: the difference of the two sides lies in the span of the hypotheses at shifts −2..2,
+  multiplied by monomials of degree three in N(m+k), |k| ≤ 4, checked by linear algebra modulo a prime for
+  several numeric triples (b, c, d), with N(4) = d b and N(5) = d b⁴ − c³ substituted (these are the normEDS
+  values). Controls fail: a wrong multiplier such as N(m−2)N(m)N(m+2), or a wrong constant in the bracket.
+  Without the substitution N(4) = d b and N(5) = d b⁴ − c³ the identity is not in the span, so the proof must
+  first rewrite N(4) and N(5) with those values (provable from the normEDS recursion).
+  Not checked in Lean, and the symbolic certificate is not written down yet.
+sketch: |
+  Rewrite N(4) = d b and N(5) = d b⁴ − c³ (from the normEDS recursion), then close the goal by
+  linear_combination with the hypotheses h2(k) and h3(k) for k = m−2, …, m+2 and polynomial cofactors of degree
+  three in N(m+k), |k| ≤ 4. The cofactors are not known yet. Route: solve the linear system for the cofactors
+  with b, c, d as variables (a Gröbner or pseudo-division step over the atoms N(m+k)), or find them by a
+  numeric search over small integer coefficients and then check with ring. The bsd-224 proof is the pattern.
+  Once this holds, bsd-250 (telescoping induction) and bsd-267 (the base case at m = 2) give the n = 4 instance
+  of bsd-210 for m ≥ 2, and the symmetry N(−k) = −N(k) gives all m.
+dead: []

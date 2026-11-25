@@ -1,0 +1,24 @@
+id: bsd-267
+problem: bsd
+title: 'Base case of the n = 4 bracket: at m = 2 the bracket of bsd-210 at n = 4 vanishes, N(6) N(−2) − N(4)² N(3) N(1) + N(5) N(3) N(2)² = 0 for normEDS'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (A : Type) [CommRing A] (b c d : A),
+    normEDS b c d (2 + 4) * normEDS b c d (2 - 4)
+      - normEDS b c d 4 ^ 2 * normEDS b c d (2 + 1) * normEDS b c d (2 - 1)
+      + normEDS b c d 5 * normEDS b c d 3 * normEDS b c d 2 ^ 2 = 0
+context: |
+  The starting point of the induction on m in the n = 4 instance of bsd-210 (the telescoping principle bsd-250
+  needs the bracket to vanish at m = 2). It is the n = 2 relation at index 4, up to sign: with N(−k) = −N(k),
+  the bracket at 2 is −(N(6) N(2) − b² N(5) N(3) + c N(4)²), and that is the bsd-214 relation at k = 4.
+  It is an identity of normEDS for every b, c, d, so no hypothesis is needed. The values used are
+  N(4) = d b, N(5) = d b⁴ − c³, N(6) = c b (N(5) − d²). Not checked against a Lean build here.
+sketch: |
+  Unfold normEDS at 2 + 4 = 6, 5, 4, 3, 1 and 2 (Mathlib lemmas normEDS_neg, normEDS_zero, normEDS_one,
+  and the normEDS recursion for indices 4, 5, 6), then ring. If the recursion unfolding is awkward, first prove
+  the values N(4), N(5), N(6) as separate lemmas, then close with linear_combination.
+dead: []
