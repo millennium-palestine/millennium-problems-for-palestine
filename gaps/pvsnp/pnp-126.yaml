@@ -1,0 +1,28 @@
+id: pnp-126
+problem: pvsnp
+title: Every fixed binary string is the output of a polynomial-time map
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-030
+- pnp-125
+statement: |
+  ∀ c : List Bool, ∃ T : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) T) ∧
+    ∀ x : List Bool, T x = c
+context: |
+  Gadget lemma: a fixed string, of any length, can be produced by a polynomial-time map that
+  ignores its input. A reduction hardcodes its fixed gadgets (for example the clause shapes of a
+  circuit) as constants, and this lemma says that such constants are polynomial-time outputs.
+  It is a structural lemma and does not decide P vs NP.
+sketch: |
+  Induction on c, building it from the empty string by appending one bit at a time at the end.
+  The base case c = [] is pnp-030 with count 0, since List.replicate 0 false = []. For the step
+  c ++ [b], the induction hypothesis gives a polynomial-time T with T x = c for all x, and
+  pnp-125 applied to T and b gives T' with T' x = T x ++ [b] = c ++ [b] for all x.
+dead: []
