@@ -1,0 +1,36 @@
+id: pnp-138
+problem: pvsnp
+title: One step of the windowed iteration is polynomial-time, on the nested state
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-136
+statement: |
+  ∀ g : Lang, InP g → ∃ S : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) S) ∧
+    (∀ z : List Bool, (S z).length = z.length + 1) ∧
+    ∀ x c out : List Bool, S (pair (pair x c) out) =
+      pair (pair x c) (out ++ [g ((x.drop out.length).take c.length)])
+context: |
+  First piece of the variable-width windows of pnp-137. pnp-137 asks for all windows of width
+  |c| of x as a list. Its iteration state cannot be a flat pair, because three things are needed:
+  the input x, the width c, and the output so far. The state is nested, pair (pair x c) out: the
+  index of the next window is the length of out, and the window is the take of c.length symbols
+  of the drop of x by out.length. This gap says that one step of the iteration, which appends the
+  next window bit to out, is polynomial-time on this nested state. It does not decide P vs NP.
+sketch: |
+  Input z = pair (pair x c) out. Decode the outer pair to get the inner pair and out (pnp-021 and
+  the witness part of the pair encoding, pnp-025), then decode the inner pair to get x and c.
+  Compute D (pair x out) = x.drop out.length with pnp-120, then the window with the take of
+  pnp-136 applied to pair (x.drop out.length) c, which is the take of c.length symbols. Apply the
+  predicate g to the window (pnp-008 composed with the take, since g is polynomial-time), append
+  the bit to out (pnp-125 appends a fixed bit, and a polynomial-time map appends a bit by
+  pnp-060), and encode the new state with the pair encoding of pnp-026. Each piece is a
+  polynomial-time map and their composition is polynomial-time. The equation holds by unfolding
+  the pair encoding and the definitions of the pieces.
+dead: []
