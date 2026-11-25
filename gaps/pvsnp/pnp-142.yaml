@@ -1,0 +1,36 @@
+id: pnp-142
+problem: pvsnp
+title: A NAND gadget on the fan-out program pushes the NAND of the top two values
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  ∀ (a b : Bool) (rest w : List Bool),
+    ([true, true].foldl (fun (st : List Bool × List Bool × Option Bool) (c : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some c)
+      | some d =>
+        if d then (if c then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if c then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (a :: b :: rest, w, none)).1
+      = (!(a && b)) :: rest
+context: |
+  Gadget lemma for the fan-out circuit language of pnp-132. In that language a pair of input bits
+  (true, true) is the NAND instruction: it pops the two top values and pushes their NAND. This gap
+  states that effect on a stack with at least two values, for every witness. It is the instruction-level
+  semantics that a Cook–Levin program for pnp-141 would use when it writes NAND gates. It does not
+  give hardness of the circuit language: pnp-141 still needs a polynomial-time map from NP verifiers to
+  programs. This gap does not decide P vs NP.
+sketch: |
+  Unfold the fold on the two-element list. After the first bit true the pending component is some true.
+  The second bit true then takes the branch that rewrites the head of the work stack: the first two
+  values a and b are replaced by their NAND and the rest is kept. The witness component is never read,
+  since no false instruction occurs. The statement follows by simp on the list literal and the
+  headD/drop lemmas, with no induction.
+dead: []

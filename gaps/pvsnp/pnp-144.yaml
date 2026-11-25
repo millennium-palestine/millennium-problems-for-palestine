@@ -1,0 +1,37 @@
+id: pnp-144
+problem: pvsnp
+title: A NAND followed by a copy on the fan-out program leaves the NAND on the stack twice
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-142
+- pnp-143
+statement: |
+  ∀ (a b : Bool) (rest w : List Bool),
+    ([true, true, false, true].foldl (fun (st : List Bool × List Bool × Option Bool) (c : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some c)
+      | some d =>
+        if d then (if c then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if c then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (a :: b :: rest, w, none)).1
+      = (!(a && b)) :: (!(a && b)) :: rest
+context: |
+  Composition of the NAND gadget of pnp-142 with the copy gadget of pnp-143: the instruction sequence
+  NAND then copy computes a gate and writes its value to the stack twice, which is the pattern a
+  circuit with fan-out uses when one gate feeds two later gates. The gap checks that the two gadgets
+  compose as expected on the fan-out program of pnp-132. It is a sanity lemma for pnp-141, not a step
+  toward deciding P vs NP.
+sketch: |
+  The program [true, true, false, true] is the concatenation of the NAND instruction and the copy
+  instruction. By pnp-142 the first two bits leave the stack (!(a && b)) :: rest with no pending bit, and
+  by pnp-143 applied to that stack the copy leaves (!(a && b)) :: (!(a && b)) :: rest. Both gadgets are
+  about the same fold, so the proof is their composition, by unfolding the list literal and rewriting
+  with the two gadget lemmas, or by a direct simp.
+dead: []
