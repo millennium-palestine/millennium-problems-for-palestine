@@ -1,0 +1,31 @@
+id: pnp-119
+problem: pvsnp
+title: 'Postfix NAND evaluation with constant leaves is in P'
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+depends: []
+statement: |
+  InP (fun x : List Bool => (x.foldl (fun (s : List Bool) (b : Bool) =>
+      if b then (!(s.headD false && (s.drop 1).headD false)) :: s.drop 2 else true :: s) []).headD false)
+context: |
+  Building block for the membership side of pnp-100 (Cook–Levin, as released by pvsnp):
+  CIRCUIT-SAT is in NP only if a straight-line Boolean program can be evaluated in polynomial time
+  by a TM2 machine. This gap is the smallest such evaluator. Read the input as a postfix program:
+  a bit false pushes the constant true, and a bit true pops the two top values and pushes their
+  NAND (a missing operand counts as false). The answer is the top value after the whole input.
+  The language is accepted when that answer is true. The machine uses the input stack, the
+  output stack as the work stack, and one state; it writes the answer and clears the work stack
+  before halting, as haltList requires.
+  This gap has no variables and no tableau reduction, so it does not decide anything about
+  NP-completeness. It is independent of the sliding-window chain (pnp-115 and following).
+sketch: |
+  Machine with labels false (read one input symbol, then either push true, or pop two and push
+  the NAND, then jump back) and true (clear the work stack, then push the answer and halt).
+  Step lemma per symbol, induction on the input with the work stack as the invariant, then a
+  clearing lemma by induction on the stack. The step bound is 2 n + 2, where n is the input
+  length, because the work stack never grows by more than one per input symbol.
+dead: []
