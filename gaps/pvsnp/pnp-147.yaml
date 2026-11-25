@@ -1,0 +1,33 @@
+id: pnp-147
+problem: pvsnp
+title: Running a fan-out program concatenation is running its two parts in turn
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  let step := fun (st : List Bool × List Bool × Option Bool) (c : Bool) =>
+    match st.2.2 with
+    | none => (st.1, st.2.1, some c)
+    | some d =>
+      if d then (if c then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+        else (st.1, st.2.1, none))
+      else (if c then (st.1.headD false :: st.1, st.2.1, none)
+        else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))
+  ∀ (p q : List Bool) (s : List Bool × List Bool × Option Bool),
+    (p ++ q).foldl step s = q.foldl step (p.foldl step s)
+context: |
+  Sequential composition for the fan-out programs of pnp-141. The reduction builds a program for a
+  verifier run by writing one block of program bits per step of the run, so the blocks must compose:
+  running p ++ q from a state is running p and then q from the state p leaves. This is the fold form of
+  the composition, with no assumption on the pending component. It does not decide P vs NP and it does
+  not by itself give the simulation of a TM2 run; it is the bookkeeping that the block-by-block
+  construction of pnp-141 uses.
+sketch: |
+  Rewrite the fold over an append with List.foldl_append, which states exactly this equation for any
+  step function. The proof is one line: intro the three arguments and apply List.foldl_append.
+dead: []
