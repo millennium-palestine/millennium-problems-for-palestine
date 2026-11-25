@@ -1,0 +1,27 @@
+id: bsd-182
+problem: bsd
+title: 'Monomial blocks are independent: over a field, the polynomials X^(p·j + t) for j < J and t < N are linearly independent when N ≤ p'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (p J N : ℕ), 0 < p → N ≤ p →
+    LinearIndependent K (fun u : Fin J × Fin N => (Polynomial.X : Polynomial K) ^ (p * (u.1 : ℕ) + (u.2 : ℕ)))
+context: |
+  The monomial part of the shaped auxiliary polynomial of Stepanov's method (bsd-172). The route uses polynomials of the
+  form R = Σ_{j<J} X^(p·j) · (r_{0j} + r_{1j}·g) with deg r_{ij} < K. Write the monomial part of the basis as the family
+  X^(p·j + t), j < J, t < K. When K ≤ p these exponents are pairwise distinct (the base-p digits of p·j + t are t and j),
+  so the family is linearly independent over any field, with no assumption on the field's characteristic. This is the
+  elementary half of the independence that the nonvanishing step of bsd-172 needs. The other half, that the g-part
+  r_{1j}·g does not cancel the monomial part, is not in this gap. That half needs deg g ≥ K (see the failure report on
+  bsd-172 for why the trivial relations r_0 = −g, r_1 = 1 appear as soon as K > deg g). The gap is true, and it is
+  short once Mathlib's monomial basis is used (Polynomial.basisMonomials).
+sketch: |
+  Let e u = p * u.1 + u.2. Show e is injective on Fin J × Fin N when N ≤ p: from p * a + b = p * a' + b' with b, b' < p,
+  reduce both sides mod p (Nat.mul_add_mod, Nat.mod_eq_of_lt) to get b = b', then cancel p (Nat.eq_of_mul_eq_mul_left)
+  to get a = a', and use Prod.ext / Fin.ext. Then the family is (Polynomial.basisMonomials K) composed with e:
+  Polynomial.basisMonomials K has coercion fun s => X ^ s (Polynomial.coe_basisMonomials), and its linear independence
+  (Basis.linearIndependent) composed with an injective index map gives the claim (LinearIndependent.comp).
+dead: []
