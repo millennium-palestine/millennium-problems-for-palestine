@@ -1,0 +1,27 @@
+id: bsd-255
+problem: bsd
+title: 'Support modulo p: a sum over j of X^(p·j) times a polynomial r_j of degree below K has zero coefficient at every exponent u with K ≤ u mod p'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (K J : ℕ) (r : Fin J → Polynomial (ZMod p)),
+    (∀ j, (r j).natDegree < K) →
+    ∀ u : ℕ, K ≤ u % p →
+      (∑ j : Fin J, (Polynomial.X : Polynomial (ZMod p)) ^ (p * (j : ℕ)) * r j).coeff u = 0
+context: |
+  Bookkeeping for bsd-183 (the nonvanishing step of Stepanov's method, bsd-172). Write A := Σ_j X^(p·j)·r_{0j} and
+  B := Σ_j X^(p·j)·r_{1j} with deg r_{ij} < K = (p−1)/2. Then A has no monomial X^u with u mod p ≥ K: every
+  exponent of A is p·j + t with t < K. This is the coefficient fact behind the step "A + g·B = 0 forces g·B to have
+  no coefficients at u with K ≤ u mod p" that bsd-183 uses before its Toeplitz step. It is elementary and does not
+  mention f, g, Frobenius or the cubic. It is not the Toeplitz step itself (bsd-253 and bsd-254 concern that), and
+  it does not use p prime. Independence of the blocks is a different fact (bsd-182, already on main).
+sketch: |
+  Rewrite the coefficient with Polynomial.finsetSum_coeff, then Finset.sum_eq_zero over j. For each j use
+  Polynomial.coeff_X_pow_mul' (the coefficient is r_j.coeff (u − p·j) when p·j ≤ u, and 0 otherwise). In the first case
+  show K ≤ u − p·j: since u = (u − p·j) + p·j, Nat.add_mul_mod_self_left gives (u − p·j) % p = u % p, and Nat.mod_le
+  gives (u − p·j) % p ≤ u − p·j. Then Polynomial.coeff_eq_zero_of_natDegree_lt with (r j).natDegree < K. Use
+  lt_of_lt_of_le and le_trans instead of omega, because omega does not handle % by a variable p.
+dead: []
