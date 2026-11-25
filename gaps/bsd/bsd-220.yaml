@@ -1,0 +1,25 @@
+id: bsd-220
+problem: bsd
+title: 'Order-3 points are roots of the 3-division polynomial: for an elliptic curve over a field K and a nonsingular affine point (x, y) with 3 • P = 0, the 3-division polynomial vanishes at x'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) [W.IsElliptic]
+    (x y : K) (h : W.toAffine.Nonsingular x y),
+    (3 : ℤ) • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) = 0 →
+    (W.preΨ' 3).eval x = 0
+context: |
+  The case m = 3 of bsd-198 (the division polynomial vanishes on torsion for odd m), and so of bsd-218. It is the one
+  odd m that needs no general addition formula for division polynomials (that is bsd-210, still open): 3P = 0 forces
+  2P = −P, so the x-coordinate of 2P is x, and the doubling identity of bsd-221 turns this into Ψ₃(x) = 0. It does not
+  prove bsd-198 for general odd m; it is the base instance of that statement. Mathlib's Ψ₃ is W.Ψ₃ (see preΨ'_three).
+  Not checked against the text here beyond this proof.
+sketch: |
+  From 3 • P = 0 get P + P = −P (eq_neg_of_add_eq_zero_left, with two_zsmul and add_zsmul). If y = negY x y then
+  P + P = 0 (add_self_of_Y_eq), so P = 0, contradicting some_ne_zero. Otherwise add_self_of_Y_ne and neg_some give
+  x(P + P) = x, and slope_of_Y_ne gives the slope N / D with N = 3x² + 2a₂x + a₄ − a₁y and D = 2y + a₁x + a₃. Clearing
+  denominators gives N² + a₁ND − (a₂ + 3x)D² = 0, and Ψ₃(x) = (−a₁² − 4a₂ − 12x)·E − H, where E is the curve equation.
+dead: []

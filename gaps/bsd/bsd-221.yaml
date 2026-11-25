@@ -1,0 +1,27 @@
+id: bsd-221
+problem: bsd
+title: 'Doubling identity for the x-coordinate: for a nonsingular affine point (x, y) of a Weierstrass curve over a field K with 2y + a₁x + a₃ ≠ 0, the x-coordinate of P + P, times (2y + a₁x + a₃)², equals x⁴ − b₄x² − 2b₆x − b₈'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) (x y : K)
+    (h : W.toAffine.Nonsingular x y), y ≠ W.toAffine.negY x y →
+    ∃ (x' y' : K) (h' : W.toAffine.Nonsingular x' y'),
+      (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) +
+          WeierstrassCurve.Affine.Point.some x y h =
+        WeierstrassCurve.Affine.Point.some x' y' h' ∧
+      x' * (2 * y + W.a₁ * x + W.a₃) ^ 2 = x ^ 4 - W.b₄ * x ^ 2 - 2 * W.b₆ * x - W.b₈
+context: |
+  The doubling step of the division polynomial theory: x(2P) = φ₂/ψ₂² with ψ₂ = 2y + a₁x + a₃ and
+  φ₂ = x⁴ − b₄x² − 2b₆x − b₈. It is the n = 2 case of the identity x(nP) = φ_n/ψ_n² that the odd-torsion chain
+  (bsd-192, bsd-198, bsd-218) needs for general n, and it is the input to bsd-220 (order-3 points). Proved from
+  the doubling formula in Mathlib (slope_of_Y_ne, addX) and the curve equation, with cofactor −a₁² − 4a₂ − 8x.
+  Not checked against the text here beyond this proof.
+sketch: |
+  Take x' = addX x x (slope x x y y) from nonsingular_add and add_self_of_Y_ne. Rewrite the slope with slope_of_Y_ne
+  and 2y + a₁x + a₃ = y − negY x y. Then x'·D² − (x⁴ − b₄x² − 2b₆x − b₈) = (tD − N)(tD + N + a₁D) + (−a₁² − 4a₂ − 8x)·E,
+  where t = N / D, N = 3x² + 2a₂x + a₄ − a₁y, and E is the curve equation. Close with linear_combination.
+dead: []
