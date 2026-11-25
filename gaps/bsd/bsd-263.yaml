@@ -1,0 +1,26 @@
+id: bsd-263
+problem: bsd
+title: 'Toeplitz coefficient identity: over a commutative ring, if B has degree below K, then for u ≥ K the coefficient of X^u in G·B is Σ_{t<K} G_(u−t)·B_t'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (R : Type) [CommRing R] (K : ℕ) (G B : Polynomial R), B.natDegree < K →
+    ∀ u : ℕ, K ≤ u →
+      (G * B).coeff u = ∑ t ∈ Finset.range K, G.coeff (u - t) * B.coeff t
+context: |
+  Step 1 of the bsd-183 reduction, second half (see bsd-262). The proof of the square-system transfer bsd-253 uses this
+  identity inline, with the sum over range K. Stating it on its own lets the Toeplitz equations
+  Σ_{t<K} g_(K+i−t)(Y)·β_t(Y) = 0 of bsd-183 be read off from the coefficients of g·B at K ≤ u < 2K, for any
+  commutative ring of coefficients, in particular R = F_p[Y]. The identity is elementary: the terms with t ≥ K vanish
+  because B has degree below K, and every t < K satisfies t ≤ u, so u − t is a genuine natural subtraction. Not checked
+  against a Lean proof; the statement is true (it is the convolution formula for the coefficient of a product).
+sketch: |
+  Polynomial.coeff_mul gives the coefficient as a sum over Finset.antidiagonal u of G.coeff a * B.coeff b. Use
+  Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk or an explicit bijection to reindex by b = t ∈ range (u+1). Then
+  split range (u+1) into range K and the rest: for b ≥ K, B.coeff b = 0 by Polynomial.coeff_eq_zero_of_natDegree_lt.
+  The sum over range K then matches the stated form with a = u − t (Finset.sum_congr, omega for t ≤ u). Alternatively
+  induct on the degree of B is not needed; the direct split suffices.
+dead: []

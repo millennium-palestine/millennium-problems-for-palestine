@@ -1,0 +1,32 @@
+id: bsd-262
+problem: bsd
+title: 'Residue-class vanishing: if Σ_j X^(pj)·(r₀ⱼ + r₁ⱼ·g) = 0 with deg r₀ⱼ, deg r₁ⱼ < K, then the product g·Σ_j X^(pj)·r₁ⱼ has zero coefficients at every u with K ≤ u mod p'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (K J : ℕ) (g : Polynomial (ZMod p)) (r₀ r₁ : Fin J → Polynomial (ZMod p)),
+    (∀ j, (r₀ j).natDegree < K) → (∀ j, (r₁ j).natDegree < K) →
+    ∑ j : Fin J, (Polynomial.X : Polynomial (ZMod p)) ^ (p * (j : ℕ)) * (r₀ j + r₁ j * g) = 0 →
+    ∀ u : ℕ, K ≤ u % p →
+      (g * ∑ j : Fin J, (Polynomial.X : Polynomial (ZMod p)) ^ (p * (j : ℕ)) * r₁ j).coeff u = 0
+context: |
+  Step 1 of the bsd-183 reduction (Stepanov nonvanishing, bsd-172 chain), first half. Write A := Σ_j X^(pj)·r₀ⱼ and
+  B := Σ_j X^(pj)·r₁ⱼ. The hypothesis says A + g·B = 0, so g·B = −A. Every monomial of A has exponent u with
+  u mod p < K, because a term X^(pj)·r₀ⱼ has its nonzero coefficients at exponents pj + t with t < K, and
+  (pj + t) mod p = t mod p is below K when t < K ≤ p. So the coefficients of g·B at exponents with K ≤ u mod p vanish.
+  This gap is that fact, with no assumption on g and no assumption K < p (the argument needs only that u − pj ≥ u mod p
+  whenever pj ≤ u). It is elementary. It is proposed so that the reduction of bsd-183 to a Toeplitz system is explicit:
+  bsd-183 follows from this gap, the Toeplitz coefficient identity bsd-263, the square-system transfer bsd-253 with
+  bsd-255 (support of sums of X^(pj)·r_j), and the symbol nonvanishing core bsd-254, plus a short bookkeeping step
+  that rewrites the coefficient equations over F_p[Y] with Y = X^p. The only open mathematics is bsd-254.
+sketch: |
+  Put A := Σ_j X^(p·j)·r₀ⱼ. Then the hypothesis, after the ring identity X^(pj)·(r₀ⱼ + r₁ⱼ·g) = X^(pj)·r₀ⱼ + g·(X^(pj)·r₁ⱼ),
+  reads A + g·B = 0 (Finset.sum_add_distrib, Finset.mul_sum, mul_comm). Take coeff u of both sides
+  (Polynomial.coeff_add, Polynomial.finsetSum_coeff). It remains to show (A).coeff u = 0 when K ≤ u % p. For each j,
+  (X^(p·j) * r₀ j).coeff u is 0 unless p·j ≤ u (Polynomial.coeff_X_pow_mul'), and then it is (r₀ j).coeff (u − p·j), which
+  vanishes once u − p·j ≥ K (Polynomial.coeff_eq_zero_of_natDegree_lt). For that inequality use
+  u − p·j = u % p + p·(u / p − j) (Nat.mod_add_div, p·j ≤ u) so u − p·j ≥ u % p ≥ K. The same argument as in bsd-255.
+dead: []
