@@ -13,6 +13,7 @@ depends:
 statement: |
   ∀ g : Lang, InP g → ∃ S : List Bool → List Bool,
     Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) S) ∧
+    (∀ z : List Bool, (S z).length = z.length + 1) ∧
     ∀ x c out : List Bool, S (pair (pair x c) out) =
       pair (pair x c) (out ++ [g ((x.drop out.length).take c.length)])
 context: |
