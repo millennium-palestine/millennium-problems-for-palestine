@@ -1,0 +1,37 @@
+id: pnp-151
+problem: pvsnp
+title: k leaf pairs (false, false) load the first k witness bits onto the stack in reverse
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-149
+statement: |
+  let step := fun (st : List Bool × List Bool × Option Bool) (c : Bool) =>
+    match st.2.2 with
+    | none => (st.1, st.2.1, some c)
+    | some d =>
+      if d then (if c then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+        else (st.1, st.2.1, none))
+      else (if c then (st.1.headD false :: st.1, st.2.1, none)
+        else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))
+  ∀ (k : ℕ) (stk w : List Bool), k ≤ w.length →
+    ((List.replicate k [false, false]).flatten).foldl step (stk, w, none)
+      = ((w.take k).reverse ++ stk, w.drop k, none)
+context: |
+  Loading block for the witness in pnp-141. The reduction has to make every witness bit of the NP verifier
+  available on the stack, so one block of program bits must read the first k witness leaves at once. pnp-149
+  is the single leaf (false, false); this gap is its k-fold form, the block (false, false) repeated k times.
+  The witness bits come out in reverse order on the stack, the last-read bit on top. The block consumes
+  exactly k witness bits and leaves the rest of the witness. It does not decide P vs NP.
+sketch: |
+  Induction on k, generalizing stk and w. For k = 0 both sides are the original state. For k + 1 the
+  witness has a head b and tail rest with k ≤ rest.length. The first pair is the leaf gadget of pnp-149,
+  giving (b :: stk, rest, none), and the induction hypothesis applies to that state. Then the two
+  stack expressions agree: (rest.take k).reverse ++ (b :: stk) = ((b :: rest).take (k + 1)).reverse ++ stk,
+  by List.take_succ_cons and List.reverse_cons, and the witness rest.drop k = (b :: rest).drop (k + 1).
+dead: []
