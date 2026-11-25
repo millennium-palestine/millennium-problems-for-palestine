@@ -1,0 +1,41 @@
+id: pnp-197
+problem: pvsnp
+title: A primitive block of pair steps leaves the stack below its top unchanged and replaces the top by one value
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ p : List (Bool × Bool),
+    (p.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 →
+    (∀ j, 0 < j → j < p.length →
+      0 < ((p.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) →
+    ∀ (t w : List Bool) (v : Bool), ∃ g : Bool,
+      ((p.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+        match st.2.2 with
+        | none => (st.1, st.2.1, some b)
+        | some a =>
+          if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+            else (st.1, st.2.1, none))
+          else (if b then (st.1.headD false :: st.1, st.2.1, none)
+            else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (v :: t, w, none)).1 = g :: t
+context: |
+  Stack-shape lemma for the pnp-152 route, the step after the block decomposition of pnp-193 to pnp-196. A pair
+  (a, b) of the fan-out fold is processed as the two bits a, b of the pnp-133 fold: (true, true) pops two and pushes
+  their NAND, (true, false) is a no-op, (false, true) copies the top, (false, false) pushes the next witness bit.
+  The height step of a pair is -1, 0, +1 as in pnp-192. A primitive block (zero total height, strictly positive
+  before its end, as in pnp-195 and pnp-196) reads the stack only at depth 0 (its first pair, a copy) and at depth 1
+  (its last pair, a NAND, which pops the block's own value and the entry below the block). So running it on
+  v :: t gives g :: t for some bit g: the stack below the top is untouched, and only the top is replaced. This is the
+  fact that lets a CYK-style grammar for the pnp-133 language carry one value per block, the inherited base value.
+  It is a statement about the fold on lists, with no machine, no polynomial bound, no P, and it does not decide P vs NP.
+sketch: |
+  Prove the invariant on the state after each complete pair inside the block: if the height of the processed prefix q
+  is h with 1 <= h, then the stack is r ++ (v :: t) with r.length = h, and the pending bit is none. Each pair of the
+  block changes r only at its top (leaf and copy push, no-op does nothing, NAND pops two entries of r when h >= 2).
+  The first pair starts from height 0, and it is a leaf or a copy, so the invariant holds after it with r of length 1.
+  The last pair of the block takes the height from 1 to 0 and is a NAND reading r.head and v, so the result is
+  NAND(r.head, v) :: t. Use List.foldl_append on the flatMap of the pairs, and prove the invariant for the prefixes by
+  induction on the pair list, generalising over the stack.
+dead: []
