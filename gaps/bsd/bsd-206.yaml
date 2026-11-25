@@ -1,0 +1,30 @@
+id: bsd-206
+problem: bsd
+title: 'Lift of an x-coordinate: over an algebraically closed field, every x-coordinate of an elliptic curve in Weierstrass form is the x-coordinate of a nonsingular affine point'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [IsAlgClosed K] (W : WeierstrassCurve K) [W.IsElliptic]
+    (x : K), ∃ y : K, W.toAffine.Nonsingular x y
+context: |
+  Step (3) of bsd-193 (m-torsion lower bound). For odd m prime to the characteristic, the roots of the
+  division polynomial ψ_m give x-coordinates, and each root must be lifted to an affine point of E over
+  the algebraic closure before it can be counted as m-torsion. This gap is that lift, and nothing more:
+  given any x0 in an algebraically closed field, the quadratic in y, y² + (a₁x0 + a₃)y − (x0³ + a₂x0² +
+  a₄x0 + a₆), has a root y0 in K, and the point (x0, y0) lies on the curve. For an elliptic curve the
+  curve has no singular points over K, so the point is nonsingular. The statement is true for every
+  Weierstrass curve over an algebraically closed field with Δ ≠ 0 (the IsElliptic hypothesis). It does
+  not prove bsd-193 or bsd-192: the separability of ψ_m, the count of its roots, and the converse
+  (a root of ψ_m gives an m-torsion point) remain. Not checked against a textbook; the proof below is
+  a direct Lean verification of the argument above.
+sketch: |
+  Let P be the monic-in-y quadratic over K, written as a polynomial in X: X² + C(a₁x + a₃) X − C(x³ + a₂x² +
+  a₄x + a₆). Its degree is 2, so it has a root y0 in the algebraically closed field K (IsAlgClosed.exists_root).
+  Evaluating the root gives the Weierstrass equation at (x, y0) (WeierstrassCurve.Affine.equation_iff), and
+  the equation is equivalent to nonsingularity for an elliptic curve (WeierstrassCurve.Affine.equation_iff_nonsingular).
+  The degree computation is compute_degree!. No characteristic assumption is needed, since the quadratic
+  is solved by the existence of roots, not by the quadratic formula.
+dead: []
