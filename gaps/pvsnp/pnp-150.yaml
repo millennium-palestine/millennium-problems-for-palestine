@@ -1,0 +1,37 @@
+id: pnp-150
+problem: pvsnp
+title: Splicing k no-op pairs (true, false) after a clean fan-out program leaves its result unchanged
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  let step := fun (st : List Bool × List Bool × Option Bool) (c : Bool) =>
+    match st.2.2 with
+    | none => (st.1, st.2.1, some c)
+    | some d =>
+      if d then (if c then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+        else (st.1, st.2.1, none))
+      else (if c then (st.1.headD false :: st.1, st.2.1, none)
+        else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))
+  ∀ (k : ℕ) (p : List Bool) (s : List Bool × List Bool × Option Bool),
+    (p.foldl step s).2.2 = none →
+    (p ++ (List.replicate k [true, false]).flatten).foldl step s = p.foldl step s
+context: |
+  The splice step of pnp-141. The statement there pads a fan-out program with no-op pairs (true, false)
+  up to the witness bound of the verifier, and the padded program must have the same result as the
+  unpadded one. pnp-145 is the one-pair no-op from a clean state and pnp-146 is its iterate on states;
+  pnp-146's context leaves the splice into a program string to a later gap. This is that gap: if the
+  unpadded program ends in a clean state, appending k blocks (true, false) to it, as a flat list of bits,
+  does not change the fold. It is the one-line padding fact that pnp-141 uses. It does not decide P vs NP.
+sketch: |
+  Let t be the state after p, with t.2.2 = none. The fold over the appended list is the fold over the
+  flattened blocks from t, by List.foldl_append (pnp-147). Induct on k, generalizing nothing: for k = 0 the
+  flattened list is empty. For k + 1, List.replicate_succ and List.flatten_cons turn the list into
+  true :: false :: (flatten of the rest). The first pair leaves t unchanged by the one-pair no-op of pnp-145,
+  since t is clean, and the induction hypothesis applies to the same clean state t.
+dead: []
