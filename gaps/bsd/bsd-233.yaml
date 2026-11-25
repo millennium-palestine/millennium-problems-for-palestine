@@ -1,0 +1,28 @@
+id: bsd-233
+problem: bsd
+title: 'Three roots of a cubic: over an algebraically closed field, a cubic with nonzero leading coefficient and nonzero discriminant has at least three distinct roots'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [IsAlgClosed K] (a b c d : K), a ≠ 0 →
+    b ^ 2 * c ^ 2 - 4 * a * c ^ 3 - 4 * b ^ 3 * d - 27 * a ^ 2 * d ^ 2 + 18 * a * b * c * d ≠ 0 →
+    3 ≤ Nat.card {x : K // a * x ^ 3 + b * x ^ 2 + c * x + d = 0}
+context: |
+  Root step of the lower bound on the 2-torsion (bsd-234, which is the case ℓ = 2 of bsd-193). The cubic
+  a x³ + b x² + c x + d has three roots with multiplicity over an algebraically closed field. The discriminant
+  b²c² − 4ac³ − 4b³d − 27a²d² + 18abcd is nonzero, so the roots are distinct. The proof is by a Bezout identity:
+  with F = a x³ + b x² + c x + d and F' its derivative, there are polynomials U, V in K[x] with coefficients in
+  ℤ[a, b, c, d] such that U·F + V·F' = a · (discriminant) (U has degree at most 1 and V at most 2 in x). Since a and the
+  discriminant are nonzero, F and F' are coprime, so F is separable and its roots are distinct. Over an algebraically
+  closed field F has three roots counted with multiplicity, so three distinct roots exist. The statement is true.
+sketch: |
+  Let F be the cubic as a polynomial in K[X] (Polynomial.C a * X^3 + ...). Its natDegree is 3 (Polynomial.natDegree_cubic).
+  Show IsCoprime F (derivative F) with the explicit cofactors C((a·disc)⁻¹)·U and C((a·disc)⁻¹)·V, where
+  U = −a(27a²d − 15abc + 4b³) + 6a²(3ac − b²)·X and V = a(3abd − 4ac² + b²c) + a(9a²d − 7abc + 2b³)·X − 2a²(3ac − b²)·X²
+  (checked with sympy: U·F + V·F' = a·disc as polynomials). Then Polynomial.Separable, Polynomial.nodup_roots,
+  the root multiset has card 3 over an algebraically closed field (IsAlgClosed.splits and card of roots), so the
+  finset of roots has 3 elements, and it injects into the subtype of roots of the cubic.
+dead: []
