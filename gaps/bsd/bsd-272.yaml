@@ -1,0 +1,44 @@
+id: bsd-272
+problem: bsd
+title: 'Seventh division polynomial from two doublings and one triple: with Ψ₂Sq, Ψ₃ and preΨ₄ as in Mathlib, the relations x₂ Ψ₂Sq(x) = Φ₂(x), t Ψ₂Sq(x₂) = Φ₂(x₂) and t Ψ₃(x)² = Φ₃(x) force preΨ₄ Ψ₂Sq² Ψ₃³ − Ψ₃⁶ − preΨ₄³ Ψ₂Sq² = 0'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (b₂ b₄ b₆ b₈ x x₂ t : K),
+    4 * b₈ = b₂ * b₆ - b₄ ^ 2 →
+    x₂ * (4 * x ^ 3 + b₂ * x ^ 2 + 2 * b₄ * x + b₆) = x ^ 4 - b₄ * x ^ 2 - 2 * b₆ * x - b₈ →
+    t * (3 * x ^ 4 + b₂ * x ^ 3 + 3 * b₄ * x ^ 2 + 3 * b₆ * x + b₈) ^ 2 =
+      x * (3 * x ^ 4 + b₂ * x ^ 3 + 3 * b₄ * x ^ 2 + 3 * b₆ * x + b₈) ^ 2 -
+        (2 * x ^ 6 + b₂ * x ^ 5 + 5 * b₄ * x ^ 4 + 10 * b₆ * x ^ 3 + 10 * b₈ * x ^ 2 +
+          (b₂ * b₈ - b₄ * b₆) * x + (b₄ * b₈ - b₆ ^ 2)) *
+          (4 * x ^ 3 + b₂ * x ^ 2 + 2 * b₄ * x + b₆) →
+    t * (4 * x₂ ^ 3 + b₂ * x₂ ^ 2 + 2 * b₄ * x₂ + b₆) = x₂ ^ 4 - b₄ * x₂ ^ 2 - 2 * b₆ * x₂ - b₈ →
+    ((2 * x ^ 6 + b₂ * x ^ 5 + 5 * b₄ * x ^ 4 + 10 * b₆ * x ^ 3 + 10 * b₈ * x ^ 2 +
+          (b₂ * b₈ - b₄ * b₆) * x + (b₄ * b₈ - b₆ ^ 2)) *
+          (4 * x ^ 3 + b₂ * x ^ 2 + 2 * b₄ * x + b₆) ^ 2 -
+        (3 * x ^ 4 + b₂ * x ^ 3 + 3 * b₄ * x ^ 2 + 3 * b₆ * x + b₈) ^ 3) *
+        (3 * x ^ 4 + b₂ * x ^ 3 + 3 * b₄ * x ^ 2 + 3 * b₆ * x + b₈) ^ 3 -
+      (2 * x ^ 6 + b₂ * x ^ 5 + 5 * b₄ * x ^ 4 + 10 * b₆ * x ^ 3 + 10 * b₈ * x ^ 2 +
+          (b₂ * b₈ - b₄ * b₆) * x + (b₄ * b₈ - b₆ ^ 2)) ^ 3 *
+        (4 * x ^ 3 + b₂ * x ^ 2 + 2 * b₄ * x + b₆) ^ 2 = 0
+context: |
+  The algebraic core of the seven-torsion identity (bsd-256). Write G(s) = 4s³ + b₂s² + 2b₄s + b₆ = Ψ₂Sq(s),
+  H(s) = s⁴ − b₄s² − 2b₆s − b₈ = Φ₂(s), Ψ₃(s) = 3s⁴ + b₂s³ + 3b₄s² + 3b₆s + b₈, and
+  preΨ₄(s) = 2s⁶ + b₂s⁵ + 5b₄s⁴ + 10b₆s³ + 10b₈s² + (b₂b₈ − b₄b₆)s + (b₄b₈ − b₆²). Then Mathlib gives
+  preΨ'7 = (preΨ₄ Ψ₂Sq² − Ψ₃³) Ψ₃³ − preΨ₄³ Ψ₂Sq² (preΨ'_odd twice), which is the left side above.
+  The hypotheses say: x₂ = x(2P) (bsd-221), t = x(3P) (bsd-271), and t = x(4P) = x(2·(2P)) (bsd-221 again).
+  Going from the hypotheses to the conclusion: multiply the last relation by G(x)³ and reduce x₂ with
+  x₂G(x) = H(x) to get G(x)³G(x₂) = 4H³ + b₂H²G + 2b₄HG² + b₆G³, and similarly G(x)⁴H(x₂) = H⁴ − b₄H²G² − 2b₆HG³ − b₈G⁴.
+  Eliminating t then gives Φ₃G(x)·(4H³ + …) = Ψ₃²·(H⁴ − …) modulo the b-relation, which is exactly
+  the left side of the statement. Checked by sympy: the difference equals the 7-division polynomial
+  exactly after substituting 4b₈ = b₂b₆ − b₄² (no nonvanishing hypothesis is needed). Not yet checked against Lean.
+sketch: |
+  Let G = Ψ₂Sq(x), H = Φ₂(x), and set G₂ = G(x₂), H₂ = H(x₂). (1) From the second hypothesis, linear_combination with
+  explicit quotients gives G³ G₂ = 4H³ + b₂H²G + 2b₄HG² + b₆G³ and G⁴ H₂ = H⁴ − b₄H²G² − 2b₆HG³ − b₈G⁴ (the quotients are
+  polynomials in x, x₂ and the b's, computed by sympy). (2) Multiply the fourth hypothesis by G⁴ and use (1) to get
+  t·G·(4H³ + …) = H⁴ − …. (3) Multiply by Ψ₃² and use the third hypothesis to replace t Ψ₃² by Φ₃. (4) The result is
+  the target polynomial times 1, up to a multiple of 4b₈ − (b₂b₆ − b₄²), which is a linear_combination with a sympy quotient.
+dead: []
