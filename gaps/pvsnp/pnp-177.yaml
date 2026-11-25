@@ -1,0 +1,32 @@
+id: pnp-177
+problem: pvsnp
+title: After a run of pairs from a clean pending bit, the pending bit is clean
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (ps : List (Bool × Bool)) (s w : List Bool),
+    ((ps.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (s, w, none)).2.2 = none
+context: |
+  Boundary fact for the pair encoding of the fan-out fold. A pair list is read two bits at a time, so
+  every instruction starts and ends with the pending bit clear. The fold over the doubled bits of a
+  pair list therefore ends with no pending bit, which says that a split of the pair list between two
+  pairs is a split at a clean state. This is what makes the composition law of pnp-173 usable for a
+  dynamic programme over pairs. It does not use a machine, a polynomial bound or P, and it does not
+  decide P vs NP.
+sketch: |
+  Prove the stronger statement for every starting state with pending bit none, by induction on the
+  pair list. The empty list keeps the state. For a pair (a, b) :: ps, the first bit sets the pending
+  bit to some a, and the second bit clears it in every branch of the match, so the state after the
+  pair has pending bit none, and the induction hypothesis gives the rest. The flatMap of a cons is
+  the two bits followed by the flatMap of the tail, by List.flatMap_cons and List.cons_append.
+dead: []
