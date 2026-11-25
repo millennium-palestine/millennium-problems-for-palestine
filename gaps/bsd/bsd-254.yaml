@@ -15,16 +15,17 @@ statement: |
           Polynomial.C (g.coeff ((p - 1) / 2 + (i : ℕ) - (t : ℕ) + p)) * (Polynomial.X : Polynomial (ZMod p)))).det ≠ 0
 context: |
   The hard core of bsd-183 (the Stepanov nonvanishing step for the level-set bound bsd-172), split off from the
-  transfer step bsd-253. Write g = f^((p−1)/2) with f = X³ + aX + b and g_s(Y) = c_s + d_s·Y, where c_s is the
+  square-system step bsd-253. Write g = f^((p−1)/2) with f = X³ + aX + b and g_s(Y) = c_s + d_s·Y, where c_s is the
   coefficient of X^s in g and d_s the coefficient of X^(s+p) (bsd-195 makes this decomposition of g, since deg g < 2p).
-  With K = (p−1)/2 the Toeplitz matrix (g_{K+i−t}(Y))_{i,t<K} has determinant nonzero in F_p[Y] exactly when the
-  bsd-183 statement holds for all J (bsd-253 gives the implication from this determinant to bsd-183). The statement is
-  the claim that the K×K determinant is a nonzero polynomial in Y. Numerically this holds for all nonsingular short
-  cubics over F_p with p ≤ 23 (all pairs checked by computer, not a proof), and for one cubic with p ≤ 61. It is
+  With K = (p−1)/2 the Toeplitz matrix (g_{K+i−t}(Y))_{i,t<K} is the coefficient matrix of the square system that the
+  bsd-183 context reduces to (the bsd-183 context says that the statement for all J is equivalent to this determinant
+  being nonzero; that equivalence is not proved here, and the bookkeeping that gives it is not yet a gap). The
+  statement is the claim that the K×K determinant is a nonzero polynomial in Y. The bsd-183 context reports computer checks that it
+  holds for all nonsingular short cubics over F_p with p ≤ 23, and for one cubic with p ≤ 61 (not a proof). It is
   believed true, but no proof is known to the proposer, and it is NOT an hour's work. Any proof must be a genuinely
   new argument about the coefficients of f^((p−1)/2) (a Stepanov-type or Hermite-type identity), and not a
-  specialisation that is already known to vanish. A reduction worth checking: the determinant is nonzero iff its
-  value modulo f(Y) is nonzero, since f is squarefree, and that value is the Toeplitz minor evaluated at a root of f.
+  specialisation that is already known to vanish. A sufficient test: if the determinant is nonzero modulo f(Y), then
+  it is nonzero; its value modulo f(Y) is its value at the roots of f.
 sketch: |
   Not an hour's work. Route to try: (1) reduce to a root y of X³ + aX + b in the algebraic closure, so that
   the symbol becomes G_y(X) = Σ_{s<p} (c_s + d_s y) X^s, which is the unique polynomial of degree below p congruent
