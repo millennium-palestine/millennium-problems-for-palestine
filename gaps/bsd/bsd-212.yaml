@@ -1,0 +1,27 @@
+id: bsd-212
+problem: bsd
+title: 'Frobenius commutes with the sum x-coordinate formula: over a field K of characteristic p, with a₁ and a₂ fixed by the p-th power, the x-coordinate ℓ² + a₁ℓ − a₂ − x₁ − x₂ of a chord is commuted with the p-th power'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (K : Type) [Field K] [CharP K p] (W : WeierstrassCurve K),
+    W.a₁ ^ p = W.a₁ → W.a₂ ^ p = W.a₂ →
+    ∀ x₁ x₂ ℓ : K,
+      WeierstrassCurve.Affine.addX W (x₁ ^ p) (x₂ ^ p) (ℓ ^ p) =
+        (WeierstrassCurve.Affine.addX W x₁ x₂ ℓ) ^ p
+context: |
+  Second step of the sketch of bsd-089, the Frobenius as a group endomorphism of the points of E over the algebraic
+  closure of F_p. Mathlib's WeierstrassCurve.Affine.addX W x₁ x₂ ℓ = ℓ² + a₁ℓ − a₂ − x₁ − x₂ is the x-coordinate of the
+  sum of two points whose chord has slope ℓ. Its p-th power commutes with the p-th power of each input when a₁ and a₂
+  are fixed by the p-th power. This is the x-coordinate half of the Frobenius formula for sums; bsd-213 is the
+  y-coordinate half, and bsd-211 is the slope. None of the three proves that the Frobenius is a homomorphism on the
+  points, and none of them is Hasse's bound. It is true for every field of characteristic p.
+sketch: |
+  Unfold WeierstrassCurve.Affine.addX and rewrite with the hypotheses W.a₁ ^ p = W.a₁ and W.a₂ ^ p = W.a₂. Then
+  add_pow_char and sub_pow_char (for the sum and differences, in a field of characteristic p), mul_pow and pow_mul for
+  the square ℓ² and the product a₁ℓ. A direct `simp` with these lemmas, followed by `ring` if needed, should close
+  the goal. Checked by hand, not in Lean.
+dead: []
