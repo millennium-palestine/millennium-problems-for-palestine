@@ -1,0 +1,24 @@
+id: bsd-187
+problem: bsd
+title: 'Prime sum converges: for σ > 3/2, the sum of p^(1/2−σ) over the primes p converges'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ σ : ℝ, 3 / 2 < σ →
+    Summable (fun p : ℕ => if p.Prime then (p : ℝ) ^ (1 / 2 - σ) else 0)
+context: |
+  The prime-sum input of the Euler product step on the weak-bound route to bsd-006. Once the local factors
+  are bounded by bsd-186 (one factor 1 + 8 A p^(1/2−σ) for each prime p), the product over primes of these
+  factors converges exactly when Σ_p p^(1/2−σ) converges, which is the case for σ > 3/2. This gap is the
+  convergence of that prime sum, the only analytic input of the product step besides the multiplicative
+  bookkeeping. It is true and elementary: the prime terms are dominated by n^(1/2−σ), which is summable by
+  Real.summable_nat_rpow since 1/2 − σ < −1. It says nothing about curves or coefficients.
+sketch: |
+  Let f(n) be the indicator-weighted term. Use Summable.of_nonneg_of_le with the bound f(n) ≤ (n : ℝ)^(1/2 − σ)
+  and the nonnegativity of rpow on the natural numbers. For a prime n the two sides are equal. For a non-prime
+  n the term is 0 ≤ (n : ℝ)^(1/2 − σ). The domination summand is summable since 1/2 − σ < −1
+  (Real.summable_nat_rpow.mpr). Use split_ifs to separate the cases.
+dead: []
