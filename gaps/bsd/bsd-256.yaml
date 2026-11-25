@@ -1,0 +1,28 @@
+id: bsd-256
+problem: bsd
+title: 'Seven-torsion roots: on an elliptic curve, an affine point killed by 7 has x-coordinate a root of the 7-division polynomial'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) [W.IsElliptic] (x y : K)
+    (h : W.toAffine.Nonsingular x y),
+    (7 : ℤ) • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) = 0 →
+    (W.preΨ' 7).eval x = 0
+context: |
+  The m = 7 case of bsd-198 (division polynomial vanishes on torsion), the same step as bsd-246 for m = 5. Together
+  with the counting argument of bsd-247 it gives the seven-torsion upper bound (bsd-257), which is the ℓ = 7 case of
+  the torsion bound bsd-192: E[7] has at most 49 points over a field in which 7 is nonzero, and E[7] has 49 points
+  over the algebraic closure when p ≠ 7. The argument of bsd-246 uses the doubling and addition of affine points
+  (bsd-221, bsd-240 and the chord formulas) and a polynomial identity that a sympy certificate verifies for m = 5;
+  the m = 7 identity is larger. The statement is true for every field and every nonsingular affine point.
+sketch: |
+  Let P = (x, y) with 7 • P = 0. Then 3 • P = −4 • P, so x(3P) = x(4P) by the same-x lemma (bsd-217 for ±). Write
+  2P, 3P = 2P + P, 4P = 2·(2P) as affine points with explicit coordinates (bsd-199, bsd-200, bsd-221), noting that
+  the nonzero denominators come from 2P ≠ O and 3P ≠ O (both follow from 7 • P = 0 and P ≠ 0, as in bsd-246). The
+  equation x(3P) = x(4P) is a rational identity in x and y, which after clearing denominators is ψ₇(x) · (unit) = 0
+  modulo the curve equation. Lean: prove the cleared identity by linear_combination with a sympy certificate over
+  the coefficients a₁ … a₆, the same way bsd-246 was done for m = 5. Split further only if the certificate is too large.
+dead: []
