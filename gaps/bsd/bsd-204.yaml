@@ -1,0 +1,26 @@
+id: bsd-204
+problem: bsd
+title: 'Odd torsion halving: for an affine point P and an odd m = 2k + 1 with m • P = 0, the points (k + 1) • P and k • P are negatives of each other'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) [W.IsElliptic] (k : ℕ)
+    (x y : K) (h : W.toAffine.Nonsingular x y),
+    (2 * k + 1) • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) = 0 →
+      (k + 1) • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) =
+        -(k • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point))
+context: |
+  Step (0) of the induction behind bsd-198 (the division polynomial vanishes on m-torsion for odd m prime to the
+  characteristic), and the group-law half of the reduction that bsd-192 needs for odd m. The statement is pure group
+  theory in Mathlib's AddCommGroup on the affine points: (k + 1) • P + k • P = (2k + 1) • P = 0, so (k + 1) • P is the
+  negative of k • P. Its use is to turn the odd-multiple condition m • P = 0 into an equality of two multiples,
+  x((k+1)P) = x(kP), which the division-polynomial induction then consumes. It does not by itself give any formula for
+  x-coordinates; that formula (x(nP) ψ_n(x)² = φ_n(x) for nP ≠ O) is the part still missing from Mathlib and is not
+  claimed here. Proof is expected to be a few lines: add_nsmul and eq_neg_of_add_eq_zero_left.
+sketch: |
+  Let Q = (k + 1) • P and R = k • P. Then Q + R = (k + 1 + k) • P = (2k + 1) • P = 0 by add_nsmul, and
+  eq_neg_of_add_eq_zero_left gives Q = -R. The hypothesis h is only needed to form the affine point P.
+dead: []
