@@ -1,0 +1,39 @@
+id: pnp-178
+problem: pvsnp
+title: In a tagged run of the fan-out program a wire created inside a consumption arc is consumed no later than the arc ends
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (x : List Bool) (s : List ℕ × ℕ × Option Bool × List (ℕ × ℕ)),
+    x.foldl (fun (st : List ℕ × ℕ × Option Bool × List (ℕ × ℕ)) (b : Bool) =>
+      match st.2.2.1 with
+      | none => (st.1, st.2.1, some b, st.2.2.2)
+      | some a =>
+        if a then (if b then (st.2.1 :: st.1.drop 2, st.2.1 + 1, none,
+            ((st.1.take 2).filter (· != 0)).map (fun u => (u, st.2.1)) ++ st.2.2.2)
+          else (st.1, st.2.1, none, st.2.2.2))
+        else (if b then (st.1.headD 0 :: st.1, st.2.1, none, st.2.2.2)
+          else (st.2.1 :: st.1, st.2.1 + 1, none, st.2.2.2))) ([], 1, none, []) = s →
+    ∀ p ∈ s.2.2.2, ∀ v : ℕ, p.1 < v → v < p.2 → ∃ q ∈ s.2.2.2, q.1 = v ∧ q.2 ≤ p.2
+context: |
+  Stepping stone for pnp-152, the interval form of pnp-162 and pnp-163. A consumption arc (u, t) of a
+  tagged fan-out run says that the wire created at time u is consumed by the NAND at time t. The
+  claim is the interval property that a dynamic programme over the arcs uses: every wire created at a
+  time v strictly between u and t is itself consumed by a NAND at a time no later than t. So the
+  work done between the creation of u and its consumption is closed under consumption. The proof
+  uses the stack invariant of pnp-161 (the stack is non-increasing and below the time), the fact that
+  every created wire is either on the stack or already consumed, and the order of the top two entries.
+  It involves no machine, no polynomial bound and no P, and it does not decide P vs NP.
+sketch: |
+  Prove an invariant of the state, by induction on the input, for every state reached: the stack is
+  non-increasing and below the time, the time is at least 1, every wire id v with 1 ≤ v < time is on
+  the stack or has a logged arc, every logged arc ends before the time, and the interval property of
+  the statement holds for the logged arcs. The four transitions of pnp-159 preserve it. A NAND pops
+  the top two entries and logs the nonzero ones at the current time t; a wire v strictly between the
+  popped entry u and t is either logged earlier, or it is on the stack above u (which forces it to be
+  the top entry, since the stack is non-increasing), and then it is popped and logged at t. The
+  conclusion is the interval component of the invariant at the final state.
+dead: []
