@@ -1,0 +1,38 @@
+id: bsd-179
+problem: bsd
+title: 'Frobenius and level-set evaluation: over ZMod p, for x with f(x)^c = ε and k < p, the k-th Hasse derivative of X^(pj)·(r₀ + r₁·f^c) times f^k, evaluated at x, is x^j times the sum of the evaluated f^k·D^k r₀ and ε times a finite sum of f^m·D^m r₁·Q_(k−m)'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-166
+- bsd-178
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (f : Polynomial (ZMod p)), f ≠ 0 → ∀ (c : ℕ) (r₀ r₁ : Polynomial (ZMod p)) (ε : ZMod p)
+    (k j : ℕ), k < p → k ≤ c →
+    ∃ Q : ℕ → Polynomial (ZMod p), (∀ i, i ≤ k → Polynomial.hasseDeriv i (f ^ c) = f ^ (c - i) * Q i) ∧
+      ∀ x : ZMod p, (Polynomial.eval x f) ^ c = ε →
+        Polynomial.eval x (f ^ k * Polynomial.hasseDeriv k (Polynomial.X ^ (p * j) * (r₀ + r₁ * f ^ c))) =
+          x ^ j * (Polynomial.eval x (f ^ k * Polynomial.hasseDeriv k r₀) +
+            ε * ∑ m ∈ Finset.range (k + 1), Polynomial.eval x (f ^ m * Polynomial.hasseDeriv m r₁ * Q (k - m)))
+context: |
+  The second evaluation step of the Stepanov auxiliary polynomial (bsd-172), after bsd-178. The auxiliary
+  polynomial has the shape X^(pj)·(r₀ + r₁·g) with g = f^c, summed over j < J, and its Hasse derivatives must
+  vanish at the points x of the level set {g = ε} over F_p. Two facts make that a linear condition on the
+  coefficients of r₀ and r₁: first, over F_p the Frobenius kills the Hasse derivatives of X^(pj) of order below p
+  (bsd-166), so the derivative of order k only sees the factor X^(pj); second, x^(pj) = x^j for every x in F_p
+  (Fermat). Then bsd-178 handles the part with g. The result is an expression in which every term is a
+  polynomial in x and the coefficients of r₀, r₁, with cofactors Q that do not depend on j or on the coefficients,
+  so the linear system has a fixed shape in j. This gap states exactly that identity. It is not the vanishing
+  itself (that needs the sum over j and the choice of coefficients) and not the nonvanishing of the auxiliary
+  polynomial; those are the remaining pieces of bsd-172. It uses no Hasse bound and no curve.
+sketch: |
+  Take Q from bsd-178 (now accepted on main) applied to r₁ with the same k, c, ε (the hypothesis k ≤ c is given). For the existence part,
+  return that Q. For the evaluation: if k = 0 the derivative is the identity, so the claim is a ring identity
+  after Polynomial.eval_mul, eval_add, eval_pow, eval_X. If 0 < k < p, bsd-166 gives
+  hasseDeriv k (X^(p j) * h) = X^(p j) * hasseDeriv k h with h = r₀ + r₁ f^c, and map_add splits the derivative.
+  Expand the evaluation of f^k · X^(p j) · (A + B) as x^(p j) · (eval (f^k A) + eval (f^k B)). Then x^(p j) = x^j
+  from ZMod.pow_card (x^p = x) with pow_mul, and eval (f^k · hasseDeriv k (r₁ f^c)) is given by bsd-178 at x.
+  Use Fact p.Prime for ZMod.pow_card and CharP (ZMod p) p for bsd-166.
+dead: []
