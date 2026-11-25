@@ -1,0 +1,29 @@
+id: pnp-118
+problem: pvsnp
+title: Taking a fixed-length prefix of a binary string is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  ∀ k : ℕ, ∃ T : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) T) ∧
+    ∀ x : List Bool, T x = x.take k
+context: |
+  Prefix primitive for the window step of the Cook–Levin tableau of pnp-100. A window of k + 1
+  consecutive symbols is the prefix of length k + 1 of the current suffix, so the window map of
+  pnp-115 needs a fixed-length take. The length k is fixed, so the machine can have k + 1 control
+  labels, one for each count of symbols already moved. It does not give a tableau and it does not
+  decide P vs NP.
+sketch: |
+  Use control labels 0 … k, where label i means that i symbols have been moved so far. From label i
+  with a non-empty input, pop one symbol, push it onto an accumulator stack, and go to label i + 1
+  (stop at label k). On an empty input, or at label k, move to the output phase. Then pop the
+  accumulator onto the output stack, which reverses the prefix back to its original order. The
+  running time is at most k + 1 steps per symbol moved, plus the reversal, so it is linear in the
+  input length for fixed k and the bound is polynomial.
+dead: []
