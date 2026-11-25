@@ -1,0 +1,39 @@
+id: bsd-271
+problem: bsd
+title: 'x-coordinate of 3P: if 3P = P + 2P is an affine point (t, y₃), then t times Ψ₃(x)² equals Φ₃(x) = x Ψ₃(x)² − preΨ₄(x) Ψ₂Sq(x)'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) (x y t y₃ : K)
+    (h : W.toAffine.Nonsingular x y) (h₃ : W.toAffine.Nonsingular t y₃),
+    y ≠ W.toAffine.negY x y →
+    (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) +
+        ((WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) +
+          WeierstrassCurve.Affine.Point.some x y h) =
+      WeierstrassCurve.Affine.Point.some t y₃ h₃ →
+    t * (3 * x ^ 4 + W.b₂ * x ^ 3 + 3 * W.b₄ * x ^ 2 + 3 * W.b₆ * x + W.b₈) ^ 2 =
+      x * (3 * x ^ 4 + W.b₂ * x ^ 3 + 3 * W.b₄ * x ^ 2 + 3 * W.b₆ * x + W.b₈) ^ 2 -
+        (2 * x ^ 6 + W.b₂ * x ^ 5 + 5 * W.b₄ * x ^ 4 + 10 * W.b₆ * x ^ 3 + 10 * W.b₈ * x ^ 2 +
+          (W.b₂ * W.b₈ - W.b₄ * W.b₆) * x + (W.b₄ * W.b₈ - W.b₆ ^ 2)) *
+          (4 * x ^ 3 + W.b₂ * x ^ 2 + 2 * W.b₄ * x + W.b₆)
+context: |
+  The x-coordinate formula for the triple of a point, the input that bsd-256 (the seven-torsion roots, which
+  bsd-198 needs at m = 7) takes from the chord and tangent formulas. Here P = (x, y) is affine, 2P ≠ O is
+  the hypothesis y ≠ −y − a₁x − a₃, and 3P = P + 2P is the affine point (t, y₃). The statement says
+  t = x(3P) = Φ₃(x)/Ψ₃(x)², which is Silverman, The Arithmetic of Elliptic Curves, Exercise III.3.7 / the
+  formula x(3P) = x − ψ₂ψ₄/ψ₃² (Mathlib: Φ_three in DivisionPolynomial/Basic.lean, with Ψ₂Sq = 4X³ + b₂X² + 2b₄X + b₆).
+  The proof: 2P = (x₂, y₂) with x₂ = μ² + a₁μ − a₂ − 2x and y₂ = −(μ + a₁)x₂ − (y − μx) − a₃, where
+  μ = (3x² + 2a₂x + a₄ − a₁y)/(2y + a₁x + a₃); then t = λ² + a₁λ − a₂ − x − x₂ with λ = (y₂ − y)/(x₂ − x)
+  (Mathlib's add_of_X_ne with x ≠ x₂, which holds because 3P is affine); the identity is a polynomial
+  consequence of the curve equation for (x, y). Checked numerically on two rational points (residual 0)
+  before proposing. Not yet checked against a Lean build.
+sketch: |
+  (1) From y ≠ negY, add_self_of_Y_ne and slope_of_Y_ne give 2P = some x₂ y₂ h₂ with the addX / addY formulas
+  above (as in bsd-221). (2) x ≠ x₂: if x₂ = x then 2P = ±P and 3P is O or 2P + P = 0 contradicts affineness.
+  (3) Chord formula (bsd-199) identifies t = λ² + a₁λ − a₂ − x − x₂. (4) Clear denominators with
+  div_mul_cancel₀ and reduce the curve equation for (x, y) with linear_combination; the coefficient
+  of the curve equation can be produced by sympy pseudo-division in the variables x, y, a₁ … a₆.
+dead: []
