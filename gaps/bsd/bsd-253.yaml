@@ -1,0 +1,31 @@
+id: bsd-253
+problem: bsd
+title: 'Toeplitz transfer: over a domain R, a polynomial B of degree below K whose coefficients at K, ..., 2K−1 in G·B all vanish, with det(G_{K+i−t}) ≠ 0, is zero'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (R : Type) [CommRing R] [IsDomain R] (K : ℕ) (G B : Polynomial R),
+    B.natDegree < K →
+    (∀ i : Fin K, (G * B).coeff (K + (i : ℕ)) = 0) →
+    (Matrix.of (fun (i t : Fin K) => G.coeff (K + (i : ℕ) - (t : ℕ)))).det ≠ 0 →
+    B = 0
+context: |
+  Step 1 of the bsd-183 reduction, stated once for an arbitrary domain. In bsd-183 the coefficient ring is
+  R = F_p[Y] (Y = X^p), B = Σ_{t<K} X^t β_t(Y) with deg β_t below p, and the coefficient comparison at the
+  exponents K ≤ u < 2K becomes the linear system Σ_{t<K} g_{K+i−t}(Y) β_t(Y) = 0, i < K, where g_s(Y) = c_s + d_s Y.
+  This gap is the transfer step alone: a nonzero Toeplitz determinant over a domain forces the unknown coefficient
+  vector to vanish, so B = 0. It is elementary linear algebra (adjugate argument over a domain). It does not mention
+  f, the level set, Frobenius or the cubic; the determinant itself is the separate open gap bsd-254. Proof route:
+  Matrix.eq_zero_of_mulVec_eq_zero (or the adjugate identity) on the coefficient vector t ↦ B.coeff t.
+sketch: |
+  Write B as Σ_{t<K} C (B.coeff t) * X^t (Polynomial.as_sum_range' from natDegree < K). For i < K the coefficient
+  of G * B at K + i is Σ_{t<K} (G.coeff (K + i − t)) * B.coeff t: multiply out with Polynomial.coeff_mul_X_pow' and
+  Polynomial.coeff_mul_C, using t < K ≤ K + i so the if-condition holds. Hence the matrix M i t := G.coeff (K + i − t)
+  satisfies M *ᵥ (fun t => B.coeff t) = 0 (Matrix.mulVec, Finset.sum_congr). The hypothesis det M ≠ 0 with R a
+  domain gives the coefficient vector zero (Matrix.eq_zero_of_mulVec_eq_zero, or Matrix.mulVec of adjugate times det).
+  Then B.coeff t = 0 for t < K, and B.coeff t = 0 for t ≥ K by natDegree, so B = 0 by Polynomial.ext.
+  Watch the natural-number subtraction K + i − t (it is fine because t < K) and the Fin coercions.
+dead: []
