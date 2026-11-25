@@ -1,0 +1,44 @@
+id: pnp-173
+problem: pvsnp
+title: The fan-out fold over a concatenation of pair lists splits at the boundary between the two lists
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (ps1 ps2 : List (Bool × Bool)) (s w : List Bool),
+    ((ps1 ++ ps2).flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (s, w, none)
+    = (ps2.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) ((ps1.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (s, w, none))
+context: |
+  Composition law for the fan-out fold used in the pnp-152 route. A run of pairs is a fold over the
+  doubled bits of the pair list. Running ps1 and then ps2 is the same as running ps1 ++ ps2, because
+  the doubled bits of a concatenation are the concatenation of the doubled bits. The equality holds
+  for every starting state, so it is a general fold-append law specialised to the fan-out step, and
+  it compares the full state triple (stack, witness, pending bit) at the boundary.
+  This does not use a machine, a polynomial bound or P, and it does not decide P vs NP.
+sketch: |
+  Rewrite the flatMap of an append by List.flatMap_append, then the fold of an append by
+  List.foldl_append. The two sides then agree syntactically.
+dead: []
