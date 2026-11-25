@@ -4,9 +4,7 @@ title: Folding the window bits over the indices gives the list of windows
 status: open
 imports:
 - Mathlib
-open:
-- MPP.PvsNP
-- Turing
+open: []
 depends: []
 statement: |
   ∀ (g : List Bool → Bool) (x c : List Bool) (k : ℕ),
