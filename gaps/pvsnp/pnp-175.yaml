@@ -1,0 +1,40 @@
+id: pnp-175
+problem: pvsnp
+title: On a stack with at least one more cell than the NAND count, a run of pairs of the fan-out program changes the stack height by the pair count minus twice the NAND count
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (ps : List (Bool × Bool)) (s w : List Bool),
+    ps.countP (fun q => q.1 && q.2) + 1 ≤ s.length →
+    ((ps.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (s, w, none)).1.length
+      + ps.countP (fun q => q.1 && q.2)
+    = s.length + ps.countP (fun q => !q.1)
+context: |
+  Height bookkeeping for the pnp-152 route. Each pair (false, false) (leaf) and (false, true) (copy)
+  pushes one cell, each (true, true) (NAND) pops two and pushes one, and (true, false) is a no-op.
+  So the height changes by +1 per leaf or copy and by -1 per NAND. The NAND count is written
+  ps.countP (fun q => q.1 && q.2), and the count of pairs with first component false is
+  ps.countP (fun q => !q.1), which covers leaves and copies. The hypothesis says the stack has at
+  least one more cell than the NAND count, so that every NAND finds two cells to pop. Then the
+  height is exact and the statement gives the new height.
+  This is a counting fact about the fold. It does not use a machine, a polynomial bound or P, and
+  it does not decide P vs NP.
+sketch: |
+  Induction on ps, generalising s and w. The hypothesis is passed to the tail as the NAND count of
+  the tail plus one cell: a NAND at the head lowers both the NAND count and the height by one, so
+  the hypothesis N + 1 ≤ height is preserved, and a non-NAND head raises the height and keeps the
+  NAND count. The case split on the two bits of the head pair is four cases as in pnp-171 and
+  pnp-174. In the NAND case the stack length after the head pair is s.length - 1, which uses that
+  the hypothesis gives at least two cells, so drop 2 removes two and the push adds one. The
+  arithmetic is closed by omega.
+dead: []

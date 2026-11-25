@@ -1,0 +1,29 @@
+id: bsd-257
+problem: bsd
+title: 'Seven-torsion upper bound: an elliptic curve over a field in which 7 is nonzero has at most forty-nine points killed by 7'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-216
+- bsd-217
+- bsd-256
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) [W.IsElliptic],
+    (7 : K) ≠ 0 → Nat.card {P : W.toAffine.Point // (7 : ℤ) • P = 0} ≤ 49
+context: |
+  The ℓ = 7 case of the torsion upper bound bsd-192 (m-torsion has at most m² points when p ∤ m), obtained from the
+  m = 7 case of bsd-198 (bsd-256: seven-torsion points have x-coordinate a root of the 7-division polynomial). It is
+  the same count as bsd-247 for ℓ = 5, with ψ₇ of degree (7² − 1)/2 = 24 in place of ψ₅ of degree 12. So at most
+  1 + 2 · 24 = 49 points: a point with 7 • P = 0 is zero or has an x-coordinate that is a root of preΨ' 7, there are
+  at most 24 distinct roots (bsd-216 with m = 7), and two points with the same x-coordinate are equal or opposite
+  (bsd-217). The statement is true: E[7] has 49 points over the algebraic closure when the characteristic is not 7.
+sketch: |
+  Copy the proof of bsd-247 with 5 replaced by 7. (1) R is the finset of roots of W.preΨ' 7. Its natDegree is 24
+  (natDegree_preΨ' with (7 : K) ≠ 0 and the parity case split, as in bsd-247), so W.preΨ' 7 ≠ 0 and R has at most
+  24 elements (bsd-216 for m = 7, then norm_num for (7² − 1)/2 = 24). (2) For each x, a finset A x of at most two
+  points contains every affine point with x-coordinate x (bsd-217). (3) {P | 7 • P = 0} ⊆ insert 0 (R.biUnion A) by
+  bsd-256 and Polynomial.mem_roots. (4) The card is at most Σ_{x ∈ R} 2 + 1 = 2 · |R| + 1 ≤ 49. (5) Nat.card of the
+  subtype is the ncard of the set, bounded by the finset.
+dead: []

@@ -1,0 +1,34 @@
+id: pnp-176
+problem: pvsnp
+title: The stack of a run of bits grows by at most one cell per bit
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (x : List Bool) (st : List Bool × List Bool × Option Bool),
+    (x.foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) st).1.length
+      ≤ st.1.length + x.length
+context: |
+  Height bound for the fan-out fold, the bit-level form of the stack facts used for pnp-152. Each bit
+  of the program either sets the pending bit (no change to the stack), or completes an instruction:
+  a leaf or a copy pushes one cell, a no-op pushes nothing, and a NAND pops at most two cells and
+  pushes one. So a single bit changes the stack length by at most one, and a run of n bits from any
+  state gives a stack of length at most the old length plus n. This is the bound that makes the stack
+  of a pushdown simulation of the pnp-133 fold polynomially short in the input. It does not use a
+  machine, a polynomial bound or P, and it does not decide P vs NP.
+sketch: |
+  Induction on x, generalising the state. The empty list gives equality. For b :: x, the foldl step
+  turns the state into the one-bit successor, and the induction hypothesis applies to that successor.
+  So it is enough that one bit adds at most one cell: split on the pending bit and on the two bits
+  (cases on Bool), then the stack is unchanged, or it is a cons on a list, or a cons on a drop, and
+  List.length_cons, List.length_drop and omega close each case.
+dead: []

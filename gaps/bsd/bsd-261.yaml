@@ -1,0 +1,23 @@
+id: bsd-261
+problem: bsd
+title: 'Conjugate of a quartic character: for ρ with ρ² = quadratic character, the complex conjugate of ρ(t) is ρ(t)³ for every t in F_p'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (ρ : MulChar (ZMod p) ℂ),
+    (∀ x : ZMod p, ρ x ^ 2 = ((quadraticChar (ZMod p) x : ℤ) : ℂ)) →
+    ∀ t : ZMod p, starRingEnd ℂ (ρ t) = ρ t ^ 3
+context: |
+  Fourth input of bsd-150 (Hasse–Weil bound for y² = x³ + ax, p ≡ 1 mod 4). It lets the two twisted sums of bsd-259,
+  T(ρ) and T(ρ³), be recognised as complex conjugates, so that the sum is 2·Re T(ρ) and |Re T| ≤ |T| = √p by bsd-260.
+  Mathematically: ρ(0) = 0; for t ≠ 0, ρ(t)² = ±1 so ρ(t)⁴ = 1, hence |ρ(t)| = 1, so conj ρ(t) = ρ(t)⁻¹ = ρ(t)³.
+  True and elementary once one knows the values are unit complex numbers. It says nothing about Millennium problems.
+sketch: |
+  Case t = 0: ρ 0 = 0 (MulChar.map_nonunit, 0 is not a unit in the field ZMod p), so both sides are 0 (map_zero for
+  starRingEnd, zero_pow). Case t ≠ 0: from the hypothesis, ρ(t)² = ((χ t : ℤ) : ℂ), and χ t = ±1 for t ≠ 0
+  (quadraticChar_sq_one or quadraticChar_dichotomy), so ρ(t)⁴ = 1. A complex z with z⁴ = 1 has normSq z = 1 (take
+  normSq of both sides: normSq z ^ 4 = 1 and normSq z ≥ 0), so z · conj z = 1 (Complex.mul_conj). Then conj z = z⁻¹
+  and z⁻¹ = z³ because z⁴ = 1 (eq_inv_of_mul_eq_one_left or field_simp with z ≠ 0, which holds since z⁴ = 1).
