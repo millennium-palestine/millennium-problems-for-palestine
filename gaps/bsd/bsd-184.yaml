@@ -1,0 +1,30 @@
+id: bsd-184
+problem: bsd
+title: 'Weak second-order recurrence bound: if |a| ≤ C·s with s > 0 and C ≥ 0, the sequence c₀ = 1, c₁ = a, c_{k+2} = a c_{k+1} − s² c_k satisfies |c_k| ≤ (k+1)(C+1)^k s^k'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (a s C : ℝ) (c : ℕ → ℝ), 0 < s → 0 ≤ C → |a| ≤ C * s → c 0 = 1 → c 1 = a →
+    (∀ k : ℕ, c (k + 2) = a * c (k + 1) - s ^ 2 * c k) →
+    ∀ k : ℕ, |c k| ≤ ((k : ℝ) + 1) * (C + 1) ^ k * s ^ k
+context: |
+  Weak-bound variant of bsd-028 (the prime-power step of the coefficient bound d(n)√n for an elliptic curve over ℚ).
+  bsd-028 uses Hasse's sharp bound a² ≤ 4p, which is bsd-024 (open). Convergence of the L-series for Re s > 3/2
+  (bsd-006) needs only a bound |a_p| ≤ C·√p with some absolute constant C, not the sharp constant 2. Such a bound
+  is the Stepanov-type estimate (bsd-172, open), and it is the route to bsd-006 that avoids bsd-024. For a good
+  prime p with a = a_p and s = √p, the prime-power coefficients of the local factor 1 − a T + p T² satisfy
+  exactly this recurrence (with s² = p), so this gap is the curve-free step of that route. It is an ordinary
+  real sequence statement, provable independently of bsd-024 and bsd-172.
+  Sanity checks: C = 2 (Hasse) gives |c_k| ≤ (k+1)·3^k·s^k, which is weaker than bsd-028's (k+1)s^k, as expected.
+  With a = 0, c_k = 0 for odd k and (−s²)^(k/2) for even k, which satisfies the bound.
+sketch: |
+  Put x_k = c_k / s^k (s > 0). Then x_0 = 1, x_1 = t with t = a / s, |t| ≤ C, and x_{k+2} = t x_{k+1} − x_k.
+  Let M = C + 1 ≥ 1. Prove |x_k| ≤ (k+1) M^k by strong induction on k (two-step: prove the pair
+  statement P(k) ∧ P(k+1) by induction on k). The step is |x_{k+2}| ≤ C (k+2) M^{k+1} + (k+1) M^k ≤ (k+3) M^{k+2},
+  which after dividing by M^k reads C (k+2) M + (k+1) ≤ (k+3) M², true because M² = M C + M.
+  Then |c_k| = s^k |x_k| gives the claim. In Lean it is easiest to first prove the statement for x_k with
+  `c k / s ^ k` and `div_le_iff`, or to prove the version c_k · s^(−k) directly with `pow_pos`.
+dead: []

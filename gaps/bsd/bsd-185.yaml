@@ -1,0 +1,25 @@
+id: bsd-185
+problem: bsd
+title: 'Polynomial growth gives summability: if |c n| ≤ K n^(1/2 + ε) for n ≥ 1 and σ − 1/2 − ε > 1, then Σ c n / n^σ converges'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (c : ℕ → ℝ) (K ε σ : ℝ), 0 < ε → 1 < σ - 1 / 2 - ε →
+    (∀ n : ℕ, 1 ≤ n → |c n| ≤ K * (n : ℝ) ^ (1 / 2 + ε)) →
+    Summable (fun n : ℕ => c n / (n : ℝ) ^ σ)
+context: |
+  Summability step of the weak-bound route to bsd-006 (convergence of the L-series of an elliptic curve over ℚ for
+  Re s > 3/2). If the coefficients a_n of the L-series satisfy |a_n| ≤ K·n^(1/2+ε) for every ε > 0 (which follows from
+  the prime-power bound of bsd-184 with a weak Stepanov-type estimate on a_p, plus a divisor-type bound, both still to
+  be written), then the Dirichlet series Σ a_n n^(−s) converges absolutely for Re s > 3/2 + ε. This gap is only the
+  real-analysis summation: a comparison with Σ n^(1/2+ε−σ), which converges by `Real.summable_nat_rpow` because
+  σ − 1/2 − ε > 1. The term at n = 0 is 0 in Lean (division by zero), so it does not matter. It is true.
+sketch: |
+  Compare with g n = |K| · n^(1/2 + ε − σ) for n ≥ 1. For n ≥ 1, |c n / n^σ| = |c n| / n^σ ≤ |K| n^(1/2+ε) / n^σ
+  = |K| n^(1/2+ε−σ) (use `Real.rpow_sub` or `Real.rpow_natCast` and `Real.rpow_add`, with n > 0). Then
+  `Real.summable_nat_rpow` gives summability of n ↦ n^(1/2+ε−σ) since 1/2 + ε − σ < −1. Use `Summable.of_norm_bounded_eventually`
+  or `Summable.of_norm_bounded` after handling n = 0 separately (any finite change keeps summability).
+dead: []
