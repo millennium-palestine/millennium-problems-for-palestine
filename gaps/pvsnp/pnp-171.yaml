@@ -1,0 +1,52 @@
+id: pnp-171
+problem: pvsnp
+title: A run of pairs of the fan-out program leaves the entries below its first 2N+1 stack cells untouched
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (ps : List (Bool × Bool)) (s r w : List Bool),
+    2 * ps.countP (fun q => q.1 && q.2) + 1 ≤ s.length →
+    ((ps.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (s ++ r, w, none)).1
+    = ((ps.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (s, w, none)).1 ++ r
+context: |
+  Stepping stone for pnp-152, the interface of one segment of the fan-out program. A pair (true, true)
+  is a NAND: it pops two stack cells and pushes one. A pair (false, true) copies the top cell, and a
+  pair (false, false) is a leaf. Let N be the number of NAND pairs. A run of pairs pops at most 2N
+  cells from the stack it starts on, and it reads at most 2N + 1 of them (the copy reads the top).
+  So the cells below the first 2N + 1 are never read, and the run leaves them where they were. This
+  gap says exactly that: the run on s ++ r is the run on s, with r put back below.
+  It is what a dynamic programme over the program needs to treat a segment as a function of its own
+  top cells, with the rest of the stack as a frame. It says nothing about the witness beyond what
+  the run does with it, and it does not use a machine, a polynomial bound or P. It does not decide
+  P vs NP.
+sketch: |
+  Induction on ps, generalising s, r and w, with the length bound as the hypothesis. The empty list
+  gives s ++ r on the left and s on the right, with the append by r. For a cons q :: ps, the pair q
+  contributes [q.1, q.2] to the flatMap, so foldl_append splits the run into the two bits of q and then
+  the rest. The two bits of q act on the stack by the four cases of the pair table (no-op, copy, leaf,
+  NAND). In each case, with the stack of s ++ r and of s, the top cells are read from s, because the
+  bound 2N + 1 ≤ |s| makes the top cell and the two NAND cells come from s: the copy reads s.headD,
+  which exists since |s| ≥ 1, and a NAND reads the first two cells of s, which exist since |s| ≥ 3 when
+  q is a NAND (the count of the tail is at least 0 and the count of q adds 1). Then List.cons_append,
+  List.drop_append_of_le_length and List.headD_append give the same stack with r appended. The new
+  stack length is |s| + 1, |s| - 1 or |s|, and the new bound for ps holds for it: the NAND count of ps
+  drops by one and the length drops by at most 2, so 2 * N(ps) + 1 ≤ |s| - 2 ≤ |s'| still holds.
+  The witness is not touched by the stack equation, so the witness argument is the same in both runs.
+dead: []
