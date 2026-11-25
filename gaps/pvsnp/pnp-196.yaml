@@ -1,0 +1,35 @@
+id: pnp-196
+problem: pvsnp
+title: A primitive block of pair steps with two or more pairs is an up step, a nonnegative zero-sum middle and a down step
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ q : List (Bool × Bool), 2 ≤ q.length →
+    (q.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 →
+    (∀ j, 0 < j → j < q.length →
+      0 < ((q.take j).map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum) →
+    ∃ (a c : Bool × Bool) (mid : List (Bool × Bool)), q = a :: (mid ++ [c]) ∧
+      (if a.1 && a.2 then (-1 : ℤ) else if a.1 then 0 else 1) = 1 ∧
+      (if c.1 && c.2 then (-1 : ℤ) else if c.1 then 0 else 1) = -1 ∧
+      (mid.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 ∧
+      ∀ j, j ≤ mid.length →
+        0 ≤ ((mid.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum
+context: |
+  Shape of a primitive excursion of pair steps, for the pnp-152 route. A pair of the fan-out program has height step
+  +1 (a leaf or a copy), 0 (a no-op) or -1 (a NAND pair), as in pnp-192. A primitive block as in pnp-195 has zero total
+  height and strictly positive height before its end. When it has at least two pairs, its first pair must go up and
+  its last pair must go down, and what lies between is a nonnegative zero-sum walk. This is the Dyck-style shape
+  that a context-free (CYK-style) decomposition of the pnp-133 language uses: a primitive block is an up step, a
+  nonnegative middle, and a down step. It is a fact about lists of pairs and integers: no machine, no polynomial
+  bound, no P, and it does not decide P vs NP.
+sketch: |
+  Every pair has height step in {-1, 0, 1}, by cases on its two bits. The prefix of length 1 is positive, so the first
+  step is +1. The prefix of length q.length - 1 is positive and the total is zero, so the last step is -1. Write q as
+  a :: r, and r as mid ++ [c] (since r is nonempty; List.eq_nil_or_concat or induction on r). The middle has sum
+  zero, because the total is zero and the two end steps cancel. Its prefix of length j is the prefix of q of length
+  j + 1 minus one, which is at least zero since j + 1 < q.length. Use the hypotheses at the indices 1 and
+  q.length - 1, and simp with List.take_succ_cons, List.map_cons, List.sum_cons and List.take_append, then omega.
+dead: []
