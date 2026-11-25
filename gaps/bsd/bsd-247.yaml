@@ -1,0 +1,30 @@
+id: bsd-247
+problem: bsd
+title: 'Five-torsion upper bound: an elliptic curve over a field in which 5 is nonzero has at most twenty-five points killed by 5'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-216
+- bsd-217
+- bsd-246
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) [W.IsElliptic],
+    (5 : K) ≠ 0 → Nat.card {P : W.toAffine.Point // (5 : ℤ) • P = 0} ≤ 25
+context: |
+  The ℓ = 5 case of the torsion upper bound bsd-192 (m-torsion has at most m² points when p ∤ m), obtained from the
+  m = 5 case of bsd-198 (bsd-246: five-torsion points are roots of the 5-division polynomial). It is the same count as
+  bsd-245 for ℓ = 3, with ψ₅ of degree (5² − 1)/2 = 12 in place of ψ₃ of degree 4. A point P with 5 • P = 0 is zero or
+  has an x-coordinate that is a root of preΨ' 5 (bsd-246); there are at most 12 distinct roots (bsd-216 with m = 5);
+  and two points with the same x-coordinate are equal or opposite (bsd-217). So at most 1 + 2 · 12 = 25 points. No
+  algebraic closure and no characteristic hypothesis beyond (5 : K) ≠ 0 are needed, which is what the root count uses.
+  The statement is true: E[5] has 25 points over the algebraic closure when p ≠ 5. Not checked against the text here.
+sketch: |
+  (1) R is the finset of roots of W.preΨ' 5. Its natDegree is 12 (natDegree_preΨ' with (5 : K) ≠ 0 and the parity
+  case split), so W.preΨ' 5 ≠ 0 and R has at most 12 elements (bsd-216 for m = 5, then norm_num for (5² − 1)/2 = 12).
+  (2) For each x, a finset A x of at most two points contains every affine point with x-coordinate x (bsd-217, as in
+  bsd-245). (3) {P | 5 • P = 0} ⊆ insert 0 (R.biUnion A) by bsd-246 and Polynomial.mem_roots. (4) The card is at most
+  Σ_{x ∈ R} 2 + 1 = 2 · |R| + 1 ≤ 25. (5) Nat.card of the subtype is the ncard of the set, bounded by the finset
+  (Nat.card_coe_set_eq, Set.ncard_le_ncard, Set.ncard_coe_finset). The proof follows the solution of bsd-245 line by line.
+dead: []
