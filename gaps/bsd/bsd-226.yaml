@@ -1,0 +1,34 @@
+id: bsd-226
+problem: bsd
+title: 'Induction core of the n = 3 bracket: in a domain where normEDS is nonzero off zero and the n = 2 relation holds for every index, the bracket of bsd-222 vanishes for every integer m'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-224
+statement: |
+  ∀ (A : Type) [CommRing A] [IsDomain A] (b c d : A),
+    (∀ k : ℤ, k ≠ 0 → normEDS b c d k ≠ 0) →
+    (∀ m : ℤ, normEDS b c d (m + 2) * normEDS b c d (m - 2) - b ^ 2 * normEDS b c d (m + 1) * normEDS b c d (m - 1)
+        + c * normEDS b c d m ^ 2 = 0) →
+    ∀ m : ℤ,
+      normEDS b c d 4 * (normEDS b c d m * normEDS b c d (m + 1) * normEDS b c d (m - 1))
+        + b ^ 3 * (normEDS b c d m * normEDS b c d (m - 2) * normEDS b c d (m + 2))
+        - b * c * (normEDS b c d (m - 1) ^ 2 * normEDS b c d (m + 2)
+          + normEDS b c d (m - 2) * normEDS b c d (m + 1) ^ 2) = 0
+context: |
+  The induction step behind bsd-222 (the n = 3 bracket) once the universal domain is in place. Write B(m) for
+  the bracket above and Y(m) = N(m) N(m+1) N(m-1). bsd-224 gives Y(m) B(m+1) = Y(m+1) B(m) from the n = 2 relations
+  at m and m + 1. So B vanishes at m + 1 as soon as it vanishes at m and Y(m) is nonzero, and Y(m) is nonzero for
+  m >= 2 by the hypothesis on nonvanishing. Negative indices follow from B(-m) = -B(m), which comes from
+  normEDS_neg (the bracket is odd). B(2) = 0 is a direct computation with N(0) = 0, N(1) = 1, N(2) = b, N(3) = c,
+  N(4) = d b. The hypotheses hold in the universal ring MvPolynomial (Fin 3) ℤ by bsd-225 and bsd-214, which is how
+  bsd-222 will be deduced: map along MvPolynomial.aeval into K[X][Y] as in Bsd214.main.
+sketch: |
+  Strong induction on m ≥ 2 (Nat.le_induction on the natural number m - 2), with base B(2) by simp using
+  normEDS_zero, normEDS_one, normEDS_two, normEDS_three, normEDS_four. Step: from bsd-224 at m, with
+  Y(m) ≠ 0 (mul_ne_zero from the hypothesis at m-1, m, m+1, all nonzero for m ≥ 2), cancel Y(m) using
+  mul_left_cancel₀ or mul_eq_zero to get B(m+1) = 0. Negative m: prove B(-k) = -B(k) by simp [normEDS_neg] and ring,
+  then use the nonnegative case. The hypothesis that the n = 2 relation holds at every index is used at m and m + 1.
+dead: []
