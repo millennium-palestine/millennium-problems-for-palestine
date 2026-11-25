@@ -1,0 +1,37 @@
+id: bsd-178
+problem: bsd
+title: 'Stepanov derivative on the level set: for a nonzero cubic f, c ≥ k, and a point x with f(x)^c = ε, the k-th Hasse derivative of r·f^c times f^k is ε times a finite sum of f^m · (hasseDeriv m r) · Q_{k−m} evaluated at x'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-165
+statement: |
+  ∀ (K : Type) [Field K] (f : Polynomial K), f ≠ 0 → ∀ (c : ℕ) (r : Polynomial K) (ε : K) (k : ℕ), k ≤ c →
+    ∃ Q : ℕ → Polynomial K, (∀ j, j ≤ k → Polynomial.hasseDeriv j (f ^ c) = f ^ (c - j) * Q j) ∧
+      ∀ x : K, (Polynomial.eval x f) ^ c = ε →
+        Polynomial.eval x (f ^ k * Polynomial.hasseDeriv k (r * f ^ c)) =
+          ε * ∑ m ∈ Finset.range (k + 1), Polynomial.eval x (f ^ m * Polynomial.hasseDeriv m r * Q (k - m))
+context: |
+  The key evaluation identity of Stepanov's method on a level set (bsd-172). Take g = f^c with f the cubic
+  x³ + ax + b and T = {x : g(x) = ε}, ε = ±1. The auxiliary polynomial of the route is built from r · g, and its
+  Hasse derivatives at a point x of T must be linear functions of the coefficients of r. The naive expansion
+  D^k(r g) = Σ D^i r · D^{k−i} g is not a polynomial in those coefficients evaluated at x unless one removes the
+  power of g: multiplying by f^k cancels the denominators coming from bsd-165 (D^j g = f^(c−j) Q_j), and then
+  f^k · D^{k−i} g · D^i r = f^i · g · Q_{k−i} · D^i r, so on T the factor g equals ε. The result is a sum
+  Σ_m f^m · D^m r · Q_{k−m} evaluated at x, which is linear in r and in the cofactors Q, and does not involve g at
+  all. This is the input that turns "vanishing of the Hasse derivatives of the auxiliary polynomial at the points of
+  the level set" into finitely many linear conditions on its coefficients (the dimension count of bsd-159).
+  It is a Leibniz-rule identity over any field, with the cofactors supplied by bsd-165. It does not use the prime p,
+  Frobenius, or Hasse's bound. The gap is one of the pieces of bsd-172 (the others are the Frobenius reduction of
+  X^(pj) on F_p, the choice of ℓ, J, K in bsd-177, and the nonvanishing of the auxiliary polynomial).
+sketch: |
+  Let Q j be the cofactor of hasseDeriv j (f ^ c) from bsd-165 for j ≤ k (choose, with Q j = 0 for j > k).
+  Rewrite hasseDeriv k (r * f ^ c) with Polynomial.hasseDeriv_mul, and the antidiagonal sum with
+  Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk. Use Polynomial.eval_finset_sum and Finset.mul_sum.
+  For a term i < k + 1, with j = k − i ≤ c: rewrite hasseDeriv j (f ^ c) by the cofactor identity, then show
+  f ^ k * (hasseDeriv i r * (f ^ (c − j) * Q j)) = (f ^ i * hasseDeriv i r * Q j) * f ^ c, using
+  f ^ k * f ^ (c − j) = f ^ i * f ^ c (pow_add, and omega for k + (c − j) = i + c). Then Polynomial.eval_mul and
+  the hypothesis eval x f ^ c = ε finish the term with ring.
+dead: []
