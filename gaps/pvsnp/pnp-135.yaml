@@ -1,0 +1,41 @@
+id: pnp-135
+problem: pvsnp
+title: Indexed lookup in the witness, at the index given by the instance read as a binary number, is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-134
+statement: |
+  ∃ L : Lang, InP L ∧ ∀ x w : List Bool,
+    L (pair x w) = w.getD (x.foldl (fun c b => 2 * c + (if b then 1 else 0)) 0) false
+context: |
+  Random access into the witness with a binary index. The index is the instance x read as a binary
+  number, most significant bit first, and the answer is the witness bit at that position (false when
+  the position is past the end of the witness). pnp-134 is the same lookup when the index is the
+  number of true bits of the instance, which is a unary index. A circuit whose wires are written in
+  binary needs this form: each gate reads its inputs at indices given by bits of the instance. This
+  gap is only the lookup. It does not build the circuit, does not simulate a TM2 verifier, and does
+  not decide P vs NP. The index is consumed from the instance one bit at a time, so the running time
+  is polynomial in the length of the pair.
+sketch: |
+  Five stacks: 0 the pair encoding and then the witness, 1 output, 2 a unary counter, 3 a buffer, 4 the
+  instance. Phase 0 reads the doubled instance two symbols at a time, as in pnp-134, and pushes each
+  instance bit onto stack 3; the separator leaves the witness on stack 0. Stack 3 is then moved to
+  stack 4, so the instance is on stack 4 with its most significant bit on top.
+  Invariant of the Horner loop, with c the value of the instance prefix read so far: stack 0 holds the
+  witness with its first c symbols dropped, and stack 2 holds c marks. Reading a bit b, the counter is
+  doubled by popping one witness symbol per mark and pushing two marks onto stack 3; then b = 1 pops one
+  more witness symbol and pushes one mark; then stack 3 is moved back to stack 2. The invariant now
+  holds for 2c + b. If a pop finds stack 0 empty, then c ≥ the witness length, so the answer is false:
+  the machine clears stacks 2 to 4 and outputs false. Once the instance is consumed, the head of stack 0
+  is the answer, since the head of the witness with c symbols dropped is the witness bit at position c.
+  No comparison with the witness length is needed. The counter never exceeds the witness length, so one
+  instance bit costs O(length of the witness) steps and the whole run is polynomial in the length of
+  the pair. Each loop iteration is one TM2 block (one step of `TM2.step`), so the step counts are easy
+  to bound.
+dead: []
