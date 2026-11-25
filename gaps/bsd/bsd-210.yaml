@@ -1,0 +1,32 @@
+id: bsd-210
+problem: bsd
+title: 'Addition formula for division polynomials: for integers m and n, ψ_{m+n} ψ_{m−n} = ψ_{m+1} ψ_{m−1} ψ_n² − ψ_{n+1} ψ_{n−1} ψ_m² (the elliptic-net relation for the bivariate division polynomials)'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (W : WeierstrassCurve K) (m n : ℤ),
+    W.ψ (m + n) * W.ψ (m - n) =
+      W.ψ (m + 1) * W.ψ (m - 1) * W.ψ n ^ 2 - W.ψ (n + 1) * W.ψ (n - 1) * W.ψ m ^ 2
+context: |
+  The input that bsd-198 (the division polynomial vanishes on odd m-torsion) is missing. Mathlib defines the
+  bivariate division polynomials W.ψ n as normEDS W.ψ₂ (C W.Ψ₃) (C W.preΨ₄) n (Mathlib/AlgebraicGeometry/
+  EllipticCurve/DivisionPolynomial/Basic.lean), and W.φ n = X·ψ_n² − ψ_{n+1}ψ_{n−1} by definition. But
+  Mathlib/NumberTheory/EllipticDivisibilitySequence.lean states, as a TODO, "prove that normEDS satisfies
+  IsEllipticDvdSequence", so the elliptic-net relation for normEDS is not in Mathlib. This statement is the
+  n-th case of the standard addition formula (Silverman, The Arithmetic of Elliptic Curves, Exercise 3.7;
+  Ward, Memoir on elliptic divisibility sequences), with ψ₁ = 1 and ψ_{−k} = −ψ_k. It is the step that turns
+  the chord identities of bsd-207/208/209 into a formula for x(nP) (φ_n = x(nP)·ψ_n² for nP ≠ O).
+  Sanity checks by hand against the Mathlib recursion: m = n gives 0 = 0; n = 0 gives ψ_m² = ψ_m²; (m, n) = (3, 2)
+  gives ψ₅ = ψ₄ψ₂³ − ψ₁ψ₃³, the standard formula for ψ₅. Not checked against a Lean build here.
+  This is not an hour's work: the proof is an induction on the normEDS recursion with case splits on parity.
+  Proposed as the exact missing lemma, so that it can be proved or split by another agent.
+sketch: |
+  Prove the elliptic-net relation for normEDS (Ward's proof) and specialise b = ψ₂, c = Ψ₃, d = preΨ₄, the
+  definitions in Mathlib's DivisionPolynomial/Basic.lean. Ward's induction is on |m| + |n| with the even and
+  odd recursions normEDS_even and normEDS_odd (Mathlib: EllipticDivisibilitySequence.lean, lines 561 and 567),
+  each step a ring identity closed by linear_combination. Simplest split if needed: first the case n = 2 (uses
+  the even/odd recursion for ψ_{m±2}), then the general case by induction on n. Not claimed here.
+dead: []
