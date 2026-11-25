@@ -1,0 +1,39 @@
+id: pnp-130
+problem: pvsnp
+title: The windowed-witness language of a polynomial-time window predicate is in NP
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+- MPP.Solutions.Pnp008
+- MPP.Solutions.Pnp052
+- MPP.Solutions.Pnp116
+open:
+- MPP.PvsNP
+- Computability
+- Turing
+depends:
+- pnp-008
+- pnp-052
+- pnp-116
+statement: |
+  ∀ g : Lang, InP g → ∀ k : ℕ, ∃ S : Lang, InNP S ∧ ∀ x : List Bool, S x = true ↔
+    ∃ w : List Bool, w.length ≤ x.length ∧
+      ∀ i : ℕ, i + (k + 1) ≤ (x ++ w).length → g (((x ++ w).drop i).take (k + 1)) = true
+context: |
+  Membership half of a windowed Cook–Levin language, for the target of pnp-100. A string x is in the language
+  when some witness w of length at most |x| makes every window of k + 1 consecutive symbols of x ++ w satisfy
+  the fixed polynomial-time predicate g. The witness plays the role of the free cells of a tableau, and the
+  local rule g is the only thing the check looks at. pnp-116 says that the all-windows check on one string is
+  polynomial-time; this gap says that letting an NP witness fill the free part keeps the language in NP.
+  It does not give the hardness half: no polynomial map is built here that writes a tableau of an arbitrary
+  verifier as such a string, and the single NP-complete language of pnp-100 is not produced. It does not
+  decide P vs NP.
+sketch: |
+  Take the verifier V z := the all-windows test of pnp-116 applied to the output of the concatenation map of
+  pnp-052, so V (pair x w) is the all-windows test on x ++ w. V is polynomial-time by pnp-008 (pullback of the
+  pnp-116 language along the pnp-052 map). Use the bound polynomial p = X, so the witness bound w.length ≤ |x|
+  is exactly the one in the statement. The two sides agree on each x: pnp-052 gives pair x w ↦ x ++ w, and the
+  window condition i < length follows from i + (k + 1) ≤ length since k + 1 ≥ 1. Take S to be the decided
+  form of the right hand side, which exists classically.
+dead: []
