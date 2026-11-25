@@ -1,0 +1,32 @@
+id: bsd-192
+problem: bsd
+title: 'Torsion upper bound: on an elliptic curve over a prime field F_p, the m-torsion over the algebraic closure has at most m² points when p does not divide m'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] [DecidableEq (AlgebraicClosure (ZMod p))]
+    (W : WeierstrassCurve (ZMod p)) [W.IsElliptic] (m : ℤ), ¬ (p : ℤ) ∣ m →
+    (Nat.card {P : (W.baseChange (AlgebraicClosure (ZMod p))).toAffine.Point // m • P = 0} : ℤ) ≤ m ^ 2
+context: |
+  The upper half of bsd-191 (m-torsion count). If the m-torsion is infinite, Nat.card is 0 and the bound is
+  trivial, so the content is the finite case. For odd m with p ∤ m, the nonzero m-torsion points have
+  distinct x-coordinates that are roots of the division polynomial ψ_m, of degree (m² − 1)/2 (Mathlib:
+  WeierstrassCurve.natDegree_preΨ, with preΨ' = ψ_m up to the 2-torsion factor). Each root gives at most two
+  points (±P), so the count is at most (m² − 1) + 1 = m² with O added. Note: the degree of ΨSq_m, which is
+  m² − 1, is NOT enough by itself, because it counts roots of ψ_m² and would give 2(m² − 1) + 1 points. The
+  step Mathlib lacks is the correspondence between m • P = 0 and the vanishing of ψ_m at x(P); the
+  DivisionPolynomial directory has the degrees of the polynomials but no lemma about m • P. The statement is
+  true: it is implied by bsd-191, which is standard (Silverman, The Arithmetic of Elliptic Curves, Chapter III).
+  Not checked against the text here.
+sketch: |
+  Route for odd m (even m needs the 2-torsion factor and is left to a later step): (1) for a nonzero P with
+  m • P = 0, ψ_m(x(P)) = 0 in the coordinate ring (the division polynomial vanishes at the x-coordinate of an
+  m-torsion point); (2) the distinct x-coordinates are roots of ψ_m, so there are at most (m² − 1)/2 of them,
+  by natDegree_preΨ; (3) each x-coordinate gives at most two points P and −P; (4) so the count is at most
+  2·(m² − 1)/2 + 1 = m². Step (1) is the hard one: it needs the group-law formula for x(m • P), which is not
+  in the DivisionPolynomial directory, so it is the first lemma to check in Mathlib (grep for nsmul or
+  add_mul in AlgebraicGeometry/EllipticCurve before starting).
+dead: []
