@@ -1,0 +1,29 @@
+id: bsd-244
+problem: bsd
+title: 'Three-torsion count: an elliptic curve over an algebraically closed field of characteristic not 2 or 3 has at least nine points killed by 3'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [IsAlgClosed K] [DecidableEq K] (W : WeierstrassCurve K) [W.IsElliptic],
+    (2 : K) ≠ 0 → (3 : K) ≠ 0 → 9 ≤ Nat.card {P : W.toAffine.Point // (3 : ℤ) • P = 0}
+context: |
+  The ℓ = 3 case of the torsion lower bound bsd-193 (m-torsion has at least m² points when p ∤ m), and the first
+  instance of the lower-bound chain (bsd-235 to bsd-243) to be assembled. The proof is the count below, from the
+  inputs of this chain: the 3-division polynomial 4ψ₃ has four distinct roots x_i (bsd-242), each root has D ≠ 0
+  (bsd-241, since Δ ≠ 0 for an elliptic curve), each x_i lifts to a nonsingular point (bsd-243), and for each such point
+  and its negative P, 3P = 0 (bsd-240). The 8 affine points ±P_i are pairwise distinct (different x for different i,
+  and P ≠ −P because D ≠ 0), and together with the zero point they give 9 points killed by 3. The statement is the
+  true count: E[3] ≅ (Z/3)² over the closure when p ≠ 3, and it holds for every elliptic curve in characteristic not 2
+  or 3, with no finiteness hypothesis needed (the subtype is exhibited to be finite and of size at least 9).
+sketch: |
+  Let P4 be 4ψ₃ for W (b-invariants of W, with Δ(W) = −Q/4 for Q the form of bsd-239). (1) Roots: bsd-242 gives f : Fin 4 → K
+  injective with P4 (f i) = 0. (2) Lifts: bsd-243 gives y_i with W.toAffine.Nonsingular (f i) y_i; then −P_i is the
+  point with y = negY. (3) Ψ₃ roots and the 2-torsion: bsd-241 gives D_i = 2y_i + a₁x_i + a₃ ≠ 0. (4) 3P = 0 for ±P_i by
+  bsd-240. (5) Injective map Fin 9 → {P // 3 • P = 0}: 0 ↦ O, and the 8 affine points ±P_i; distinctness from different
+  x-coordinates (Point.some injective in x) and from D ≠ 0 (y ≠ negY). (6) Nat.card bound via Nat.card_le_card_of_injective
+  with a finite target (finite from the injection's image bound, or from Nat.card of an infinite set being 0 contradicting
+  the injection). Mathlib: WeierstrassCurve.b_relation or the Δ formula for Q = −4Δ, Point.some injectivity, negY.
+dead: []
