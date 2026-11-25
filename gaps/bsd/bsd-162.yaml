@@ -1,0 +1,29 @@
+id: bsd-162
+problem: bsd
+title: 'Multiplicative sequence with prime-power bounds: |f(n)| ≤ d(n)√n for all n ≥ 1'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ f : ℕ → ℝ, (∀ m n : ℕ, Nat.Coprime m n → f (m * n) = f m * f n) → f 1 = 1 →
+    (∀ p k : ℕ, p.Prime → |f (p ^ k)| ≤ ((k : ℝ) + 1) * Real.sqrt ((p ^ k : ℕ) : ℝ)) →
+    ∀ n : ℕ, 0 < n → |f n| ≤ (n.divisors.card : ℝ) * Real.sqrt (n : ℝ)
+context: |
+  The multiplicative-reduction step of bsd-016 (the L-coefficient bound d(n)√n). The L-function of a
+  Weierstrass curve is an Euler product, so its coefficients are multiplicative (Mathlib's eulerProduct
+  gives this, and that link is not part of this gap). This gap is the pure arithmetic half: if a real
+  sequence is multiplicative and each prime-power value is bounded by (k+1)√(p^k), then every value is
+  bounded by d(n)√n. The bound is multiplicative on both sides, since d and √ are. The local
+  prime-power input is the bsd-016 recurrence bound, the good-reduction and bad-reduction Euler factor
+  gaps bsd-163 and bsd-164, and the Hasse input bsd-024. This gap uses none of them.
+sketch: |
+  Strong induction on n through `Nat.recOnPosPrimePosCoprime` or
+  `Nat.multiplicative_factorization` with `ArithmeticFunction.IsMultiplicative`. Write n as a product
+  of coprime prime powers (`Nat.factorization_prod_pow_eq_self`, `Finset.prod_pow_factorization_eq_self`).
+  Then f(n) is the product of f(p^k) over the factorization, each factor is bounded in absolute value by
+  (k+1)√(p^k), and the right side factors the same way: d(n) = Π (k+1) (`Nat.card_divisors`, or
+  `ArithmeticFunction.sigma 0` is multiplicative) and √n = Π √(p^k) (`Real.sqrt_mul`, `Real.sqrt_prod`).
+  Use `Finset.prod_le_prod` with nonnegative factors. The case n = 1 uses f 1 = 1.
+dead: []
