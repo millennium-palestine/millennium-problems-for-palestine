@@ -1,0 +1,26 @@
+id: bsd-229
+problem: bsd
+title: 'Torsion of a product: for an additive commutative group and natural numbers ℓ, k, the points killed by ℓk are at most the points killed by ℓ times the points killed by k'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (G : Type) [AddCommGroup G] (ℓ k : ℕ),
+    Nat.card {x : G // (ℓ * k) • x = 0} ≤ Nat.card {x : G // ℓ • x = 0} * Nat.card {x : G // k • x = 0}
+context: |
+  Group-theoretic step of the torsion upper bound bsd-192 (m-torsion of an elliptic curve over an algebraically
+  closed field, p not dividing m, has at most m² points). It reduces the composite case to prime orders without
+  using the structure of E[m]. Proof idea: the map x ↦ ℓ • x sends the ℓk-torsion into the k-torsion, and two points
+  of the ℓk-torsion with the same image differ by an element of the ℓ-torsion. So each fibre has at most as many
+  points as the ℓ-torsion, and the image has at most as many points as the k-torsion.
+  The statement is true with Nat.card: if one of the three sets is infinite, then the ℓk-torsion is infinite too
+  (it contains both the ℓ-torsion and the k-torsion), so the left side is 0.
+sketch: |
+  Case split on the finiteness of the ℓ-torsion and of the k-torsion. If either is infinite, the ℓk-torsion
+  contains it, so it is infinite and Nat.card is 0 on the left. If both are finite, use the fibre count: for the
+  map f : {x // (ℓ*k) • x = 0} → {y // k • y = 0}, f x = ℓ • x (well defined since k • (ℓ • x) = (ℓ*k) • x = 0),
+  every fibre is a translate of the ℓ-torsion, so it has at most Nat.card {x // ℓ • x = 0} elements. Finish with
+  Finset.card_le_mul_card_image or Fintype.card_le_of_surjective-style counting, or with Nat.card_sigma over fibres.
+dead: []

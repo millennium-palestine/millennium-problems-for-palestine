@@ -1,0 +1,28 @@
+id: bsd-231
+problem: bsd
+title: 'Two-torsion count: an elliptic curve over a field of characteristic not 2 has at most 4 points killed by 2'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) [W.IsElliptic], (2 : K) ≠ 0 →
+    Nat.card {P : W.toAffine.Point // (2 : ℕ) • P = 0} ≤ 4
+context: |
+  The prime-order case ℓ = 2 of the torsion upper bound bsd-192 (for p odd; bsd-192 is stated for p not dividing m).
+  Needed as the hypothesis of bsd-230 at ℓ = 2. The count is elementary. A point P with 2P = 0 is either the point at
+  infinity or an affine point (x, y) with P = −P, i.e. 2y + a₁x + a₃ = 0. Over a field of characteristic not 2 this
+  linear relation determines y from x, so each x-coordinate gives at most one such point. Substituting y = −(a₁x + a₃)/2
+  into the curve equation and multiplying by 4 gives the cubic 4x³ + b₂x² + 2b₄x + b₆ = 0 with b₂ = a₁² + 4a₂,
+  b₄ = 2a₄ + a₁a₃, b₆ = a₃² + 4a₆, a nonzero polynomial of degree 3. So there are at most three affine 2-torsion points
+  plus the point at infinity: at most 4. The statement is true, and it holds for every such field (equality over the
+  algebraic closure).
+sketch: |
+  Map the 2-torsion set to Option K by P ↦ x(P) on affine points and O ↦ none, or split the set as {O} ∪ affine points.
+  Show the x-coordinate is injective on affine 2-torsion points (two affine points with equal x and 2y+a₁x+a₃=0 have equal
+  y, since 2 ≠ 0; use Affine.Point.some.inj). Show each such x is a root of the cubic (linear_combination of the curve
+  equation with the relation 2y + a₁x + a₃ = 0, coefficient 4 and the substitution). Bound the number of roots of a
+  nonzero cubic by 3 (Polynomial.card_roots' and natDegree). Use the relation P + P = 0 ↔ P = −P (eq_neg_of_add_eq_zero_left,
+  two_nsmul) and Affine.Point.neg_some to get 2y + a₁x + a₃ = 0 from 2P = 0.
+dead: []

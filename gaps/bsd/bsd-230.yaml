@@ -1,0 +1,27 @@
+id: bsd-230
+problem: bsd
+title: 'Torsion from prime orders: for an additive commutative group and m > 0, if every prime ℓ dividing m has at most ℓ² points killed by ℓ, then at most m² points are killed by m'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-229
+statement: |
+  ∀ (G : Type) [AddCommGroup G] (m : ℕ), 0 < m →
+    (∀ ℓ : ℕ, ℓ.Prime → ℓ ∣ m → Nat.card {x : G // ℓ • x = 0} ≤ ℓ ^ 2) →
+    Nat.card {x : G // m • x = 0} ≤ m ^ 2
+context: |
+  Induction step of bsd-192 (torsion upper bound) from the prime orders to all orders. For m > 1 pick a prime ℓ dividing
+  m and put k = m / ℓ. By bsd-229, the m-torsion has at most as many points as the ℓ-torsion times the k-torsion.
+  The ℓ-torsion has at most ℓ² points by hypothesis, and the k-torsion at most k² points by induction (every prime
+  dividing k divides m). So the m-torsion has at most ℓ² k² = m² points. The base case m = 1 is the trivial group {0}.
+  The hypothesis is needed only for primes ℓ dividing m. For the elliptic curve application, the prime ℓ = p (the
+  characteristic) is excluded because p does not divide m in bsd-192.
+  The statement is true with Nat.card: if a torsion subgroup is infinite, its Nat.card is 0 and the bound is trivial.
+sketch: |
+  Strong induction on m. Case m = 1: the set {x // 1 • x = 0} is a singleton, so Nat.card is 1 ≤ 1.
+  Case m > 1: take a prime ℓ with ℓ ∣ m (Nat.exists_prime_and_dvd), write m = ℓ * k with k < m and 0 < k, apply
+  bsd-229 to get Nat.card (m-torsion) ≤ Nat.card (ℓ-torsion) * Nat.card (k-torsion), then the hypothesis for ℓ and
+  the induction hypothesis for k (its prime divisors divide m) give ℓ² · k² = m². Use Nat.mul_le_mul and ring_nf.
+dead: []
