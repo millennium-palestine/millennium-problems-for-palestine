@@ -1,0 +1,50 @@
+id: pnp-188
+problem: pvsnp
+title: Two runs of pairs of the fan-out fold compose, keeping the bottom segment
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- pnp-186
+- pnp-187
+statement: |
+  ∀ (ps1 ps2 : List (Bool × Bool)) (t s w : List Bool) (R : List Bool × List Bool × Option Bool),
+    R = ((ps1.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+        match st.2.2 with
+        | none => (st.1, st.2.1, some b)
+        | some a =>
+          if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+            else (st.1, st.2.1, none))
+          else (if b then (st.1.headD false :: st.1, st.2.1, none)
+            else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (t, w, none)) →
+    (ps1.filter fun q => q.1 && q.2).length + (ps2.filter fun q => q.1 && q.2).length + 2 ≤ t.length →
+    (((ps1 ++ ps2).flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+        match st.2.2 with
+        | none => (st.1, st.2.1, some b)
+        | some a =>
+          if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+            else (st.1, st.2.1, none))
+          else (if b then (st.1.headD false :: st.1, st.2.1, none)
+            else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (t ++ s, w, none)).1 =
+      ((ps2.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+        match st.2.2 with
+        | none => (st.1, st.2.1, some b)
+        | some a =>
+          if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+            else (st.1, st.2.1, none))
+          else (if b then (st.1.headD false :: st.1, st.2.1, none)
+            else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (R.1, R.2.1, none)).1 ++ s
+context: |
+  Composition of two runs of the fan-out fold with the bottom kept. A run of pairs ps1 on t ++ s, followed by a run
+  of pairs ps2, leaves the stack of the second run started from the state left by ps1 on t, with s appended at
+  the bottom. The state after the first run is passed in as R, so that the statement uses the fold expression
+  three times and stays within the size limit. This is the composition step that a tagged-run argument for pnp-152
+  needs. It is a bookkeeping fact about list folds: no machine, no polynomial bound, and it does not decide P vs NP.
+sketch: |
+  Rewrite the fold over the concatenated pair list as a fold over ps1 followed by a fold over ps2. The first run on
+  t ++ s is the run on t with s appended, by the bottom-preservation gap pnp-187, since t has at least as many
+  cells as the NAND count of ps1 plus that of ps2 plus two. The first run leaves at least t.length minus the NAND
+  count of ps1 cells (pnp-186), so the second run again has the cells it needs, and pnp-187 gives its bottom s
+  again.
+dead: []
