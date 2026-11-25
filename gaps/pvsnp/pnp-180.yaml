@@ -1,0 +1,41 @@
+id: pnp-180
+problem: pvsnp
+title: In a tagged run of the fan-out program the consumption cone of every wire is an interval ending at that wire
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- pnp-179
+statement: |
+  ∀ (x : List Bool) (s : List ℕ × ℕ × Option Bool × List (ℕ × ℕ)),
+    x.foldl (fun (st : List ℕ × ℕ × Option Bool × List (ℕ × ℕ)) (b : Bool) =>
+      match st.2.2.1 with
+      | none => (st.1, st.2.1, some b, st.2.2.2)
+      | some a =>
+        if a then (if b then (st.2.1 :: st.1.drop 2, st.2.1 + 1, none,
+            ((st.1.take 2).filter (· != 0)).map (fun u => (u, st.2.1)) ++ st.2.2.2)
+          else (st.1, st.2.1, none, st.2.2.2))
+        else (if b then (st.1.headD 0 :: st.1, st.2.1, none, st.2.2.2)
+          else (st.2.1 :: st.1, st.2.1 + 1, none, st.2.2.2))) ([], 1, none, []) = s →
+    ∀ i w w' : ℕ, 1 ≤ i → i < s.2.1 →
+      Relation.ReflTransGen (fun c a => (a, c) ∈ s.2.2.2) i w → w ≤ w' → w' ≤ i →
+        Relation.ReflTransGen (fun c a => (a, c) ∈ s.2.2.2) i w'
+context: |
+  Stepping stone for pnp-152, the interval form of the consumption cones. The consumption cone of a wire i
+  is the set of wires reachable from i through the logged operand arcs (a, c): the sub-circuit that computes
+  i. The claim says that this set is an interval ending at i: if a wire w is in the cone and w ≤ w' ≤ i, then
+  w' is in the cone too. Interval cones are what an interval dynamic programme over the fan-out program needs:
+  the sub-circuit of a gate is a contiguous block of creation times. The proof uses pnp-179 for the stack
+  entries (the top two entries of a NAND). It involves no machine, no polynomial bound and no P, and it does
+  not decide P vs NP. It was checked by brute force over all programs of length at most 16 (no
+  counterexample); the check is not in Lean.
+sketch: |
+  Induction on the input, with the invariant: every wire i with 1 ≤ i < time has the interval property of the
+  statement, and every stack entry satisfies the gap property of pnp-179. The cone of a leaf is {i}. A copy
+  changes no cone. A NAND creates t = u + 1, where u is the top and v the second entry (or absent), and its
+  cone is {t} ∪ cone(u) ∪ cone(v). By the gap property of u (the next entry below u is v), cone(u) contains
+  every wire between v and u, so cone(u) ∪ cone(v) ∪ {t} is an interval ending at t: for w ≤ v use cone(v),
+  for v < w ≤ u use cone(u), and w' = t is reflexive. The arcs logged earlier are never changed, so the cones
+  of older wires do not move.
+dead: []

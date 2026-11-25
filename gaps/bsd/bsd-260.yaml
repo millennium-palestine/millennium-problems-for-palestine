@@ -1,0 +1,28 @@
+id: bsd-260
+problem: bsd
+title: 'Jacobi modulus for the quartic twist: for a ≠ 0 and ρ with ρ² = quadratic character, the sum Σ_t ρ(t)χ(t + a) has squared absolute value p'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (a : ZMod p) (ρ : MulChar (ZMod p) ℂ), p ≠ 2 → a ≠ 0 →
+    (∀ x : ZMod p, ρ x ^ 2 = ((quadraticChar (ZMod p) x : ℤ) : ℂ)) →
+    Complex.normSq (∑ t : ZMod p, ρ t * ((quadraticChar (ZMod p) (t + a) : ℤ) : ℂ)) = (p : ℝ)
+context: |
+  Third input of bsd-150 (Hasse–Weil bound for y² = x³ + ax, p ≡ 1 mod 4). For a ≠ 0 the twisted sum T = Σ_t ρ(t)χ(t + a)
+  is a unit times a Jacobi sum: substituting t = −a·s gives T = ρ(−a)χ(a) · J(ρ, χ) with J(ρ, χ) = Σ_s ρ(s)χ(1 − s)
+  (Mathlib's jacobiSum), and |ρ(−a)χ(a)| = 1. Mathlib's jacobiSum_mul_jacobiSum_inv (JacobiSum/Basic.lean, line 203)
+  gives J(ρ,χ)·J(ρ⁻¹,χ⁻¹) = p once ρ, χ and ρχ = ρ³ are nontrivial and ringChar ℂ ≠ ringChar F_p; complex conjugation
+  turns J(ρ⁻¹, χ⁻¹) into conj J(ρ, χ) since the values are roots of unity. This is the same mechanism as bsd-148 (cubic
+  case, with the Jacobi modulus used there). The statement is true and classical (Ireland–Rosen, Chapter 8, §3–4 and
+  Chapter 8 Theorem on |J|² = p). It says nothing about Millennium problems.
+sketch: |
+  Let χ' = ρ² as a MulChar (it agrees with the quadratic character pointwise, so χ'(x) = χ(x) cast to ℂ). Reindex
+  Σ_t ρ(t) χ(t + a) by t = −a·s (Equiv.mulLeft on units or a direct Finset.sum_bij with a ≠ 0), getting
+  ρ(−a)·χ'(a)·Σ_s ρ(s) χ'(1 − s) = ρ(−a)·χ'(a)·jacobiSum ρ χ' (using a + (−a)s = a(1 − s) and map_mul). Then
+  normSq (u · z) = normSq z for ‖u‖ = 1, with ‖ρ(−a)‖ = 1 because ρ(−a)⁴ = 1 (from ρ(−a)² = ±1). Finally
+  jacobiSum_mul_jacobiSum_inv with normSq z = z · conj z and conj(jacobiSum ρ χ') = jacobiSum ρ⁻¹ χ'⁻¹ (MulChar values
+  are roots of unity, so conj = inverse). Nontriviality: ρ ≠ 1 and ρ² ≠ 1 because ρ² takes the value −1 at a
+  non-square (p ≡ 1 mod 4 or any p ≠ 2 where non-squares exist), and ρ · ρ² = ρ³ ≠ 1 since ρ⁴ = 1 and ρ² ≠ 1.

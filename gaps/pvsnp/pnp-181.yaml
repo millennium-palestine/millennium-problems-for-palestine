@@ -1,0 +1,41 @@
+id: pnp-181
+problem: pvsnp
+title: A stack entry of a tagged fan-out run can have a consumption cone that reaches past the entry directly below it
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∃ x : List Bool, ∃ s : List ℕ × ℕ × Option Bool × List (ℕ × ℕ),
+    x.foldl (fun (st : List ℕ × ℕ × Option Bool × List (ℕ × ℕ)) (b : Bool) =>
+      match st.2.2.1 with
+      | none => (st.1, st.2.1, some b, st.2.2.2)
+      | some a =>
+        if a then (if b then (st.2.1 :: st.1.drop 2, st.2.1 + 1, none,
+            ((st.1.take 2).filter (· != 0)).map (fun u => (u, st.2.1)) ++ st.2.2.2)
+          else (st.1, st.2.1, none, st.2.2.2))
+        else (if b then (st.1.headD 0 :: st.1, st.2.1, none, st.2.2.2)
+          else (st.2.1 :: st.1, st.2.1 + 1, none, st.2.2.2))) ([], 1, none, []) = s ∧
+    ∃ e ∈ s.1, ∃ g ∈ s.1, ∃ f ∈ s.1, f < g ∧ g < e ∧
+      Relation.ReflTransGen (fun c a => (a, c) ∈ s.2.2.2) e f
+context: |
+  Refutation of a sub-route for pnp-152. Interval dynamic programmes over the tagged fan-out fold would
+  need the following window property: for every stack entry e, the consumption cone of e (the wires
+  reachable from e through the logged operand arcs) contains no wire that lies strictly below some other
+  stack entry lying strictly below e. Equivalently, the cone of e meets the stack below e only in the
+  entry directly below e. This statement says that the property fails: a run of 14 bits leaves the stack
+  [5, 3, 1] and the cone of the top entry 5 contains the wire 1, which lies below the entry 3.
+  The run reads the 14 bits as seven pairs (F,F) (F,T) (F,F) (T,T) (F,T) (F,F) (T,T), which are
+  leaf, copy, leaf, NAND, copy, leaf, NAND in the instruction set of pnp-180.
+  It is proved by evaluation, so it adds no P vs NP content: it only blocks the window invariant.
+  Checked by brute force: no violation of the window property on runs of at most 13 bits. The
+  two-wire exposure bound (at most two wires of a cone consumed from outside the cone) also fails, on
+  an 18-bit run, so the interval DP sketch of pnp-152 needs a different decomposition (a tree
+  decomposition, or a pushdown automaton with guessed leaves and CYK).
+sketch: |
+  Take x to be the 14 bits above, s the final state of the fold, e = 5, g = 3, f = 1. The stack of s is
+  [5, 3, 1] and the log of s contains (3, 5), (1, 3), which give the chain 5 to 3 to 1 under the
+  reflexive transitive closure of the arcs. The first conjunct is an evaluation of the fold; the second is
+  membership in the stack plus two inequalities and the chain. Both are decidable on the concrete values.
+dead: []

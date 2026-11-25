@@ -1,0 +1,28 @@
+id: bsd-259
+problem: bsd
+title: 'Character sum of x³ + ax as a sum over square roots: for ρ with ρ² = quadratic character, the sum of χ(x³ + ax) equals Σ_t ρ(t)χ(t+a) + Σ_t ρ(t)³χ(t+a)'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (a : ZMod p) (ρ : MulChar (ZMod p) ℂ), p ≠ 2 →
+    (∀ x : ZMod p, ρ x ^ 2 = ((quadraticChar (ZMod p) x : ℤ) : ℂ)) →
+    ∑ x : ZMod p, ((quadraticChar (ZMod p) (x ^ 3 + a * x + (0 : ZMod p)) : ℤ) : ℂ) =
+      ∑ t : ZMod p, ρ t * ((quadraticChar (ZMod p) (t + a) : ℤ) : ℂ) +
+      ∑ t : ZMod p, ρ t ^ 3 * ((quadraticChar (ZMod p) (t + a) : ℤ) : ℂ)
+context: |
+  Second input of bsd-150 (the j = 1728 Hasse–Weil bound, p ≡ 1 mod 4). It is the elementary rewriting step that turns
+  the character sum of x³ + ax into a sum of two twisted sums T(ρ) + T(ρ³), where T(κ) = Σ_t κ(t)χ(t + a). The
+  ingredients are χ(x³ + ax) = χ(x)·χ(x² + a) (quadraticChar is multiplicative and x³ + ax = x(x² + a)), the identity
+  ρ(x)² = χ(x) so that χ(x)χ(x² + a) = ρ(x²)χ(x² + a), and the fibre count #{x : x² = t} = χ(t) + 1
+  (quadraticChar_card_sqrts, valid when ringChar ≠ 2). Then Σ_x F(x²) = Σ_t (χ(t) + 1) F(t) with χ(t)ρ(t) = ρ(t)³.
+  The statement is an identity of finite sums and says nothing about Millennium problems.
+sketch: |
+  Write LHS termwise: χ(x³ + a x + 0) = χ(x) · χ(x² + a) (map_mul after x³ + a x + 0 = x * (x² + a), ring) and
+  χ(x) = ρ(x)² = ρ(x²)·... more precisely ρ(x²) = ρ(x)² by map_pow, so the summand is F(x²) with F(t) = ρ(t)·χ(t + a)
+  (as ℂ-valued, using the hypothesis pointwise). Then Σ_x F(x²) = Σ_t #{x | x² = t} · F(t) (Finset.sum_fiberwise or
+  Finset.sum_comp with the fibre card), and #{x | x² = t} = χ(t) + 1 as an integer (quadraticChar_card_sqrts with
+  ringChar ≠ 2, cast to ℂ). Expand (χ(t) + 1) ρ(t) χ(t + a) = ρ(t) χ(t + a) + ρ(t)³ χ(t + a) using χ(t) = ρ(t)² on
+  the cast level, then Finset.sum_add_distrib. Mind the cast: the hypothesis rewrites ((χ t : ℤ) : ℂ) to ρ t ^ 2.
