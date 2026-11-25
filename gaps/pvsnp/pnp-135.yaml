@@ -23,14 +23,19 @@ context: |
   not decide P vs NP. The index is consumed from the instance one bit at a time, so the running time
   is polynomial in the length of the pair.
 sketch: |
-  Four stacks: input (the pair encoding), a counter, a copy of the witness, and output. The counter is
-  kept in unary, so the value c is c marks. Phase 0 reads the doubled instance two symbols at a time,
-  as in pnp-134. Before each instance bit, the counter is doubled (move its marks twice, through a
-  scratch stack) and the bit is added (one mark for true). A flag records that the counter has reached
-  the witness length m. The test "c ≥ m" pops the counter and the copy of the witness in lockstep. Once
-  the flag is set, the rest of the instance is only consumed. The copy of the witness is made by one
-  pass over the witness, which pops it and pushes it onto the copy stack and back. Since the counter is
-  below m until the flag is set, it never exceeds 2m, so every phase is polynomial in the length of the
-  pair. Finally, if the flag is not set, the witness is consumed as in pnp-134 by popping the counter,
-  and the head is the answer; if the flag is set, the answer is false.
+  Five stacks: 0 the pair encoding and then the witness, 1 output, 2 a unary counter, 3 a buffer, 4 the
+  instance. Phase 0 reads the doubled instance two symbols at a time, as in pnp-134, and pushes each
+  instance bit onto stack 3; the separator leaves the witness on stack 0. Stack 3 is then moved to
+  stack 4, so the instance is on stack 4 with its most significant bit on top.
+  Invariant of the Horner loop, with c the value of the instance prefix read so far: stack 0 holds the
+  witness with its first c symbols dropped, and stack 2 holds c marks. Reading a bit b, the counter is
+  doubled by popping one witness symbol per mark and pushing two marks onto stack 3; then b = 1 pops one
+  more witness symbol and pushes one mark; then stack 3 is moved back to stack 2. The invariant now
+  holds for 2c + b. If a pop finds stack 0 empty, then c ≥ the witness length, so the answer is false:
+  the machine clears stacks 2 to 4 and outputs false. Once the instance is consumed, the head of stack 0
+  is the answer, since the head of the witness with c symbols dropped is the witness bit at position c.
+  No comparison with the witness length is needed. The counter never exceeds the witness length, so one
+  instance bit costs O(length of the witness) steps and the whole run is polynomial in the length of
+  the pair. Each loop iteration is one TM2 block (one step of `TM2.step`), so the step counts are easy
+  to bound.
 dead: []
