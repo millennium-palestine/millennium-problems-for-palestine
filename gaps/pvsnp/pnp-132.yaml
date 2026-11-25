@@ -1,0 +1,38 @@
+id: pnp-132
+problem: pvsnp
+title: Postfix programs with shared values and witness leaves, read two bits per instruction, are polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  ∃ V : Lang, InP V ∧ ∀ x w : List Bool,
+    V (pair x w) = (x.foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) ([], w, none)).1.headD false
+context: |
+  Verifier for the fan-out version of the circuit language of pnp-124. The program x is read two bits
+  at a time: a pair (false, false) pushes the next witness bit (false when the witness has run out),
+  (true, true) pops two values and pushes their NAND, (false, true) pushes a copy of the top value
+  (fan-out: one gate value feeds several later gates), and (true, false) does nothing. A trailing
+  unpaired bit is ignored. The witness-leaf machine of pnp-123 is the model. Fan-out is what
+  pnp-124's language lacks: with fresh leaves only, the language is decided by a bottom-up pass and
+  lies in P, so it cannot be NP-complete. This gap does not decide P vs NP; it is a membership step
+  for a circuit language on which a Cook–Levin reduction (pnp-100) could be built.
+sketch: |
+  Same shape as pnp-123: three stacks for the work and the input, one for the witness, with the
+  machine state holding the pending first bit of the current instruction (the state of pnp-123 has
+  room for it). Each input bit costs a constant number of machine steps, and each instruction then
+  applies one of the four cases of the fold, as in the leaf and NAND steps of pnp-123, with the
+  copy case of (false, true) being a push of the top value. The equation holds by induction on x with
+  the stacks as invariant. The pair encoding is read by the scan of pnp-123 (scan z gives x and w).
+dead: []
