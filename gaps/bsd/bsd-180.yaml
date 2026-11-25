@@ -1,0 +1,37 @@
+id: bsd-180
+problem: bsd
+title: 'Stepanov auxiliary polynomial, generic form: for a linearly independent family of U > m·ℓ polynomials, some nonzero combination has all Hasse derivatives of order < ℓ vanishing at m prescribed points'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-159
+statement: |
+  ∀ (K : Type) [Field K] (U m ℓ : ℕ) (B : Fin U → Polynomial K) (xs : Fin m → K),
+    LinearIndependent K B → m * ℓ < U →
+    ∃ c : Fin U → K, c ≠ 0 ∧ (∑ u, Polynomial.C (c u) * B u) ≠ 0 ∧
+      ∀ i : Fin m, ∀ k : ℕ, k < ℓ →
+        (Polynomial.hasseDeriv k (∑ u, Polynomial.C (c u) * B u)).eval (xs i) = 0
+context: |
+  The nonvanishing step of the Stepanov argument (bsd-172, third piece in the list of bsd-178). In bsd-172 the auxiliary
+  polynomial is not a plain polynomial of low degree: it is a combination Σ_u c_u · B_u of a fixed family B (the shaped
+  family r_{ij} · g^i · X^(p·j) of the route). Its vanishing at the points of the level set is a finite set of linear
+  conditions on the coefficients c, one for each pair (point, order), and there are m·ℓ of them. bsd-159 proves the
+  case B_u = X^u (an arbitrary low-degree polynomial killed by the conditions). This gap is the same dimension count for an
+  arbitrary family B: with U > m·ℓ unknowns and m·ℓ linear conditions there is a nonzero coefficient vector, and linear
+  independence of B makes the resulting combination nonzero. Nothing here uses the prime p, Frobenius, or the shape of B;
+  the shape and degree bounds are the job of the later assembly gap. It is the generic form of bsd-159, and it is the
+  dimension count that bsd-172 calls "the linear-algebra count 2JK > ℓm".
+sketch: |
+  Copy the proof of bsd-159 (Bsd159.lean on main) with the evaluation map replaced by
+  L : (Fin U → K) →ₗ[K] (Fin m × Fin ℓ → K), L c = fun ik => eval (xs ik.1) (hasseDeriv ik.2 (∑ u, C (c u) * B u)).
+  Linearity: hasseDeriv k is K-linear (Polynomial.hasseDeriv as a LinearMap), eval is linear, and the sum over u is
+  linear in c, so build L with LinearMap.pi and map_sum / Polynomial.hasseDeriv applied to C (c u) * B u
+  (Polynomial.C_mul / smul_eq_C_mul). The domain has finrank U (Module.finrank_fintype_fun_eq_card), the codomain
+  has finrank m * ℓ (Fintype.card_prod, Fintype.card_fin), so LinearMap.ker_ne_bot_of_finrank_lt gives ker L ≠ ⊥ and
+  Submodule.exists_mem_ne_zero_of_ne_bot gives c ≠ 0 in the kernel. The vanishing conclusion is congrFun of
+  LinearMap.mem_ker at (i, ⟨k, hk⟩), exactly as in bsd-159. For the nonvanishing conclusion use
+  Fintype.linearIndependent_iff on B (after rewriting Polynomial.smul_eq_C_mul): Σ_u (c u) • B u = 0 forces every c u = 0,
+  contradicting c ≠ 0.
+dead: []

@@ -1,0 +1,29 @@
+id: bsd-181
+problem: bsd
+title: 'Frobenius reduction on the points: over ZMod p, the k-th Hasse derivative of X^(p·j) · h at a point x is x^j times the k-th Hasse derivative of h at x, for 0 < k < p'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-166
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (j k : ℕ) (h : Polynomial (ZMod p)) (x : ZMod p), 0 < k → k < p →
+    (Polynomial.hasseDeriv k (Polynomial.X ^ (p * j) * h)).eval x =
+      x ^ j * (Polynomial.hasseDeriv k h).eval x
+context: |
+  The Frobenius step of Stepanov's method over a prime field (bsd-172). The auxiliary polynomial of the route contains
+  the factor X^(p·j), and its Hasse derivatives are controlled at the points of F_p. bsd-166 says that in characteristic p
+  the factor X^(p·j) passes through the Hasse derivatives of order below p. Over F_p the Fermat identity x^p = x makes the
+  remaining factor a plain power: x^(p·j) = x^j for every x in ZMod p. Together, the value of the k-th Hasse derivative of
+  X^(p·j) · h at x is x^j times the value of the k-th Hasse derivative of h at x. This is the "Frobenius reduction of
+  X^(pj) on F_p" that bsd-178 lists among the pieces of bsd-172. It is an elementary consequence of bsd-166 and Fermat's
+  little theorem, and it uses that p is prime only through ZMod.pow_card.
+sketch: |
+  Rewrite the Hasse derivative with bsd-166 (inline its proof, or import MPP.Solutions.Bsd166 once it is accepted and
+  merged):
+  Polynomial.hasseDeriv k (X ^ (p * j) * h) = X ^ (p * j) * Polynomial.hasseDeriv k h, given 0 < k and k < p with
+  CharP (ZMod p) p from the instance. Then Polynomial.eval_mul and Polynomial.eval_pow, Polynomial.eval_X, give
+  x ^ (p * j) * eval x (hasseDeriv k h). Finish with pow_mul (x ^ (p * j) = (x ^ p) ^ j) and ZMod.pow_card x : x ^ p = x
+  (which needs the Fact instance, here given by the binder), so x ^ (p * j) = x ^ j, then ring or rfl.
+dead: []
