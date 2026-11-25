@@ -1,0 +1,42 @@
+id: pnp-154
+problem: pvsnp
+title: Pair steps of the fan-out program leave the stack as a fixed top segment on an untouched suffix
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (ps : List (Bool × Bool)) (s w : List Bool), ∃ (t : List Bool) (k : ℕ),
+    ((ps.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (s, w, none)).1
+      = t ++ s.drop k ∧ t.length ≤ ps.length ∧ k ≤ 2 * ps.length
+context: |
+  Stack discipline for the fan-out program of pnp-133, at the level of the fold itself. Read the
+  program in pairs (instruction bit, value bit) as in pnp-132. Each pair pushes at most one value
+  and pops at most two, and every pop and push is at the top. So after any run of k pairs from a
+  stack s, the stack is some new top segment t on the old stack with a fixed number of its top
+  entries removed. Only the top of the old stack is ever touched, and by at most 2 entries per pair.
+  This is the fold-level counterpart of the TM2 statements pnp-109 and pnp-110, and it is the basic
+  fact a dynamic programme over the program needs before it can split the run at a point where the
+  stack below is untouched, as in the pnp-152 route through a pushdown or treewidth argument.
+  The statement is about the fold of pnp-133 and does not involve a machine, a witness bound or P.
+sketch: |
+  Induction on ps, with the claim for every s and w, since the induction hypothesis is applied to
+  the stack after one pair. For one pair
+  (a, b) starting from the empty pending state the fold is one of four instructions, leaf, copy,
+  NAND, no-op, and each one gives a stack of the form t0 ++ s.drop k0 with t0.length ≤ 1 and
+  k0 ≤ 2. The leaf gives t0 = [w.headD false] and k0 = 0, the copy gives t0 = [s.headD false] and
+  k0 = 0, the NAND gives t0 = [!(x && y)] and k0 = 2, and the no-op gives t0 = [] and k0 = 0. For
+  the step, apply the induction hypothesis to the stack after the first pair, s1 = t0 ++ s.drop k0,
+  which gives t' and k'. Then the stack is t' ++ (t0 ++ s.drop k0).drop k'. Use
+  List.drop_append to rewrite the second part as t0.drop k' ++ s.drop (k0 + (k' - t0.length)),
+  so the new segment is t' ++ t0.drop k' with length at most (|ps| + 1) and the new drop count is
+  at most 2 + 2 |ps| = 2 (|ps| + 1).
+dead: []
