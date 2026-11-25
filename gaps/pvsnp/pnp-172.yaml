@@ -1,0 +1,43 @@
+id: pnp-172
+problem: pvsnp
+title: The stack left by a run of pairs of the fan-out program depends on the initial stack only through its first 2N+1 cells
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- pnp-171
+statement: |
+  ∀ (ps : List (Bool × Bool)) (s w : List Bool),
+    ((ps.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (s, w, none)).1
+    = ((ps.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (s.take (2 * ps.countP (fun q => q.1 && q.2) + 1), w, none)).1
+      ++ s.drop (2 * ps.countP (fun q => q.1 && q.2) + 1)
+context: |
+  Interface corollary of pnp-171 for pnp-152. A dynamic programme over the fan-out program that
+  gives each segment a function of its top cells needs exactly this: the run on a stack s is the run
+  on the first 2N + 1 cells of s, followed by the cells that were never read. The N here is the
+  NAND count of the segment, so a segment whose NAND count is bounded sees a bounded interface.
+  It follows from pnp-171 by splitting s at 2N + 1. It does not use a machine, a polynomial bound
+  or P, and it does not decide P vs NP.
+sketch: |
+  Let k = 2 * ps.countP (fun q => q.1 && q.2) + 1. If k ≤ s.length, then s = s.take k ++ s.drop k by
+  List.take_append_drop, and the length of s.take k is k by List.length_take and min. So pnp-171 applies
+  with s := s.take k and r := s.drop k, and rewriting s with the splitting gives the statement. If
+  s.length < k, then s.take k = s and s.drop k = [], so the right-hand side is the run on s followed by
+  the empty list, and List.append_nil closes the goal. The only other fact used is the bound in
+  pnp-171, which is the length condition on the first split part.
+dead: []
