@@ -1,0 +1,38 @@
+id: bsd-207
+problem: bsd
+title: 'Product of the chord x-coordinates: for two points (x₁, y₁), (x₂, y₂) of a Weierstrass curve with x₁ ≠ x₂, the x-coordinates of P + Q and P − Q multiply to the Vieta form Q(x₁, x₂)/(x₁ − x₂)²'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (a₁ a₂ a₃ a₄ a₆ x₁ y₁ x₂ y₂ : K),
+    y₁ ^ 2 + a₁ * x₁ * y₁ + a₃ * y₁ = x₁ ^ 3 + a₂ * x₁ ^ 2 + a₄ * x₁ + a₆ →
+    y₂ ^ 2 + a₁ * x₂ * y₂ + a₃ * y₂ = x₂ ^ 3 + a₂ * x₂ ^ 2 + a₄ * x₂ + a₆ →
+    x₁ ≠ x₂ →
+    ((((y₂ - y₁) / (x₂ - x₁)) ^ 2 + a₁ * ((y₂ - y₁) / (x₂ - x₁)) - a₂ - x₁ - x₂) *
+      (((-y₂ - a₁ * x₂ - a₃ - y₁) / (x₂ - x₁)) ^ 2 + a₁ * ((-y₂ - a₁ * x₂ - a₃ - y₁) / (x₂ - x₁)) - a₂ - x₁ - x₂)) *
+      (x₂ - x₁) ^ 2 =
+    x₁ ^ 2 * x₂ ^ 2 - a₁ * a₃ * x₁ * x₂ - 2 * a₄ * x₁ * x₂ - a₃ ^ 2 * (x₁ + x₂) - 4 * a₆ * (x₁ + x₂) +
+      a₄ ^ 2 + a₁ * a₃ * a₄ - a₁ ^ 2 * a₆ - a₂ * a₃ ^ 2 - 4 * a₂ * a₆
+context: |
+  Pure algebra, a step of bsd-198 (the division polynomial vanishes on m-torsion for odd m prime to the
+  characteristic). The x-coordinate of a sum of two affine points with distinct x-coordinates is given by the
+  chord formula (bsd-199). Here P = (x₁, y₁) and Q = (x₂, y₂), and −Q = (x₂, −y₂ − a₁x₂ − a₃). The chord
+  formula applied to P + Q and to P + (−Q) gives two x-coordinates, each a rational function of the slope.
+  The statement says their product, times (x₂ − x₁)², is the polynomial Q(x₁, x₂) = x₁²x₂² − a₁a₃x₁x₂ − 2a₄x₁x₂ −
+  a₃²(x₁ + x₂) − 4a₆(x₁ + x₂) + a₄² + a₁a₃a₄ − a₁²a₆ − a₂a₃² − 4a₂a₆. For a₁ = a₂ = a₃ = 0 and a₄ = a, a₆ = b this is
+  the classical (x₁x₂ − a)² − 4b(x₁ + x₂). It is the Vieta-type identity behind the recursion for
+  x(nP) in the proof of bsd-198. It does not use the group law, only the two curve equations, and it is
+  checked symbolically (cofactors below), not against a textbook.
+sketch: |
+  Let s = y₂ − y₁, t = −y₂ − a₁x₂ − a₃ − y₁, d = x₂ − x₁ and c = a₂ + x₁ + x₂. Clearing the denominators, the
+  claim is (s² + a₁sd − cd²)(t² + a₁td − cd²) = Q·d², a polynomial identity modulo the two curve equations
+  E₁ = 0 and E₂ = 0 (each is monic of degree 2 in y). Verified with sympy: the difference equals C₁E₁ + C₂E₂ with
+  C₁ = a₁²x₁x₂ − a₁²x₂² + a₁a₃x₁ − a₁a₃x₂ + a₁x₁y₁ − a₂x₁² + 4a₂x₁x₂ − 4a₂x₂² + a₃y₁ + a₄x₁ − 2a₄x₂ − a₆ −
+  x₁³ + 2x₁²x₂ + 2x₁x₂² − 4x₂³ + y₁², and C₂ = −a₁²x₁² + a₁²x₁x₂ − a₁a₃x₁ + a₁a₃x₂ − 2a₁x₁y₁ + a₁x₂y₂ −
+  2a₂x₁² + 4a₂x₁x₂ − a₂x₂² − 2a₃y₁ + a₃y₂ + a₄x₂ + a₆ − 2x₁³ + 2x₁²x₂ + 2x₁x₂² − x₂³ − 2y₁² + y₂².
+  In Lean: prove the polynomial identity with linear_combination C₁ * E₁ + C₂ * E₂, then rewrite each slope
+  quotient as (numerator)/(x₂ − x₁)² and combine.
+dead: []
