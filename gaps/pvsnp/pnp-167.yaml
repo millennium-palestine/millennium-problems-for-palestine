@@ -1,0 +1,36 @@
+id: pnp-167
+problem: pvsnp
+title: In a tagged run of the fan-out program each consumer time carries at most two consumption arcs
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (x : List Bool) (s : List ℕ × ℕ × Option Bool × List (ℕ × ℕ)),
+    x.foldl (fun (st : List ℕ × ℕ × Option Bool × List (ℕ × ℕ)) (b : Bool) =>
+      match st.2.2.1 with
+      | none => (st.1, st.2.1, some b, st.2.2.2)
+      | some a =>
+        if a then (if b then (st.2.1 :: st.1.drop 2, st.2.1 + 1, none,
+            ((st.1.take 2).filter (· != 0)).map (fun u => (u, st.2.1)) ++ st.2.2.2)
+          else (st.1, st.2.1, none, st.2.2.2))
+        else (if b then (st.1.headD 0 :: st.1, st.2.1, none, st.2.2.2)
+          else (st.2.1 :: st.1, st.2.1 + 1, none, st.2.2.2))) ([], 1, none, []) = s →
+    ∀ t : ℕ, s.2.2.2.countP (fun p => decide (p.2 = t)) ≤ 2
+context: |
+  Stepping stone for pnp-152, the gate-degree bound of a tagged fan-out run. The consumption arcs
+  of a run are recorded with the time of the gate that consumes them, and a NAND gate records at most
+  two arcs, both with the current time. So every gate has at most two incoming arcs in the log. This
+  is the in-degree bound that a dynamic programme over the gates needs for its table to have a
+  fixed number of entries per gate. It involves no machine and no P, and does not decide P vs NP.
+  It is a corollary-level bookkeeping fact about the list model of pnp-161 to pnp-166.
+sketch: |
+  Induct over the input, generalising the state, with the invariant of two facts: every arc on the
+  log has consumer time strictly below the time counter, and for every t the number of arcs with
+  consumer time t is at most two. The initial log is empty. A leaf pair, a copy and a no-op leave the
+  log unchanged and the counter unchanged or increased by one, so both facts persist. A NAND adds at
+  most two arcs with the old time t and then increases the counter to t + 1. The old arcs have
+  consumer time below t, so none of them has time t, and the new arcs contribute at most two to the
+  count at t. Nothing else changes, so the count at every other time is unchanged.
+dead: []
