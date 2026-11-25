@@ -1,0 +1,51 @@
+id: pnp-187
+problem: pvsnp
+title: A run of pairs of the fan-out fold keeps the bottom segment, the witness and the pending bit
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- pnp-185
+- pnp-186
+statement: |
+  ∀ (ps : List (Bool × Bool)) (t s w : List Bool),
+    (ps.filter fun q => q.1 && q.2).length + 2 ≤ t.length →
+    ((ps.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (t ++ s, w, none))
+    = (((ps.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (t, w, none)).1 ++ s,
+       ((ps.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (t, w, none)).2.1, none)
+context: |
+  Bottom preservation for a whole run of the fan-out fold, with the witness and the pending bit, not only the
+  stack. pnp-185 says that the stack of a run on t ++ s is the stack of the run on t with s appended, when t has
+  enough cells. This gap adds the two other components: the witness left is the same as on t, and the pending bit
+  is clean. It is the form in which a composition of two runs can be stated (run ps1 ++ ps2 on t ++ s is run ps2
+  started from the state left by run ps1 on t, with s kept at the bottom), and the one-pair step of pnp-185 already
+  proves its three conjuncts. It does not use a machine, a polynomial bound or P, and it does not decide P vs NP.
+sketch: |
+  Induction on the pair list, generalising t and w. For the head pair the one-pair step of pnp-185 gives the
+  three conjuncts (stack with s appended, clean pending bit, witness unchanged); the length hypothesis for the tail
+  is the one for the whole list with the NAND count of the head removed, and the count of cells left by the head
+  pair is at least the starting count minus one (pnp-186). Then apply the induction hypothesis to the tail on the
+  new state. The clean pending bit after each pair is the pending lemma of pnp-186.
+dead: []
