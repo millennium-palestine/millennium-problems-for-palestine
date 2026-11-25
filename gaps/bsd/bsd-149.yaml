@@ -1,0 +1,23 @@
+id: bsd-149
+problem: bsd
+title: 'Supersingular case y² = x³ + ax over F_p: for p ≡ 3 mod 4 and p ≠ 2, the character sum of x³ + ax is zero'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (a : ZMod p), p ≠ 2 → p % 4 = 3 →
+    ∑ x : ZMod p, quadraticChar (ZMod p) (x ^ 3 + a * x + (0 : ZMod p)) = 0
+context: |
+  Elementary case of the j = 1728 family (curves y² = x³ + ax, b = 0) for the Hasse–Weil character sum bound of
+  bsd-142. When p ≡ 3 mod 4 the quadratic character takes the value −1 at −1 (Mathlib: quadraticChar_neg_one and
+  ZMod.χ₄_nat_three_mod_four), and x ↦ −x changes the sign of x³ + ax. So the sum equals its own negative and is zero.
+  This is the j = 1728 analogue of bsd-147 (which handles the j = 0 family when p ≢ 1 mod 3). The other case p ≡ 1 mod 4
+  is a separate gap. The statement is true (these curves are supersingular, with trace zero) and says nothing about
+  Millennium problems.
+sketch: |
+  Let f(x) = x³ + a x + 0. Reindex the sum by x ↦ −x (Equiv.neg, Equiv.sum_comp) to get S = Σ_x χ((−x)³ + a(−x)).
+  Since (−x)³ + a(−x) = −1 · f(x), map_mul gives χ(−1)·χ(f(x)), and χ(−1) = −1 when p % 4 = 3
+  (quadraticChar_neg_one, then ZMod.card and ZMod.χ₄_nat_three_mod_four). So S = −S in ℤ, hence S = 0 (linarith).
+dead: []

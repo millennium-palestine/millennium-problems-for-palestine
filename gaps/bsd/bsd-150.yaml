@@ -1,0 +1,28 @@
+id: bsd-150
+problem: bsd
+title: 'Hasse–Weil bound for y² = x³ + ax when p ≡ 1 mod 4: for a prime p ≠ 2 with p % 4 = 1 and any a, the square of the character sum of x³ + ax is at most 4p'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (a : ZMod p), p ≠ 2 → p % 4 = 1 →
+    (∑ x : ZMod p, quadraticChar (ZMod p) (x ^ 3 + a * x + (0 : ZMod p))) ^ 2 ≤ 4 * (p : ℤ)
+context: |
+  The deep input of bsd-142 for the j = 1728 family (b = 0, p ≡ 1 mod 4), the companion of bsd-148 (which does the
+  j = 0 family with p ≡ 1 mod 3). It is true: Hasse's bound for the curves y² = x³ + ax over F_p (Silverman, The
+  Arithmetic of Elliptic Curves, V.1 and Ireland–Rosen, Chapter 18, §4, where y² = x³ − Dx is written with a quartic
+  character and Jacobi sums of absolute value √p). For a = 0 the sum is zero, so the statement is trivial there.
+  It is not a general Hasse bound: short forms with b ≠ 0 stay in bsd-142, and the p ≡ 3 mod 4 case is bsd-149.
+  It is a multi-hour formalisation (quartic character, decomposition into Jacobi sums, |J|² = p), as bsd-148 was.
+  The statement does not decide anything about Millennium problems.
+sketch: |
+  Write x³ + ax = x (x² + a). Let ρ be a multiplicative character of F_p with values in ℂ and ρ² = χ (the quadratic
+  character; it exists because a quartic character of Fˣ exists when 4 ∣ p − 1, and its square is quadratic). For
+  p ≡ 1 mod 4 we have χ(−1) = 1, and for each t the sum over the square roots of t of χ(x) equals (1 + χ(t)) ρ(t),
+  with ρ(t) = 0 when t = 0. So S = Σ_x χ(x) χ(x² + a) = Σ_t (1 + χ(t)) ρ(t) χ(t + a), which splits as
+  T(ρ) + T(ρ⁻¹), where T(κ) = Σ_t κ(t) χ(t + a). Each T(κ) is a unit times a Jacobi sum of ρ (or ρ⁻¹) and χ, as in
+  the j = 0 case of bsd-148 (MulChar shift t = −a·s), and jacobiSum_mul_jacobiSum_inv gives |J|² = p. The real-part
+  argument of bsd-148 then gives S² ≤ 4p. The case a = 0 is trivial (S = 0). Also see bsd-148 for the same pattern.
+dead: []
