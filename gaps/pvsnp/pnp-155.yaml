@@ -5,8 +5,7 @@ status: open
 imports:
 - Mathlib
 open: []
-depends:
-- pnp-154
+depends: []
 statement: |
   ∀ (ps : List (Bool × Bool)) (s w : List Bool), (∀ q ∈ ps, q.1 = false) → ∃ (t : List Bool),
     ((ps.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
