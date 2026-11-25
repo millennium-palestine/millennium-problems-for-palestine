@@ -1,0 +1,31 @@
+id: pnp-121
+problem: pvsnp
+title: Appending the bit of a polynomial-time predicate on the window at the output offset is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  ∀ g : Lang, InP g → ∀ k : ℕ, ∃ s : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) s) ∧
+    ∀ x u : List Bool, s (pair x u) = pair x (u ++ [g ((x.drop u.length).take (k + 1))])
+context: |
+  One step of the sliding-window map of pnp-115, in the pair encoding. Given the pair (x, u), it appends
+  to u the value of g on the window of k + 1 symbols of x that starts at offset |u|. The output
+  offset is read from u itself, so the step is a composition of the offset map of pnp-120, the
+  prefix map of pnp-118 with k + 1 in place of k, and the machine of g. Iterating this step |x| - k
+  times from the pair (x, []) gives the window vector of pnp-115 through the iteration lemma of
+  pnp-066. This gap does not decide P vs NP and does not build the tableau itself.
+sketch: |
+  Compose three polynomial-time maps on the pair encoding, using pnp-006 and pnp-022 to apply them to
+  the input of the pair. First the suffix map of pnp-120 gives drop |u| x. Then the prefix map of
+  pnp-118 with k + 1 gives the window. Then the machine of g gives the one bit. The append on the
+  second component is the pattern of pnp-056: rebuild the pair with the new bit after u, which is a
+  fixed-length change of the stack tops. Each piece is polynomial, and the composition is
+  polynomial, so the step is polynomial-time. The equation is immediate from the pair encoding, which
+  is injective (pnp-005).
+dead: []
