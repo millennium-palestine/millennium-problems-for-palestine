@@ -1,0 +1,28 @@
+id: bsd-236
+problem: bsd
+title: 'Torsion lower bound from prime powers: for an additive commutative group and a natural number m, if every prime power ℓ^e dividing m has at least (ℓ^e)² points killed by ℓ^e, then m has at least m² points killed by m'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (G : Type) [AddCommGroup G] (m : ℕ),
+    (∀ ℓ e : ℕ, ℓ.Prime → 0 < e → ℓ ^ e ∣ m → (ℓ ^ e) ^ 2 ≤ Nat.card {x : G // (ℓ ^ e) • x = 0}) →
+    m ^ 2 ≤ Nat.card {x : G // m • x = 0}
+context: |
+  Group-theoretic step of the torsion lower bound bsd-193 (the m-torsion of an elliptic curve over an algebraically
+  closed field, p not dividing m, has at least m² points). It is the glue that reduces a composite m to its prime-power
+  parts: the coprime-product inequality |G[ℓ]|·|G[k]| ≤ |G[ℓk]| for coprime ℓ, k (the lower direction, bsd-235) turns
+  the prime-power bounds into the bound for m, by induction on the coprime factorisation of m. The statement is
+  self-contained (no elliptic curve appears), and it is true: for m = 0 the square is 0, and for m ≥ 1 the factors
+  of m are pairwise coprime prime powers, each dividing m, so the product of their bounds gives m². The prime-power
+  case is the hard remaining input (separability of ψ_ℓ^e for ℓ ≠ p), and is not part of this gap.
+sketch: |
+  Induction over the coprime factorisation, Nat.recOnPosPrimePosCoprime with motive
+  P m := (hypothesis for m) → m ^ 2 ≤ Nat.card G[m]. Cases: prime power p^n, where the hypothesis at ℓ = p, e = n gives
+  the claim (dividing m = p^n is reflexive); 0, where 0² = 0; 1, where the 1-torsion is a subsingleton (1 • x = 0 means
+  x = 0) so its card is 1; and a·b with 1 < a, 1 < b, coprime, where the hypothesis passes to a and b (divisibility is
+  transitive, a ∣ a·b and b ∣ a·b), giving a² ≤ |G[a]|, b² ≤ |G[b]|, and then (ab)² = a²b² ≤ |G[a]|·|G[b]| ≤ |G[ab]|
+  by the coprime-product inequality (proved inside the solution as a helper lemma, the same argument as bsd-235).
+dead: []
