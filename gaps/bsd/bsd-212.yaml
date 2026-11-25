@@ -1,0 +1,28 @@
+id: bsd-212
+problem: bsd
+title: 'Addition formula at n = 2: for every integer m, ψ_{m+2} ψ_{m−2} = ψ_{m+1} ψ_{m−1} ψ_2² − ψ_3 ψ_1 ψ_m² (the case n = 2 of bsd-210)'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (W : WeierstrassCurve K) (m : ℤ),
+    W.ψ (m + 2) * W.ψ (m - 2) =
+      W.ψ (m + 1) * W.ψ (m - 1) * W.ψ 2 ^ 2 - W.ψ 3 * W.ψ 1 * W.ψ m ^ 2
+context: |
+  The n = 2 instance of the elliptic-net relation bsd-210 (normEDS, Mathlib's W.ψ). It is the first
+  non-trivial case of bsd-210: the cases n = 0, 1 and m = n are ring identities, but n = 2 for all m is
+  not a local computation, because W.ψ (2k) is determined by W.ψ at about k. It is a true statement: it
+  is the Somos-4 recurrence satisfied by the sequence W.ψ n with b = ψ_2, c = ψ_3, d = ψ_4 / ψ_2.
+  Proposed as a split of bsd-210, so that the general case can be reduced to this one and to the
+  cases already in hand. bsd-210 stays open.
+sketch: |
+  Work first over a domain A with b = W(2) ≠ 0 (take A = MvPolynomial (Fin 3) ℤ with b, c, d the three
+  variables, so that b ≠ 0), and write F(m) = N(m+2)N(m−2) − b² N(m+1)N(m−1) + c N(m)², where N = normEDS b c d.
+  Strong induction on m ≥ 0 with F(0), F(1), F(2) by normEDS_zero/one/two/three/neg. For m = 2t + 3 the
+  odd recursion normEDS_odd gives F(2t+3) with no cancellation, from F(t+1) and F(t+2) (linear_combination,
+  cofactors found by computer algebra). For m = 2t + 4 the even recursion normEDS_even gives b² F(2t+4) as a
+  combination of F(t+1), F(t+2), F(t+3); cancel b² in the domain. Negative m: F(−m) = F(m) by normEDS_neg.
+  Transfer to W.ψ by MvPolynomial.aeval into K[X][Y] with (ψ₂, C Ψ₃, C preΨ₄) and map_normEDS.
+dead: []
