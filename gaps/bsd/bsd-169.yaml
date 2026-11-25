@@ -1,0 +1,25 @@
+id: bsd-169
+problem: bsd
+title: 'Degree bound for shaped sums: over a field, if every r_j with j < J has natural degree at most N, then Σ_{j<J} r_j · g^j has natural degree at most N + J · deg g'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (g : Polynomial K) (J N : ℕ) (r : ℕ → Polynomial K),
+    (∀ j < J, (r j).natDegree ≤ N) →
+    (∑ j ∈ Finset.range J, r j * g ^ j).natDegree ≤ N + J * g.natDegree
+context: |
+  The degree input of the zero count in Stepanov's method for the weak Hasse–Weil bound (the bsd-142 chain).
+  The auxiliary polynomial is Σ_{j<J} r_j · g^j with g = f^c. bsd-160 says a nonzero polynomial with ℓ-fold
+  zeros at a set S has natural degree at least |S|·ℓ. To turn that into a bound on |S| one needs an upper
+  bound on the natural degree of the auxiliary polynomial, and this gap supplies it: each summand has degree
+  at most N + j·deg g, so the whole sum has degree at most N + J·deg g. It is an elementary inequality over
+  any field, with no curve, no prime, and no Hasse bound. It does not use the independence of bsd-167.
+sketch: |
+  Use Polynomial.natDegree_sum_le_of_forall_le with bound N + J · deg g. For j ∈ range J, the summand r_j · g^j
+  has natDegree ≤ natDegree r_j + natDegree (g^j) (Polynomial.natDegree_mul_le), and natDegree (g^j) ≤ j · deg g
+  (Polynomial.natDegree_pow_le). So the summand is at most N + j · deg g ≤ N + J · deg g, using j ≤ J
+  (Nat.mul_le_mul_right and omega).
+dead: []
