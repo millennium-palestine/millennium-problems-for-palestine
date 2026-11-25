@@ -1,0 +1,31 @@
+id: pnp-186
+problem: pvsnp
+title: A run of pairs of the fan-out fold shortens the stack by at most its NAND count
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (ps : List (Bool × Bool)) (t w : List Bool), t.length ≤
+    ((ps.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (t, w, none)).1.length
+      + (ps.filter fun q => q.1 && q.2).length
+context: |
+  Length lower bound for the fan-out fold, the bookkeeping step that a composition of two runs needs
+  (pnp-185 applies to the first run only when the second run still has cells to read). A leaf or a copy
+  adds one cell, a no-op adds none, and a NAND removes at most one cell. So after any run of pairs the
+  stack is at least the starting stack minus the number of NAND pairs. It does not use a machine, a
+  polynomial bound or P, and it does not decide P vs NP.
+sketch: |
+  Induction on the pair list, generalising t and w, using the pending bit clean after a pair (the third
+  conjunct and the pending component of the one-pair step). For one pair, a NAND case lowers the length
+  by at most one (both cells are read with headD, so this holds even on a short stack), and the other
+  three cases do not lower it. The induction step adds the count of the head pair.
+dead: []
