@@ -1,0 +1,29 @@
+id: pnp-124
+problem: pvsnp
+title: Circuit satisfiability with postfix programs and witness leaves is in NP
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-123
+statement: |
+  ∃ L : Lang, InNP L ∧ ∀ x : List Bool, L x = true ↔ ∃ w : List Bool, w.length ≤ x.length ∧
+    (x.foldl (fun (st : List Bool × List Bool) (b : Bool) =>
+      if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2)
+      else (st.2.headD false :: st.1, st.2.drop 1)) ([], w)).1.headD false = true
+context: |
+  Membership side of the Cook–Levin language of pnp-100. The language is satisfiability of a postfix
+  program with witness leaves, as in pnp-123: a program x is accepted when some assignment w of length
+  at most |x| makes the program evaluate to true. The verifier of pnp-123 checks an assignment in
+  polynomial time, and the witness is short, so the language is in NP. This gap does not decide P vs NP
+  and it does not give the hardness half, which is the tableau of pnp-100.
+sketch: |
+  Take L to be the language in the statement, which is well defined because the right hand side is a
+  Prop about x. The verifier V of pnp-123 with the polynomial p = X gives InNP: the witness bound is
+  w.length ≤ x.length, and V (pair x w) is the fold of the statement by the equation of pnp-123. So the
+  two sides agree on every x, by unfolding InNP and the equation of pnp-123.
+dead: []

@@ -1,0 +1,37 @@
+id: pnp-123
+problem: pvsnp
+title: Postfix evaluation with witness leaves, on the pair encoding, is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  ∃ V : Lang, InP V ∧ ∀ x w : List Bool,
+    V (pair x w) = (x.foldl (fun (st : List Bool × List Bool) (b : Bool) =>
+      if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2)
+      else (st.2.headD false :: st.1, st.2.drop 1)) ([], w)).1.headD false
+context: |
+  Verifier for the witness side of pnp-100 (Cook–Levin, as released by pvsnp). pnp-119 evaluates a
+  postfix NAND program whose leaves are the constant true. Here a leaf is a bit of a witness: a false
+  symbol of the program pushes the next bit of w (false when w has run out), and a true symbol pops two
+  values and pushes their NAND, exactly as in pnp-119. The state is a pair: the work stack and the
+  rest of the witness. The verifier reads the pair encoding of x and w, so it must separate the
+  doubled bits of x from w (pnp-120 and pnp-021 show how) and then run the evaluator. This gap does not
+  decide P vs NP. It is the membership part of the circuit-satisfiability language, and pnp-124 turns it
+  into an NP statement.
+sketch: |
+  Three stacks for the work and two for the parts of the input. Scan the doubled bits of x into an
+  accumulator, reversed, as in the prefix machine of pnp-118 with the rule of pnp-045 for the separator,
+  and move the witness w to a second stack, reversed, so that its first bit is on top. Then pop the
+  accumulator to obtain x in program order, and for each symbol apply the step of the state: a false
+  symbol moves the top of the witness stack to the work stack, a true symbol pops two values and pushes
+  their NAND, with missing values read as false. Finally move the top of the work stack to the output
+  and clear the rest, as in pnp-119. Each symbol costs a constant number of machine steps, so the
+  number of steps is at most a fixed multiple of the length of the pair. The equation holds because the
+  machine applies the same fold as the statement, by induction on x with the pair of stacks as the
+  invariant.
+dead: []
