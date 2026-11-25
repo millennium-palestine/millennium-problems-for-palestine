@@ -1,0 +1,37 @@
+id: pnp-148
+problem: pvsnp
+title: Running a fan-out program consumes at most one witness bit per program bit
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  let step := fun (st : List Bool × List Bool × Option Bool) (c : Bool) =>
+    match st.2.2 with
+    | none => (st.1, st.2.1, some c)
+    | some d =>
+      if d then (if c then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+        else (st.1, st.2.1, none))
+      else (if c then (st.1.headD false :: st.1, st.2.1, none)
+        else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))
+  ∀ (p : List Bool) (s : List Bool × List Bool × Option Bool),
+    ∃ k ≤ p.length, (p.foldl step s).2.1 = s.2.1.drop k
+context: |
+  Witness bookkeeping for pnp-141. The statement there asks for a witness w with w.length ≤ (f x).length,
+  so the reduction needs to know how many witness bits a fan-out program can read. Each program bit is
+  one step of the fold, and a step reads at most one witness bit (a leaf pair (false, false) reads the
+  head of the witness and drops it; no other pair touches the witness). So a program of length n leaves
+  at most n bits of the witness unread-consumed, and the witness left over is a suffix of the original
+  one. It does not decide P vs NP.
+sketch: |
+  Induction on p, generalizing s. The empty program gives k = 0. For a cons c :: p, the fold is the fold of
+  p from step s c, and a one-bit lemma shows (step s c).2.1 = s.2.1.drop j for some j ≤ 1 (the witness
+  changes only in the branch (false, false), where it drops one element). Apply the induction hypothesis to
+  step s c and add the two drops with List.drop_drop. The bound k ≤ p.length + 1 from the induction is
+  k ≤ (c :: p).length because j + k ≤ 1 + p.length. Case analysis on the match and the if-branches with
+  simp or split.
+dead: []

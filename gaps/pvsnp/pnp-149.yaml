@@ -1,0 +1,34 @@
+id: pnp-149
+problem: pvsnp
+title: A leaf pair (false, false) pushes the first witness bit and drops it
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  let step := fun (st : List Bool × List Bool × Option Bool) (c : Bool) =>
+    match st.2.2 with
+    | none => (st.1, st.2.1, some c)
+    | some d =>
+      if d then (if c then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+        else (st.1, st.2.1, none))
+      else (if c then (st.1.headD false :: st.1, st.2.1, none)
+        else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))
+  ∀ (stk : List Bool) (b : Bool) (rest : List Bool),
+    [false, false].foldl step (stk, b :: rest, none) = (b :: stk, rest, none)
+context: |
+  The witness-reading gadget of pnp-141. A witness leaf is read by the pair (false, false): the first bit
+  stores the pending false, and the second bit pushes the head of the witness onto the stack and drops it.
+  This is the gadget that turns the NP witness into shared leaves of the program, one leaf per witness bit.
+  It is the leaf-level counterpart of the NAND and copy gadgets of pnp-142 to pnp-144. It does not decide
+  P vs NP.
+sketch: |
+  Unfold the two steps of the fold. The first false with pending none gives (stk, b :: rest, some false).
+  The second false with pending some false takes the else branch with c = false, which pushes
+  (b :: rest).headD false = b onto stk and drops one element of the witness. The result is (b :: stk,
+  rest, none). Proof: intro the three arguments and simp [List.foldl].
+dead: []
