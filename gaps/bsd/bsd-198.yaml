@@ -1,0 +1,31 @@
+id: bsd-198
+problem: bsd
+title: 'Division polynomial vanishes on torsion: for odd m prime to the characteristic, an affine point P with m • P = 0 has ψ_m(x(P)) = 0'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) [W.IsElliptic] (m : ℕ),
+    Odd m → (m : K) ≠ 0 → ∀ (x y : K) (h : W.toAffine.Nonsingular x y),
+    m • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) = 0 →
+      (W.preΨ' m).eval x = 0
+context: |
+  Step (1) of bsd-192, and the hard one: it is the link between the group law and the division polynomial that
+  Mathlib lacks (its DivisionPolynomial directory has the polynomials and their degrees, and the recursion for
+  preΨ', but no lemma about m • P, and no formula for the x-coordinate of nP). For odd m, preΨ' m is ψ_m, so the
+  statement says that the x-coordinate of a nonzero m-torsion point is a root of ψ_m. It is the standard fact about
+  division polynomials (see e.g. Silverman, The Arithmetic of Elliptic Curves, Chapter III), not checked against
+  the text here. Not an hour's work: the proof needs the formula x(nP) = φ_n / ψ_n² by
+  induction on n, which Mathlib does not yet provide. Proposed here so that the missing input is a precise
+  statement. The DecidableEq K hypothesis is the one the Mathlib group law on affine points needs (see
+  Affine/Point.lean, the AddCommGroup instance).
+sketch: |
+  Induction on odd m via the doubling and addition formulas for x(nP) in terms of φ_n and ψ_n (Mathlib has the
+  recursions for φ and ψ, Φ and preΨ' as definitions), or via the classical fact that ψ_n(x) = 0 iff nP = O for
+  odd n. The missing piece is the identity x(nP) · ψ_n(x)² = φ_n(x) (or its nonvanishing form) for points with
+  nP ≠ O, which needs the addition formula of Mathlib's Point.add in terms of coordinates. Two smaller
+  steps if this is split later: (a) x(P + Q) formula for distinct affine points, (b) the doubling formula; each
+  is a computation in Mathlib's Affine.Point. Not claimed in this proposal.
+dead: []

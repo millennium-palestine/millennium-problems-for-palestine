@@ -1,0 +1,23 @@
+id: bsd-197
+problem: bsd
+title: 'Root count: a nonzero polynomial over a field has at most natDegree many zeros, counted as a set'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (f : Polynomial K), f ≠ 0 →
+    Set.ncard {x : K | f.eval x = 0} ≤ f.natDegree
+context: |
+  Step (2) of bsd-192 (the upper bound on the m-torsion). The x-coordinates of the nonzero m-torsion points of an
+  elliptic curve are zeros of the division polynomial preΨ' m (step (1), bsd-198), and this lemma bounds the
+  number of such zeros by its degree (m² − 1)/2 (Mathlib: natDegree_preΨ', once p does not divide m). The
+  statement is over an arbitrary field, not only the algebraic closure, and it is true: a nonzero polynomial has
+  at most as many roots as its degree. Standard; Mathlib's Polynomial.card_roots' is the root bound used.
+sketch: |
+  The zero set equals the finite set f.roots.toFinset as a Set (Polynomial.mem_roots, needs f ≠ 0), so its ncard is
+  the cardinality of f.roots.toFinset (Set.ncard_coe_finset). Then Multiset.toFinset_card_le and
+  Polynomial.card_roots' bound that by natDegree. Checked locally on a scratch file: it compiles with the
+  statement exactly as above (after `classical` for the DecidableEq instance used by toFinset).
+dead: []

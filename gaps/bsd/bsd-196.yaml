@@ -1,0 +1,26 @@
+id: bsd-196
+problem: bsd
+title: 'Same x-coordinate, opposite y: two solutions of a Weierstrass equation over a field with equal x are equal or negatives'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (a₁ a₂ a₃ a₄ a₆ x y₁ y₂ : K),
+    y₁ ^ 2 + a₁ * x * y₁ + a₃ * y₁ = x ^ 3 + a₂ * x ^ 2 + a₄ * x + a₆ →
+    y₂ ^ 2 + a₁ * x * y₂ + a₃ * y₂ = x ^ 3 + a₂ * x ^ 2 + a₄ * x + a₆ →
+    y₂ = y₁ ∨ y₂ = -y₁ - a₁ * x - a₃
+context: |
+  Step (3) of bsd-192 (the upper bound on the m-torsion, which is half of bsd-191). Over a fixed x-coordinate,
+  the affine points of a Weierstrass curve have at most two y-coordinates, and they are swapped by negation,
+  which sends (x, y) to (x, −y − a₁x − a₃). This is the fibre bound that turns a count of x-coordinates into a
+  count of points: at most two points per x. The statement is the Weierstrass equation written out
+  coefficient by coefficient over a field K, so it does not depend on the point type of Mathlib. It is elementary
+  and true; the negation formula is standard (e.g. Silverman, The Arithmetic of Elliptic Curves, Chapter III),
+  not checked against the text here.
+sketch: |
+  Subtract the two equations: (y₂ − y₁)(y₂ + y₁ + a₁x + a₃) = 0 is a linear combination of them. Then mul_eq_zero
+  gives the two cases. In Lean: linear_combination for the product, mul_eq_zero, and linear_combination in each
+  case. Checked locally on a scratch file (it compiles with the statement exactly as above).
+dead: []
