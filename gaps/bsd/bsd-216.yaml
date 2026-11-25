@@ -1,0 +1,24 @@
+id: bsd-216
+problem: bsd
+title: 'Root count of the odd division polynomial: over a field K where the odd integer m is nonzero, the odd division polynomial of m has at most (m² − 1)/2 distinct roots'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) (m : ℕ),
+    Odd m → (m : K) ≠ 0 → (W.preΨ' m).roots.toFinset.card ≤ (m ^ 2 - 1) / 2
+context: |
+  First counting step of bsd-192 (m-torsion upper bound, odd m). For odd m with (m : K) ≠ 0, Mathlib gives
+  natDegree (preΨ' m) = (m² − 1)/2 (WeierstrassCurve.natDegree_preΨ', which needs (m : R) ≠ 0), and a nonzero
+  polynomial has at most as many distinct roots as its degree. The counting uses only the polynomial, not the
+  curve, so this is independent of the hard step bsd-218 (which links the roots to m-torsion points). Together with
+  bsd-217 (two points with the same x-coordinate differ by a sign) and bsd-218, this gives the upper bound
+  m² on the m-torsion, which is bsd-192 for odd m. Not checked against the text here.
+sketch: |
+  (1) preΨ' m ≠ 0 when (m : K) ≠ 0 (WeierstrassCurve.preΨ'_ne_zero or from natDegree_preΨ'_pos); (2) the toFinset of
+  roots has card at most card of the multiset of roots (Multiset.toFinset_card_le); (3) card of roots is at most
+  natDegree (Polynomial.card_roots'); (4) rewrite natDegree with natDegree_preΨ' and use Odd m to simplify the
+  if-then-else (Nat.not_even_iff_odd). Should be well under an hour.
+dead: []
