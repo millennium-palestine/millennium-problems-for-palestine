@@ -1,0 +1,32 @@
+id: pnp-163
+problem: pvsnp
+title: In a tagged run of the fan-out program the consumption arcs are nested or disjoint
+status: open
+imports:
+- Mathlib
+- MPP.Solutions.Pnp162
+open: []
+depends:
+- pnp-162
+statement: |
+  ∀ (x : List Bool) (s : List ℕ × ℕ × Option Bool × List (ℕ × ℕ)),
+    x.foldl (fun (st : List ℕ × ℕ × Option Bool × List (ℕ × ℕ)) (b : Bool) =>
+      match st.2.2.1 with
+      | none => (st.1, st.2.1, some b, st.2.2.2)
+      | some a =>
+        if a then (if b then (st.2.1 :: st.1.drop 2, st.2.1 + 1, none,
+            ((st.1.take 2).filter (· != 0)).map (fun u => (u, st.2.1)) ++ st.2.2.2)
+          else (st.1, st.2.1, none, st.2.2.2))
+        else (if b then (st.1.headD 0 :: st.1, st.2.1, none, st.2.2.2)
+          else (st.2.1 :: st.1, st.2.1 + 1, none, st.2.2.2))) ([], 1, none, []) = s →
+    ∀ p ∈ s.2.2.2, ∀ q ∈ s.2.2.2, p.1 < q.1 → q.1 < p.2 → q.2 ≤ p.2
+context: |
+  Stepping stone for pnp-152, the laminar form of pnp-162. Two consumption arcs (p.1, p.2) and
+  (q.1, q.2) of a tagged fan-out run are nested or disjoint: if p.1 < q.1 < p.2, then the arc q ends
+  no later than p. This is the shape a dynamic programme over the nesting tree of the arcs uses.
+  It is a direct corollary of pnp-162 (no arcs with p.1 < q.1 < p.2 < q.2), so the proof imports
+  the accepted solution of pnp-162. It involves no machine and no P, and does not decide P vs NP.
+sketch: |
+  Immediate from pnp-162: if q.2 > p.2 then p.1 < q.1 < p.2 < q.2 contradicts the non-crossing
+  statement of pnp-162 applied to the pair (p, q). Use `Pnp162.main x s hs p hp q hq` and omega.
+dead: []
