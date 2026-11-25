@@ -1,0 +1,31 @@
+id: bsd-242
+problem: bsd
+title: 'Four distinct roots of the 3-division polynomial: over an algebraically closed field of characteristic not 2 or 3, with nonzero discriminant form, the 3-division polynomial 4-root form has four distinct roots'
+status: open
+imports:
+- Mathlib
+open:
+- Polynomial
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [IsAlgClosed K] (b2 b4 b6 : K), (2 : K) ≠ 0 → (3 : K) ≠ 0 →
+    b2 ^ 3 * b6 - b2 ^ 2 * b4 ^ 2 - 36 * b2 * b4 * b6 + 32 * b4 ^ 3 + 108 * b6 ^ 2 ≠ 0 →
+    ∃ f : Fin 4 → K, Function.Injective f ∧
+      ∀ i, 12 * f i ^ 4 + 4 * b2 * f i ^ 3 + 12 * b4 * f i ^ 2 + 12 * b6 * f i + (b2 * b6 - b4 ^ 2) = 0
+context: |
+  First layer of the ℓ = 3 count |E[3]| ≥ 9 (the case ℓ = 3 of the torsion lower bound bsd-193). The four roots of the
+  3-division polynomial 4ψ₃ = 12x⁴ + 4b2x³ + 12b4x² + 12b6x + (b2b6 − b4²) are distinct when Δ ≠ 0, where the form in the
+  statement is Q = −4Δ. The proof is the separability certificate of bsd-239 lifted to K[X]: the polynomial and its derivative
+  are coprime, since 3Q = b1·P′ − 3a1·P, so the roots are nodup (Mathlib: nodup_roots), and an algebraically closed
+  field gives card = degree = 4 (Mathlib: splits_iff_card_roots). Then Finset.equivFinOfCardEq gives the function f.
+  The hypotheses 2 ≠ 0 and 3 ≠ 0 are needed (2 for the leading-coefficient degree computation, 3 for the certificate).
+  Companion gaps needed for the full count: bsd-240 (2P = ±P, so 3P = 0), bsd-241 (no 2-torsion root), and the
+  lifts to points of the curve over the closure.
+sketch: |
+  Work in K[X] with P := 4ψ₃ and Q the discriminant form. (1) natDegree P = 4 (compute_degree!, leading coefficient 12 ≠ 0).
+  (2) derivative P = 48X³ + 12b2X² + 24b4X + 12b6 (derivative_C_mul_X_pow, then norm_num and ring). (3) Bezout certificate:
+  C(3Q) = b1·P′ − C3·a1·P (ring after pushing C through map_add, map_mul, map_pow, map_ofNat), with a1, b1 the
+  explicit polynomials of bsd-239, and C(3Q)·C((3Q)⁻¹) = 1, so IsCoprime P P′ and P.Separable. (4) nodup_roots, then
+  card roots = 4 (splits_iff_card_roots, IsAlgClosed.splits). (5) finset of roots of card 4 gives Fin 4 → K
+  (Finset.equivFinOfCardEq), injective and each value is a root (mem_roots, eval_add/eval_mul).
+dead: []
