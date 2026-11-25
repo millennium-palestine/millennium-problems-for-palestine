@@ -1,0 +1,25 @@
+id: bsd-232
+problem: bsd
+title: 'Discriminant of the 2-division cubic: for a Weierstrass curve over a commutative ring, the discriminant of 4x³ + b₂x² + 2b₄x + b₆ equals 16Δ'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (R : Type) [CommRing R] (W : WeierstrassCurve R),
+    W.b₂ ^ 2 * (2 * W.b₄) ^ 2 - 4 * 4 * (2 * W.b₄) ^ 3 - 4 * W.b₂ ^ 3 * W.b₆ - 27 * 4 ^ 2 * W.b₆ ^ 2 +
+      18 * 4 * W.b₂ * (2 * W.b₄) * W.b₆ = 16 * W.Δ
+context: |
+  Algebraic step of the lower bound on the 2-torsion, which is the case ℓ = 2 of the torsion count bsd-193
+  (m-torsion over the algebraic closure has at least m² points when p does not divide m). The 2-torsion points
+  are the point at infinity and the affine points (x, y) with 2y + a₁x + a₃ = 0 and 4x³ + b₂x² + 2b₄x + b₆ = 0
+  (bsd-231 derives this cubic). Its discriminant, written with the general formula b²c² − 4ac³ − 4b³d − 27a²d² + 18abcd
+  for a = 4, b = b₂, c = 2b₄, d = b₆, is 16Δ, where Δ is the discriminant of the curve. Since Δ is a unit on an elliptic
+  curve, the cubic has distinct roots, which bsd-233 uses. The identity is a consequence of 4b₈ = b₂b₆ − b₄² and
+  Δ = −b₂²b₈ − 8b₄³ − 27b₆² + 9b₂b₄b₆, so it is a polynomial identity over ℤ and holds over every commutative ring.
+sketch: |
+  Unfold W.Δ and the b-invariants (WeierstrassCurve.Δ, b₂, b₄, b₆, b₈ are definitions in Mathlib; use simp only with them,
+  or the lemmas W.b₂ = a₁^2 + 4a₂ etc.), then close with ring. If ring does not close it directly, first rewrite b₈ by its
+  definition and check the identity with ring on the resulting polynomial in a₁, a₂, a₃, a₄, a₆.
+dead: []

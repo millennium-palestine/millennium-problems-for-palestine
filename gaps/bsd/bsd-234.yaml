@@ -1,0 +1,30 @@
+id: bsd-234
+problem: bsd
+title: 'Two-torsion lower bound: an elliptic curve over an algebraically closed field of characteristic not 2 has at least 4 points killed by 2'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-232
+- bsd-233
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] [IsAlgClosed K] (W : WeierstrassCurve K) [W.IsElliptic],
+    (2 : K) ≠ 0 → 4 ≤ Nat.card {P : W.toAffine.Point // (2 : ℕ) • P = 0}
+context: |
+  The prime-order case ℓ = 2 of the torsion lower bound bsd-193 (m-torsion over the algebraic closure has at least m²
+  points when p does not divide m). Over an algebraically closed field of characteristic not 2, the 2-torsion of an
+  elliptic curve is {O} together with the affine points (x, −(a₁x + a₃)/2) where x is a root of the 2-division cubic
+  4x³ + b₂x² + 2b₄x + b₆. That cubic has three distinct roots (bsd-233 with bsd-232, since its discriminant is 16Δ ≠ 0,
+  because Δ is a unit on an elliptic curve). Each root gives a nonsingular point (the curve equation follows from the
+  cubic by the identity 4·E = (2y + a₁x + a₃)² − F(x), and nonsingularity from equation_iff_nonsingular, since Δ ≠ 0).
+  Distinct x-coordinates give distinct points, and none is O, so there are at least 4 points. The finiteness of the set
+  (needed for Nat.card to see it, and given by bsd-231) is part of the statement.
+  The statement is true.
+sketch: |
+  Finiteness: the map P ↦ x-coordinate (with O ↦ none) is injective on the 2-torsion into Option of the roots of the
+  cubic, as in the proof of bsd-231, so the set is finite. Lower bound: the three distinct roots x₁, x₂, x₃ of
+  bsd-233 give three affine 2-torsion points (x_i, −(a₁x_i + a₃)/2) with nonsingularity from
+  WeierstrassCurve.Affine.equation_iff_nonsingular, and the point O, four distinct points. Count them with a Finset or
+  Nat.card_le_card_of_injective from Fin 4. Use Affine.Point.some.injEq for distinctness.
+dead: []
