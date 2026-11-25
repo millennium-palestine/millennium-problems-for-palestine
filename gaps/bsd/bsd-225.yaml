@@ -1,0 +1,30 @@
+id: bsd-225
+problem: bsd
+title: 'Nonvanishing of the universal elliptic divisibility sequence: for every nonzero integer k, normEDS in the three variables b, c, d is a nonzero polynomial'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ k : ℤ, k ≠ 0 →
+    normEDS (MvPolynomial.X 0 : MvPolynomial (Fin 3) ℤ) (MvPolynomial.X 1) (MvPolynomial.X 2) k ≠ 0
+context: |
+  Needed to cancel the factor Y(m) = N(m) N(m+1) N(m-1) in the induction that proves the n = 3 bracket (bsd-222)
+  in the universal domain MvPolynomial (Fin 3) ℤ, and then transfers it to W.ψ. Without it the induction
+  only gives the bracket where Y(m) happens to be nonzero, and torsion points of a specific curve give no
+  such guarantee. The statement is true: the leading coefficient of the division polynomial in the variable x is
+  n (up to the parity normalisation), which is nonzero in characteristic zero. It is a split target of the
+  universal route, separate from bsd-222 itself.
+sketch: |
+  Transfer from the universal ring to a curve over ℚ, which is a domain of characteristic zero. Let W be any
+  WeierstrassCurve over ℚ (for instance y² = x³ + x + 1). Apply MvPolynomial.aeval with the three values
+  ![W.ψ₂, C W.Ψ₃, C W.preΨ₄] into Polynomial (Polynomial ℚ), exactly as in Bsd214.main, and use map_normEDS to get
+  that the image of normEDS X0 X1 X2 k is W.ψ k. If normEDS X0 X1 X2 k were 0, then W.ψ k would be 0.
+  For k ≠ 0 it is not: for odd k, W.ψ k is the polynomial C (Ψ k) with leading coefficient k by
+  WeierstrassCurve.leadingCoeff_preΨ (needs (k : ℚ) ≠ 0). The even case is the open part of this sketch: W.ψ (2m) is
+  not a multiple of a known nonzero polynomial in Mathlib, so the argument must show it directly (for example from
+  the even recursion ψ_even at the right index, or from the odd case by an induction). Negative k follow from
+  W.ψ_neg. Check the exact name of the normEDS-to-W.ψ lemma in Mathlib
+  (AlgebraicGeometry/EllipticCurve/DivisionPolynomial/Basic.lean, around line 439) before using it.
+dead: []

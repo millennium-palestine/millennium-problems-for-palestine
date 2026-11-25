@@ -1,0 +1,42 @@
+id: bsd-224
+problem: bsd
+title: 'Telescoping of the n = 3 bracket: with Y(m) = N(m) N(m+1) N(m-1) and B(m) the bracket of bsd-222 written for normEDS, Y(m) B(m+1) = Y(m+1) B(m) whenever the n = 2 relations hold at m and m+1'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (A : Type) [CommRing A] (b c d : A) (m : ℤ),
+    normEDS b c d (m + 2) * normEDS b c d (m - 2) - b ^ 2 * normEDS b c d (m + 1) * normEDS b c d (m - 1)
+        + c * normEDS b c d m ^ 2 = 0 →
+    normEDS b c d (m + 3) * normEDS b c d (m - 1) - b ^ 2 * normEDS b c d (m + 2) * normEDS b c d m
+        + c * normEDS b c d (m + 1) ^ 2 = 0 →
+    normEDS b c d m * normEDS b c d (m + 1) * normEDS b c d (m - 1) *
+        (normEDS b c d 4 * (normEDS b c d (m + 1) * normEDS b c d (m + 2) * normEDS b c d m)
+          + b ^ 3 * (normEDS b c d (m + 1) * normEDS b c d (m - 1) * normEDS b c d (m + 3))
+          - b * c * (normEDS b c d m ^ 2 * normEDS b c d (m + 3)
+            + normEDS b c d (m - 1) * normEDS b c d (m + 2) ^ 2)) =
+      normEDS b c d (m + 1) * normEDS b c d (m + 2) * normEDS b c d m *
+        (normEDS b c d 4 * (normEDS b c d m * normEDS b c d (m + 1) * normEDS b c d (m - 1))
+          + b ^ 3 * (normEDS b c d m * normEDS b c d (m - 2) * normEDS b c d (m + 2))
+          - b * c * (normEDS b c d (m - 1) ^ 2 * normEDS b c d (m + 2)
+            + normEDS b c d (m - 2) * normEDS b c d (m + 1) ^ 2))
+context: |
+  Step toward bsd-222 (the n = 3 bracket) and bsd-223. Write N = normEDS b c d and Y(m) = N(m) N(m+1) N(m-1).
+  The bracket of bsd-222, after the substitution N(4) = d b, reads N(4) Y(m) + b^3 N(m) N(m-2) N(m+2) - b c (N(m-1)^2 N(m+2) + N(m-2) N(m+1)^2),
+  so the statement is the cross-multiplied form of "the bracket divided by Y(m) is independent of m".
+  The key point is that N(4) cancels, so the identity is free of d. It is a consequence of the n = 2 relations
+  (bsd-214) only, with no division: the two hypotheses are exactly the n = 2 relation at m and at m + 1.
+  It is true: the difference of the two sides is -b times (Y(m) X(m+1) - Y(m+1) X(m)), where X(m) is the bracket
+  with N(4) removed and divided by -b, and this vanishes by the cofactors in the sketch (checked by computer algebra
+  for m from -3 to 3, as a polynomial identity in the atoms N(k), b, c).
+sketch: |
+  Pure linear_combination, no cancellation. Write h1 for the first hypothesis (the n = 2 relation at m)
+  and h2 for the second (at m + 1). The goal is LHS = RHS, and LHS - RHS equals
+    b * N m * N (m+1) * N (m+2) * N (m-2) * h2 - b * N m * N (m+1) * N (m+3) * N (m-1) * h1
+  as polynomials in the atoms N k, N 4, b, c (N 4 cancels). So try
+    linear_combination (b * normEDS b c d m * normEDS b c d (m + 1) * normEDS b c d (m + 2) * normEDS b c d (m - 2)) * h2
+      - (b * normEDS b c d m * normEDS b c d (m + 1) * normEDS b c d (m + 3) * normEDS b c d (m - 1)) * h1
+  and let ring close it. If the sign is off, flip both coefficients.
+dead: []
