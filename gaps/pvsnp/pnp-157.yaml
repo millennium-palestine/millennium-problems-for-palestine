@@ -1,0 +1,33 @@
+id: pnp-157
+problem: pvsnp
+title: The witness left after a run of pairs is the witness with one bit dropped per leaf pair
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (ps : List (Bool × Bool)) (s w : List Bool),
+    ((ps.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (s, w, none)).2.1
+      = w.drop (ps.countP fun q => !q.1 && !q.2)
+context: |
+  The witness half of the fan-out program of pnp-133, for arbitrary pairs. A pair (false, false) is a
+  leaf and consumes one witness bit; the other three pairs leave the witness alone. So after any run
+  of pairs the unused witness is the old witness with one bit dropped for each leaf pair. This is the
+  general form of the witness part of pnp-155, which covers only runs whose instructions are all
+  leaves or copies. It is the bookkeeping a dynamic programme needs to know which witness bits a
+  segment of the program uses. It does not involve a machine, a polynomial or P.
+sketch: |
+  Induction on ps, generalising s and w. For a cons, split the pair into its four cases with cases on
+  both bits. In the three cases other than (false, false) the witness is unchanged and the count of
+  leaf pairs does not change, since the predicate fails on the pair. In the leaf case the witness is
+  w.drop 1 and the predicate holds, so the count is 1 + the count of the rest, and List.drop_drop
+  with Nat.add_comm closes the goal by the induction hypothesis applied to w.drop 1.
+dead: []

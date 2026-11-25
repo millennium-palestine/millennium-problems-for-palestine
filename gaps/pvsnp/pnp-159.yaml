@@ -1,0 +1,59 @@
+id: pnp-159
+problem: pvsnp
+title: The four pair instructions of the fan-out program act on the stack and witness as a fixed table
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (s w : List Bool),
+    ([false, false].foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (s, w, none)
+      = (w.headD false :: s, w.drop 1, none))
+    ∧ ([false, true].foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (s, w, none)
+      = (s.headD false :: s, w, none))
+    ∧ ([true, true].foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (s, w, none)
+      = ((!(s.headD false && (s.drop 1).headD false)) :: s.drop 2, w, none))
+    ∧ ([true, false].foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (s, w, none)
+      = (s, w, none))
+context: |
+  The transition table of the fan-out program of pnp-133, one row per pair. The pair (false, false)
+  is a leaf: it pushes the first witness bit and drops it. The pair (false, true) is a copy: it pushes
+  a copy of the top. The pair (true, true) is a NAND: it pops the top two and pushes their negated
+  conjunction. The pair (true, false) is a no-op. These four rows are the only transitions that the
+  lemmas pnp-154, pnp-155, pnp-157 and pnp-158 use, and a dynamic programme over the program would
+  use them as its per-pair step function. Each row is a definitional computation. It involves no
+  machine, no polynomial and no P.
+sketch: |
+  Each conjunct is closed by rfl: the pending state after the first bit is some a, and the match and
+  if-branches reduce on the constructor a and on the second bit b, with a and b concrete. The stack
+  and witness arguments stay symbolic, so the result is the stated tuple.
+dead: []
