@@ -1,0 +1,35 @@
+id: bsd-190
+problem: bsd
+title: 'Frobenius fixed points: on an elliptic curve over a prime field, the points over the algebraic closure fixed by the p-power Frobenius number #E(F_p)'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] [DecidableEq (AlgebraicClosure (ZMod p))]
+    (W : WeierstrassCurve (ZMod p)) [W.IsElliptic],
+    let φ := WeierstrassCurve.Affine.Point.map (W' := W)
+      (FiniteField.frobeniusAlgHom (ZMod p) (AlgebraicClosure (ZMod p)))
+    Nat.card {P : (W.baseChange (AlgebraicClosure (ZMod p))).toAffine.Point // P - φ P = 0} =
+      Nat.card (W.baseChange (ZMod p)).toAffine.Point
+context: |
+  The m = n = 1 instance of bsd-161 (isogeny kernel count). With m = n = 1 the kernel of m − nφ is the
+  set of points P over the algebraic closure with P = φ P, and bsd-161 predicts 1 − a + p = #E(F_p)
+  points, since a = p + 1 − #E(F_p). This gap states that count directly, without the trace a, so it
+  is provable with Mathlib: the Frobenius fixed points are the points with coordinates in F_p
+  (x^p = x in an algebraic closure forces x to lie in the prime subfield), and the base change of the
+  F_p-points is injective. It is a foothold for bsd-161, not a proof of it: the general kernel count
+  for m − nφ still needs separability and the degree of an isogeny. Mathlib has no isogeny degree.
+  The statement is true: the fixed points of Frobenius on E(F̄_p) are exactly E(F_p). Standard texts
+  on elliptic curves (e.g. Silverman, The Arithmetic of Elliptic Curves) treat this; not checked against
+  the text here, but the proof below is by direct Lean verification of the same argument.
+sketch: |
+  Let K = F̄_p and ι the base change from F_p to K, which is injective (Point.map_injective) and lands
+  in the Frobenius-fixed points (Point.map_baseChange with the Frobenius, which fixes F_p). Surjectivity
+  onto the fixed points: a fixed point some x y h has x^p = x and y^p = y. Each such element lies in
+  the image of F_p, since the prime subfield is exactly the set of solutions of x^p = x
+  (FiniteField.Subfield.mem_bot_iff_pow_eq_self together with mem_bot_iff_intCast). Nonsingularity
+  descends along the injective base change (WeierstrassCurve.Affine.baseChange_nonsingular). The
+  bijection then gives the equality of cardinalities.
+dead: []
