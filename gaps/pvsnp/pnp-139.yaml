@@ -1,0 +1,27 @@
+id: pnp-139
+problem: pvsnp
+title: Folding the window bits over the indices gives the list of windows
+status: open
+imports:
+- Mathlib
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  ∀ (g : List Bool → Bool) (x c : List Bool) (k : ℕ),
+    (List.range k).foldl (fun out i => out ++ [g ((x.drop i).take c.length)]) [] =
+      List.ofFn (fun i : Fin k => g ((x.drop (i : ℕ)).take c.length))
+context: |
+  Bridge between the iteration of the windowed step and the list of windows. pnp-138 gives one
+  polynomial-time step that appends the next window bit to the output, and pnp-137 needs the
+  output after k steps to be the list of all k windows. This gap is the identity behind that:
+  appending the bit of window i in the order i = 0, 1, …, k-1 gives the list of windows in the
+  order of List.ofFn. It is a statement about lists only, with no machine, and it does not decide
+  P vs NP.
+sketch: |
+  Induction on k. For k = 0 both sides are empty. For k + 1, List.range_succ turns the fold into
+  appending the bit of window k to the fold over range k, and List.ofFn_succ' gives the same
+  append for the right-hand side. The induction hypothesis then closes the goal, since the two
+  sides agree on the last element.
+dead: []
