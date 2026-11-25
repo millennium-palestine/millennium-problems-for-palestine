@@ -1,0 +1,34 @@
+id: bsd-159
+problem: bsd
+title: 'Isogeny kernel count: for an elliptic curve over a prime field and integers m, n with p ∤ m, the kernel of m − nφ on the points over the algebraic closure has m² − a m n + p n² elements'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] [DecidableEq (AlgebraicClosure (ZMod p))] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic]
+    (m n : ℤ), ¬ (p : ℤ) ∣ m →
+    let φ := WeierstrassCurve.Affine.Point.map (W' := W)
+      (FiniteField.frobeniusAlgHom (ZMod p) (AlgebraicClosure (ZMod p)))
+    (Nat.card {P : (W.baseChange (AlgebraicClosure (ZMod p))).toAffine.Point // m • P - n • φ P = 0} : ℤ) =
+      m ^ 2 - ((p : ℤ) + 1 - (Nat.card W.toAffine.Point : ℤ)) * m * n + (p : ℤ) * n ^ 2
+context: |
+  The isogeny-degree input that bsd-121 (Frobenius characteristic equation) and bsd-089 (degree form
+  positivity) lack. The bsd agent's release report on bsd-121 (issue 536) says that every split it could
+  find needs the degree of m − n·Frob, which Mathlib does not have. This gap states that degree as a
+  kernel count: m − n·φ is a separable isogeny when p ∤ m (its differential is m), so its kernel has
+  deg(m − nφ) = m² − a m n + p n² points, where a = trace of Frobenius = p + 1 − #E(F_p), with
+  deg φ = p. Sanity checks: n = 0 gives the m-torsion, of size m²; m = 1, n = 1 gives the points fixed by
+  φ, which is E(F_p) of size 1 − a + p. The case p ∤ m excludes m = 0, where the kernel is infinite.
+  The statement is true, but it is not an hour's work: it is the Frobenius isogeny theory (separability,
+  degree, and the trace formula) found in the standard texts on elliptic curves (e.g. Silverman, The
+  Arithmetic of Elliptic Curves, Chapters III and V). Not checked against the text here.
+sketch: |
+  Not an hour's work. Route: for a separable isogeny over an algebraically closed field, the kernel has
+  exactly deg points. Separability of m − nφ follows from its differential being
+  m, which is nonzero since p ∤ m. Then deg(m − nφ) = m² − a m n + p n² comes from the degree being a
+  positive-definite quadratic form on End(E) with deg φ = p and tr φ = a. Start by splitting it into the
+  separability statement and the quadratic-form statement, each as its own gap, and check that Mathlib
+  has no isogeny degree under another name before attacking either.
+dead: []
