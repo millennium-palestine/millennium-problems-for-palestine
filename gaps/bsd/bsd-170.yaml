@@ -1,0 +1,30 @@
+id: bsd-170
+problem: bsd
+title: 'Degree form positivity off multiples of p suffices: if m² − a m n + p n² is nonnegative for all integers m, n with p ∤ m, then it is nonnegative for all integers m, n'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (a : ℤ),
+    (∀ m n : ℤ, ¬ (p : ℤ) ∣ m → 0 ≤ m ^ 2 - a * m * n + (p : ℤ) * n ^ 2) →
+      ∀ m n : ℤ, 0 ≤ m ^ 2 - a * m * n + (p : ℤ) * n ^ 2
+context: |
+  Splits the degree-form positivity of bsd-089 (the input of bsd-032, which gives Hasse's bound from it). With a = p + 1 − #E(F_p),
+  the Frobenius degree argument (Silverman V.1.1) only controls the form m − nπ for m prime to p: its degree is the kernel count of
+  m − nπ, which is m² − a m n + p n² when p ∤ m (this is the isogeny input of bsd-161). This gap removes the case p ∣ m by pure
+  algebra over ℤ, so what remains open for bsd-089 is exactly the case p ∤ m.
+  Proof idea: 4(m² − a m n + p n²) = (2m − a n)² − D n² with D = a² − 4p. If the form is negative at some (m₀, n₀), then D n₀² > 0,
+  so D ≥ 1. Take n = 4 and m = 2a or 2a + 1, whichever is prime to p (both cannot be divisible by p ≥ 2). The value is
+  m² − 4 a m + 16 p = e² − 4D with e = m − 2a ∈ {0, 1}, which is negative, contradicting the hypothesis at (m, 4).
+  It is true and elementary; it does not use isogenies or Hasse's bound.
+sketch: |
+  intro p _ a H m n. By contradiction, assume m² − a m n + p n² < 0 (lt_of_not_ge). Then 1 ≤ a² − 4p: multiply the
+  assumption by 4, use 4(m² − a m n + p n²) = (2m − a n)² − (a² − 4p) n², so (a² − 4p) n² > 0 and n ≠ 0 gives a² − 4p > 0
+  (nlinarith with sq_nonneg (2 * m - a * n) and sq_nonneg n, or pos_of_mul_pos ...). Then case on (p : ℤ) ∣ 2 * a.
+  If not, apply H (2 * a) 4: it gives 0 ≤ −4(a² − 4p) (ring identity: (2a)² − a(2a)·4 + 16p), contradicting 1 ≤ a² − 4p.
+  If it divides, then ¬ (p : ℤ) ∣ 2 * a + 1 (otherwise p ∣ 1 by dvd_sub, impossible since p ≥ 2), and apply H (2 * a + 1) 4:
+  it gives 0 ≤ 1 − 4(a² − 4p), contradicting the same bound. Use Int.natCast_dvd / Int.natCast_dvd_natCast, Int.eq_one_of_dvd_one
+  and Nat.Prime.two_le for the divisibility step, and linear_combination / nlinarith for the expansions.
+dead: []
