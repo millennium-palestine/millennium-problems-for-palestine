@@ -1,0 +1,37 @@
+id: bsd-270
+problem: bsd
+title: 'Sum of the two x-coordinates of P + Q and P − Q: for affine points P = (x₁, y₁) and Q = (x₂, y₂) with x₁ ≠ x₂, (x₁ − x₂)² (x(P + Q) + x(P − Q)) = 2x₁x₂(x₁ + x₂) + b₂x₁x₂ + b₄(x₁ + x₂) + b₆'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K)
+    (x₁ y₁ x₂ y₂ x₃ y₃ x₄ y₄ : K)
+    (h₁ : W.toAffine.Nonsingular x₁ y₁) (h₂ : W.toAffine.Nonsingular x₂ y₂)
+    (h₃ : W.toAffine.Nonsingular x₃ y₃) (h₄ : W.toAffine.Nonsingular x₄ y₄)
+    (h₂' : W.toAffine.Nonsingular x₂ (WeierstrassCurve.Affine.negY W x₂ y₂)),
+    x₁ ≠ x₂ →
+    (WeierstrassCurve.Affine.Point.some x₁ y₁ h₁ + WeierstrassCurve.Affine.Point.some x₂ y₂ h₂ :
+        W.toAffine.Point) = WeierstrassCurve.Affine.Point.some x₃ y₃ h₃ →
+    (WeierstrassCurve.Affine.Point.some x₁ y₁ h₁ +
+        WeierstrassCurve.Affine.Point.some x₂ (WeierstrassCurve.Affine.negY W x₂ y₂) h₂' :
+        W.toAffine.Point) = WeierstrassCurve.Affine.Point.some x₄ y₄ h₄ →
+    (x₁ - x₂) ^ 2 * (x₃ + x₄) =
+      2 * x₁ * x₂ * (x₁ + x₂) + W.b₂ * x₁ * x₂ + W.b₄ * (x₁ + x₂) + W.b₆
+context: |
+  The three-term relation for x-coordinates that drives the induction behind bsd-218: with x(nP) known, it gives
+  x((n+1)P) + x((n−1)P) in terms of x(nP) and x(P), once the x-coordinate of P ± nP is divided by (x(P) − x(nP))².
+  It is the x-coordinate form of the elliptic net addition law used in bsd-210. Here P ± Q are written as the two
+  sums of P with Q and with −Q = (x₂, −y₂ − a₁x₂ − a₃). Only the affine case x₁ ≠ x₂ is needed; the other cases
+  are the doubling and 2-torsion cases handled in bsd-268. Derivation: with slopes λ = (y₁ − y₂)/d and
+  μ = (y₁ − y₂′)/d, d = x₁ − x₂, one has d²(x₃ + x₄) = (y₁ − y₂)² + (y₁ − y₂′)² + a₁d(2y₁ − y₂ − y₂′) − 2(a₂ + x₁ + x₂)d²,
+  and modulo the two curve equations this equals 2x₁x₂(x₁ + x₂) + b₂x₁x₂ + b₄(x₁ + x₂) + b₆. The reduction is
+  checked by sympy: the difference is 2·E(x₁, y₁) + 2·E(x₂, y₂), where E is the curve equation. Not checked against a
+  Lean build here.
+sketch: |
+  Rewrite both sums with Mathlib's add_of_X_ne (x₁ ≠ x₂ makes both sums affine), take the injective parts, unfold
+  slope_of_X_ne, addX and negY, clear the denominator d with field_simp, then close with
+  linear_combination 2 * E₁ + 2 * E₂ where E₁, E₂ are the two curve equations (via equation_iff).
+dead: []

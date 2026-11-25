@@ -1,0 +1,31 @@
+id: bsd-268
+problem: bsd
+title: 'Doubling formula for the x-coordinate: if the double of an affine point (x, y) is the affine point (x'', y''), then (x − x'') times the 2-division cubic at x equals the 3-division polynomial at x'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) (x y x' y' : K)
+    (h : W.toAffine.Nonsingular x y) (h' : W.toAffine.Nonsingular x' y'),
+    (WeierstrassCurve.Affine.Point.some x y h + WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) =
+      WeierstrassCurve.Affine.Point.some x' y' h' →
+    (x - x') * (4 * x ^ 3 + W.b₂ * x ^ 2 + 2 * W.b₄ * x + W.b₆) =
+      3 * x ^ 4 + W.b₂ * x ^ 3 + 3 * W.b₄ * x ^ 2 + 3 * W.b₆ * x + W.b₈
+context: |
+  The n = 2 step of the induction behind bsd-218 (odd-order torsion lies on the roots of the division polynomial).
+  Writing ψ₂ = 2y + a₁x + a₃, the Mathlib definitions give Ψ₂Sq = 4x³ + b₂x² + 2b₄x + b₆ = ψ₂² on the curve, and
+  φ₂ = xψ₂² − ψ₃ with ψ₃ = Ψ₃ = 3x⁴ + b₂x³ + 3b₄x² + 3b₆x + b₈. So the statement is x(2P)·ψ₂² = φ₂, written without
+  division. It is the first instance of the formula x(nP) ψ_n² = φ_n that the induction for bsd-218 needs. Whenever
+  2P is an affine point, the slope is ℓ = (3x² + 2a₂x + a₄ − a₁y)/(2y + a₁x + a₃), and the statement follows from
+  Mathlib's add_self_of_Y_ne and the formula addX, after clearing denominators with the curve equation. The polynomial
+  identity used is checked by computer algebra (sympy: the numerator equals (b₂x + b₄ + 6x²)² times the Weierstrass
+  equation). Not checked against a Lean build here.
+sketch: |
+  Unfold the sum with Mathlib's add_self_of_Y_ne (the hypothesis y ≠ negY x y is forced by the equation of the
+  sum being an affine point, since the double of a 2-torsion point is 0). Then x'' = addX x x ℓ with ℓ = slope, so
+  x'' = ℓ² + a₁ℓ − a₂ − 2x. Clear the denominator 2y + a₁x + a₃, then close with linear_combination using the
+  equation h.1 with coefficient (b₂x + b₄ + 6x²)², after checking the normal form in Lean. The earlier gap bsd-269
+  supplies the identity (2y + a₁x + a₃)² = 4x³ + b₂x² + 2b₄x + b₆ on the curve.
+dead: []

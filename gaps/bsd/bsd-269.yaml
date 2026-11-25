@@ -1,0 +1,24 @@
+id: bsd-269
+problem: bsd
+title: 'Two-division identity: for a nonsingular affine point (x, y) on a Weierstrass curve, (2y + a₁x + a₃)² = 4x³ + b₂x² + 2b₄x + b₆'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (W : WeierstrassCurve K) (x y : K),
+    W.toAffine.Nonsingular x y →
+    (2 * y + W.a₁ * x + W.a₃) ^ 2 = 4 * x ^ 3 + W.b₂ * x ^ 2 + 2 * W.b₄ * x + W.b₆
+context: |
+  The identity ψ₂² = Ψ₂Sq in the coordinate ring, used in bsd-268 (doubling formula) and in the induction for bsd-218.
+  It is the completing-the-square identity: 4(y² + a₁xy + a₃y) = (2y + a₁x + a₃)² − (a₁x + a₃)² ... and the curve equation
+  y² + a₁xy + a₃y = x³ + a₂x² + a₄x + a₆ turns the right-hand side into 4x³ + b₂x² + 2b₄x + b₆ with
+  b₂ = a₁² + 4a₂, b₄ = 2a₄ + a₁a₃, b₆ = a₃² + 4a₆. Mathlib has the same identity as a lemma about Ψ₂Sq in
+  Mathlib/AlgebraicGeometry/EllipticCurve/DivisionPolynomial/Basic.lean (ψ₂_sq, C_Ψ₂Sq), but only as an identity in the
+  coordinate ring, not as an equation on the points of K. Not checked against a Lean build here.
+sketch: |
+  Use the equation h.1 of Nonsingular (the Equation of the affine curve, as Mathlib's Affine.Nonsingular.1), unfold b₂,
+  b₄, b₆ (Mathlib's WeierstrassCurve.b₂ etc. are the defining formulas), and close with linear_combination (4) * h.1
+  (up to sign, to be fixed in Lean).
+dead: []
