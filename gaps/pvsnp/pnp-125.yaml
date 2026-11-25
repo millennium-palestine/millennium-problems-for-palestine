@@ -1,0 +1,35 @@
+id: pnp-125
+problem: pvsnp
+title: Appending a fixed bit to the output of a polynomial-time map is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-003
+- pnp-004
+- pnp-006
+- pnp-060
+statement: |
+  ∀ (T : List Bool → List Bool) (b : Bool),
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) T) →
+    ∃ T' : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) T') ∧
+      ∀ x : List Bool, T' x = T x ++ [b]
+context: |
+  Gadget lemma for building the output of a reduction string by string. A Cook–Levin style
+  reduction writes its output as a concatenation of fixed-width blocks, and each block ends with a
+  bit that is fixed by the block shape. Appending one fixed bit after a polynomial-time map must
+  stay polynomial-time, otherwise the block builder is not polynomial. It is a structural lemma
+  about string outputs and does not decide P vs NP.
+sketch: |
+  Take the constant language D := fun _ => !b. It is in P: for b = false it is the constant-true
+  language of pnp-003, and for b = true it is the complement of the constant-true language,
+  in P by pnp-004 applied to pnp-003. The map s of pnp-060 for D satisfies
+  s z = z ++ [!D z] = z ++ [b] for every z, and it is polynomial-time. Compose T with s by pnp-006:
+  T' := s ∘ T satisfies T' x = s (T x) = T x ++ [b]. The equation is by unfolding the definition
+  of D and simplifying !!b.
+dead: []

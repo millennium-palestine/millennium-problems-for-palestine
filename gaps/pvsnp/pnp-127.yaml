@@ -1,0 +1,33 @@
+id: pnp-127
+problem: pvsnp
+title: Concatenating the outputs of two polynomial-time maps is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-006
+- pnp-026
+- pnp-052
+statement: |
+  ∀ f g : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) →
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) g) →
+    ∃ h : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) h) ∧
+      ∀ x : List Bool, h x = f x ++ g x
+context: |
+  Gadget lemma for a reduction that writes its output as a concatenation of blocks: each block is
+  a polynomial-time map of the input, and the whole output is their concatenation. Pair encoding
+  (pnp-026) followed by the concatenation of the two components of a pair (pnp-052) gives this
+  directly, so the block builder stays polynomial when its number of blocks is polynomial.
+  It is a structural lemma and does not decide P vs NP.
+sketch: |
+  By pnp-026 there is a polynomial-time h0 with h0 z = pair (f z) (g z). By pnp-052 there is a
+  polynomial-time C with C (pair u w) = u ++ w. Compose by pnp-006: h := C ∘ h0 is polynomial-time
+  and h x = C (pair (f x) (g x)) = f x ++ g x. The composition is the only machine-level step, and
+  it is already covered by the solved gaps pnp-006, pnp-026 and pnp-052.
+dead: []
