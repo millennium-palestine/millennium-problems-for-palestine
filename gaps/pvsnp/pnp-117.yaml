@@ -1,0 +1,28 @@
+id: pnp-117
+problem: pvsnp
+title: Dropping the first symbol of a binary string is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  ∃ T : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) T) ∧
+    ∀ x : List Bool, T x = x.tail
+context: |
+  Drop-one primitive for the window step of the Cook–Levin tableau of pnp-100. Iterating the window
+  map of pnp-115 needs to move from one window to the next, which means removing the first symbol of
+  the current suffix. This gap is the one-symbol case of that move. It is the same machine as the
+  unpadding map of pnp-045 without its leading loop: pop one symbol, then reverse the rest twice
+  through the accumulator stack. It is a structural lemma; it does not decide P vs NP.
+sketch: |
+  Three control labels, as in pnp-045. Label 0 pops the input once and goes to label 1 (on an empty
+  input it halts with the empty output). Label 1 pops the rest of the input onto an accumulator
+  stack, which reverses it. Label 2 pops the accumulator onto the output stack, which reverses it
+  back. Running time is linear in the input length, so the bound is polynomial. The equation
+  T x = x.tail follows from the two reversals cancelling.
+dead: []
