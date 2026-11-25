@@ -1,0 +1,27 @@
+id: bsd-199
+problem: bsd
+title: 'Affine addition with distinct x: the sum of two nonsingular affine points with x₁ ≠ x₂ is an affine point with x-coordinate λ² + a₁λ − a₂ − x₁ − x₂, where λ = (y₂ − y₁)/(x₂ − x₁)'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) (x₁ y₁ x₂ y₂ : K)
+    (h₁ : W.toAffine.Nonsingular x₁ y₁) (h₂ : W.toAffine.Nonsingular x₂ y₂), x₁ ≠ x₂ →
+    ∃ (x₃ y₃ : K) (h₃ : W.toAffine.Nonsingular x₃ y₃),
+      (WeierstrassCurve.Affine.Point.some x₁ y₁ h₁ + WeierstrassCurve.Affine.Point.some x₂ y₂ h₂ :
+        W.toAffine.Point) = WeierstrassCurve.Affine.Point.some x₃ y₃ h₃ ∧
+      x₃ = ((y₂ - y₁) / (x₂ - x₁)) ^ 2 + W.a₁ * ((y₂ - y₁) / (x₂ - x₁)) - W.a₂ - x₁ - x₂
+context: |
+  Step (a) of the induction behind bsd-198 (the division polynomial vanishes on m-torsion). The
+  x-coordinate of nP is computed by induction on n from the addition and doubling formulas; this is the
+  addition formula for two affine points with different x-coordinates. Mathlib has the sum point
+  (Affine/Point.lean, add_of_X_ne), and the x-coordinate as addX of the slope (Affine/Formula.lean), but
+  not this λ-form. It is a true identity: the secant slope is (y₁ − y₂)/(x₁ − x₂), which is the λ above.
+  This gap proves only this one step; the induction for x(nP) is not included.
+sketch: |
+  nonsingular_add and Point.add_of_X_ne give the sum and its coordinates. slope_of_X_ne rewrites the slope
+  as (y₁ − y₂)/(x₁ − x₂), which equals (y₂ − y₁)/(x₂ − x₁) by div_eq_div_iff (both denominators nonzero)
+  and ring. Checked locally on a scratch file: it compiles with the statement exactly as above.
+dead: []

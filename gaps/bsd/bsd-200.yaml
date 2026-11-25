@@ -1,0 +1,30 @@
+id: bsd-200
+problem: bsd
+title: 'Affine doubling: for a nonsingular affine point (x, y) with 2y + a₁x + a₃ ≠ 0, the double is an affine point with x-coordinate λ² + a₁λ − a₂ − 2x, where λ = (3x² + 2a₂x + a₄ − a₁y)/(2y + a₁x + a₃)'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) (x y : K)
+    (h : W.toAffine.Nonsingular x y), 2 * y + W.a₁ * x + W.a₃ ≠ 0 →
+    ∃ (x₃ y₃ : K) (h₃ : W.toAffine.Nonsingular x₃ y₃),
+      (WeierstrassCurve.Affine.Point.some x y h + WeierstrassCurve.Affine.Point.some x y h :
+        W.toAffine.Point) = WeierstrassCurve.Affine.Point.some x₃ y₃ h₃ ∧
+      x₃ = ((3 * x ^ 2 + 2 * W.a₂ * x + W.a₄ - W.a₁ * y) / (2 * y + W.a₁ * x + W.a₃)) ^ 2 +
+        W.a₁ * ((3 * x ^ 2 + 2 * W.a₂ * x + W.a₄ - W.a₁ * y) / (2 * y + W.a₁ * x + W.a₃)) -
+        W.a₂ - 2 * x
+context: |
+  Step (b) of the induction behind bsd-198 (the division polynomial vanishes on m-torsion): the doubling
+  formula for the x-coordinate. Mathlib has the double as a point (Point.add_self_of_Y_ne, with the condition
+  y ≠ negY x y, which is 2y + a₁x + a₃ ≠ 0) and the tangent slope (Affine/Formula.lean, slope_of_Y_ne).
+  The statement is the λ-form of the x-coordinate of 2P, and is true by the same computation as bsd-199.
+  The hypothesis 2y + a₁x + a₃ ≠ 0 excludes exactly the points with 2P = 0. This gap proves only this step;
+  the induction for x(nP) is not included.
+sketch: |
+  The hypothesis gives y ≠ negY x y (linear_combination), so add_self_of_Y_ne gives the double and its
+  nonsingularity. slope_of_Y_ne (with rfl for x = x) gives the tangent slope with denominator y − negY x y,
+  which equals 2y + a₁x + a₃ by unfolding negY and ring. Then unfold addX and ring. Checked locally on a
+  scratch file: it compiles with the statement exactly as above.
+dead: []
