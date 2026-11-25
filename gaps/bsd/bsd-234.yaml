@@ -6,7 +6,6 @@ imports:
 - Mathlib
 open: []
 depends:
-- bsd-231
 - bsd-232
 - bsd-233
 statement: |
