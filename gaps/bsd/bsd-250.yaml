@@ -1,0 +1,29 @@
+id: bsd-250
+problem: bsd
+title: 'Telescoping induction principle: if B and Y are integer-indexed sequences in a domain, Y is nonzero from index 2 on, Y(m) B(m+1) = Y(m+1) B(m) for m ≥ 2 and B(2) = 0, then B(m) = 0 for all m ≥ 2'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (A : Type) [CommRing A] [IsDomain A] (B Y : ℤ → A),
+    (∀ m : ℤ, 2 ≤ m → Y m ≠ 0) →
+    (∀ m : ℤ, 2 ≤ m → Y m * B (m + 1) = Y (m + 1) * B m) →
+    B 2 = 0 →
+    ∀ m : ℤ, 2 ≤ m → B m = 0
+context: |
+  The induction step used inline in bsd-226 (the n = 3 bracket of bsd-222), isolated as a reusable principle.
+  In bsd-226 the telescoping identity Y(m) B(m+1) = Y(m+1) B(m) (bsd-224) is proved for Y(m) = N(m) N(m+1) N(m-1)
+  and B the n = 3 bracket, and the induction is done by hand. Any telescoping of the same shape, for another
+  bracket B_n of the elliptic-net relation, reduces to this principle plus a base case B_n(2) = 0 and nonvanishing
+  of Y. It is a reduction for the general-n addition formula of bsd-210: once a telescoping identity is known
+  for each fixed n, the induction is this principle, so the open part of bsd-210 is the telescoping identity
+  itself (with a choice of Y_n that works for every n). The principle is true: B(m) = 0 at m ≥ 2 gives
+  Y(m) B(m+1) = 0, and cancelling Y(m) ≠ 0 in a domain gives B(m+1) = 0.
+sketch: |
+  Nat.le_induction on m (or induction on the natural number (m - 2).toNat after obtaining m = 2 + k). Base:
+  the hypothesis B 2 = 0. Step: from the telescoping identity at m, with ih : B m = 0, get
+  Y m * B (m + 1) = Y (m + 1) * 0 = 0, so mul_eq_zero and Y m ≠ 0 (from the hypothesis at m, since 2 ≤ m) give
+  B (m + 1) = 0. Use omega for the side conditions 2 ≤ m and 2 ≤ m + 1.
+dead: []
