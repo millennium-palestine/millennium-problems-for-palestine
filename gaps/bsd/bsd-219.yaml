@@ -1,0 +1,31 @@
+id: bsd-219
+problem: bsd
+title: 'Counting glue for the odd torsion bound: given the division polynomial vanishing at x-coordinates of torsion points, the m-torsion of an elliptic curve over a field has at most m squared points when m is odd and nonzero in the field'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-198
+- bsd-216
+- bsd-217
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) [W.IsElliptic] (m : ℕ),
+    Odd m → (m : K) ≠ 0 →
+    (∀ (x y : K) (h : W.toAffine.Nonsingular x y),
+      m • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) = 0 → (W.preΨ' m).eval x = 0) →
+    (Nat.card {P : W.toAffine.Point // m • P = 0} : ℤ) ≤ (m : ℤ) ^ 2
+context: |
+  Counting step that closes bsd-192 for odd m, with the crux as a hypothesis. The hypothesis is the statement of
+  bsd-198 (division polynomial vanishes at the x-coordinate of an odd-order affine point). The glue: the nonzero
+  m-torsion points have x-coordinates among the roots of preΨ' m (by the hypothesis), at most (m² − 1)/2 of them
+  (bsd-216), and each x-coordinate is shared by at most two points (bsd-217). So there are at most
+  2 · (m² − 1)/2 = m² − 1 nonzero m-torsion points, and the point at infinity makes m². This is bsd-192 for odd m, and
+  bsd-192 should follow from this gap once bsd-198 is proved. Not checked against the text here.
+sketch: |
+  Let S be the set of m-torsion points. Show S is finite (every point of S other than O has x-coordinate among the
+  finitely many roots, and each fibre has at most two points). Then use a fibre-counting lemma such as
+  Finset.card_le_mul_card_image_of_maps_to on S \ {O} with the map x, fibres bounded by 2 (bsd-217) and target the
+  root finset of preΨ' m (card at most (m² − 1)/2 by bsd-216). Add one for O. The degenerate case where m is
+  not positive cannot occur since m is odd.
+dead: []
