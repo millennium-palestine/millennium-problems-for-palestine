@@ -1,0 +1,32 @@
+id: bsd-163
+problem: bsd
+title: 'Good-reduction Euler factor: the power series 1/(1 − aT + qT²) has coefficients c₀ = 1, c₁ = a, c_{k+2} = a c_{k+1} − q c_k'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ a q : ℤ,
+    PowerSeries.coeff 0 (PowerSeries.invOfUnit (1 - PowerSeries.C a * PowerSeries.X + PowerSeries.C q * PowerSeries.X ^ 2) 1) = 1 ∧
+    PowerSeries.coeff 1 (PowerSeries.invOfUnit (1 - PowerSeries.C a * PowerSeries.X + PowerSeries.C q * PowerSeries.X ^ 2) 1) = a ∧
+    ∀ k : ℕ, PowerSeries.coeff (k + 2) (PowerSeries.invOfUnit (1 - PowerSeries.C a * PowerSeries.X + PowerSeries.C q * PowerSeries.X ^ 2) 1) =
+      a * PowerSeries.coeff (k + 1) (PowerSeries.invOfUnit (1 - PowerSeries.C a * PowerSeries.X + PowerSeries.C q * PowerSeries.X ^ 2) 1) -
+        q * PowerSeries.coeff k (PowerSeries.invOfUnit (1 - PowerSeries.C a * PowerSeries.X + PowerSeries.C q * PowerSeries.X ^ 2) 1)
+context: |
+  The good-reduction case of the local Euler factor in Mathlib (WeierstrassCurve.localPolynomial is
+  1 − C a * X + C q * X ^ 2 at a prime of good reduction, and localPowerSeries is its inverse via
+  PowerSeries.invOfUnit). This gap is the algebra in the power-series ring over ℤ: the inverse series
+  has the two initial coefficients 1 and a, and satisfies the second-order recurrence. Together with
+  bsd-162 (multiplicativity) and the bsd-016 recurrence bound on prime powers, it gives the prime-power
+  coefficient bound in bsd-016 once the Hasse inequality |a| ≤ 2√q (bsd-024) is known. The statement is
+  about an arbitrary pair (a, q) of integers; it does not use Hasse.
+sketch: |
+  Let g be the invOfUnit. By `PowerSeries.mul_invOfUnit` (or the defining equation `PowerSeries.mul_invOfUnit`
+  applied to the series with unit 1) the product (1 − aX + qX²) * g equals 1. Take coefficient 0 to get
+  g₀ = 1 (`PowerSeries.coeff_mul`, `PowerSeries.coeff_one`), coefficient 1 to get g₁ − a g₀ = 0, and
+  coefficient k + 2 to get g_{k+2} − a g_{k+1} + q g_k = 0. Use `PowerSeries.coeff_mul_X`,
+  `PowerSeries.coeff_C_mul`, and simp on `Finset.Nat.antidiagonal` sums (for k + 2 only three terms of the
+  antidiagonal are nonzero, via `Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk` and `Finset.sum_range_succ`).
+  The final step is `linarith` on the three coefficient equations.
+dead: []

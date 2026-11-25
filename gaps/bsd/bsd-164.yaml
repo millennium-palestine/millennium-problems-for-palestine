@@ -1,0 +1,28 @@
+id: bsd-164
+problem: bsd
+title: 'Bad-reduction Euler factors: 1/(1 − T) has all coefficients 1 and 1/(1 + T) has coefficients (−1)^k'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ k : ℕ,
+    PowerSeries.coeff k (PowerSeries.invOfUnit (1 - PowerSeries.X : PowerSeries ℤ) 1) = 1 ∧
+    PowerSeries.coeff k (PowerSeries.invOfUnit (1 + PowerSeries.X : PowerSeries ℤ) 1) = (-1) ^ k
+context: |
+  The split and nonsplit multiplicative cases of the local Euler factor in Mathlib
+  (WeierstrassCurve.localPolynomial is 1 − X in the split case and 1 + X in the nonsplit case). At a
+  prime of bad multiplicative reduction the local factor has coefficients of absolute value 1, so the
+  prime-power bound of bsd-016 holds there with room to spare: |c_k| = 1 ≤ (k + 1)√(p^k) for p ≥ 2.
+  The additive case, where the local factor is 1 and only c₀ = 1 is nonzero, is the same kind of
+  statement and is not included here. This gap is pure power-series algebra over ℤ.
+sketch: |
+  Show that (1 − X) * mk (fun _ => 1) = 1 and (1 + X) * mk (fun k => (-1) ^ k) = 1 by comparing
+  coefficients (`PowerSeries.ext`, `PowerSeries.coeff_mul`, `PowerSeries.coeff_mul_X`, `PowerSeries.coeff_one`).
+  Then identify the invOfUnit with the mk series by uniqueness: `PowerSeries.invOfUnit` is characterised
+  by `PowerSeries.mul_invOfUnit`, and two series whose product with the same series is 1 agree (cancel the
+  constant unit, or use `PowerSeries.eq_inv_iff_mul_eq_one` / `PowerSeries.inv_eq_iff_mul_eq_one`).
+  The coefficient of mk (fun _ => 1) at k is 1 by `PowerSeries.coeff_mk`, and of mk (fun k => (-1)^k) at k
+  is (-1)^k by the same lemma.
+dead: []
