@@ -1,0 +1,31 @@
+id: bsd-193
+problem: bsd
+title: 'Torsion lower bound: on an elliptic curve over a prime field F_p, the m-torsion over the algebraic closure has at least m² points when p does not divide m'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] [DecidableEq (AlgebraicClosure (ZMod p))]
+    (W : WeierstrassCurve (ZMod p)) [W.IsElliptic] (m : ℤ), ¬ (p : ℤ) ∣ m →
+    m ^ 2 ≤ (Nat.card {P : (W.baseChange (AlgebraicClosure (ZMod p))).toAffine.Point // m • P = 0} : ℤ)
+context: |
+  The lower half of bsd-191 (m-torsion count). Since m ≠ 0 here (p ∤ m), the statement forces the m-torsion to
+  be finite, as Nat.card of an infinite type is 0. Together with bsd-192 (at most m²) it gives bsd-191. The
+  content: the division polynomial ψ_m is separable when p ∤ m, so over the algebraically closed field
+  F̄_p it has (m² − 1)/2 distinct roots for odd m; each root x0 lifts to a point of E over F̄_p (the Weierstrass
+  equation is solvable in y over an algebraically closed field), and each such point is m-torsion. The last
+  point is the converse of the correspondence needed for bsd-192, so the two halves share the same missing
+  Mathlib input. Separability of ψ_m uses that its discriminant is a power of m times a unit, which is
+  nonzero because p ∤ m. The statement is true: it is implied by bsd-191, which is standard (Silverman, The
+  Arithmetic of Elliptic Curves, Chapter III). Not checked against the text here.
+sketch: |
+  Route for odd m: (1) ψ_m has degree (m² − 1)/2 (Mathlib: natDegree_preΨ, valid when (m : F̄_p) ≠ 0, which is
+  p ∤ m); (2) its roots in F̄_p are distinct, via the nonvanishing of its discriminant, which is a power of m
+  up to a unit (the separability step, not in Mathlib); (3) each root x0 lifts to y0 with (x0, y0) on the curve
+  and nonsingular, giving two points ±P with x(P) = x0 when y0 ≠ 0; (4) m • P = 0 for each such P, by the
+  converse of bsd-192's correspondence; (5) the count is at least 2·(m² − 1)/2 + 1 = m². Steps (2) and (4) are
+  the hard ones. Check first what Mathlib has for the discriminant of a division polynomial and for
+  nsmul on points.
+dead: []
