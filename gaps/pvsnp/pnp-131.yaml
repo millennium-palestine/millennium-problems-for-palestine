@@ -1,0 +1,28 @@
+id: pnp-131
+problem: pvsnp
+title: Under P = NP, the windowed-witness language of a polynomial-time window predicate is in P
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+- MPP.Solutions.Pnp130
+open:
+- MPP.PvsNP
+- Computability
+- Turing
+depends:
+- pnp-130
+statement: |
+  PEqualsNP → ∀ g : Lang, InP g → ∀ k : ℕ, ∃ S : Lang, InP S ∧ ∀ x : List Bool, S x = true ↔
+    ∃ w : List Bool, w.length ≤ x.length ∧
+      ∀ i : ℕ, i + (k + 1) ≤ (x ++ w).length → g (((x ++ w).drop i).take (k + 1)) = true
+context: |
+  Conditional side of the windowed Cook–Levin language of pnp-130. If P = NP, every NP language is in P, so
+  the windowed-witness language is decided in polynomial time. This is the step that shows why a hardness
+  reduction into such a language cannot be an argument for P ≠ NP, and why the NP-complete target of pnp-100
+  would have to lie outside P for any separation through it. It does not decide P vs NP.
+sketch: |
+  Take S from pnp-130 for g and k. Its NP membership gives InNP S, and PEqualsNP turns that into InP S, with the
+  same characterisation of S by pnp-130. So the existential form of the windowed language is inherited, and
+  the statement follows by unfolding PEqualsNP.
+dead: []
