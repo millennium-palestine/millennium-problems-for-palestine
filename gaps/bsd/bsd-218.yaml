@@ -1,0 +1,30 @@
+id: bsd-218
+problem: bsd
+title: 'Division polynomial at the x-coordinate of a torsion point: for an elliptic curve over a field K, an affine point of odd order m with (m : K) nonzero has x-coordinate a root of the odd division polynomial of m'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) [W.IsElliptic] (m : ℕ) (x y : K)
+    (h : W.toAffine.Nonsingular x y),
+    Odd m → (m : K) ≠ 0 →
+    (m : ℤ) • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) = 0 →
+    (W.preΨ' m).eval x = 0
+context: |
+  The hard step of bsd-192 (m-torsion upper bound, odd m): the link between the group law and the division
+  polynomial. For a nonzero m-torsion point P = (x, y) with m odd, the x-coordinate is a root of ψ_m; the
+  2-torsion points are excluded because the order of P divides the odd number m. Mathlib has the division
+  polynomials (WeierstrassCurve.preΨ' and its degree lemmas) but no lemma relating them to nsmul on points, which is
+  the missing input named in bsd-192. This gap is the open step of that chain; bsd-216 and bsd-217 are the counting
+  and fibre steps. The statement is standard (Silverman, The Arithmetic of Elliptic Curves, Chapter III and Exercise 3.7),
+  but it is not an hour's work: it needs an induction over the recursion for preΨ' using the doubling and chord
+  formulas. Not checked against the text here.
+sketch: |
+  Induction on odd m, with the statement generalised to all nonzero affine points P with mP = 0 expressed through
+  the coordinates x(mP) = x − ψ_{m−1}ψ_{m+1}/ψ_m² (the standard formula), which needs the x-coordinate of nP as a
+  rational function. Alternative: show that the set of x-coordinates of m-torsion points is contained in the roots of
+  preΨ' m, using that the x-coordinate of P + Q is determined by the chord formula. Check first what Mathlib has in
+  Affine/Point.lean for nsmul and addX before choosing a route.
+dead: []

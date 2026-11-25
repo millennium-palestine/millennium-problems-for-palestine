@@ -1,0 +1,27 @@
+id: bsd-217
+problem: bsd
+title: 'Points with the same x-coordinate: two nonsingular affine points of a Weierstrass curve over a field with the same x-coordinate are equal or opposite'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (W : WeierstrassCurve K) (x y₁ y₂ : K)
+    (h₁ : W.toAffine.Nonsingular x y₁) (h₂ : W.toAffine.Nonsingular x y₂),
+    (WeierstrassCurve.Affine.Point.some x y₁ h₁ : W.toAffine.Point) =
+        WeierstrassCurve.Affine.Point.some x y₂ h₂ ∨
+      (WeierstrassCurve.Affine.Point.some x y₁ h₁ : W.toAffine.Point) =
+        -(WeierstrassCurve.Affine.Point.some x y₂ h₂ : W.toAffine.Point)
+context: |
+  Fibre step of bsd-192 (m-torsion upper bound). Two affine points with the same x-coordinate satisfy the same
+  quadratic in y, namely y² + (a₁x + a₃) y − (x³ + a₂x² + a₄x + a₆) = 0, so either y₁ = y₂ or y₁ + y₂ = −(a₁x + a₃),
+  which is the negative of the point with y₂ (Mathlib: Point.some negation has y-coordinate W.negY x y₂ =
+  −y₂ − a₁x − a₃). Hence each x-coordinate gives at most two points, which is what bsd-192 needs. This is the
+  elementary algebra in the Weierstrass equation and needs no division polynomial. Not checked against the text here.
+sketch: |
+  Unfold the Nonsingular hypotheses (WeierstrassCurve.Affine.nonsingular_iff or equation_iff) to get the two
+  equations for y₁ and y₂ at the same x. Subtract them: (y₁ − y₂)(y₁ + y₂ + a₁x + a₃) = 0 by ring_nf/linear_combination.
+  In the first factor case use the equality of points (Point.some congr with the equal y); in the second case use
+  Point.neg_some (or the definition of neg) to identify −some x y₂ with some x (negY x y₂).
+dead: []
