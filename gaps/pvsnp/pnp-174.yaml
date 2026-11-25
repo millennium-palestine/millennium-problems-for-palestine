@@ -1,0 +1,33 @@
+id: pnp-174
+problem: pvsnp
+title: After a run of pairs of the fan-out program the unread witness is the witness with one bit dropped per leaf pair
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (ps : List (Bool × Bool)) (s w : List Bool),
+    ((ps.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (s, w, none)).2.1
+    = w.drop (ps.countP fun q => !q.1 && !q.2)
+context: |
+  Witness bookkeeping for the pnp-152 route. A pair (false, false) is a leaf: it pushes the first
+  unread witness bit and drops it from the witness. The other three pairs (false, true) (copy),
+  (true, true) (NAND) and (true, false) (no-op) leave the witness alone. So after a run of pairs the
+  witness is the original witness with exactly as many leading bits dropped as there are leaf pairs.
+  This is the count that the witness-length bound of pnp-133 needs. It does not use a machine, a
+  polynomial bound or P, and it does not decide P vs NP.
+sketch: |
+  Induction on ps, generalising s and w. The empty case is simp. For a cons, the doubled bits are
+  [q.1, q.2] followed by the rest, and the fold over the two bits from the state (s, w, none) is a
+  case split on q.1 and q.2 (four cases, as in pnp-171). In the leaf case the witness is w.drop 1
+  and the count is one more than for the tail, so List.drop_drop and the induction hypothesis close
+  it. In the other three cases the witness is unchanged and the count is unchanged.
+dead: []
