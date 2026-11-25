@@ -1,0 +1,27 @@
+id: bsd-195
+problem: bsd
+title: 'Two-block decomposition below 2p: a polynomial over F_p of degree less than 2p is the sum over s < p of X^s times (c_s + d_s X^p) for some coefficients c_s, d_s'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (h : Polynomial (ZMod p)), h.natDegree < 2 * p →
+    ∃ c d : Fin p → ZMod p, h = ∑ s : Fin p,
+      Polynomial.X ^ (s : ℕ) * (Polynomial.C (c s) + Polynomial.C (d s) * Polynomial.X ^ p)
+context: |
+  Bookkeeping for the Toeplitz step of bsd-183. The level-set power g = f^((p−1)/2) has degree 3(p−1)/2 < 2p,
+  and the bsd-183 reduction writes it as g = Σ_{s<p} X^s · g_s(X^p) with g_s(Y) = c_s + d_s·Y, so that the
+  coefficient comparison at the exponents X^u with K ≤ u < p becomes a linear system over F_p[Y]. This gap is the
+  coefficient-level fact behind that splitting: every polynomial of degree below 2p is determined by its
+  coefficients below p and its coefficients from p to 2p−1. It is elementary, and it does not mention f, the
+  Toeplitz minor or Frobenius.
+sketch: |
+  Take c s := h.coeff (s : ℕ) and d s := h.coeff ((s : ℕ) + p). Prove the equality with Polynomial.ext on the
+  coefficient n. The right side has coefficient n equal to Σ_s (if n = s then c s else 0) + (if n = s + p then
+  d s else 0), by Polynomial.finset_sum_coeff, Polynomial.coeff_X_pow, Polynomial.coeff_C_mul and
+  Polynomial.coeff_X_pow_mul / coeff_C, and this reduces by Finset.sum_ite_eq to h.coeff n when n < p and to
+  h.coeff n when p ≤ n < 2p. For n ≥ 2p both sides are zero, the left by Polynomial.coeff_eq_zero_of_natDegree_lt.
+  Watch the ZMod p coercion of s : Fin p to ℕ and the case split on n < p.
+dead: []

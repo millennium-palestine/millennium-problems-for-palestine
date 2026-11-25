@@ -1,0 +1,27 @@
+id: bsd-194
+problem: bsd
+title: 'Frobenius identity for the level-set power: over F_p, f times (f^((p-1)/2))^2 equals f(X^p) for f = X^3 + aX + b'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (a b : ZMod p), 2 < p →
+    (Polynomial.X ^ 3 + Polynomial.C a * Polynomial.X + Polynomial.C b : Polynomial (ZMod p)) *
+      ((Polynomial.X ^ 3 + Polynomial.C a * Polynomial.X + Polynomial.C b) ^ ((p - 1) / 2)) ^ 2 =
+    Polynomial.X ^ (3 * p) + Polynomial.C a * Polynomial.X ^ p + Polynomial.C b
+context: |
+  Step 2 of bsd-183 (the K×K Toeplitz minor in the Stepanov level-set argument of bsd-172). There g = f^c with
+  c = (p−1)/2 and f = X³ + aX + b, and the bsd-183 sketch asks for the behaviour of g modulo X^p − Y, which
+  needs the identity f · g² = f evaluated at X^p. It holds because f^p = f(X^p) in characteristic p (the
+  coefficients a, b of F_p satisfy a^p = a and b^p = b), and f^p = f · f^(p−1) = f · (f^c)². This gap is only
+  that identity. It does not bound or prove the minor; it is the first input of the Frobenius route sketched in
+  bsd-183, and it is elementary.
+sketch: |
+  Let f = X³ + C a · X + C b. Since p is prime, f ^ p = f ^ (p - 1) * f and p - 1 = 2 * ((p - 1) / 2) because p is
+  odd (2 < p), so f ^ p = (f ^ ((p - 1) / 2))^2 * f. In characteristic p, f ^ p = expand (ZMod p) p f
+  (Mathlib: ZMod.expand_card, or the ExpChar lemmas for Polynomial), and expand p f = X^(3p) + C a · X^p + C b
+  by simp (Polynomial.expand_X, Polynomial.expand_C, map_add, map_mul, pow_mul), with no need for a^p = a
+  because expand acts on coefficients. Finish with ring/ Polynomial.ext-free rewriting.
+dead: []
