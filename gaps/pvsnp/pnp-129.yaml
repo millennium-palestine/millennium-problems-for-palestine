@@ -1,0 +1,31 @@
+id: pnp-129
+problem: pvsnp
+title: A fixed number of copies of the output of a polynomial-time map, concatenated, is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-126
+- pnp-127
+statement: |
+  ∀ T : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) T) →
+    ∀ k : ℕ, ∃ T' : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) T') ∧
+      ∀ x : List Bool, T' x = (List.replicate k (T x)).flatten
+context: |
+  Generalises pnp-128 from the input to the output of an arbitrary polynomial-time map. A reduction
+  lays out its tableau as copies of a block that is itself computed from the input, so the copies
+  must be taken of a polynomial-time output, not only of the input. It is a structural lemma about
+  string outputs and does not decide P vs NP.
+sketch: |
+  Fix T and induct on k. For k = 0 the output is the empty string, a polynomial-time map by pnp-126.
+  For the step, let T1 be the map of the induction hypothesis, so T1 x = (replicate k (T x)).flatten.
+  The concatenation map T2 of pnp-127 applied to T1 and T satisfies T2 x = T1 x ++ T x. Since
+  List.replicate (k + 1) a = List.replicate k a ++ [a] and flattening distributes over append,
+  this is (replicate (k + 1) (T x)).flatten.
+dead: []
