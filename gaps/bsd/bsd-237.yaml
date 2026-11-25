@@ -1,0 +1,27 @@
+id: bsd-237
+problem: bsd
+title: 'Torsion tower count: for an additive commutative group in which multiplication by ℓ is surjective, the points killed by ℓ^(e+1) are counted by the points killed by ℓ times the points killed by ℓ^e'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (G : Type) [AddCommGroup G] (ℓ e : ℕ), (∀ x : G, ∃ y : G, ℓ • y = x) →
+    Nat.card {x : G // (ℓ ^ (e + 1)) • x = 0} = Nat.card {x : G // ℓ • x = 0} * Nat.card {x : G // ℓ ^ e • x = 0}
+context: |
+  Group-theoretic step of the prime-power case of the torsion lower bound bsd-193. For an elliptic curve over an
+  algebraically closed field F̄_p and a prime ℓ ≠ p, multiplication by ℓ is surjective (the input is a separate
+  gap, the degree of the multiplication-by-ℓ isogeny), so this lemma turns the ℓ-torsion count into the ℓ^e count
+  by induction: |E[ℓ^(e+1)]| = |E[ℓ]| · |E[ℓ^e]|, and then |E[ℓ^e]| ≥ (ℓ²)^e if |E[ℓ]| ≥ ℓ². The statement needs
+  no finiteness hypothesis: with the Nat.card convention (an infinite type counts 0) it is an equality of cardinals,
+  proved by an explicit bijection E[ℓ^(e+1)] ≃ E[ℓ^e] × E[ℓ]. The bijection sends (y, z) to s(y) + z, where s is a
+  chosen lift of y under multiplication by ℓ; the inverse sends x to (ℓ • x, x − s(ℓ • x)).
+sketch: |
+  Let π : E[ℓ^(e+1)] → E[ℓ^e], π x = ℓ • x (well defined: ℓ^e • (ℓ • x) = ℓ^(e+1) • x = 0). π is surjective by the
+  hypothesis: for y with ℓ^e • y = 0, pick x0 with ℓ • x0 = y, then ℓ^(e+1) • x0 = ℓ^e • y = 0. Choose a section s
+  with π (s y) = y (choose). Its kernel is E[ℓ] (x with ℓ • x = 0 is automatically in E[ℓ^(e+1)]). Build the map
+  E[ℓ^e] × E[ℓ] → E[ℓ^(e+1)], (y, z) ↦ s y + z, and show it is bijective: π (s y + z) = y, and s y + z = s y' + z'
+  forces y = y' (apply π) and z = z' (since z − z' = s y' − s y has π = 0). Conclude with Nat.card_congr and Nat.card_prod.
+  Mathlib: Equiv.ofBijective, Nat.card_congr, Nat.card_prod, pow_succ', mul_smul, choose.
+dead: []
