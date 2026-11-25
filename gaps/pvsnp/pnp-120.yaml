@@ -1,0 +1,31 @@
+id: pnp-120
+problem: pvsnp
+title: Dropping from the first component of a pair as many symbols as the second component has is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  ∃ D : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) D) ∧
+    ∀ x u : List Bool, D (pair x u) = x.drop u.length
+context: |
+  Window-offset primitive for the Cook–Levin tableau of pnp-100. The sliding-window step of pnp-115
+  reads the window at position |u| of the input x, where u is the output so far. This gap says that
+  the suffix of x after |u| symbols is computed from the pair encoding of (x, u) in polynomial time.
+  The machine reads the pair, loops over the symbols of u, and drops one symbol of x for each. It
+  is a single loop whose count is read from the second component, so it is in the style of pnp-045
+  and pnp-066 and not a new kind of construction. It does not decide P vs NP.
+sketch: |
+  Input is pair x u, that is the doubled bits of x, then [false, true], then u (pnp-021 and pnp-025
+  show how to separate the two parts). Move the doubled bits of x to an accumulator stack, reading
+  one pair of equal bits at a time, so that the suffix of x is left on the input stack. Then, for
+  each symbol of u, pop one symbol of the suffix, and finally return the suffix. Each step is a
+  constant number of machine steps and the number of steps is at most a fixed polynomial in the
+  length of pair x u, so the bound is polynomial. The equation D (pair x u) = x.drop u.length follows
+  by induction on u.
+dead: []
