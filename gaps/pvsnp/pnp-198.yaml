@@ -1,0 +1,38 @@
+id: pnp-198
+problem: pvsnp
+title: A nonnegative zero-sum list of pair steps replaces only the top of the stack and leaves the rest unchanged
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ q : List (Bool × Bool),
+    (∀ j, j ≤ q.length → 0 ≤ ((q.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) →
+    (q.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 →
+    ∀ (t w : List Bool) (v : Bool), ∃ (g : Bool) (w' : List Bool),
+      (q.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+        match st.2.2 with
+        | none => (st.1, st.2.1, some b)
+        | some a =>
+          if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+            else (st.1, st.2.1, none))
+          else (if b then (st.1.headD false :: st.1, st.2.1, none)
+            else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (v :: t, w, none) = (g :: t, w', none)
+context: |
+  Stack-level form of the pnp-133 fold for the pnp-152 route. The fold reads two bits per pair: (true, true) pops two
+  entries and pushes their NAND, (true, false) is a no-op, (false, true) copies the top, (false, false) pushes the next
+  witness bit. A list of pairs whose height walk (+1 for a copy or leaf, 0 for a no-op, -1 for a NAND) is nonnegative
+  and ends at zero never reads below the entry that was on top when it started, except through its first copy and its
+  last NAND. So run on v :: t it ends with a single new top g and the rest t unchanged, and the witness is consumed
+  by the leaves only. This is the step that makes the fold a pushdown automaton with a one-symbol interface, the
+  shape a CYK-style decomposition of the pnp-133 language needs. It is a statement about lists of pairs with the fold
+  written out, with no machine, no polynomial bound, no P, and it does not decide P vs NP.
+sketch: |
+  Cut q into primitive blocks by the lemma of pnp-195 (q = qs.flatten, each block with zero total height, positive
+  before its end). Induct on qs, generalising the top value and the witness. A block run on v :: t ends with g :: t
+  and the pending bit none, by the block lemma of pnp-197 (it starts with a leaf or copy, keeps the entries below its
+  top, and ends with a NAND that reads the entry it replaces). The induction hypothesis applied to the rest from g :: t
+  finishes the proof, since the fold of an append is the fold of the second part from the fold of the first
+  (List.foldl_append, List.flatMap_append).
+dead: []
