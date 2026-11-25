@@ -1,0 +1,32 @@
+id: bsd-188
+problem: bsd
+title: 'Finite Euler domination: for a multiplicative sequence, the partial sum of |f(n)| n^(−σ) up to N is at most the product over primes ≤ N of the local sums'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (f : ℕ → ℝ) (σ : ℝ) (N : ℕ),
+    (∀ m n : ℕ, 0 < m → 0 < n → Nat.Coprime m n → f (m * n) = f m * f n) →
+    ∑ n ∈ Finset.Icc 1 N, |f n| / (n : ℝ) ^ σ ≤
+      ∏ p ∈ (Finset.range (N + 1)).filter Nat.Prime,
+        ∑ k ∈ Finset.range (N + 1), |f (p ^ k)| / (p : ℝ) ^ (σ * k)
+context: |
+  Multiplicative step of the summation route to bsd-006, which replaces the pointwise bound of bsd-185 (see the
+  correction on the bsd-184/185 proposal). bsd-186 bounds each local factor Σ_k |f(p^k)| p^(−σk) by 1 + 8x_p with
+  x_p = A p^(1/2−σ), and bsd-187 makes Σ_p x_p converge for σ > 3/2. This gap is the bridge between them: a
+  partial sum of the Dirichlet series of |f| is at most the finite product of its local factors. Every n in
+  [1, N] has its prime factors among the primes ≤ N and exponents ≤ N, so it occurs in the expansion of the
+  product, and the expansion has only nonnegative terms. The statement is true also when f(1) = 0 (then f = 0).
+  It is elementary but needs factorization bookkeeping; no curve is involved.
+sketch: |
+  Case f(1) = 0: then f(n) = f(n·1) = f(n)·f(1) = 0 for all n, so the left side is 0 and the product is nonnegative.
+  Case f(1) = 1: |f| is multiplicative on coprime arguments, so |f(∏ p^(k_p))| = ∏ |f(p^(k_p))| by induction over
+  the finset of primes (Finset.prod over Finset.induction, using Nat.Coprime of distinct prime powers, pow_coprime
+  or Nat.Coprime.pow). Expand the product of finite sums with Finset.prod_univ_sum (over the Fintype of functions
+  from the primes to range (N+1)) or Finset.prod_sum. Map each n in Icc 1 N to its exponent function
+  k_p = n.factorization p (Nat.factorization_prod_pow_eq_self) and check it is injective on [1, N] with
+  p^(k_p) ≤ N; the left side is then a sub-sum of the nonnegative expansion. Real.mul_rpow and
+  Real.rpow_natCast give (∏ p^(k_p))^σ = ∏ p^(σ k_p).
+dead: []
