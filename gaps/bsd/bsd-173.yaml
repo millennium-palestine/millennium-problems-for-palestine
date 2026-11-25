@@ -1,0 +1,34 @@
+id: bsd-173
+problem: bsd
+title: 'Degree form positivity from the isogeny kernel count: if the kernel of m − nφ has m² − a m n + p n² points whenever p ∤ m, then the degree form of bsd-089 is nonnegative for all integers m, n'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  (∀ (p : ℕ) [Fact p.Prime] [DecidableEq (AlgebraicClosure (ZMod p))] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic]
+      (m n : ℤ), ¬ (p : ℤ) ∣ m →
+      let φ := WeierstrassCurve.Affine.Point.map (W' := W)
+        (FiniteField.frobeniusAlgHom (ZMod p) (AlgebraicClosure (ZMod p)))
+      (Nat.card {P : (W.baseChange (AlgebraicClosure (ZMod p))).toAffine.Point // m • P - n • φ P = 0} : ℤ) =
+        m ^ 2 - ((p : ℤ) + 1 - (Nat.card W.toAffine.Point : ℤ)) * m * n + (p : ℤ) * n ^ 2) →
+    ∀ (p : ℕ) [Fact p.Prime] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic] (m n : ℤ),
+      0 ≤ m ^ 2 - ((p : ℤ) + 1 - (Nat.card W.toAffine.Point : ℤ)) * m * n + (p : ℤ) * n ^ 2
+context: |
+  Glue for bsd-089 (degree form positivity) from the isogeny kernel count bsd-161, stated as a hypothesis H.
+  bsd-161 says that for p ∤ m the kernel of m − nφ over the algebraic closure of F_p has exactly m² − a m n + p n²
+  points, where a = p + 1 − #E(F_p). A cardinal is nonnegative, so H gives the form for p ∤ m. The case p ∣ m is
+  then pure algebra, which is bsd-170 (inline it as a helper: if the form is nonnegative off multiples of p, it is
+  nonnegative everywhere, by taking n = 4 and m = 2a or 2a + 1). So bsd-089 is exactly bsd-161 plus this step, and
+  the only deep input left for bsd-089 is bsd-161. Statement is true: H is true (Silverman III.4.10 and III.6.4).
+  Chosen so that the hypothesis is the exact statement of bsd-161 (it is an `∀` over the same binders).
+sketch: |
+  intro H p _ W _ m n. Use classical to supply the DecidableEq instance for the algebraic closure.
+  By cases on (p : ℤ) ∣ m. If not: have h := H p W m n hm, then `simp only at h` (zeta) to unfold the let φ, then
+  rw [← h] and exact Int.natCast_nonneg _ (or positivity). If so, the form is nonnegative for every n whenever
+  it is nonnegative off multiples of p: prove it by contradiction as in bsd-170. Assume the form is negative at (m, n).
+  Then n ≠ 0 and a² − 4p ≥ 1 (4·form = (2m − a n)² − (a² − 4p) n²). Apply the p ∤ m case at n = 4 with
+  m = 2a or 2a + 1 (not both divisible by p ≥ 2). Use Int.eq_one_of_dvd_one, dvd_sub, nlinarith as in the
+  bsd-170 solution (origin/main lean/MPP/Solutions/Bsd170.lean once merged).
+dead: []
