@@ -1,0 +1,35 @@
+id: pnp-164
+problem: pvsnp
+title: In a tagged run of the fan-out program the number of consumption arcs is at most the input length
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (x : List Bool) (s : List ℕ × ℕ × Option Bool × List (ℕ × ℕ)),
+    x.foldl (fun (st : List ℕ × ℕ × Option Bool × List (ℕ × ℕ)) (b : Bool) =>
+      match st.2.2.1 with
+      | none => (st.1, st.2.1, some b, st.2.2.2)
+      | some a =>
+        if a then (if b then (st.2.1 :: st.1.drop 2, st.2.1 + 1, none,
+            ((st.1.take 2).filter (· != 0)).map (fun u => (u, st.2.1)) ++ st.2.2.2)
+          else (st.1, st.2.1, none, st.2.2.2))
+        else (if b then (st.1.headD 0 :: st.1, st.2.1, none, st.2.2.2)
+          else (st.2.1 :: st.1, st.2.1 + 1, none, st.2.2.2))) ([], 1, none, []) = s →
+    s.2.2.2.length ≤ x.length
+context: |
+  Size bound for the tagged run of pnp-161 and pnp-162. Each input bit is read once, a NAND pair
+  consumes two bits and records at most two arcs (one per real wire it pops), and the other pairs
+  record none. So the arc list of the run has at most as many entries as the input has bits, and the
+  graph that the dynamic programme of pnp-152 runs on has polynomially many arcs. It involves no
+  machine and no P, and does not decide P vs NP. The statement is stated without a Lean machine so
+  that the size bound can be used directly by the TM2 construction later.
+sketch: |
+  Prove the stronger invariant for every list y and state st: the arc count of the fold of y from st
+  is at most the arc count of st plus the length of y plus one if st has a pending bit. Induct on y.
+  A bit with no pending bit adds no arc and sets the pending flag (budget +1). A second bit of a pair
+  adds at most two arcs, since the filtered take of two entries has length at most two, and clears
+  the flag (the budget of the pair is 2 bits + 0 flags, enough for two arcs). Apply with the initial
+  state ([], 1, none, []) which has no pending bit.
+dead: []
