@@ -1,0 +1,35 @@
+id: pnp-168
+problem: pvsnp
+title: In a tagged run of the fan-out program the consumption log is sorted by consumer time, newest first
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (x : List Bool) (s : List ℕ × ℕ × Option Bool × List (ℕ × ℕ)),
+    x.foldl (fun (st : List ℕ × ℕ × Option Bool × List (ℕ × ℕ)) (b : Bool) =>
+      match st.2.2.1 with
+      | none => (st.1, st.2.1, some b, st.2.2.2)
+      | some a =>
+        if a then (if b then (st.2.1 :: st.1.drop 2, st.2.1 + 1, none,
+            ((st.1.take 2).filter (· != 0)).map (fun u => (u, st.2.1)) ++ st.2.2.2)
+          else (st.1, st.2.1, none, st.2.2.2))
+        else (if b then (st.1.headD 0 :: st.1, st.2.1, none, st.2.2.2)
+          else (st.2.1 :: st.1, st.2.1 + 1, none, st.2.2.2))) ([], 1, none, []) = s →
+    s.2.2.2.Pairwise (fun p q => q.2 ≤ p.2)
+context: |
+  Stepping stone for pnp-152, the order of the consumption log of a tagged fan-out run. The log is
+  written by prepending the arcs of each NAND gate, and each gate is stamped with the current time,
+  which only grows. So read from the front of the list, the consumer times never increase. A dynamic
+  programme that sweeps the log therefore visits the gates in time order, each gate once. This is
+  bookkeeping on the list model of pnp-161 to pnp-167. It involves no machine and no P, and does not
+  decide P vs NP.
+sketch: |
+  Induct over the input, generalising the state, with the invariants of pnp-167 that every arc has
+  consumer time strictly below the counter, and that the log is pairwise non-increasing in consumer
+  time. The initial log is empty. A NAND puts new arcs, all with the old time t, in front of the old
+  log. Every old arc has consumer time below t, so the new arcs are above every old arc in the order,
+  and the new arcs are equal to each other. Leaves, copies and no-ops leave the log unchanged. Use
+  List.pairwise_append for the split of the log into the new arcs and the old log.
+dead: []
