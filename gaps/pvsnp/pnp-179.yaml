@@ -1,0 +1,42 @@
+id: pnp-179
+problem: pvsnp
+title: In a tagged run of the fan-out program every wire strictly above the stack entries below a stack entry lies in its consumption cone
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (x : List Bool) (s : List ℕ × ℕ × Option Bool × List (ℕ × ℕ)),
+    x.foldl (fun (st : List ℕ × ℕ × Option Bool × List (ℕ × ℕ)) (b : Bool) =>
+      match st.2.2.1 with
+      | none => (st.1, st.2.1, some b, st.2.2.2)
+      | some a =>
+        if a then (if b then (st.2.1 :: st.1.drop 2, st.2.1 + 1, none,
+            ((st.1.take 2).filter (· != 0)).map (fun u => (u, st.2.1)) ++ st.2.2.2)
+          else (st.1, st.2.1, none, st.2.2.2))
+        else (if b then (st.1.headD 0 :: st.1, st.2.1, none, st.2.2.2)
+          else (st.2.1 :: st.1, st.2.1 + 1, none, st.2.2.2))) ([], 1, none, []) = s →
+    ∀ e ∈ s.1, ∀ w : ℕ, 1 ≤ w → w ≤ e → (∀ f ∈ s.1, f < e → f < w) →
+      Relation.ReflTransGen (fun c a => (a, c) ∈ s.2.2.2) e w
+context: |
+  Stepping stone for pnp-152 (the treewidth-2 interval dynamic programme over a tagged fan-out run),
+  between pnp-178 and the interval recursion. A tagged run records, for each wire, its creation time
+  (the wire id). The logged arcs (a, c) say that the wire a is an operand of the NAND created at time c.
+  The consumption cone of a wire e is the set of wires reachable from e through operand arcs, that is,
+  the sub-circuit that computes e. The claim says that the cone of a stack entry e contains every wire w
+  lying above the largest stack entry below e: the wires between the next stack entry and e are all
+  inside the sub-circuit of e. This is the invariant that makes the cone of a NAND an interval (pnp-180).
+  It involves no machine, no polynomial bound and no P, and it does not decide P vs NP. It was checked by
+  brute force over all programs of length at most 16 (no counterexample); the check is not in Lean.
+sketch: |
+  Prove an invariant of the state, by induction on the input, for every state reached, and read off the
+  statement at the final state. The invariant has two parts: (i) for every stack entry e and every w with
+  1 ≤ w ≤ e such that every stack entry below e is below w, the wire w is reachable from e through the
+  logged arcs; (ii) the stack is non-increasing (pnp-161). A leaf pushes the new time t with nothing
+  between it and the old top, so (i) holds for t with the empty gap. A copy duplicates the top, which
+  changes no gap. A NAND with top u and second v creates t = u + 1 (the top is always the newest wire) and
+  pops both: t reaches u by its arc, every w with v < w < u is reachable from u by (i) applied to u (the
+  next entry below u is v), and every w with w ≤ v is reachable from v. The gap of t is therefore covered.
+  Use the stack order of pnp-161 to identify the entries below a given entry.
+dead: []
