@@ -1,0 +1,24 @@
+id: bsd-258
+problem: bsd
+title: 'Quartic character: for a prime p ≡ 1 mod 4 there is a multiplicative character ρ : F_p → ℂ whose square is the quadratic character'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime], p % 4 = 1 →
+    ∃ ρ : MulChar (ZMod p) ℂ, ∀ x : ZMod p, ρ x ^ 2 = ((quadraticChar (ZMod p) x : ℤ) : ℂ)
+context: |
+  First input of bsd-150 (Hasse–Weil bound for y² = x³ + ax when p ≡ 1 mod 4), the quartic-character step. The
+  multiplicative group of F_p is cyclic of order p − 1, which is divisible by 4, so a character of order 4 exists;
+  its square is the quadratic character. This is the quartic analogue of the cubic character used in bsd-148
+  (cube_of_char_one and the generator argument in Solutions/Bsd148.lean). It is true and classical (Ireland–Rosen,
+  Chapter 8, §3 and Chapter 8 §4 on power characters). The statement does not decide anything about Millennium problems.
+sketch: |
+  Take a generator g of (ZMod p)ˣ (IsCyclic.exists_generator). Let i = Complex.I. Define ρ on units by ρ(g^k) = i^k,
+  which is well defined because i^4 = 1 and the order of g is p − 1, a multiple of 4; set ρ(0) = 0 (MulChar needs
+  a value on non-units, MulChar.map_nonunit). Build the MulChar via a monoid hom (ZMod p)ˣ →* ℂˣ (for example
+  zpowersHom or a lift from ZMod (p − 1) with 4 ∣ p − 1) and MulChar.ofUnitHom, or argue with MulChar.ext. Then
+  ρ(x)² = χ(x) pointwise: for a unit x = g^k, ρ(x)² = (−1)^k = χ(g^k), since χ(g) = −1 (quadraticChar_neg/generator
+  not a square) and χ(x) = (−1)^k by quadraticChar on powers of a generator; for x = 0 both sides are 0.
