@@ -1,0 +1,26 @@
+id: bsd-252
+problem: bsd
+title: 'Nonnegativity of the degree form for a complex model: if z + z̄ = a and z z̄ = p, then m² − a m n + p n² ≥ 0 for all real m, n'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (a p : ℝ) (z : ℂ), z + starRingEnd ℂ z = (a : ℂ) → z * starRingEnd ℂ z = (p : ℂ) →
+    ∀ m n : ℝ, 0 ≤ m ^ 2 - a * m * n + p * n ^ 2
+context: |
+  The positivity step of bsd-089 (degree form m² − a m n + p n² is nonnegative), in the case where the Frobenius
+  trace and norm are realised by a complex number z. Over ℂ the degree of m − n z is |m − n z|², which is nonnegative;
+  the identity |m − n z|² = m² − a m n + p n² uses only z + z̄ = a and z z̄ = p. So whenever the trace a and the norm p
+  of a complex number z are the given integers, the form is nonnegative. This gap proves that step for complex models.
+  It does not give bsd-089 itself, which
+  needs the Frobenius endomorphism, and the step from endomorphism degree to the quadratic form (bsd-161), which
+  remain open. It is stated over ℝ so that it is independent of the ring of bsd-251.
+sketch: |
+  Let w = (m : ℂ) − (n : ℂ) * z. Then w * conj w = m² − a m n + p n² as a complex number (use the two hypotheses
+  and ring/linear_combination, with conj (m − nz) = m − n conj z for real m, n: simp with map_sub, map_mul,
+  Complex.conj_ofReal). Hence the real form equals Complex.normSq w, which is nonnegative by Complex.normSq_nonneg.
+  To pass from the complex equality to the real one use Complex.ofReal_injective or Complex.ofReal_inj after
+  rewriting the right side as ((m ^ 2 - a * m * n + p * n ^ 2 : ℝ) : ℂ) with push_cast.
+dead: []
