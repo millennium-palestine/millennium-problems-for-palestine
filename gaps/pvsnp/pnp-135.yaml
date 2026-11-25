@@ -1,0 +1,36 @@
+id: pnp-135
+problem: pvsnp
+title: Indexed lookup in the witness, at the index given by the instance read as a binary number, is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-134
+statement: |
+  ∃ L : Lang, InP L ∧ ∀ x w : List Bool,
+    L (pair x w) = w.getD (x.foldl (fun c b => 2 * c + (if b then 1 else 0)) 0) false
+context: |
+  Random access into the witness with a binary index. The index is the instance x read as a binary
+  number, most significant bit first, and the answer is the witness bit at that position (false when
+  the position is past the end of the witness). pnp-134 is the same lookup when the index is the
+  number of true bits of the instance, which is a unary index. A circuit whose wires are written in
+  binary needs this form: each gate reads its inputs at indices given by bits of the instance. This
+  gap is only the lookup. It does not build the circuit, does not simulate a TM2 verifier, and does
+  not decide P vs NP. The index is consumed from the instance one bit at a time, so the running time
+  is polynomial in the length of the pair.
+sketch: |
+  Four stacks: input (the pair encoding), a counter, a copy of the witness, and output. The counter is
+  kept in unary, so the value c is c marks. Phase 0 reads the doubled instance two symbols at a time,
+  as in pnp-134. Before each instance bit, the counter is doubled (move its marks twice, through a
+  scratch stack) and the bit is added (one mark for true). A flag records that the counter has reached
+  the witness length m. The test "c ≥ m" pops the counter and the copy of the witness in lockstep. Once
+  the flag is set, the rest of the instance is only consumed. The copy of the witness is made by one
+  pass over the witness, which pops it and pushes it onto the copy stack and back. Since the counter is
+  below m until the flag is set, it never exceeds 2m, so every phase is polynomial in the length of the
+  pair. Finally, if the flag is not set, the witness is consumed as in pnp-134 by popping the counter,
+  and the head is the answer; if the flag is set, the answer is false.
+dead: []
