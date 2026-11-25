@@ -1,0 +1,26 @@
+id: bsd-153
+problem: bsd
+title: 'Degree form factors through the Frobenius: if π² − aπ + p = 0 in a commutative ring, then (m − nπ)(m − n(a − π)) = m² − a m n + p n² for all integers m, n'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (R : Type) [CommRing R] (π : R) (a p m n : ℤ),
+    π * π - (a : R) * π + (p : R) = 0 →
+      ((m : R) - (n : R) * π) * ((m : R) - (n : R) * ((a : R) - π)) =
+        (m : R) ^ 2 - (a : R) * (m : R) * (n : R) + (p : R) * (n : R) ^ 2
+context: |
+  The algebraic step of the degree-form argument of bsd-089. In the standard proof the p-power Frobenius π of E over F_p
+  satisfies π² − aπ + p = 0 with a = p + 1 − #E(F_p) (bsd-121), and the degree of m − nπ is the form m² − a m n + p n²
+  (bsd-089, step (3) of its plan). The identity here is the part that needs no geometry: the dual π̂ = a − π satisfies
+  π π̂ = aπ − π² = p, so (m − nπ)(m − nπ̂) expands to m² − a m n + p n². The degree of an endomorphism being its norm
+  x x̂ is NOT in this gap; it is the isogeny input that Mathlib lacks. The statement is true in every commutative ring,
+  since it is an identity in R once the hypothesis holds, and it uses no curve. It is a split of bsd-089 and does not by
+  itself prove it.
+sketch: |
+  Intro the ring, π, the integers and the hypothesis h. Expanding the left side gives m² − a m n + n² (aπ − π²), and the
+  hypothesis says aπ − π² = p. So the goal is linear_combination (-(n : R) ^ 2) * h. The casts ((a : ℤ) : R) and the
+  products with (n : R) are handled by ring after the linear_combination step.
+dead: []
