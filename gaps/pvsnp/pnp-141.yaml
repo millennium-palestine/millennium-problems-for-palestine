@@ -1,0 +1,43 @@
+id: pnp-141
+problem: pvsnp
+title: Every NP language reduces to the postfix circuit language of pnp-133
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  ∀ L : Lang, InNP L → ∃ f : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) ∧
+    ∀ x : List Bool, L x = true ↔ ∃ w : List Bool, w.length ≤ (f x).length ∧
+      ((f x).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+        match st.2.2 with
+        | none => (st.1, st.2.1, some b)
+        | some a =>
+          if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+            else (st.1, st.2.1, none))
+          else (if b then (st.1.headD false :: st.1, st.2.1, none)
+            else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) ([], w, none)).1.headD false = true
+context: |
+  The hardness half of pnp-100, split off from its membership half. pnp-133 shows that the language of
+  postfix programs with shared values and witness leaves (the fold in the statement, with the witness as
+  the leaves) is in NP. Together with this gap it gives pnp-100: the language is the NP-complete S, and
+  every NP language L reduces to it by a polynomial-time map f. The gap is the Cook–Levin step for this
+  circuit model: a polynomial-time map must write, for each input x, a postfix program whose satisfying
+  leaf assignments are exactly the NP witnesses of x. The witness bound of the program is its length, so
+  the map pads the program with no-op pairs (true, false) to length at least the witness bound of L.
+  This gap does not decide P vs NP. It is not an hour-sized lemma: the program must simulate an
+  arbitrary polynomial-time TM2 verifier (a tableau of its run with fan-out for shared cells), and the
+  map must be a TM2 machine. It is stated here so that pnp-100 has an explicit open hardness step.
+sketch: |
+  Let V be a polynomial-time verifier for L with witness bound p (from InNP L). Let f x be a postfix
+  program that, for the pair (x, w) with the witness as leaves, evaluates the run of V on pair x w,
+  with one shared value per cell of the run tableau (fan-out through the copy instruction of pnp-132),
+  and whose output is the accept bit of V. Pad the program with (true, false) pairs to length at least
+  p(|x|). The fold of the statement then equals V (pair x w) for every leaf string w of the witness
+  length, by induction on the tableau rows. The map f is polynomial-time by the bound on the run of V
+  (pnp-102) and a fixed local rule for each cell.
+dead: []
