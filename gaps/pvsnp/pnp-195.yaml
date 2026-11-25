@@ -1,0 +1,33 @@
+id: pnp-195
+problem: pvsnp
+title: A pair list whose height walk is nonnegative with zero total splits into blocks that are primitive excursions
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ ps : List (Bool × Bool),
+    (∀ j ≤ ps.length, 0 ≤ ((ps.map fun q : Bool × Bool => if q.1 && q.2 then (-1 : ℤ) else if q.1 then 0 else 1).take j).sum) →
+    (ps.map fun q : Bool × Bool => if q.1 && q.2 then (-1 : ℤ) else if q.1 then 0 else 1).sum = 0 →
+    ∃ qs : List (List (Bool × Bool)), ps = qs.flatten ∧
+      ∀ q ∈ qs, 0 < q.length ∧
+        (q.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 ∧
+        ∀ j, 0 < j → j < q.length →
+          0 < ((q.take j).map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum
+context: |
+  Pair-level form of the excursion factorization of pnp-194, for the pnp-152 route. A pair (a, b) of the fan-out
+  program has height step -1 when it is a NAND pair, 0 when it is a no-op and +1 when it is a leaf or a copy
+  (the step used in pnp-192). If the height walk of a list of pairs stays at or above zero and ends at zero,
+  the list is cut into blocks, each of which is a primitive excursion: its height is zero at the end and
+  strictly positive before. This is the block decomposition that a CYK-style argument over pair runs needs. It
+  is a fact about lists of pairs and integers: no machine, no polynomial bound, no P, and it does not decide
+  P vs NP.
+sketch: |
+  Let d be the height list of ps (the map of the step above). Apply pnp-194 to d, which gives bs with d = bs.flatten and
+  each block of bs a primitive excursion. Prove by induction on bs that every list ps whose height list is bs.flatten
+  is qs.flatten for some qs whose height lists are bs: the map of a list splits as b ++ rest using
+  List.map_eq_append_split, which gives the first block of ps with height list b, and the rest is handled by the
+  induction hypothesis. The three conditions on each block transfer from b to the block, since the height list of
+  the block is b and take commutes with map.
+dead: []
