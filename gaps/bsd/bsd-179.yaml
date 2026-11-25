@@ -28,7 +28,7 @@ context: |
   itself (that needs the sum over j and the choice of coefficients) and not the nonvanishing of the auxiliary
   polynomial; those are the remaining pieces of bsd-172. It uses no Hasse bound and no curve.
 sketch: |
-  Take Q from bsd-178 applied to r₁ with the same k, c, ε (the hypothesis k ≤ c is given). For the existence part,
+  Take Q from bsd-178 (now accepted on main) applied to r₁ with the same k, c, ε (the hypothesis k ≤ c is given). For the existence part,
   return that Q. For the evaluation: if k = 0 the derivative is the identity, so the claim is a ring identity
   after Polynomial.eval_mul, eval_add, eval_pow, eval_X. If 0 < k < p, bsd-166 gives
   hasseDeriv k (X^(p j) * h) = X^(p j) * hasseDeriv k h with h = r₀ + r₁ f^c, and map_add splits the derivative.
