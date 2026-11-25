@@ -1,0 +1,35 @@
+id: bsd-175
+problem: bsd
+title: 'Stepanov parameter bound: for p ≥ 3 and m ≤ p with m > p/2 + C√p, some integers ℓ, J, K satisfy ℓm < 2JK and pJ + K + 3⌊(p−1)/2⌋ + 3ℓ < ℓm (the arithmetic of the Stepanov auxiliary polynomial)'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∃ C : ℝ, ∀ p : ℕ, 3 ≤ p → ∀ m : ℕ, m ≤ p →
+      (p : ℝ) / 2 + C * Real.sqrt (p : ℝ) < m →
+      ∃ ℓ J K : ℕ, 1 ≤ ℓ ∧ 1 ≤ J ∧ ℓ * m < 2 * J * K ∧
+        p * J + K + 3 * ((p - 1) / 2) + 3 * ℓ < ℓ * m
+context: |
+  The parameter arithmetic of the Stepanov route to the level-set bound (bsd-172). The auxiliary polynomial of that
+  route is R = f^ℓ · Σ_{j<J} X^{pj} (r_{0j} + r_{1j} g) with g = f^c, c = (p−1)/2, f = x³ + ax + b, and deg r_{ij} < K.
+  Its unknown coefficients number 2JK, and vanishing to order ℓ at the m points of the level set imposes ℓm linear
+  conditions, so a nonzero R exists when ℓm < 2JK (the dimension count, bsd-159 in shape). Its degree is at most
+  3ℓ + pJ + K + 3c, and a nonzero polynomial vanishing to order ℓ at m points has degree at least ℓm (bsd-160), so
+  ℓm ≤ 3ℓ + pJ + K + 3c. This gap says that for m above p/2 + C√p the two requirements cannot both hold for
+  the right choice of ℓ, J, K, namely ℓ = ⌊√p⌋, J = ⌊(ℓ+1)/2⌋ and K = ⌊ℓm/(2J)⌋ + 1. It is a pure inequality
+  between natural numbers and a real square root: it does not use polynomials, Hasse derivatives or curves.
+  The statement is true with C = 4: for p ≤ 64 the hypothesis m ≤ p contradicts p/2 + 4√p < m, and for p ≥ 65 the
+  choice above gives the inequality. Numerically the worst m outside the regime is about p/2 + 3.52√p (checked for
+  primes p ≤ 5000). This gap is one of the three pieces of bsd-172; the other two (the shaped auxiliary polynomial
+  with its vanishing and nonvanishing, and the assembly with bsd-160) are not proposed here.
+sketch: |
+  intro. Use C = 4. Case p ≤ 64: m ≤ p and p/2 + 4√p < m give p/2 + 4√p < p, so √p > 8 and p > 64, a contradiction.
+  Case p ≥ 65: let ℓ = Nat.sqrt p, so ℓ² ≤ p < (ℓ+1)², hence ℓ ≥ 8 and ℓ ≤ √p < ℓ + 1. Let J = (ℓ+1)/2, so
+  2J = ℓ or ℓ + 1 (omega), and J ≥ 1. Let K = ℓm/(2J) + 1. Then ℓm < 2J·K by Nat.lt_mul_div_succ.
+  Also K·2J ≤ ℓm + 2J ≤ (m+1)·2J (since ℓ ≤ 2J), so K ≤ m + 1. Real inequalities: pJ ≤ p(ℓ+1)/2, 3c ≤ 3p/2
+  (from 2c ≤ p with c = (p−1)/2). So the goal follows from m(ℓ−1) > pℓ/2 + 2p + 3ℓ + 1. Use m ≥ p/2 + 4√p,
+  ℓ − 1 ≥ √p − 2, ℓ ≤ √p and 3p/2 > 11√p + 1 (true for √p ≥ 8): so 4√p(ℓ−1) > 5p/2 + 3ℓ + 1. Finish with
+  nlinarith on the real facts, then exact_mod_cast back to ℕ.
+dead: []
