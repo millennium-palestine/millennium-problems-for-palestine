@@ -1,0 +1,44 @@
+id: pnp-190
+problem: pvsnp
+title: On a stack with at least one more cell than the NAND count, the first run of pairs of the fan-out program that drops the stack below its start has a first return by one cell
+status: open
+imports:
+- Mathlib
+- MPP.Solutions.Pnp175
+open: []
+depends:
+- pnp-175
+- pnp-189
+statement: |
+  ∀ (ps : List (Bool × Bool)) (s w : List Bool) (run : List (Bool × Bool) → List Bool),
+    (∀ p : List (Bool × Bool), run p = ((p.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (s, w, none)).1) →
+    ps.countP (fun q => q.1 && q.2) + 1 ≤ s.length →
+    (run ps).length < s.length →
+    ∃ k, k < ps.length ∧ (run (ps.take (k + 1))).length + 1 = s.length ∧
+      ∀ j ≤ k, s.length ≤ (run (ps.take j)).length
+context: |
+  The fold-level form of the first-return split for the pnp-152 route. pnp-175 gives the exact stack height of a
+  run of pairs under the NAND hypothesis: new height plus the NAND count equals the old height plus the count of
+  pairs with first component false (leaves and copies). The hypothesis of pnp-175 passes to every prefix of the
+  run, because a prefix has no more NAND pairs than the whole run. So along the run the height is the start height
+  plus a walk with steps +1 (leaf or copy), 0 (no-op) and -1 (NAND). pnp-189 gives the first time such a walk goes
+  below its start, one level down. This is the split point of a CYK-style decomposition of the pnp-133 language at
+  the first return of the stack. The statement is a counting fact about the fold: no machine, no polynomial bound,
+  no P, and it does not decide P vs NP. Its hypothesis is the one of pnp-175, so it does not cover shallow stacks.
+sketch: |
+  Let d q = if q.1 && q.2 then -1 else if q.1 then 0 else 1 as an integer, and apply the walk lemma of pnp-189 to the
+  list ps.map d (proved here as a helper, so that the file imports only pnp-175).
+  Two facts make this work. First, for every prefix p of ps the NAND hypothesis holds, because
+  p.countP (q.1 && q.2) ≤ ps.countP (q.1 && q.2). So pnp-175 gives (run p).length + NAND(p) = s.length + leaves
+  and copies in p, that is (run p).length = s.length + ((p.map d).sum), by induction on p using countP_cons. Second,
+  (run ps).length < s.length makes the total sum of ps.map d negative. pnp-189 then gives k with the walk at k+1
+  equal to -1 and the walk at j ≤ k nonnegative. Translate both sums back with the first fact, using
+  List.map_take for ps.take j, and omega for the integer arithmetic. The bound k < ps.length is from pnp-189.
+dead: []

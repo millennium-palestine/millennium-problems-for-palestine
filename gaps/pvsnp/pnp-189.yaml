@@ -1,0 +1,27 @@
+id: pnp-189
+problem: pvsnp
+title: A walk on the integers with steps of size at most one that ends below zero first reaches minus one at some step
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ d : List ℤ, (∀ e ∈ d, -1 ≤ e ∧ e ≤ 1) → d.sum < 0 →
+    ∃ k, k < d.length ∧ (d.take (k + 1)).sum = -1 ∧ ∀ j ≤ k, 0 ≤ (d.take j).sum
+context: |
+  Discrete first-hit lemma for the pnp-152 route. A pushdown run of the pnp-133 fold changes its stack height
+  by +1 for a leaf or a copy pair, by 0 for a no-op pair, and by -1 for a NAND pair (see pnp-175, which gives
+  the exact height under the NAND count hypothesis). So the height along a run is the partial sums of a walk
+  whose steps lie in {-1, 0, 1}. A run that ends below its start must cross each level between its start and
+  its end, and the first time it goes below the start it is exactly one level down. This is the step that
+  splits a run at its first return, which a context-free (CYK-style) decomposition of the pnp-133 language
+  uses. The statement is about integer lists only: no machine, no polynomial bound, no P, and it does not
+  decide P vs NP.
+sketch: |
+  Let m be the least index with (d.take m).sum < 0. It exists because d.take d.length = d has negative sum.
+  Index 0 has sum 0, so m ≥ 1. Take k = m - 1. Then k < d.length because m ≤ d.length, and for j ≤ k the
+  sum of d.take j is ≥ 0 by minimality of m. Since (d.take m).sum = (d.take k).sum + d[k] with the first
+  summand ≥ 0 and d[k] ≥ -1, the sum (d.take (k+1)).sum is ≥ -1, and it is < 0 by minimality, so it equals -1.
+  In Lean: Nat.find on the predicate (d.take j).sum < 0, List.take_succ and List.sum_take_succ, then omega.
+dead: []
