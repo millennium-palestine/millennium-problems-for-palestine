@@ -1,0 +1,25 @@
+id: pnp-193
+problem: pvsnp
+title: A zero-sum walk with nonnegative prefix sums splits at its first return into a primitive excursion and a nonnegative zero-sum rest
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ d : List ℤ, 0 < d.length → (∀ j ≤ d.length, 0 ≤ (d.take j).sum) → d.sum = 0 →
+    ∃ m, 0 < m ∧ m ≤ d.length ∧ (d.take m).sum = 0 ∧ (∀ j, 0 < j → j < m → 0 < (d.take j).sum) ∧
+      (∀ j ≤ d.length - m, 0 ≤ ((d.drop m).take j).sum) ∧ (d.drop m).sum = 0
+context: |
+  Split form of the first-return lemma of pnp-191, for the pnp-152 route. A pushdown run that never drops below
+  its start and ends at its start decomposes at its first return into a primitive excursion (the part up to the
+  first return) and a rest that again never drops below its start and ends at its start. The rest is what the
+  induction over excursions (pnp-194) iterates on. The statement is about integer lists only: no machine, no
+  polynomial bound, no P, and it does not decide P vs NP. It strengthens pnp-191 by the nonnegativity and the
+  zero sum of the rest.
+sketch: |
+  Take m as in pnp-191: the least positive index with (d.take m).sum = 0, which is at most d.length. The first
+  conjunct family is pnp-191 itself. For the rest, use List.take_add (take (m + j) = take m ++ (drop m).take j)
+  and the zero sum of take m to get ((d.drop m).take j).sum = (d.take (m + j)).sum, which is nonnegative because
+  m + j ≤ d.length. The zero sum of the rest is List.sum_take_add_sum_drop at m with (d.take m).sum = 0.
+dead: []

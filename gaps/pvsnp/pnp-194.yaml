@@ -1,0 +1,24 @@
+id: pnp-194
+problem: pvsnp
+title: A zero-sum integer list with nonnegative prefix sums is a concatenation of primitive excursions
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ d : List ℤ, (∀ j ≤ d.length, 0 ≤ (d.take j).sum) → d.sum = 0 →
+    ∃ bs : List (List ℤ), d = bs.flatten ∧
+      ∀ b ∈ bs, 0 < b.length ∧ b.sum = 0 ∧ (∀ j, 0 < j → j < b.length → 0 < (b.take j).sum)
+context: |
+  Dyck-style factorization for the pnp-152 route, iterating the split of pnp-193. Every nonnegative zero-sum walk
+  is a finite concatenation of primitive excursions, each of which returns to zero only at its end. A context-free
+  (CYK-style) decomposition of the pnp-133 language is a tree over such excursions, so this factorization is the
+  combinatorial step that the interval or pushdown recursion needs. The statement is about integer lists only: no
+  machine, no polynomial bound, no P, and it does not decide P vs NP.
+sketch: |
+  Strong induction on d.length (Nat.strong_induction_on, or induction on n with d.length ≤ n). If d = [] take bs = [].
+  Otherwise pnp-193 gives m with the excursion e = d.take m and the rest f = d.drop m, nonnegative and zero-sum, and
+  f.length < d.length because m > 0. The induction hypothesis gives bs' with f = bs'.flatten. Then take bs = e :: bs',
+  using List.take_append_drop for d = e ++ f, and e satisfies the three conditions by pnp-193.
+dead: []
