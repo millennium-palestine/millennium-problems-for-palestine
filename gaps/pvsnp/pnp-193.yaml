@@ -5,8 +5,7 @@ status: open
 imports:
 - Mathlib
 open: []
-depends:
-- pnp-191
+depends: []
 statement: |
   ∀ d : List ℤ, 0 < d.length → (∀ j ≤ d.length, 0 ≤ (d.take j).sum) → d.sum = 0 →
     ∃ m, 0 < m ∧ m ≤ d.length ∧ (d.take m).sum = 0 ∧ (∀ j, 0 < j → j < m → 0 < (d.take j).sum) ∧

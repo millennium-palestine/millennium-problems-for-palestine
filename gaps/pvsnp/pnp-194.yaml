@@ -5,8 +5,7 @@ status: open
 imports:
 - Mathlib
 open: []
-depends:
-- pnp-193
+depends: []
 statement: |
   ∀ d : List ℤ, (∀ j ≤ d.length, 0 ≤ (d.take j).sum) → d.sum = 0 →
     ∃ bs : List (List ℤ), d = bs.flatten ∧
