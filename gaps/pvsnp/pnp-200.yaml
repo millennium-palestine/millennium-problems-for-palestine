@@ -1,0 +1,24 @@
+id: pnp-200
+problem: pvsnp
+title: A tableau of rows of length n whose consecutive rows obey a window-local step is the sequence of iterates of that step
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (k : ℕ) (G : List Bool → Bool) (n T : ℕ) (rows : ℕ → List Bool), (∀ t, (rows t).length = n) →
+    ((∀ t, t < T → rows (t + 1) = (List.range n).map fun i => G ((List.range (k + 1)).map fun j => (rows t).getD (i + j) false)) ↔
+      (∀ t, t ≤ T → rows t = Nat.iterate (fun r : List Bool => (List.range n).map fun i => G ((List.range (k + 1)).map fun j => r.getD (i + j) false)) t (rows 0)))
+context: |
+  Determinism of the tableau, the step of pnp-100 (Cook–Levin) that turns a run into a checkable table. A
+  tableau is a sequence of rows, and it is a genuine run exactly when every row is obtained from the previous one by
+  the same window-local step. This gap says that, for rows of fixed length n, the row-by-row window condition up to
+  time T holds exactly when each row is the T-th iterate of the step applied to the first row. The window step is
+  the list-level form of pnp-199. It is a statement about lists and natural numbers, with no machine and no P vs NP
+  content. Connecting the step to the TM2 run of a verifier (pnp-114 gives the window size) is not part of this gap.
+sketch: |
+  Induction on T for the forward direction, using Function.iterate_succ_apply' to unfold rows (t+1) as the step of
+  rows t and the hypothesis at t. For the backward direction, the iterate at t+1 is the step of the iterate at t, so
+  the hypothesis at t gives rows (t+1) = step (rows t). The length hypothesis is not needed for the proof.
+dead: []
