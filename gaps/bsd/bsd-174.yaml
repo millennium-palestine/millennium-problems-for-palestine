@@ -1,0 +1,37 @@
+id: bsd-174
+problem: bsd
+title: 'Weak character sum bound from the level-set bound: if the level sets of (x³ + ax + b)^((p−1)/2) satisfy the bsd-172 estimate, then the character sum Σ_x χ(x³ + ax + b) over F_p is O(√p), uniformly in the curve'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  (∃ C : ℝ, ∀ (p : ℕ) [Fact p.Prime], p ≠ 2 → ∀ a b : ZMod p,
+      4 * a ^ 3 + 27 * b ^ 2 ≠ 0 → ∀ ε : ZMod p, (ε = 1 ∨ ε = -1) →
+      2 * ((Finset.univ.filter (fun x : ZMod p => (x ^ 3 + a * x + b) ^ ((p - 1) / 2) = ε)).card : ℝ)
+        - (p : ℝ) ≤ C * Real.sqrt (p : ℝ)) →
+    ∃ C' : ℝ, ∀ (p : ℕ) [Fact p.Prime], p ≠ 2 → ∀ a b : ZMod p,
+      4 * a ^ 3 + 27 * b ^ 2 ≠ 0 →
+      |∑ x : ZMod p, (quadraticChar (ZMod p) (x ^ 3 + a * x + b) : ℝ)| ≤ C' * Real.sqrt (p : ℝ)
+context: |
+  The assembly step named by bsd-172 (its context: "the level-set assembly, which is the next gap once bsd-171 and
+  this gap are on main"). bsd-171 turns the quadratic character into the Euler power (f(x)^((p−1)/2) ∈ {0, 1, −1}), and
+  bsd-172 bounds each level set {x : f(x)^((p−1)/2) = ε}, ε = ±1, by p/2 + O(√p). Here the level sets are the two
+  sets where the character is +1 and −1, and the character sum is the difference of their sizes. Writing N₊ and N₋ for the two
+  level-set sizes and z for the number of roots of f, we have N₊ + N₋ + z = p and z ≤ 3 (f is a monic cubic, and it is
+  nonzero). So Σ = N₊ − N₋ = 2N₊ − p + z ≤ C√p + 3, and symmetrically Σ ≥ −(C√p + 3). With C' = |C| + 3 and √p ≥ 1 the
+  claim follows. This is a glue statement: the bsd-172 estimate is taken as a hypothesis, so this gap is true and
+  independent of whether bsd-172 is proved. It gives the weak Hasse–Weil bound (order √p, unspecified constant) and not
+  the sharp bound 4p of bsd-142, which is a separate gap.
+sketch: |
+  intro H, obtain ⟨C, hC⟩ := H, use |C| + 3, then intro p hp hp2 a b hab. Pointwise, the quadratic character of
+  f(x) = x³ + ax + b is the difference of two indicators: (1 if f(x)^e = 1) − (1 if f(x)^e = −1), with e = (p−1)/2,
+  because f(x)^e ∈ {0, 1, −1} and the character is 0 at f(x) = 0 (bsd-171 trichotomy, inlined as a helper; use
+  (p − 1)/2 = p/2 for odd p, and zero_pow for 0^e = 0 since e ≠ 0 when p ≥ 3). Sum the indicators over the Finset
+  univ (Finset.sum_boole, or Finset.card_filter cast to ℝ) to get Σ = N₊ − N₋. Bound z by 3 with Polynomial.card_roots'
+  (the cubic X³ + C a X + C b is nonzero, so it has at most 3 roots in ZMod p), via Finset.card_le_card on the roots. Get
+  N₊ + N₋ + z = p by splitting univ into the three disjoint level sets (Finset.card_filter_add_card_filter_compl or
+  Finset.filter_card_add_filter_neg_card_eq_card). Apply hC with ε = 1 and ε = −1, and conclude with abs_le and
+  Real.sqrt_nonneg, using Real.one_le_sqrt for 1 ≤ p.
+dead: []
