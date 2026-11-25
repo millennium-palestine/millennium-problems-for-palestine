@@ -1,0 +1,27 @@
+id: bsd-171
+problem: bsd
+title: 'Euler criterion trichotomy: over a prime field F_p with p ≠ 2, the quadratic character of y is 0 when y = 0, and is 1 (resp. −1) exactly when y^((p−1)/2) = 1 (resp. −1) when y ≠ 0'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime], p ≠ 2 → ∀ y : ZMod p,
+    (y = 0 ∧ quadraticChar (ZMod p) y = 0) ∨
+    (y ≠ 0 ∧ y ^ ((p - 1) / 2) = 1 ∧ quadraticChar (ZMod p) y = 1) ∨
+    (y ≠ 0 ∧ y ^ ((p - 1) / 2) = -1 ∧ quadraticChar (ZMod p) y = -1)
+context: |
+  First step of a split of the weak Hasse–Weil bound over prime fields, the Stepanov route that bsd-142 and bsd-006 lack. For
+  a cubic f over F_p, the character sum Σ_x χ(f(x)) is a difference of two level-set counts, and the level sets are
+  cut out by the power f(x)^((p−1)/2) (Euler's criterion). This gap is that pointwise translation: the value of the quadratic
+  character at y is 0, 1 or −1 according to whether y = 0, y^((p−1)/2) = 1 or y^((p−1)/2) = −1. It is true and elementary
+  (Mathlib's Euler criterion, `ZMod.euler_criterion`, and `ZMod.pow_div_two_eq_neg_one_or_one`), with no curve, no Hasse
+  bound and no Stepanov estimate. It is the translation that the assembly gap (weak bound from the level-set bound, after
+  this gap and bsd-172 are on main) will use. Compare bsd-141, which turns the character sum into a point count.
+sketch: |
+  intro p _ hp2 y. Since p is an odd prime, (p − 1)/2 = p/2 (omega, with p % 2 = 1 from Nat.Prime.odd_of_ne_two).
+  If y = 0 the first disjunct holds (quadraticChar_zero). If y ≠ 0: by ZMod.euler_criterion, IsSquare y ↔ y^(p/2) = 1.
+  If IsSquare y, quadraticChar_one_iff_isSquare gives 1. If not, ZMod.pow_div_two_eq_neg_one_or_one gives y^(p/2) ∈ {1, −1};
+  the value 1 would contradict the criterion, so it is −1, and quadraticChar_neg_one_iff_not_isSquare gives −1.
+dead: []
