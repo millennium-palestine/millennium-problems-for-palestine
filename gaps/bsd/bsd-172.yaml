@@ -1,0 +1,35 @@
+id: bsd-172
+problem: bsd
+title: 'Stepanov level-set bound over prime fields: for a nonsingular short cubic x³ + ax + b over F_p (p ≠ 2), each level set {x : (x³ + ax + b)^((p−1)/2) = ε} with ε = ±1 has at most p/2 + C√p points, for an absolute constant C'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∃ C : ℝ, ∀ (p : ℕ) [Fact p.Prime], p ≠ 2 → ∀ a b : ZMod p,
+    4 * a ^ 3 + 27 * b ^ 2 ≠ 0 → ∀ ε : ZMod p, (ε = 1 ∨ ε = -1) →
+    2 * ((Finset.univ.filter (fun x : ZMod p => (x ^ 3 + a * x + b) ^ ((p - 1) / 2) = ε)).card : ℝ)
+      - (p : ℝ) ≤ C * Real.sqrt (p : ℝ)
+context: |
+  The hard core of the weak Hasse–Weil bound over prime fields, in Stepanov's form (S. A. Stepanov, 1969, on hyperelliptic
+  curves over prime fields; not checked against the text here). It is the
+  estimate that the auxiliary-polynomial gaps of this chain feed into: bsd-159 (nonzero auxiliary polynomial of low degree
+  killed by Hasse derivatives), bsd-160 (zero count with multiplicity), bsd-165 (Hasse derivative of f^c is divisible by
+  f^(c−k), with c = (p−1)/2 and cofactor of degree at most k·deg f), bsd-166 (Frobenius kills Hasse derivatives of order
+  below p), bsd-167 (independence of shaped sums Σ r_j g^j) and bsd-169 (degree bound of shaped sums) are the algebra
+  around it, and are on main. What is missing is the shaped auxiliary polynomial built from the level set itself, its
+  vanishing to order ℓ at the points of the level set, and the parameter choice that makes its nonvanishing and its degree
+  bound compatible, giving |T_ε| ≤ p/2 + O(√p). The statement is true (Stepanov's theorem for p large, and a finite check
+  for small p absorbed into C, which is why C is only asserted to exist). It is NOT an hour's work; it is the piece to split
+  further in a later proposal. It does not bound the square of the full character sum by itself (that needs the level-set
+  assembly, which is the next gap once bsd-171 and this gap are on main). It is not Weil's bound: no extension fields.
+sketch: |
+  Not an hour's work. Route (Stepanov, for g = f^c with f(x) = x³ + ax + b, c = (p−1)/2, T = {x : g(x) = ε}): choose
+  ℓ ≈ √p and J ≈ √p, and an auxiliary polynomial R = Σ_{j<J} (r_{j0} + r_{j1} g) X^{pj} with deg r_{ij} < about p/2 (use bsd-159
+  for existence of a nonzero solution of the linear system, bsd-167 for the shape). Over F_p, x^{pj} = x^j on the points,
+  so the Hasse derivatives of R at x ∈ T are controlled by bsd-165 and bsd-166 (f^(c−k) divides the k-th derivative of g). Each
+  x ∈ T is a zero of order ℓ of R (Leibniz rule for Hasse derivatives, plus g(x) = ε), so bsd-160 with bsd-169 gives
+  |T|·ℓ ≤ deg R ≤ N + J·deg g, and the parameter inequalities give |T| ≤ p/2 + O(√p). Split further by: (a) vanishing of
+  the Hasse derivatives of R on T; (b) the parameter arithmetic; (c) the nonvanishing of R.
+dead: []
