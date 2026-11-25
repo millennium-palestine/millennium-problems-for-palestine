@@ -1,0 +1,44 @@
+id: pnp-192
+problem: pvsnp
+title: A run of pairs of the fan-out program that stays at or above its start and ends at its start first returns to the start at some step
+status: open
+imports:
+- Mathlib
+- MPP.Solutions.Pnp175
+open: []
+depends:
+- pnp-175
+- pnp-191
+statement: |
+  ∀ (ps : List (Bool × Bool)) (s w : List Bool) (run : List (Bool × Bool) → List Bool),
+    (∀ p : List (Bool × Bool), run p = ((p.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (s, w, none)).1) →
+    ps.countP (fun q => q.1 && q.2) + 1 ≤ s.length →
+    0 < ps.length →
+    (∀ j ≤ ps.length, s.length ≤ (run (ps.take j)).length) →
+    (run ps).length = s.length →
+    ∃ m, 0 < m ∧ m ≤ ps.length ∧ (run (ps.take m)).length = s.length ∧
+      ∀ j, 0 < j → j < m → s.length < (run (ps.take j)).length
+context: |
+  Fold-level form of the primitive-excursion split for the pnp-152 route, combining pnp-175 with pnp-191. Under the
+  NAND hypothesis of pnp-175 every prefix p of the run has height (run p).length = s.length + (signed count of p),
+  where a leaf or a copy pair adds one, a no-op adds zero and a NAND pair subtracts one. If the run stays at or above
+  its start and ends at its start, the prefix heights form a nonnegative walk returning to zero, and pnp-191 gives
+  its first return to zero. So the run splits, at that first return, into a primitive excursion strictly above the
+  start and the rest. This is the split a CYK-style decomposition of the pnp-133 language needs. It is a counting
+  fact about the fold: no machine, no polynomial bound, no P, and it does not decide P vs NP.
+sketch: |
+  Let d = ps.map stepZ, where stepZ q = if q.1 && q.2 then -1 else if q.1 then 0 else 1 (helper in the file).
+  Every prefix p of ps satisfies the hypothesis of pnp-175, because its NAND count is at most that of ps. As in
+  pnp-190, pnp-175 and countP_cons give (run p).length = s.length + (p.map stepZ).sum for every prefix p, by
+  induction on p. Then d.sum = 0 (from the last hypothesis), and every prefix sum of d is nonnegative (from the
+  hypothesis on prefixes, via List.map_take). Apply pnp-191 (proved inside the file as a helper, as pnp-190 does
+  for pnp-189) to d to get m with the walk at m equal to zero and positive before m. Translating back with the
+  identity above gives the three conclusions, and omega finishes the integer arithmetic.
+dead: []
