@@ -1,0 +1,27 @@
+id: bsd-240
+problem: bsd
+title: 'Converse for order 3: on a Weierstrass curve over a field, a nonsingular affine point (x, y) with 2y + a₁x + a₃ ≠ 0 and Ψ₃(x) = 0 satisfies 3 • P = 0'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-205
+- bsd-217
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) (x y : K) (h : W.toAffine.Nonsingular x y),
+    2 * y + W.a₁ * x + W.a₃ ≠ 0 →
+    3 * x ^ 4 + W.b₂ * x ^ 3 + 3 * W.b₄ * x ^ 2 + 3 * W.b₆ * x + W.b₈ = 0 →
+    (3 : ℤ) • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) = 0
+context: |
+  The converse of bsd-220 (order-3 points are roots of Ψ₃) in the case of a point that is not 2-torsion. It is the
+  ℓ = 3 step of the lower bound bsd-193: each root x0 of Ψ₃ lifts to a point P with 3P = 0, which gives 8 nonzero
+  3-torsion points together with O once the four roots are distinct (bsd-239) and the two lifts differ. The proof
+  uses the doubling identity of bsd-205, which gives x(2P) = x whenever Ψ₃(x) = 0, and the same-x lemma of bsd-217,
+  which then gives 2P = ±P. Case 2P = P is impossible for an affine point, so 2P = −P and 3P = 0.
+sketch: |
+  Apply bsd-205 to get 2P = (x₃, y₃) with x₃ · D² = x · D² − Ψ₃(x), where D = 2y + a₁x + a₃ ≠ 0. Since Ψ₃(x) = 0 and
+  D² ≠ 0, x₃ = x (mul_right_cancel₀). Then apply bsd-217 to P and 2P, which share the x-coordinate. If P = 2P, then
+  P + P = P gives P = 0, contradicting that P is affine (Point.some_ne_zero). If P = −2P, then 3•P = P + (P + P) = 0.
+  Mathlib: add_zsmul, one_zsmul, two_zsmul, add_eq_zero_iff_eq_neg, add_left_cancel, mul_right_cancel₀.
+dead: []

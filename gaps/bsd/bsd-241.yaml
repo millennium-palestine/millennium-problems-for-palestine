@@ -1,0 +1,25 @@
+id: bsd-241
+problem: bsd
+title: 'Three-division versus two-division: over any field, a common root x of the 3-division polynomial and of ψ₂² = 4x³ + b2x² + 2b4x + b6 forces the discriminant form b2³b6 − b2²b4² − 36b2b4b6 + 32b4³ + 108b6² to vanish'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (b2 b4 b6 x : K),
+    12 * x ^ 4 + 4 * b2 * x ^ 3 + 12 * b4 * x ^ 2 + 12 * b6 * x + (b2 * b6 - b4 ^ 2) = 0 →
+    4 * x ^ 3 + b2 * x ^ 2 + 2 * b4 * x + b6 = 0 →
+    b2 ^ 3 * b6 - b2 ^ 2 * b4 ^ 2 - 36 * b2 * b4 * b6 + 32 * b4 ^ 3 + 108 * b6 ^ 2 = 0
+context: |
+  Companion of bsd-239 for the order-3 count. For a nonsingular point (x, y) of a Weierstrass curve with
+  D = 2y + a₁x + a₃ = 0 (a 2-torsion point), ψ₂² = D² = 4x³ + b2x² + 2b4x + b6 vanishes at x. The lifts of the roots
+  of Ψ₃ used in the count for |E[3]| must avoid D = 0, since a 2-torsion point is not 3-torsion (bsd-240 needs D ≠ 0).
+  This gap rules that out: a root of Ψ₃ that is also a root of ψ₂² would give Δ = 0. The certificate is the exact
+  polynomial identity Q = 4·b₁·g − a₁·P₄ (sympy), where P₄ = 4Ψ₃ = 12x⁴ + 4b2x³ + 12b4x² + 12b6x + (b2b6 − b4²),
+  g = 4x³ + b2x² + 2b4x + b6, a₁ = −b2² + 8b2x + 32b4 + 48x², and b₁ = −b2²x − b2b4 + 9b2x² + 42b4x + 27b6 + 36x³.
+  No assumption on the characteristic is needed.
+sketch: |
+  The identity Q = 4·b1·g − a1·P4 is a ring identity in x, b2, b4, b6. Apply linear_combination with coefficients
+  4·b1 for the hypothesis g = 0 and −a1 for the hypothesis P4 = 0. Mathlib: linear_combination.
+dead: []
