@@ -1,0 +1,34 @@
+id: bsd-167
+problem: bsd
+title: 'Independence of low-degree multiples of powers: over a field, if g has positive degree d and polynomials r_0, …, r_(J−1) all have degree below d with Σ_j r_j · g^j = 0, then every r_j is zero'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (g : Polynomial K) (J : ℕ) (r : ℕ → Polynomial K), 0 < g.natDegree →
+    (∀ j < J, (r j).natDegree < g.natDegree) →
+    ∑ j ∈ Finset.range J, r j * g ^ j = 0 →
+    ∀ j < J, r j = 0
+context: |
+  The nonvanishing input of Stepanov's auxiliary polynomial for the weak Hasse–Weil bound (the bsd-142 chain,
+  with bsd-159 and bsd-160 for the linear-algebra and zero-count steps, bsd-165 for the derivatives of
+  g = f^c, and bsd-166 for characteristic p). Stepanov's auxiliary polynomial has the shape Σ_{j<J} r_j · g^j with
+  deg r_j < deg g. bsd-159 only gives some nonzero polynomial of low degree killed by the Hasse derivatives,
+  without saying that it has this shape. This gap says that the shape cannot be zero unless every coefficient
+  polynomial is zero, so a nonzero kernel element of the shaped linear system exists whenever the coefficient
+  space is large enough. It is an identity about degrees over a field: the top term r_J · g^J has degree
+  deg r_J + J·d ≥ J·d, while the lower terms have degree below J·d. It does not use the curve, the prime p,
+  or Hasse's bound.
+sketch: |
+  Induction on J, generalising r. Base J = 0 is vacuous. Step J → J+1: the sum splits as S + r_J · g^J with
+  S = Σ_{j<J} r_j · g^j (Finset.sum_range_succ). Claim A: S = 0 or degree S < J·d, where d = natDegree g. Each
+  term has degree deg r_j + j·d ≤ (d − 1) + j·d < J·d for j < J (natDegree_mul, natDegree_pow, degree_sum_le
+  or degree_sum_lt, with Polynomial.degree_pow and Finset.sup_lt_iff). Step: if r_J ≠ 0, then r_J · g^J ≠ 0
+  (no zero divisors over a field, g ≠ 0 since d > 0), and its degree is deg r_J + J·d ≥ J·d > degree S, so
+  degree (S + r_J · g^J) = deg(r_J · g^J) ≠ ⊥, contradicting the sum being zero (Polynomial.degree_add_eq_right_of_degree_lt).
+  So r_J = 0, the equation becomes S = 0, and the induction hypothesis gives r_j = 0 for j < J. Mathlib:
+  Polynomial.natDegree_mul, Polynomial.natDegree_pow, Polynomial.degree_add_eq_right_of_degree_lt,
+  Polynomial.degree_sum_le, Finset.sum_range_succ.
+dead: []
