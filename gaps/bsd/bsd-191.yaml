@@ -1,0 +1,29 @@
+id: bsd-191
+problem: bsd
+title: 'Torsion count: on an elliptic curve over a prime field F_p, the m-torsion over the algebraic closure has m² points when p does not divide m'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] [DecidableEq (AlgebraicClosure (ZMod p))]
+    (W : WeierstrassCurve (ZMod p)) [W.IsElliptic] (m : ℤ), ¬ (p : ℤ) ∣ m →
+    (Nat.card {P : (W.baseChange (AlgebraicClosure (ZMod p))).toAffine.Point // m • P = 0} : ℤ) = m ^ 2
+context: |
+  The n = 0 instance of bsd-161 (isogeny kernel count). With n = 0 the kernel of m − nφ is the kernel of
+  multiplication by m, and bsd-161 predicts m² − a·m·0 + p·0² = m² points. This is the classical
+  structure E[m] ≅ (ℤ/m)² for m prime to the characteristic, over the algebraic closure. Mathlib
+  does not have it. Together with bsd-190 (the m = n = 1 case) it covers two of the instances of
+  bsd-161. It does not by itself give bsd-161, which needs the mixed kernels of m − nφ with n ≠ 0.
+  The hypothesis ¬ p ∣ m excludes m = 0, where the kernel is infinite. The statement is true
+  (standard texts on elliptic curves, e.g. Silverman, The Arithmetic of Elliptic Curves, treat it; the
+  exact theorem number was not checked against the text here).
+sketch: |
+  Not an hour's work. Route: multiplication by m is a separable endomorphism when p ∤ m, since its
+  differential is multiplication by m on the invariant differential, which is nonzero. A separable
+  isogeny of degree m² over an algebraically closed field has kernel of size m². Split it into the
+  separability of [m] (the differential) and the degree of [m] being m² (the count of the kernel for
+  a separable map), each as its own gap, and check first whether Mathlib has the m-torsion of an
+  algebraic group under another name.
+dead: []
