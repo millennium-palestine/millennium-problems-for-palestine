@@ -1,0 +1,29 @@
+id: bsd-248
+problem: bsd
+title: 'Frobenius-sparse coefficients: in the sum of X^(p·i) · r_i with deg r_i < N ≤ p, the coefficient of X^(p·j + t) with t < N is the coefficient of r_j at t'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (p J N : ℕ) (r : Fin J → Polynomial K), 0 < p → N ≤ p →
+    (∀ i, (r i).natDegree < N) →
+    ∀ (j : Fin J) (t : ℕ), t < N →
+      (∑ i : Fin J, (Polynomial.X : Polynomial K) ^ (p * (i : ℕ)) * r i).coeff (p * (j : ℕ) + t) = (r j).coeff t
+context: |
+  The coefficient-comparison step (Step 1) of the nonvanishing argument for bsd-183, the shaped independence of the level-set
+  auxiliary family. There the Stepanov polynomial has monomial part A = Σ_j X^(p·j) · r_{0j} with deg r_{0j} < K = (p−1)/2 ≤ p,
+  and one needs to read off the coefficients of A at the exponents p·j + t with t < K. The exponents of the summands are
+  p·i + s with s < N, so a term with i ≠ j lands on p·j + t only when the shift p·(j − i) + t − s would be a coefficient at
+  index below N, which is impossible since p ≥ N. This is the coefficient version of the monomial independence of bsd-182,
+  and it is what turns the equation A + g·B = 0 into coefficient identities. It is elementary, and it does not use any
+  property of the level-set power g. It is true for every field K and every J, with no assumption on the characteristic.
+sketch: |
+  Use Polynomial.finset_sum_coeff to split the coefficient over the sum, then Finset.sum_eq_single j to isolate the term i = j.
+  For i ≠ j there are two cases, both by Polynomial.coeff_X_pow_mul' (coefficient of X^n · h at m is h.coeff (m − n) if n ≤ m, else 0):
+  if i > j then p·i ≥ p·j + p > p·j + t, so the term is 0; if i < j then the index p·j + t − p·i = p·(j − i) + t ≥ p ≥ N
+  exceeds natDegree (r i), so the coefficient is 0 (Polynomial.coeff_eq_zero_of_natDegree_lt). The term i = j gives
+  (r j).coeff (p·j + t − p·j) = (r j).coeff t (Nat.add_sub_cancel_left). The Nat inequalities are by omega or nlinarith after
+  case split on i < j.
+dead: []
