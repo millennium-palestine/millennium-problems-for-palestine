@@ -1,0 +1,38 @@
+id: pnp-153
+problem: pvsnp
+title: The windowed-witness language of pnp-130 is in P for every fixed window width
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-130
+statement: |
+  ∀ g : Lang, InP g → ∀ k : ℕ, ∃ S : Lang, InP S ∧ ∀ x : List Bool, S x = true ↔
+    ∃ w : List Bool, w.length ≤ x.length ∧
+      ∀ i : ℕ, i + (k + 1) ≤ (x ++ w).length → g (((x ++ w).drop i).take (k + 1)) = true
+context: |
+  The P-side counterpart of pnp-130. pnp-130 puts the windowed-witness language of a polynomial-time
+  window predicate g, with window width k + 1 and the witness appended as a suffix, in NP. This gap
+  asks whether the same language is in P. It is a dead-end check for pnp-100: if the language is in P,
+  then no NP-hard language can be obtained from it unless P = NP (by pnp-018), so the windowed route
+  of pnp-130 cannot give the Cook–Levin step of pnp-100 without already settling P vs NP.
+  Status of the claim: argued by hand. The witness is a suffix of fixed length at most |x|, and every
+  window of width k + 1 that ends inside x ++ w is checked by g. A window only sees k + 1 consecutive
+  symbols, so the state after reading a prefix of x ++ w is its last k symbols, which takes at most 2^k
+  values, a constant. A dynamic programme over the positions keeps the set of reachable states, with
+  one check of g per transition, so the existence of a witness is decided in time polynomial in |x|.
+  Nothing here is checked in Lean. A counterexample to the statement, or a reason it is false, counts
+  as much as a proof.
+sketch: |
+  Fix g and k. The prefix x is read first and contains no choices: run the states of the windows that
+  lie inside x, which are fixed. Then for each length m ≤ |x| of the witness, extend the set of
+  reachable states one symbol at a time: a transition with bit b from state s is allowed when g of the
+  window formed by s and b is true (windows shorter than k + 1 are not checked). The set of states has
+  size at most 2^k, so each step is a constant amount of work. Accept when some length m has a
+  reachable state at its end. The total time is polynomial in |x|. The machine depends on k and g,
+  which the statement allows, since k is fixed before the existential over S.
+dead: []
