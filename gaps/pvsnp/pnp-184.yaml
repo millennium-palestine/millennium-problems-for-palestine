@@ -1,0 +1,62 @@
+id: pnp-184
+problem: pvsnp
+title: A run of pairs of the fan-out fold on a stack t ++ s leaves the bottom s untouched when t has at least as many cells as the pairs plus two
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- pnp-183
+statement: |
+  ∀ (ps : List (Bool × Bool)) (t s w : List Bool), ps.length + 2 ≤ t.length →
+    ((ps.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (t ++ s, w, none)).1
+    = (((ps.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (t, w, none)).1 ++ s)
+    ∧ ((ps.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (t ++ s, w, none)).2.1
+    = ((ps.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (t, w, none)).2.1
+context: |
+  Bottom preservation for a whole run, the multi-pair form of pnp-183. The hypothesis
+  ps.length + 2 ≤ t.length is enough: each pair lowers the stack height by at most one (a NAND
+  lowers it by one, every other pair does not lower it), so after k pairs the stack still has at
+  least two cells whenever the next pair needs them. The statement says that a run of pairs on
+  t ++ s leaves the bottom s under the result of the same run on t, and that the witness pointer
+  agrees. Combined with pnp-175 (height bookkeeping) it gives the segment-independence step of the
+  pnp-152 route. It does not use a machine, a polynomial bound or P, and it does not decide P vs NP.
+sketch: |
+  Induction on ps, generalising t and w. For the empty list both sides are t ++ s and t, and the
+  claim is rfl. For a head pair q with tail ps', the flatMap is [q.1, q.2] ++ (ps'.flatMap ...), and
+  List.foldl_append splits the run into the head pair followed by the tail. Apply pnp-183 (proved
+  inside the same file, since a proof may not import an unmerged solution) to the head pair, using
+  2 ≤ t.length, which follows from ps.length + 2 ≤ t.length. The head pair gives a stack t1 with
+  t1 ++ s on the left and t1 on the right, and the witness w1 on both sides. A one-pair step changes
+  the length by at most one, so t1.length ≥ t.length − 1 ≥ ps'.length + 2, and the induction
+  hypothesis for ps' at t1 and w1 finishes the proof. The length bound for one step is a case split
+  on the four pairs with omega.
+dead: []

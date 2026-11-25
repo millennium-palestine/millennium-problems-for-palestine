@@ -1,0 +1,61 @@
+id: pnp-183
+problem: pvsnp
+title: One pair of the fan-out fold on a stack t ++ s, with at least two cells in t, leaves the bottom s untouched
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (q : Bool × Bool) (t s w : List Bool), 2 ≤ t.length →
+    ([q.1, q.2].foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (t ++ s, w, none)).1
+    = ([q.1, q.2].foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (t, w, none)).1 ++ s
+    ∧ ([q.1, q.2].foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (t ++ s, w, none)).2.1
+    = ([q.1, q.2].foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (t, w, none)).2.1
+context: |
+  Bottom preservation for the pnp-152 route. A stack of the fan-out fold is a list whose head is the
+  top cell. A pair (a, b) acts on the top one or two cells only: a leaf (false, false) pushes a
+  witness bit, a copy (false, true) pushes a copy of the top cell, a NAND (true, true) pops two and
+  pushes one, and (true, false) does nothing. So if the stack is t ++ s and t has at least two cells,
+  the pair never reads a cell of s, and the result is the result on t with s put back underneath. The
+  witness pointer does not depend on the stack, so it agrees on both runs.
+  This is the first step of a segment-independence argument for the fan-out fold. It does not use a
+  machine, a polynomial bound or P, and it does not decide P vs NP.
+sketch: |
+  Let q = (a, b) and case-split on the two bits (four cases), after rewriting the two-element list
+  with List.foldl and the pending bit. In the leaf case the stack becomes w.headD false :: (t ++ s),
+  which is (w.headD false :: t) ++ s, and the witness becomes w.drop 1 on both sides. In the copy case
+  the top of t ++ s is the top of t because t is nonempty (List.headD_append or a case on t), so the
+  result is (t.headD false :: t) ++ s. In the NAND case the two top cells of t ++ s are those of t
+  (t has at least two cells), and drop 2 of t ++ s is t.drop 2 ++ s (List.drop_append_of_le_length),
+  so the result is (nand :: t.drop 2) ++ s. The no-op case is immediate. The witness component is
+  unchanged by every case except the leaf, where both sides drop one bit.
+dead: []
