@@ -1,0 +1,24 @@
+id: pnp-156
+problem: pvsnp
+title: Every binary string is a list of bit pairs followed by at most one bit
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ x : List Bool, ∃ (ps : List (Bool × Bool)) (r : List Bool),
+    x = ps.flatMap (fun q => [q.1, q.2]) ++ r ∧ r.length ≤ 1
+context: |
+  The fan-out program of pnp-133 reads its input two bits at a time: the first bit of a pair is an
+  instruction and the second is its value. A general input string has odd length in half the cases,
+  so the last bit is left over as a pending bit. This is the splitting fact that lets the pair-level
+  lemmas pnp-154 and pnp-155 be applied to any input x: write x as pairs followed by at most one bit.
+  It involves no machine, no polynomial and no P.
+sketch: |
+  Induction on x. For the empty string take no pairs and no leftover bit. For a :: x, take the
+  decomposition ps, r of x from the induction hypothesis. If r is empty, the new leftover is [a] and
+  the pairs are ps. If r = [b], then a :: x = (a, b) :: ps flatMapped, with no leftover bit. In both
+  cases the length of the new leftover is at most one, and the equation is the definition of
+  flatMap on a cons.
+dead: []
