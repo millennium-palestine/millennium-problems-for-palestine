@@ -1,0 +1,33 @@
+id: bsd-245
+problem: bsd
+title: 'Three-torsion upper bound: an elliptic curve over a field in which 3 is nonzero has at most nine points killed by 3'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-216
+- bsd-217
+- bsd-220
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) [W.IsElliptic],
+    (3 : K) ≠ 0 → Nat.card {P : W.toAffine.Point // (3 : ℤ) • P = 0} ≤ 9
+context: |
+  The ℓ = 3 case of the torsion upper bound bsd-192 (m-torsion has at most m² points when p ∤ m), and the
+  upper half of the exact count bsd-244 (at least nine points killed by 3). Together they give E[3] has exactly
+  nine points over an algebraically closed field of characteristic not 2 or 3, the instance m = 3 of bsd-191.
+  The argument is the count of the three-division polynomial: a point P with 3 • P = 0 is zero or has an
+  x-coordinate that is a root of ψ₃ (bsd-220, which covers the case m = 3 of bsd-198), ψ₃ has at most (3² − 1)/2 = 4
+  distinct roots (bsd-216), and two points with the same x-coordinate are equal or opposite (bsd-217). So at most
+  2 · 4 + 1 = 9 points. No algebraic closure is needed, and no finiteness hypothesis: the bound is proved
+  directly from the injection into the finite union of fibres. The statement is true; it is the standard count
+  E[3] ≤ 9 (Silverman, The Arithmetic of Elliptic Curves, Chapter III). Not checked against the text here.
+sketch: |
+  (1) Let R be the finset of roots of W.preΨ' 3; natDegree is 4 (natDegree_preΨ' with (3 : K) ≠ 0), so R has at most
+  4 elements (bsd-216 for m = 3) and W.preΨ' 3 ≠ 0. (2) For each x, a finset A x of at most two points containing
+  every affine point with x-coordinate x (bsd-217: if P0 is one such point, every other is P0 or −P0; otherwise
+  take ∅). (3) The subset {P | 3 • P = 0} lies in insert 0 (R.biUnion A): a point of the form some x y h has
+  x ∈ R by bsd-220 and Polynomial.mem_roots. (4) Card bound: card (insert 0 S) ≤ card S + 1, card (R.biUnion A) ≤
+  Σ_{x ∈ R} card (A x) ≤ 2 · |R| ≤ 8, so the total is at most 9. (5) Nat.card of the subtype is the ncard of the set,
+  which is at most the card of the finset containing it (Set.ncard_le_ncard, Set.ncard_coe_finset).
+dead: []
