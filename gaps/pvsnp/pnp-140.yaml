@@ -1,0 +1,34 @@
+id: pnp-140
+problem: pvsnp
+title: Windowed-witness language with windows as wide as the input is in NP
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-137
+statement: |
+  ∀ g : Lang, InP g → ∃ S : Lang, InNP S ∧ ∀ x : List Bool, S x = true ↔
+    ∃ w : List Bool, w.length ≤ x.length ∧
+      ∀ i : ℕ, i + (x.length + 1) ≤ (x ++ w).length →
+        g (((x ++ w).drop i).take (x.length + 1)) = true
+context: |
+  Variable-width form of pnp-130, the windowed-witness language of a polynomial-time window
+  predicate. pnp-130 fixes the window width k + 1. A tableau laid out row by row has rows of the
+  length of the input, so the window must be as wide as the input itself. This gap says that the
+  language of witnesses all of whose windows of width |x| + 1 satisfy g is still in NP. It is the
+  NP-membership half of such a tableau, with the rows of the input's length. It does not decide
+  P vs NP, and it does not give the hardness half of pnp-100.
+sketch: |
+  Take the verifier V(pair x w) = the all-windows test of the windows of width |x| + 1 of x ++ w.
+  pnp-137 (variable-width windows, merged) gives the window list of x ++ w with the width read from
+  a unary count: use the count Lg x = replicate |x| false, which is polynomial-time (pnp-029).
+  The list of windows is then tested for all bits true, which is polynomial-time (pnp-122, with
+  pnp-052 for the concatenation x ++ w). Take the polynomial p = X, so the witness bound
+  w.length ≤ |x| is exact. The equivalence with the statement follows because the windows of
+  x ++ w of width |x| + 1 are exactly the positions i with i + (|x| + 1) ≤ |x ++ w|, which is the
+  index range of the list of pnp-137.
+dead: []
