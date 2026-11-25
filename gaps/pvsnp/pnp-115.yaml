@@ -1,0 +1,33 @@
+id: pnp-115
+problem: pvsnp
+title: The sliding windows of length k+1 of a polynomial-time predicate form a polynomial-time map
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Computability
+- Turing
+depends: []
+statement: |
+  ∀ g : Lang, InP g → ∀ k : ℕ, ∃ f : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) ∧
+    ∀ x : List Bool, f x = List.ofFn (fun i : Fin (x.length + 1 - (k + 1)) =>
+      g ((x.drop (i : ℕ)).take (k + 1)))
+context: |
+  Window-level step of the Cook–Levin tableau of pnp-100. A tableau row is checked by a local predicate on
+  every window of k + 1 consecutive cells (the windows overlap, so the blocks are sliding, not disjoint).
+  This gap says that the vector of window values of a polynomial-time predicate g is itself computed by a
+  polynomial-time map, for every fixed window size k. The output has length x.length + 1 - (k + 1), which
+  is at most the input length, and k is fixed, so each window is read in constant time. It is the
+  reduction-side building block of pnp-100 and not the formula itself: it does not give a tableau, a CNF,
+  or a circuit, and it does not decide P vs NP.
+sketch: |
+  Take the machine of g from InP g. Build a loop that, for each start position i, copies the k + 1 cells
+  from x.drop i onto a scratch stack, runs the machine of g on them (its time is a constant for fixed k),
+  and pushes the one output bit to the output stack. The loop count is x.length + 1 - (k + 1), read from
+  the input length by the unary-count machinery of pnp-066 and pnp-093. Each iteration takes a constant
+  number of steps plus the time of g, so the total time is polynomial. Compose with pnp-006 for the
+  sub-machine and with pnp-023 for the output length bound.
+dead: []

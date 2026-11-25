@@ -1,0 +1,29 @@
+id: pnp-116
+problem: pvsnp
+title: A predicate that holds on every sliding window of length k+1 is polynomial-time decidable
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Computability
+- Turing
+depends:
+- pnp-115
+statement: |
+  ∀ g : Lang, InP g → ∀ k : ℕ, InP (fun x : List Bool =>
+    decide (∀ i < x.length, i + (k + 1) ≤ x.length → g ((x.drop i).take (k + 1)) = true))
+context: |
+  Local-validity check of the Cook–Levin tableau of pnp-100. For a fixed polynomial-time predicate g on
+  windows of size k + 1, the input passes exactly when every window of k + 1 consecutive symbols satisfies
+  g. This is the decision version of pnp-115: the windows are the bits of that map, and the input passes
+  when all of them are true. It is the step that makes a tableau with fixed local rules a polynomial-time
+  check. It does not decide P vs NP and it does not construct a tableau.
+sketch: |
+  Use pnp-115 with the same g and k to get the window map f. The predicate is then the conjunction of the
+  bits of f x: the input is accepted when every bit is true and the window count is consistent. Decide the
+  conjunction with a loop over the output bits that stops with reject at the first false bit, which is
+  the same loop shape as pnp-011 on lists. The sliding-window condition with i + (k + 1) ≤ x.length
+  coincides with the window count of pnp-115, so the two sides agree on every input.
+dead: []
