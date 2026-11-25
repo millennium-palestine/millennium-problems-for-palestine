@@ -1,0 +1,24 @@
+id: bsd-201
+problem: bsd
+title: 'Order-3 points are not 2-torsion: for a nonsingular affine point (x, y) with 3 • P = 0, the number 2y + a₁x + a₃ is nonzero'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) (x y : K)
+    (h : W.toAffine.Nonsingular x y),
+    3 • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) = 0 →
+      2 * y + W.a₁ * x + W.a₃ ≠ 0
+context: |
+  Step (1) of the 3-torsion case of bsd-198 (the division polynomial vanishes on m-torsion, here m = 3).
+  It is the nondegeneracy input for the doubling formula of bsd-200: if 2y + a₁x + a₃ = 0 then 2P = 0 and
+  3P = P ≠ 0, a contradiction, so the tangent denominator is nonzero. This gap is not the general bsd-198;
+  it only covers the case m = 3, which is the first instance of its induction. Proved by hand here from
+  Mathlib's add_self_of_Y_eq (2P = 0 when the Y-coordinate is its own negative), not checked in a file yet.
+sketch: |
+  Suppose 2y + a₁x + a₃ = 0. Then y = negY x y, so add_self_of_Y_eq gives P + P = 0, i.e. 2 • P = 0. Subtracting
+  from 3 • P = 0 gives P = 0 (as 3 • P = 2 • P + P), contradicting that a Point.some is nonzero. Uses
+  Point.some_ne_zero (or the constructor distinctness of Point) and the identity 3 • P = 2 • P + P.
+dead: []
