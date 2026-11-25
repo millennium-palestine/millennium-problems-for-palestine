@@ -1,0 +1,34 @@
+id: bsd-246
+problem: bsd
+title: 'Five-torsion points are roots of the 5-division polynomial: for an elliptic curve over a field K and a nonsingular affine point (x, y) with 5 • P = 0, the polynomial preΨ'' 5 vanishes at x'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-221
+- bsd-240
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) [W.IsElliptic]
+    (x y : K) (h : W.toAffine.Nonsingular x y),
+    (5 : ℤ) • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) = 0 →
+    (W.preΨ' 5).eval x = 0
+context: |
+  The case m = 5 of bsd-198 (the division polynomial vanishes at the x-coordinate of an odd-order affine point), the
+  next instance after the case m = 3 of bsd-220. It is a step of the odd-torsion bound bsd-192 for m = 5, which
+  would give at most 25 five-torsion points through the glue of bsd-219. It does not need the general addition
+  formula bsd-210 (still open): 5P = 0 gives 2(2P) = −P, so x(2P) and x(4P) = x(−P) = x are linked by two uses of
+  the doubling identity bsd-221, and the resulting polynomial relation is the 5-division polynomial. The
+  polynomial ψ₅ is preΨ₄·Ψ₂Sq² − Ψ₃³ (Mathlib preΨ'_odd at m = 0). The case Ψ₃(x) = 0 is excluded by bsd-240:
+  it would force 3P = 0, and 3P = 0 with 5P = 0 gives P = 0. The statement is true (the 5-division polynomial
+  vanishes at x(P) for P of order 5). Not checked against the text here beyond the proof.
+sketch: |
+  Let D = 2y + a₁x + a₃ ≠ 0 (else 2P = 0 and then P = 0 from 5P = 0). Doubling (bsd-221) gives Q = P + P = (x₂, y₂)
+  with x₂ D² = φ(x), φ(t) = t⁴ − b₄t² − 2b₆t − b₈. Q is affine with 2y₂ + a₁x₂ + a₃ ≠ 0 (else 4P = 0 and P = 0). The
+  second doubling gives Q + Q = 4P = −P, so its x-coordinate is x and x · D₂² = φ(x₂), D₂ = 2y₂ + a₁x₂ + a₃. Using
+  D² = g(x), D₂² = g(x₂) with g(t) = 4t³ + b₂t² + 2b₄t + b₆ (from the curve equation), the two relations
+  x₂ g(x) = φ(x) and x g(x₂) = φ(x₂), together with 4b₈ = b₂b₆ − b₄², give the identity
+  (preΨ₄(x) g(x)² − Ψ₃(x)³) · Ψ₃(x) = 0 as a linear combination (the cofactors are found by eliminating x₂; the
+  resultant is the 5-division polynomial times Ψ₃). Then Ψ₃(x) ≠ 0 by bsd-240 and 5P = 0 (see context).
+  Mathlib: preΨ'_odd at m = 0, preΨ'_four, preΨ'_two, preΨ'_three, WeierstrassCurve.b_relation.
+dead: []
