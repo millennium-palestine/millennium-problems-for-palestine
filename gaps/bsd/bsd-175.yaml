@@ -1,0 +1,26 @@
+id: bsd-175
+problem: bsd
+title: 'Norm identity for the second-order recurrence: c_{k+1}² − a c_k c_{k+1} + p c_k² = p^{k+1} for the sequence c₀ = 1, c₁ = a, c_{k+2} = a c_{k+1} − p c_k'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (a p : ℤ) (c : ℕ → ℤ), c 0 = 1 → c 1 = a →
+    (∀ k : ℕ, c (k + 2) = a * c (k + 1) - p * c k) →
+    ∀ k : ℕ, c (k + 1) ^ 2 - a * c k * c (k + 1) + p * c k ^ 2 = p ^ (k + 1)
+context: |
+  Integer companion of bsd-028 and bsd-176. For a good prime p, the prime-power coefficients of the local factor
+  1 − a_p T + p T² of an elliptic curve over ℚ satisfy exactly this recurrence with a = a_p. The quadratic form
+  Q_k = c_{k+1}² − a c_k c_{k+1} + p c_k² is the norm form of the roots of X² − aX + p, and it is a conserved
+  quantity: Q_{k+1} = p Q_k, so Q_k = p^{k+1}. This is a pure identity over ℤ (no curve, no field), and it is the
+  algebraic reason why the points of the norm form with bounded coordinates are controlled in the growth argument
+  of bsd-176. It is not a Hasse input by itself.
+sketch: |
+  Induction on k. Base case: Q_0 = c_1² − a c_0 c_1 + p c_0² = a² − a·a + p = p, using c_0 = 1 and c_1 = a.
+  Step: write c_{k+2} = a c_{k+1} − p c_k (the recurrence). Then Q_{k+1} = c_{k+2}² − a c_{k+1} c_{k+2} + p c_{k+1}²,
+  and c_{k+2}² − a c_{k+1} c_{k+2} = c_{k+2}(c_{k+2} − a c_{k+1}) = (a c_{k+1} − p c_k)(−p c_k) = −p a c_k c_{k+1} + p² c_k².
+  So Q_{k+1} = p (c_{k+1}² − a c_k c_{k+1} + p c_k²) = p Q_k = p · p^{k+1}. In Lean: rewrite with the recurrence
+  (`rw [h k]` or `linear_combination`), then `ring`; the step is `linear_combination (…) * h k` with the induction hypothesis.
+dead: []

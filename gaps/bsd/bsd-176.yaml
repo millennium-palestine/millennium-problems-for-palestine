@@ -1,0 +1,32 @@
+id: bsd-176
+problem: bsd
+title: 'Growth forces the discriminant bound: if the second-order recurrence c₀ = 1, c₁ = a, c_{k+2} = a c_{k+1} − p c_k with p > 0 has |c_k| ≤ C √p^k for all k, then a² ≤ 4p'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (a p C : ℝ) (c : ℕ → ℝ), 0 < p → c 0 = 1 → c 1 = a →
+    (∀ k : ℕ, c (k + 2) = a * c (k + 1) - p * c k) →
+    (∀ k : ℕ, |c k| ≤ C * Real.sqrt p ^ k) →
+    a ^ 2 ≤ 4 * p
+context: |
+  The converse of bsd-028, and the discriminant half of the Weil route to Hasse's bound. If a = a_p and the
+  prime-power coefficients of 1 − a_p T + p T² grow at most like C √p^k uniformly in k, then the roots of
+  X² − aX + p cannot be real and distinct (they would have modulus greater than √p and make c_k grow like |α|^k).
+  So a² ≤ 4p. The hypothesis of uniform growth is NOT provable here: for an elliptic curve it is the Weil bound over
+  all extensions of the prime field (Stepanov's method gives it for all q with an absolute C, but the rationality
+  input is missing). This gap is only the algebra that turns that growth into the discriminant bound, so it can be
+  accepted independently of bsd-024. It is the hypothesis-free core of the route bsd-142 → bsd-024 via growth over
+  extensions.
+sketch: |
+  By contradiction, suppose a² > 4p. Replacing c_k by (−1)^k c_k turns a into −a and keeps the hypotheses, so assume
+  a ≥ 0. Let D = a² − 4p > 0 and s = √p > 0, and put α = (a + √D)/2 and β = (a − √D)/2 (real), so α + β = a and
+  αβ = p, with α ≠ β and α, β ≠ 0. Then |α| = (a + √D)/2 > s, since (a + √D)² = 2a² − 4p + 2a√D > 4p (use a² > 4p
+  and a ≥ 0). Also |β| = p/|α| < s. Claim: c_{k+1} − β c_k = α^{k+1} for all k, by induction (base: a − β = α;
+  step: c_{k+2} − β c_{k+1} = α(c_{k+1} − β c_k), using αβ = p). Hence c_k = (α^{k+1} − β^{k+1})/(α − β), so
+  |c_k| ≥ (|α|^{k+1} − |β|^{k+1})/|α − β|. Since |α| > s > |β|, the ratio |α|^k / s^k tends to infinity, which
+  contradicts |c_k| ≤ C s^k for large k. In Lean: use `tendsto_pow_atTop_atTop_of_one_lt` for (|α|/s)^k, and
+  `Real.sq_sqrt`, `Real.sqrt_nonneg` for the roots. The case p > 0 is needed for s > 0.
+dead: []
