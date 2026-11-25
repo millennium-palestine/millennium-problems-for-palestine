@@ -1,0 +1,35 @@
+id: pnp-145
+problem: pvsnp
+title: A pair (true, false) of fan-out program bits leaves the whole machine state unchanged
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  let step := fun (st : List Bool × List Bool × Option Bool) (c : Bool) =>
+    match st.2.2 with
+    | none => (st.1, st.2.1, some c)
+    | some d =>
+      if d then (if c then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+        else (st.1, st.2.1, none))
+      else (if c then (st.1.headD false :: st.1, st.2.1, none)
+        else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))
+  ∀ st : List Bool × List Bool × Option Bool, st.2.2 = none → step (step st true) false = st
+context: |
+  Padding step for pnp-141. The statement there pads the fan-out program with no-op pairs (true, false)
+  up to the witness bound of the verifier, and the padded program must still have the same satisfying
+  leaf assignments. This gap says the pair is a genuine no-op: after the first bit true the pending
+  component holds some true, and the second bit false takes the branch that returns the state with the
+  pending component cleared and nothing else changed. It is the one-pair base case of the padding
+  argument; the iterated form is pnp-146. It does not decide P vs NP.
+sketch: |
+  Let st = (s, w, none). The first bit true sets the pending component to some true, giving (s, w, some true).
+  The second bit false with pending some true takes the branch with d = true and c = false, which returns
+  (s, w, none). So the result is (s, w, none), which equals st because the pending component of st is none.
+  Proof: destructure st into its three components, then simp (or rfl after rewriting the hypothesis).
+  No induction is needed.
+dead: []

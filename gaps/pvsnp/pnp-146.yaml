@@ -1,0 +1,34 @@
+id: pnp-146
+problem: pvsnp
+title: Repeating the no-op pair (true, false) k times from a clean state returns the same state
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-145
+statement: |
+  let step := fun (st : List Bool × List Bool × Option Bool) (c : Bool) =>
+    match st.2.2 with
+    | none => (st.1, st.2.1, some c)
+    | some d =>
+      if d then (if c then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+        else (st.1, st.2.1, none))
+      else (if c then (st.1.headD false :: st.1, st.2.1, none)
+        else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))
+  ∀ (k : ℕ) (st : List Bool × List Bool × Option Bool), st.2.2 = none →
+    (fun s => step (step s true) false)^[k] st = st
+context: |
+  Iterated form of the padding no-op of pnp-145, which is what the padding step of pnp-141 needs: a block
+  of k pairs (true, false) inserted after a clean state changes nothing, so the padded program has the
+  same stack, witness and pending component as the unpadded one. It is only the state-level statement
+  about the iterate; the splice into a program string is left to a later gap. It does not decide P vs NP.
+sketch: |
+  Induction on k. For k = 0 the iterate is the identity. For k + 1, Function.iterate_succ_apply' writes the
+  iterate as one more application of the pair on top. The pair keeps the state clean (its pending component
+  is none by pnp-145), so the induction hypothesis applies to the state after the pair, and the pair returns
+  the original state by pnp-145. Only pnp-145 and the induction are needed.
+dead: []
