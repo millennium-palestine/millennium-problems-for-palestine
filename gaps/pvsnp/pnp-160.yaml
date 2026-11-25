@@ -1,0 +1,40 @@
+id: pnp-160
+problem: pvsnp
+title: A run of pairs of the fan-out program leaves the stack as a new top segment over the suffix with twice the NAND count removed
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (ps : List (Bool × Bool)) (s w : List Bool), ∃ t : List Bool,
+    ((ps.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (s, w, none)).1
+      = t ++ s.drop (2 * ps.countP (fun q => q.1 && q.2)) ∧ t.length ≤ ps.length
+context: |
+  The stack-shape fact behind a dynamic programme over the fan-out program of pnp-133. pnp-154 says
+  that a run of pairs leaves the stack as t ++ s.drop k with k at most twice the number of pairs,
+  but k is only existentially quantified, so it may depend on the stack. The dynamic programme needs
+  the removed count to be fixed by the program. Only the NAND pairs (true, true) remove entries from
+  the old stack, two each, and the entries they do not remove stay in the new top segment t. This
+  gap fixes k to be twice the number of NAND pairs, which depends only on the program, and bounds the
+  new top segment t by the number of pairs (each pair pushes at most one entry). It involves no
+  machine, no polynomial and no P. It is a stepping stone for pnp-152; it does not decide P vs NP.
+sketch: |
+  Induction on ps, generalising s and w, using the one-pair step of pnp-154 (a pair leaves
+  t0 ++ s.drop k0 with |t0| at most 1 and k0 equal to 2 for a NAND and 0 otherwise). For the cons
+  case, apply the induction hypothesis to the stack t0 ++ s.drop k0. The rest removes K' = twice
+  the NAND count of the tail of ps from that stack. If K' is at least |t0|, the drop of length K'
+  from t0 ++ s.drop k0 equals s.drop (k0 + K' - |t0|), which splits as a segment of length |t0|
+  followed by s.drop (k0 + K'). Put that segment in front of the new t, which keeps the length bound
+  (the segment has length at most one, and the pair pushes at most one entry). If K' is less than
+  |t0|, then K' is 0 and the drop is t0 itself, with tail s.drop k0. In both cases the total removed
+  count is k0 + K', which is twice the NAND count of the whole list. Base case: the empty program
+  returns s with t empty.
+dead: []
