@@ -1,0 +1,22 @@
+id: bsd-249
+problem: bsd
+title: 'Degree of the level-set power: for p prime and the monic cubic X³ + aX + b over ZMod p, the power to (p−1)/2 has degree 3·((p−1)/2)'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (a b : ZMod p),
+    ((Polynomial.X ^ 3 + Polynomial.C a * Polynomial.X + Polynomial.C b : Polynomial (ZMod p)) ^ ((p - 1) / 2)).natDegree =
+      3 * ((p - 1) / 2)
+context: |
+  The degree input of Step 1 of bsd-183 (shaped independence for the level-set auxiliary family). There g = f^c with
+  f = X³ + aX + b and c = (p−1)/2, and the argument needs deg g = 3c exactly, so that the bound deg R ≤ p(J−1) + K − 1 + 3c of
+  bsd-183 and the split of g into Frobenius blocks (g has degree below 2p, since 3c < 2p) are available. The degree of a
+  monic polynomial's power is the product of the degree and the exponent, and f is monic, so this holds for every prime p
+  (for p = 2 both sides are 0, since the exponent is 0). It is a small step, and it is true.
+sketch: |
+  Show f = X³ + C a · X + C b is monic (Polynomial.monic_X_pow_add or the monicity! tactic, since the lower terms have degree below 3).
+  Then Polynomial.Monic.natDegree_pow gives natDegree (f ^ n) = n * natDegree f, and natDegree f = 3 by
+  Polynomial.natDegree_cubic-style lemmas or compute_degree!. Finally rewrite the product as 3 * ((p − 1) / 2) with mul_comm.
