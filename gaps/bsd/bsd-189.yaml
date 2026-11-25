@@ -1,0 +1,37 @@
+id: bsd-189
+problem: bsd
+title: 'Summation of a multiplicative majorant: prime-power bounds off a finite set of primes give summability of |f(n)| n^(−σ) for σ > 3/2'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-186
+- bsd-187
+- bsd-188
+statement: |
+  ∀ (f : ℕ → ℝ) (σ A : ℝ) (S : Finset ℕ), 3 / 2 < σ → 0 ≤ A →
+    (∀ m n : ℕ, 0 < m → 0 < n → Nat.Coprime m n → f (m * n) = f m * f n) →
+    (∀ p : ℕ, p.Prime → ∀ k : ℕ, |f (p ^ k)| ≤ ((k : ℝ) + 1) * A ^ k * (p : ℝ) ^ ((k : ℝ) / 2)) →
+    (∀ p : ℕ, p.Prime → p ∉ S → A * (p : ℝ) ^ (1 / 2 - σ) ≤ 1 / 2) →
+    (∀ p ∈ S, Summable (fun k : ℕ => |f (p ^ k)| / (p : ℝ) ^ (σ * k))) →
+    Summable (fun n : ℕ => |f n| / (n : ℝ) ^ σ)
+context: |
+  The summation step of the weak-bound route to bsd-006, replacing the pointwise bound of bsd-185. Given a
+  multiplicative coefficient sequence f (for the L-series of an elliptic curve, f(n) = a_n) whose prime-power
+  coefficients satisfy the weak bound |f(p^k)| ≤ (k+1) A^k p^(k/2) for every prime p, this gap concludes absolute
+  convergence of Σ |f(n)| n^(−σ) for every σ > 3/2. The primes where A p^(1/2−σ) > 1/2 (finitely many, since
+  σ > 3/2 makes the exponent negative) are put in the finite set S, and their local series are assumed summable
+  (for the L-series these are the local factors at finitely many primes, which are rational in p^(−s)). Off S the
+  local factor is bounded by 1 + 8 A p^(1/2−σ) by bsd-186, the partial products are bounded by bsd-188, and the
+  prime sum converges by bsd-187. The proof is: partial sums ≤ exp(Σ_{p∈S} T_p + 8 Σ_p A p^(1/2−σ)), uniformly in N.
+  It is true, and this is the last analytic step of the route before the L-series is identified with f.
+sketch: |
+  Let T_p be the sum of the local series at p, and y_p = A p^(1/2−σ) for prime p (0 otherwise). For each prime p,
+  the partial sum of the local series up to N is at most G_p, where G_p = T_p for p in S (Summable.sum_le_tsum) and
+  G_p = 1 + 8 y_p for p outside S (bsd-186, sum_le_tsum). Then 1 + 8 y ≤ exp(8 y) and T ≤ exp(T), so each G_p is at
+  most exp(T'_p + 8 y_p) with T'_p = T_p on S and 0 elsewhere. The product over the primes ≤ N of the partial sums is
+  at most exp of the sum, and that sum is at most Σ_{p∈S} T_p + 8 Σ' y_p, which is finite by bsd-187. The partial
+  sums of |f(n)| n^(−σ) over range (N+1) are at most the product over the primes (bsd-188) since the term at 0 is
+  zero. Finally summable_of_sum_range_le gives summability of the nonnegative series.
+dead: []

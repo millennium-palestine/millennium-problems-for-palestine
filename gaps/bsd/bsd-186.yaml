@@ -1,0 +1,29 @@
+id: bsd-186
+problem: bsd
+title: 'Local Euler factor majorant: if the prime-power coefficients satisfy |u_k| ≤ (k+1) A^k p^(k/2) and A p^(1/2−σ) ≤ 1/2, then Σ_k |u_k| p^(−σk) is summable with sum at most 1 + 8 A p^(1/2−σ)'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) (A σ : ℝ) (u : ℕ → ℝ), p.Prime → 0 ≤ A → A * (p : ℝ) ^ (1 / 2 - σ) ≤ 1 / 2 →
+    (∀ k : ℕ, |u k| ≤ ((k : ℝ) + 1) * A ^ k * (p : ℝ) ^ ((k : ℝ) / 2)) →
+    Summable (fun k : ℕ => |u k| / (p : ℝ) ^ (σ * k)) ∧
+      ∑' k : ℕ, |u k| / (p : ℝ) ^ (σ * k) ≤ 1 + 8 * (A * (p : ℝ) ^ (1 / 2 - σ))
+context: |
+  Local step of the weak-bound route to bsd-006 (convergence of the L-series of an elliptic curve over ℚ for
+  Re s > 3/2), replacing the pointwise bound of bsd-185, which does not follow from bsd-184 when the constant
+  is above 2 (the powers (C+1)^k are not n^ε at n = 2^k). The route must sum over prime powers instead: for a
+  good prime p the local coefficients u_k = a_{p^k} satisfy |u_k| ≤ (k+1) A^k p^(k/2) by bsd-184 with A = C + 1,
+  and this gap bounds the local factor Σ_k |u_k| p^(−σk). The condition A p^(1/2−σ) ≤ 1/2 holds for all large
+  primes once σ > 1/2, and the constant 8 is a convenient bound for 1/(1−x)² on 0 ≤ x ≤ 1/2.
+  It is a finite real-analysis statement, provable without curves, and the Euler product step (bsd-187 and the
+  multiplicative summation still to be written) multiplies these local bounds over primes.
+sketch: |
+  Put x = A p^(1/2−σ) with 0 ≤ x ≤ 1/2. Each term satisfies |u_k| / p^(σk) ≤ (k+1) A^k p^(k/2) / p^(σk) = (k+1) x^k,
+  using p^(k/2) / p^(σk) = (p^(1/2−σ))^k (Real.rpow_sub, Real.rpow_natCast, Real.rpow_mul). The majorant
+  Σ_k (k+1) x^k equals 1/(1−x)² by hasSum_coe_mul_geometric_of_norm_lt_one plus hasSum_geometric_of_lt_one, and
+  (1 + 8x)(1−x)² = 1 + x(6 − 15x + 8x²) with 6 − 15x + 8x² = 1/2 + (1/2 − x)(11 − 8x) ≥ 0 on [0, 1/2], which gives
+  1/(1−x)² ≤ 1 + 8x. Summable.of_nonneg_of_le gives summability and Summable.tsum_le_tsum the bound.
+dead: []
