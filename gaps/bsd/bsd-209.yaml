@@ -1,0 +1,31 @@
+id: bsd-209
+problem: bsd
+title: 'Product of the chord x-coordinates on a Weierstrass curve: for two nonsingular affine points with x₁ ≠ x₂, the x-coordinates of P + Q and P − Q have product Q(x₁, x₂)/(x₁ − x₂)²'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-199
+- bsd-207
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) (x₁ y₁ x₂ y₂ : K)
+    (h₁ : W.toAffine.Nonsingular x₁ y₁) (h₂ : W.toAffine.Nonsingular x₂ y₂), x₁ ≠ x₂ →
+    ∃ (x₃ y₃ x₄ y₄ : K) (h₃ : W.toAffine.Nonsingular x₃ y₃) (h₄ : W.toAffine.Nonsingular x₄ y₄),
+      (WeierstrassCurve.Affine.Point.some x₁ y₁ h₁ + WeierstrassCurve.Affine.Point.some x₂ y₂ h₂ :
+        W.toAffine.Point) = WeierstrassCurve.Affine.Point.some x₃ y₃ h₃ ∧
+      (WeierstrassCurve.Affine.Point.some x₁ y₁ h₁ + -WeierstrassCurve.Affine.Point.some x₂ y₂ h₂ :
+        W.toAffine.Point) = WeierstrassCurve.Affine.Point.some x₄ y₄ h₄ ∧
+      x₃ * x₄ * (x₁ - x₂) ^ 2 =
+        x₁ ^ 2 * x₂ ^ 2 - W.a₁ * W.a₃ * x₁ * x₂ - 2 * W.a₄ * x₁ * x₂ - W.a₃ ^ 2 * (x₁ + x₂) -
+          4 * W.a₆ * (x₁ + x₂) + W.a₄ ^ 2 + W.a₁ * W.a₃ * W.a₄ - W.a₁ ^ 2 * W.a₆ - W.a₂ * W.a₃ ^ 2 -
+          4 * W.a₂ * W.a₆
+context: |
+  Affine version of bsd-207 (product of the chord x-coordinates). Uses bsd-199 for the sum P + Q and for
+  P + (−Q), and bsd-207 for the polynomial identity. Not checked against a textbook; the identity is
+  the Vieta form of the x-coordinates of P ± Q (Silverman, Chapter III, used in the x(nP) recursion).
+sketch: |
+  Apply bsd-199 to (P, Q) and to (P, −Q), where −Q = (x₂, −y₂ − a₁x₂ − a₃) is nonsingular by
+  nonsingular_neg. The x-coordinates are the chord expressions of bsd-199. Rewrite the negated point with
+  Point.neg_some, then multiply the two chord expressions and use bsd-207.
+dead: []
