@@ -1,0 +1,32 @@
+id: bsd-208
+problem: bsd
+title: 'Sum of the chord x-coordinates: for two points (x₁, y₁), (x₂, y₂) of a Weierstrass curve with x₁ ≠ x₂, the x-coordinates of P + Q and P − Q add up to G(x₁, x₂)/(x₂ − x₁)²'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (a₁ a₂ a₃ a₄ a₆ x₁ y₁ x₂ y₂ : K),
+    y₁ ^ 2 + a₁ * x₁ * y₁ + a₃ * y₁ = x₁ ^ 3 + a₂ * x₁ ^ 2 + a₄ * x₁ + a₆ →
+    y₂ ^ 2 + a₁ * x₂ * y₂ + a₃ * y₂ = x₂ ^ 3 + a₂ * x₂ ^ 2 + a₄ * x₂ + a₆ →
+    x₁ ≠ x₂ →
+    (((y₂ - y₁) / (x₂ - x₁)) ^ 2 + a₁ * ((y₂ - y₁) / (x₂ - x₁)) - a₂ - x₁ - x₂) +
+      (((-y₂ - a₁ * x₂ - a₃ - y₁) / (x₂ - x₁)) ^ 2 + a₁ * ((-y₂ - a₁ * x₂ - a₃ - y₁) / (x₂ - x₁)) - a₂ - x₁ - x₂) =
+    (a₁ ^ 2 * x₁ * x₂ + a₁ * a₃ * (x₁ + x₂) + 4 * a₂ * x₁ * x₂ + a₃ ^ 2 + 2 * a₄ * (x₁ + x₂) + 4 * a₆ +
+      2 * x₁ * x₂ * (x₁ + x₂)) / (x₂ - x₁) ^ 2
+context: |
+  Pure algebra, the companion of bsd-207 (product). The x-coordinates of P + Q and P − Q (chord formula,
+  bsd-199, applied to Q and to −Q = (x₂, −y₂ − a₁x₂ − a₃)) have a sum that is a rational function of x₁, x₂
+  alone. Together with the product of bsd-207, the sum and product determine the pair {x(P+Q), x(P−Q)} as
+  the roots of a quadratic over the field of x-coordinates. This is the second Vieta identity in the
+  recursion for x(nP) behind bsd-198. For a₁ = a₂ = a₃ = 0, a₄ = a, a₆ = b the numerator is 2(x₁ + x₂)(x₁x₂ + a) +
+  4b, the classical value for y² = x³ + ax + b. Pure algebra, checked symbolically; no group law is used.
+sketch: |
+  With s, t, d, c as in bsd-207, the two slope-squared terms add to (s² + t²)/d² + a₁(s + t)/d − 2c. Multiplying
+  out, (s² + a₁sd − cd²) + (t² + a₁td − cd²) − G(x₁, x₂) = 2E₁ + 2E₂, where
+  G = a₁²x₁x₂ + a₁a₃(x₁ + x₂) + 4a₂x₁x₂ + a₃² + 2a₄(x₁ + x₂) + 4a₆ + 2x₁x₂(x₁ + x₂), and E₁, E₂ are the curve
+  equations (lhs − rhs). Verified with sympy. In Lean: have key : (the numerator sum) = G := by linear_combination
+  2 * E₁ + 2 * E₂, then rewrite both slope expressions as numerators over (x₂ − x₁)² (field_simp) and use
+  div_add_div_same.
+dead: []
