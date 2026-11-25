@@ -1,0 +1,41 @@
+id: bsd-265
+problem: bsd
+title: 'Seven-torsion step, geometric half (4P): for an affine point P = (x, y) with 2y + a₁x + a₃ ≠ 0 and 4P = (x₄, y₄), x₄·Ψ₂Sq(x)·preΨ₄(x)² = x·Ψ₂Sq(x)·preΨ₄(x)² − Ψ₃(x)·preΨ₅(x), where preΨ₅ = preΨ₄·Ψ₂Sq² − Ψ₃³'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) (x y x4 y4 : K)
+    (h : W.toAffine.Nonsingular x y) (h4 : W.toAffine.Nonsingular x4 y4),
+    2 * y + W.a₁ * x + W.a₃ ≠ 0 →
+    (4 : ℤ) • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) =
+      WeierstrassCurve.Affine.Point.some x4 y4 h4 →
+    x4 * ((4 * x ^ 3 + W.b₂ * x ^ 2 + 2 * W.b₄ * x + W.b₆) *
+        (2 * x ^ 6 + W.b₂ * x ^ 5 + 5 * W.b₄ * x ^ 4 + 10 * W.b₆ * x ^ 3 + 10 * W.b₈ * x ^ 2 +
+          (W.b₂ * W.b₈ - W.b₄ * W.b₆) * x + (W.b₄ * W.b₈ - W.b₆ ^ 2)) ^ 2) =
+      x * ((4 * x ^ 3 + W.b₂ * x ^ 2 + 2 * W.b₄ * x + W.b₆) *
+        (2 * x ^ 6 + W.b₂ * x ^ 5 + 5 * W.b₄ * x ^ 4 + 10 * W.b₆ * x ^ 3 + 10 * W.b₈ * x ^ 2 +
+          (W.b₂ * W.b₈ - W.b₄ * W.b₆) * x + (W.b₄ * W.b₈ - W.b₆ ^ 2)) ^ 2) -
+      (3 * x ^ 4 + W.b₂ * x ^ 3 + 3 * W.b₄ * x ^ 2 + 3 * W.b₆ * x + W.b₈) *
+        ((2 * x ^ 6 + W.b₂ * x ^ 5 + 5 * W.b₄ * x ^ 4 + 10 * W.b₆ * x ^ 3 + 10 * W.b₈ * x ^ 2 +
+          (W.b₂ * W.b₈ - W.b₄ * W.b₆) * x + (W.b₄ * W.b₈ - W.b₆ ^ 2)) *
+          (4 * x ^ 3 + W.b₂ * x ^ 2 + 2 * W.b₄ * x + W.b₆) ^ 2 -
+          (3 * x ^ 4 + W.b₂ * x ^ 3 + 3 * W.b₄ * x ^ 2 + 3 * W.b₆ * x + W.b₈) ^ 3)
+context: |
+  Second half of the m = 7 case of the division-polynomial vanishing (bsd-256), with bsd-264 for 3P. Notation as in
+  bsd-264: ψ₂² = Ψ₂Sq(x), ψ₄ = ψ₂·preΨ₄, Ψ₃ = ψ₃, and the 5-division polynomial ψ₅ = preΨ₄·Ψ₂Sq² − Ψ₃³ (Mathlib's
+  preΨ'_odd gives this for m = 0). The classical formula x(4P) = x − ψ₃ψ₅/ψ₄² gives the statement after clearing ψ₄².
+  Here 4P = 2(2P), so the proof goes through the doubling bsd-221 twice: first x₂ = x(2P) (a rational function of x
+  by the doubling formula), then x(4P) from x₂. The statement is a polynomial identity in x once x₂ is eliminated, and
+  its numerical check over F_101 (six random curves, all affine points with 4P ≠ 0) found no failures. Not a proof.
+  With bsd-264 and the seven-torsion relation 3P = −4P, the two halves give ψ₇(x) = 0 (bsd-256).
+sketch: |
+  Let Q = 2P = (x₂, y₂) (bsd-221 gives x₂·(2y+a₁x+a₃)² = x⁴ − b₄x² − 2b₆x − b₈, and 2y+a₁x+a₃ ≠ 0 keeps the doubling
+  denominators nonzero). Then 4P = 2Q, and bsd-221 applied to Q (y₂ ≠ negY, since 4P ≠ 0 follows from 7P = 0 and P ≠ 0)
+  gives x₄·(2y₂+a₁x₂+a₃)² = x₂⁴ − b₄x₂² − 2b₆x₂ − b₈. Replace (2y₂+a₁x₂+a₃)² by Ψ₂Sq(x₂) (curve equation for Q), and
+  x₂ by the rational function of x from the first relation: multiply out and compare with the target by linear_combination
+  (sympy certificate, reduced modulo the curve equation and the relation for x₂). Alternatively state it through 2P + 2P
+  using bsd-217 and the same-x lemma. Compare bsd-246, which eliminated x₂ with a resultant for m = 5.
+dead: []

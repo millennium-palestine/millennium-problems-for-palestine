@@ -1,0 +1,38 @@
+id: bsd-264
+problem: bsd
+title: 'Seven-torsion step, geometric half (3P): for an affine point P = (x, y) with 2y + a₁x + a₃ ≠ 0 and 3P = (x₃, y₃), x₃·Ψ₃(x)² = x·Ψ₃(x)² − Ψ₂Sq(x)·preΨ₄(x)'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) (x y x3 y3 : K)
+    (h : W.toAffine.Nonsingular x y) (h3 : W.toAffine.Nonsingular x3 y3),
+    2 * y + W.a₁ * x + W.a₃ ≠ 0 →
+    (3 : ℤ) • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) =
+      WeierstrassCurve.Affine.Point.some x3 y3 h3 →
+    x3 * (3 * x ^ 4 + W.b₂ * x ^ 3 + 3 * W.b₄ * x ^ 2 + 3 * W.b₆ * x + W.b₈) ^ 2 =
+      x * (3 * x ^ 4 + W.b₂ * x ^ 3 + 3 * W.b₄ * x ^ 2 + 3 * W.b₆ * x + W.b₈) ^ 2 -
+        (4 * x ^ 3 + W.b₂ * x ^ 2 + 2 * W.b₄ * x + W.b₆) *
+          (2 * x ^ 6 + W.b₂ * x ^ 5 + 5 * W.b₄ * x ^ 4 + 10 * W.b₆ * x ^ 3 + 10 * W.b₈ * x ^ 2 +
+            (W.b₂ * W.b₈ - W.b₄ * W.b₆) * x + (W.b₄ * W.b₈ - W.b₆ ^ 2))
+context: |
+  First half of the m = 7 case of the division-polynomial vanishing (bsd-256), split off so that the
+  geometry and the algebra are separate. Write ψ₂ = 2y + a₁x + a₃, Ψ₂Sq = 4x³ + b₂x² + 2b₄x + b₆ (so ψ₂² = Ψ₂Sq(x)),
+  Ψ₃ = 3x⁴ + b₂x³ + 3b₄x² + 3b₆x + b₈, and preΨ₄ = 2x⁶ + b₂x⁵ + 5b₄x⁴ + 10b₆x³ + 10b₈x² + (b₂b₈ − b₄b₆)x + (b₄b₈ − b₆²),
+  so that ψ₄ = ψ₂·preΨ₄. The classical formula x(3P) = x − ψ₂ψ₄/ψ₃² gives, after clearing ψ₃², the statement.
+  The product ψ₂ψ₄ = ψ₂²·preΨ₄ = Ψ₂Sq(x)·preΨ₄(x) has no y left, so the statement is a polynomial identity in x. It
+  is the chord 3P = P + 2P: 2P has x-coordinate given by bsd-221 (x₂·ψ₂² = x⁴ − b₄x² − 2b₆x − b₈), and the chord
+  slope between P and 2P, with the two curve equations, eliminates y and y₂. The identity was checked numerically
+  over F_101 for six random Weierstrass curves (all affine points with 3P ≠ 0): no failures. Not yet a proof.
+  Note that the statement is also true without the hypothesis 2y + a₁x + a₃ ≠ 0, but keeping it makes the chord step
+  easier.
+sketch: |
+  Let Q = 2P = (x₂, y₂), from bsd-221 (its x-formula x₂·(2y+a₁x+a₃)² = x⁴ − b₄x² − 2b₆x − b₈ and Ψ₂Sq identity by
+  W.b_relation, or directly). 3P = P + Q with x₂ ≠ x (if x₂ = x then 3P = 0 or P = 0; Point.add_of_Y_eq). By
+  Point.add_of_X_ne, x₃ = λ² + a₁λ − a₂ − x − x₂ with λ = (y₂ − y)/(x₂ − x). Clear denominators and use the curve
+  equations for P and Q (hE, hE2) with linear_combination; the certificate can be produced with sympy over the
+  variables x, y, x₂, y₂, a₁..a₆ (reduce modulo the two curve equations and the doubling relations). Compare
+  bsd-240 and bsd-246, which did the same kind of elimination for m = 5 with a resultant in x₂.
+dead: []
