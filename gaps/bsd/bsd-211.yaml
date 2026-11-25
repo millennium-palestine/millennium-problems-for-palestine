@@ -1,0 +1,34 @@
+id: bsd-211
+problem: bsd
+title: 'Frobenius commutes with the chord slope: over a field K of characteristic p, with Weierstrass coefficients fixed by the p-th power, the slope through (x₁ᵖ, y₁ᵖ) and (x₂ᵖ, y₂ᵖ) is the p-th power of the slope through (x₁, y₁) and (x₂, y₂)'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (K : Type) [Field K] [CharP K p] [DecidableEq K] (W : WeierstrassCurve K),
+    W.a₁ ^ p = W.a₁ → W.a₂ ^ p = W.a₂ → W.a₄ ^ p = W.a₄ → W.a₃ ^ p = W.a₃ →
+    ∀ x₁ x₂ y₁ y₂ : K,
+      WeierstrassCurve.Affine.slope W (x₁ ^ p) (x₂ ^ p) (y₁ ^ p) (y₂ ^ p) =
+        (WeierstrassCurve.Affine.slope W x₁ x₂ y₁ y₂) ^ p
+context: |
+  First step of the sketch of bsd-089 (the degree form positivity, which feeds Hasse's bound bsd-024): build the
+  p-power Frobenius on the points of an elliptic curve over the algebraic closure of F_p as a group endomorphism.
+  The chord-and-tangent slope of Mathlib (WeierstrassCurve.Affine.slope, with its three cases x₁ = x₂ and y₁ = −y₂
+  or not, and x₁ ≠ x₂) is built from polynomials with coefficients in F_p and from division, so the p-th power map
+  commutes with it. The hypothesis that the coefficients a₁, a₂, a₃, a₄ satisfy aᵖ = a holds for any curve over F_p
+  (Fermat's little theorem), so this statement applies to the base change to the algebraic closure. This gap proves
+  only the slope identity. It does not prove that the Frobenius is a group homomorphism on points (bsd-212 and bsd-213
+  give the coordinate formulas for the sum) and it does not prove any part of Hasse's bound. It is true for every
+  field of characteristic p, including the cases x₁ = x₂ and the vertical-line case where the slope is 0.
+sketch: |
+  Unfold WeierstrassCurve.Affine.slope and split on the same if-conditions for the inputs x₁ᵖ, x₂ᵖ and for x₁, x₂.
+  The equality x₁ᵖ = x₂ᵖ is equivalent to x₁ = x₂ (injectivity of x ↦ xᵖ in a field of characteristic p, for instance
+  by `frobenius_inj` or `pow_left_injective` on a reduced ring with `iterateFrobenius`). The condition
+  y₁ᵖ = W.negY x₂ᵖ y₂ᵖ is equivalent to y₁ = W.negY x₂ y₂ because negY x y = −y − a₁x − a₃ and the powers of
+  −1, a₁ and a₃ are preserved (the hypotheses above and `neg_pow_char` or `Odd.neg_pow` for p odd, and for p = 2
+  signs do not matter). In the tangent branch use add_pow_char, mul_pow, pow_mul and the coefficient hypotheses to
+  pass the p-th power through 3x₁² + 2a₂x₁ + a₄ − a₁y₁ and through the denominator, then `map_div₀`-style rewriting
+  (div_pow). The chord branch is (y₁ − y₂)ᵖ/(x₁ − x₂)ᵖ with `sub_pow_char` and `div_pow`. Checked by hand, not in Lean.
+dead: []
