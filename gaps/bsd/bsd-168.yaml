@@ -1,0 +1,32 @@
+id: bsd-168
+problem: bsd
+title: 'Frobenius characteristic equation at rational points: for an elliptic curve over a prime field, the p-power Frobenius of a point over the prime field satisfies φ² − aφ + p = 0 with a = p + 1 − #E(F_p)'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] [DecidableEq (AlgebraicClosure (ZMod p))] (W : WeierstrassCurve (ZMod p))
+    (Q : (W.baseChange (ZMod p)).toAffine.Point),
+    let P := WeierstrassCurve.Affine.Point.baseChange (W' := W) (ZMod p) (AlgebraicClosure (ZMod p)) Q
+    let φ := WeierstrassCurve.Affine.Point.map (W' := W)
+      (FiniteField.frobeniusAlgHom (ZMod p) (AlgebraicClosure (ZMod p)))
+    φ (φ P) - (((p : ℤ) + 1 - (Nat.card (W.baseChange (ZMod p)).toAffine.Point : ℤ)) • φ P) + (p : ℤ) • P = 0
+context: |
+  The rational-point case of the characteristic equation of Frobenius, bsd-121 (Silverman V.2.3.1). It is the part of
+  bsd-121 for points P that come from the prime field, P = Q ⊗ 1 with Q over F_p. For such P the Frobenius fixes P
+  (Mathlib: WeierstrassCurve.Affine.Point.map_baseChange, since the p-power map is an F_p-algebra map), so φ P = P and
+  φ(φ P) = P, and the identity becomes (1 − a + p) P = #E(F_p) · P = 0, which is Lagrange's theorem for the group of
+  F_p-points (card_nsmul_eq_zero'). It is true and elementary, and it does not use isogenies or Hasse's bound.
+  It does NOT cover the points over the algebraic closure that are not defined over F_p: bsd-121 stays open for those,
+  and the degree input of bsd-089 is still needed there. The count here is Nat.card of the F_p-points as a type over
+  ZMod p, not of W.toAffine.Point; the two agree (the base change of W to ZMod p is W) but this statement does not
+  need that identification.
+sketch: |
+  intro p, W, Q and unfold the two lets. Write hfix : φ (baseChange Q) = baseChange Q from
+  WeierstrassCurve.Affine.Point.map_baseChange with f the p-power Frobenius (an AlgHom over ZMod p). Write hN :
+  N • Q = 0 with N = Nat.card of the F_p-points, from card_nsmul_eq_zero'. Push it through the group homomorphism
+  baseChange with map_nsmul and map_zero, and turn the ℤ-smul by a cast into the ℕ-smul with natCast_zsmul. Then rewrite
+  with hfix twice and close the goal with linear_combination (norm := module) on the cast identity.
+dead: []
