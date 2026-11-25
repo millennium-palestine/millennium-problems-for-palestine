@@ -1,0 +1,22 @@
+id: bsd-158
+problem: bsd
+title: 'Degree form nonnegative under the squared Hasse inequality: a² ≤ 4p makes m² − a m n + p n² nonnegative for all integers m, n'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (a p m n : ℤ), a ^ 2 ≤ 4 * p → 0 ≤ m ^ 2 - a * m * n + p * n ^ 2
+context: |
+  The positivity step of the degree-form argument of bsd-089. For an elliptic curve over a prime field,
+  the degree form m² − a m n + p n² of bsd-153 is nonnegative because a² ≤ 4p, which is the Hasse
+  inequality in squared integer form (bsd-024). This gap is the algebra that turns that Hasse input into
+  the nonnegativity required by bsd-089. It uses no curve and does not prove Hasse. The converse, that
+  nonnegativity forces a² ≤ 4p, is bsd-031.
+sketch: |
+  Multiply out: 4 (m² − a m n + p n²) = (2 m − a n)² + (4 p − a²) n². The first term is a square, and the
+  second is nonnegative because 4 p − a² ≥ 0 by hypothesis and n² ≥ 0. So nlinarith with the square
+  sq_nonneg (2 m − a n) and the product of sub_nonneg.mpr h with sq_nonneg n closes the goal, and
+  linarith on the scaled identity is enough after that.
+dead: []
