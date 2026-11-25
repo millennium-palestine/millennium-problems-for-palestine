@@ -1,0 +1,35 @@
+id: pnp-165
+problem: pvsnp
+title: In a tagged run of the fan-out program every consumption arc goes forward in time and ends before the final time
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (x : List Bool) (s : List ℕ × ℕ × Option Bool × List (ℕ × ℕ)),
+    x.foldl (fun (st : List ℕ × ℕ × Option Bool × List (ℕ × ℕ)) (b : Bool) =>
+      match st.2.2.1 with
+      | none => (st.1, st.2.1, some b, st.2.2.2)
+      | some a =>
+        if a then (if b then (st.2.1 :: st.1.drop 2, st.2.1 + 1, none,
+            ((st.1.take 2).filter (· != 0)).map (fun u => (u, st.2.1)) ++ st.2.2.2)
+          else (st.1, st.2.1, none, st.2.2.2))
+        else (if b then (st.1.headD 0 :: st.1, st.2.1, none, st.2.2.2)
+          else (st.2.1 :: st.1, st.2.1 + 1, none, st.2.2.2))) ([], 1, none, []) = s →
+    ∀ p ∈ s.2.2.2, p.1 < p.2 ∧ p.2 < s.2.1
+context: |
+  Stepping stone for pnp-152, the interval form of the arcs of a tagged fan-out run. Each arc (u, b)
+  of pnp-162 records a wire u consumed by the NAND at time b. This gap says the arc is well formed for
+  an interval dynamic programme: the creation time u is strictly before the consumption time b, and b
+  is strictly before the final time counter. It involves no machine and no P, and does not decide
+  P vs NP. The statement is closed; the proof is by induction over the fold with the stack invariant
+  of pnp-166 carried inside the file.
+sketch: |
+  Induct over the input, generalising the state, with the invariant: every stack entry is below the
+  time counter, every arc (u, b) has u < b and b < the time counter, and the time counter is at least 1.
+  A leaf pair pushes the old time and increments it. A copy pushes the top entry (or 0, below any
+  time at least 1). A NAND pushes the old time, increments it, and records arcs (u, old time) for
+  entries u of the stack, which are below the old time by the invariant. The other transitions leave
+  the stack and arcs unchanged. The invariant gives the claim at the end of the fold.
+dead: []

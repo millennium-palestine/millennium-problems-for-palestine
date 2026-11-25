@@ -1,0 +1,31 @@
+id: pnp-166
+problem: pvsnp
+title: In a tagged run of the fan-out program every stack entry is below the final time counter
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (x : List Bool) (s : List ℕ × ℕ × Option Bool × List (ℕ × ℕ)),
+    x.foldl (fun (st : List ℕ × ℕ × Option Bool × List (ℕ × ℕ)) (b : Bool) =>
+      match st.2.2.1 with
+      | none => (st.1, st.2.1, some b, st.2.2.2)
+      | some a =>
+        if a then (if b then (st.2.1 :: st.1.drop 2, st.2.1 + 1, none,
+            ((st.1.take 2).filter (· != 0)).map (fun u => (u, st.2.1)) ++ st.2.2.2)
+          else (st.1, st.2.1, none, st.2.2.2))
+        else (if b then (st.1.headD 0 :: st.1, st.2.1, none, st.2.2.2)
+          else (st.2.1 :: st.1, st.2.1 + 1, none, st.2.2.2))) ([], 1, none, []) = s →
+    ∀ u ∈ s.1, u < s.2.1
+context: |
+  Stepping stone for pnp-152, the time bound on the stack of a tagged fan-out run. Every wire id on
+  the final stack was created at a time strictly before the final time counter. Together with pnp-165
+  this is the bookkeeping the interval dynamic programme needs: every wire is an interval of times
+  that ends no later than the run. It involves no machine and no P, and does not decide P vs NP.
+sketch: |
+  Induct over the input, generalising the state, with the invariant: every stack entry is below the
+  time counter and the time counter is at least 1. A leaf pair pushes the old time and increments the
+  counter, so the new entry is below the new counter. A copy pushes the top entry, or 0, which is below
+  the counter. A NAND pushes the old time and increments the counter. A no-op changes nothing.
+dead: []
