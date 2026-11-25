@@ -1,0 +1,33 @@
+id: pnp-136
+problem: pvsnp
+title: Taking from the first component of a pair as many symbols as the second component has is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  ∃ T : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) T) ∧
+    ∀ x u : List Bool, T (pair x u) = x.take u.length
+context: |
+  Window-length primitive for a row-major tableau. The sliding-window map of pnp-115 takes a
+  window of a fixed width k + 1. A tableau whose rows have the length of the input needs windows
+  whose width is read from the input, and the window is the prefix of the suffix of x. This gap
+  is the prefix counterpart of pnp-120: the machine reads the pair, and for each symbol of u it
+  moves one symbol of x to a work stack, stopping early when x runs out. It is one loop whose
+  count is read from the second component, as in pnp-120 and pnp-045, and it does not decide
+  P vs NP.
+sketch: |
+  Input is pair x u. Split it as in pnp-120: the doubled bits of x go to an accumulator in reverse,
+  and the suffix of the input after the separator is u. Move the accumulator to the output stack,
+  which restores the order of x. Then repeat while u and the output are both nonempty: pop one
+  symbol of u, and if the output has a symbol, pop it and push it onto a third stack. Finally
+  empty the output (its rest is x.drop of the number of symbols taken), and move the third stack
+  back to the output, which restores the order of the taken prefix. The step count is at most
+  a fixed multiple of the length of pair x u, plus a constant. The equation follows by induction
+  on u, with the invariant that the third stack holds the reversed prefix taken so far.
+dead: []
