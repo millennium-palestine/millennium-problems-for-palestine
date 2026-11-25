@@ -1,0 +1,24 @@
+id: bsd-156
+problem: bsd
+title: 'Character sum of a double-root cubic: for every e in a prime field F_p with p ≠ 2, the square of Σ_x χ(x³ − 3e²x + 2e³) is at most 1'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (e : ZMod p), p ≠ 2 →
+    (∑ x : ZMod p, quadraticChar (ZMod p) (x ^ 3 + (-3 * e ^ 2) * x + 2 * e ^ 3)) ^ 2 ≤ 1
+context: |
+  Second piece of the singular case of bsd-142. The polynomial x³ − 3e²x + 2e³ factors as (x − e)²(x + 2e). Its value
+  has quadratic character χ((x − e)²(x + 2e)) = 0 when x = e and χ(x + 2e) otherwise, because χ of a nonzero square
+  is 1. So the sum is Σ_x χ(x + 2e) − χ(3e), and the first sum is zero (Mathlib's quadraticChar_sum_zero, p ≠ 2),
+  leaving −χ(3e), whose square is at most 1. The statement is true for every odd prime p and every e, including
+  e = 0. It gives no size bound beyond 1, so it is far from Hasse's bound, but it closes the singular case.
+sketch: |
+  Rewrite the polynomial as (x − e)² · (x + 2e) (ring). Use quadraticChar_mul to split χ, and quadraticChar_sq_one
+  (for a nonzero square) or the case split x = e to get χ((x−e)²) = if x = e then 0 else 1. Then the sum becomes
+  Σ_x (if x = e then 0 else χ(x + 2e)) = Σ_x χ(x + 2e) − χ(3e) (Finset.sum_ite_eq style, with x = e giving
+  x + 2e = 3e). Reindex with Equiv.addRight (2e) and quadraticChar_sum_zero (ringChar (ZMod p) = p ≠ 2) to get −χ(3e).
+  Finally (−χ(3e))² ≤ 1 from the fact that quadraticChar values are −1, 0, 1 (quadraticChar_dichotomy or quadraticChar_sq_one').
+dead: []
