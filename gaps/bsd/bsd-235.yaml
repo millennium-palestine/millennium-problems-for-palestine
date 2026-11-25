@@ -1,0 +1,30 @@
+id: bsd-235
+problem: bsd
+title: 'Torsion of a coprime product, lower direction: for an additive commutative group and coprime natural numbers ℓ, k, the points killed by ℓ times the points killed by k are at most the points killed by ℓk'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (G : Type) [AddCommGroup G] (ℓ k : ℕ), Nat.Coprime ℓ k →
+    Nat.card {x : G // ℓ • x = 0} * Nat.card {x : G // k • x = 0} ≤ Nat.card {x : G // (ℓ * k) • x = 0}
+context: |
+  Group-theoretic step of the torsion lower bound bsd-193 (the m-torsion of an elliptic curve over an algebraically
+  closed field, p not dividing m, has at least m² points). It is the converse of bsd-229 (the torsion of a product is
+  at most the product of the torsions), and it reduces a composite m with coprime factors to its prime-power parts
+  without using the structure of E[m]. The statement is true with Nat.card and needs no finiteness hypothesis: if the
+  ℓ-torsion or the k-torsion is infinite, the left side is 0; if both are finite, the ℓk-torsion is finite, because
+  every point R killed by ℓk splits as R = (bk)R + (aℓ)R with aℓ + bk = 1, the first summand lying in the ℓ-torsion
+  and the second in the k-torsion. The sum map (P, Q) ↦ P + Q from the ℓ-torsion times the k-torsion to the
+  ℓk-torsion is injective, since a difference P − P′ = Q′ − Q lies in both torsion subgroups and is killed by aℓ + bk = 1.
+sketch: |
+  Case split on Finite of the ℓ-torsion and of the k-torsion (Nat.card of an infinite type is 0). If either is
+  infinite, the left side is 0. If both are finite: (1) the sum map f : ℓ-torsion × k-torsion → ℓk-torsion,
+  f (P, Q) = P + Q, is well defined since (ℓk)•(P + Q) = k•(ℓ•P) + ℓ•(k•Q) = 0; (2) f is injective: if P + Q = P′ + Q′
+  then T = P − P′ = Q′ − Q has ℓ•T = 0 and k•T = 0, and Bézout (IsCoprime (ℓ : ℤ) (k : ℤ), i.e. Nat.isCoprime_iff_coprime)
+  gives T = (aℓ + bk)•T = 0; (3) so Nat.card (A × B) = Nat.card A * Nat.card B ≤ Nat.card of the target, by
+  Nat.card_le_card_of_injective, once the target is known to be finite; (4) finiteness of the target follows from the
+  surjectivity of f, using R = (bk)•R + (aℓ)•R (Bézout again). Finish with Nat.card_prod. Mathlib: Nat.isCoprime_iff_coprime,
+  Nat.card_prod, Nat.card_le_card_of_injective, Finite.of_surjective, mul_smul / smul_add / zsmul lemmas.
+dead: []
