@@ -1,0 +1,27 @@
+id: pnp-122
+problem: pvsnp
+title: A binary string with no false symbol is polynomial-time decidable
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  InP (fun y : List Bool => decide (∀ b ∈ y, b = true))
+context: |
+  Scanning test for the window predicate of pnp-116. The window map of pnp-115 gives the list of
+  window values; the predicate of pnp-116 holds exactly when every entry of that list is true, so
+  pnp-116 needs this test on the output of a polynomial-time map (composed with pnp-008). It is a
+  single left-to-right scan of the input stack that rejects at the first false symbol, in the style
+  of the first-bit test of pnp-013. It is a structural lemma and does not decide P vs NP.
+sketch: |
+  Use one input stack and one output stack. The state records whether every symbol read so far is
+  true, starting from true. Pop one symbol at a time: a false symbol clears the flag, a true symbol
+  keeps it. When the input is empty, push the flag onto the output, then pop the empty input once
+  more so that the state returns to the initial one, as haltList requires. The machine runs in
+  |y| + O(1) steps, so the time bound is polynomial. The equation holds because the flag is true
+  exactly when no symbol of y is false, which is the meaning of ∀ b ∈ y, b = true.
+dead: []
