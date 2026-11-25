@@ -7,7 +7,6 @@ imports:
 open: []
 depends:
 - pnp-186
-- pnp-187
 statement: |
   ∀ (ps1 ps2 : List (Bool × Bool)) (t s w : List Bool) (R : List Bool × List Bool × Option Bool),
     R = ((ps1.flatMap fun q => [q.1, q.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
