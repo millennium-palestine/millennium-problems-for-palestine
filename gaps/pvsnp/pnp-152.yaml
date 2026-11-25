@@ -1,0 +1,44 @@
+id: pnp-152
+problem: pvsnp
+title: The pnp-133 language is in P
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-133
+statement: |
+  ∃ L : Lang, InP L ∧ ∀ x : List Bool, L x = true ↔ ∃ w : List Bool, w.length ≤ x.length ∧
+    (x.foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) ([], w, none)).1.headD false = true
+context: |
+  The P-membership counterpart of pnp-133. pnp-133 puts the language of this statement in NP, with
+  the witness as the leaves of a postfix fan-out program. This gap asks whether the same language is
+  in P. It is the one missing fact in the route through pnp-141: if pnp-141 holds, then the language
+  of this statement is NP-hard in the sense of pnp-018, so this gap together with pnp-141 gives
+  PEqualsNP by pnp-018. So the pnp-141 route can succeed only if P = NP, and this gap is the
+  open fact on which that argument rests.
+  Status of the claim: argued by hand in the stuck reports on pnp-141 (issue 855). The sharing in a
+  fold program is non-crossing, so the circuit graph has a one-page embedding, hence treewidth at most
+  2, and satisfiability of such circuits is decided by dynamic programming. The non-crossing step was
+  checked by a small script on bounded programs only. Nothing here is checked in Lean. The gap is
+  stated so that maintainers can accept it or refute it; a counterexample to the statement, or a
+  reason it is false, counts as much as a proof.
+sketch: |
+  Let the program of the input x be a circuit with NAND gates of fan-in 2 and leaves given by witness
+  bits. Show that every fan-out sharing arc is non-crossing in creation order (a copy takes its
+  value from the top of the stack, so an earlier value cannot be copied after a later one is
+  created and still used before it). A graph with a one-page embedding is outerplanar, so it has
+  treewidth at most 2. Run the standard dynamic programme over a width-2 tree decomposition: one
+  table entry per assignment of the at most two shared values in a bag, with the output bit
+  propagated to the root. The table size is constant, so the time is polynomial in |x|.
+dead: []
