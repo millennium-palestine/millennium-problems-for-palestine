@@ -1,0 +1,38 @@
+id: pnp-242
+problem: pvsnp
+title: The unary count of the indices k up to the input length at which a polynomial-time bit is true is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-021
+- pnp-025
+- pnp-028
+- pnp-029
+- pnp-093
+- pnp-232
+statement: |
+  ∀ c : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) c) →
+    ∃ q : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) q) ∧
+      ∀ x : List Bool, q x = List.replicate ((List.range (x.length + 1)).countP
+        (fun k => (c (pair x (List.replicate k false))).headD false)) true
+context: |
+  A bounded count over unary indices, the counting analogue of pnp-229 (bounded OR) and pnp-237 (bounded disjunction).
+  The index k runs over 0, ..., |x| and the bit is read from a polynomial-time map c at the instance pair x (replicate k
+  false). The count is written in unary, so that it can be read back by the unary arithmetic of pnp-031 and pnp-032.
+  This is the missing piece for decoding table positions of a dynamic programme (a quotient by unary counting), which the
+  table side of pnp-152 needs. It is a counting closure lemma. It does not state any table, any CYK recurrence, or the
+  correctness of a computation, and it does not decide P vs NP.
+sketch: |
+  Let the bit at index k be g(x, k) = (length comparison of pnp-028 at pair x (replicate k false)) ∧ (c at the same input).
+  The gate is true exactly for k ≤ |x|. Iterate, with pnp-232, the map that appends g(x, |w|) to the witness, starting
+  from the empty witness; the index is the current witness length, read by pnp-029. After N = p(|x|) steps with N ≥ |x| + 1
+  the witness is the list of the bits g(x, k) for k < N, and the gate makes every bit with k > |x| false. So the count of
+  true bits of the witness, computed by pnp-093 after pnp-025, equals the count over k ≤ |x|. The unary output is pnp-093.
+dead: []
