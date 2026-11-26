@@ -1,0 +1,21 @@
+id: bsd-280
+problem: bsd
+title: "Vanishing above the Toeplitz window: for a prime p and a, b in F_p, the coefficient of X^(n+p) in (X^3 + aX + b)^K is 0 whenever K <= n, where K = (p-1)/2"
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (a b : ZMod p) (n : ℕ), (p - 1) / 2 ≤ n →
+    ((Polynomial.X ^ 3 + Polynomial.C a * Polynomial.X + Polynomial.C b) ^ ((p - 1) / 2) : Polynomial (ZMod p)).coeff (n + p) = 0
+context: |
+  Bookkeeping for the Toeplitz matrix of bsd-254. With g = (X^3 + aX + b)^K and K = (p-1)/2, the Y-coefficient matrix D has entries
+  d_n = coefficient of X^(n+p) in g. The statement says d_n = 0 for n >= K. The reason is that deg g = 3K and K + p > 3K, since
+  p - 2K = 1 for odd p. This is the fact that makes D zero on and below the diagonal, which bsd-254 needs in order to say that
+  det D = 0 and that the Y-part is strictly upper triangular.
+sketch: |
+  natDegree of f^K is at most 3K (Polynomial.natDegree_pow_le together with natDegree of f at most 3). Since n >= K, n + p > 3K
+  because 2K <= p - 1 < p, so the coefficient vanishes by Polynomial.coeff_eq_zero_of_natDegree_lt. Use omega after unfolding
+  (p - 1) / 2 with p prime (hence p >= 2) to get the arithmetic 3K < n + p.
+dead: []
