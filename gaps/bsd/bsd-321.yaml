@@ -1,0 +1,27 @@
+id: bsd-321
+problem: bsd
+title: 'Base case of the n = 5 elliptic-net relation at m = 2: N(7) N(−3) − N(3) N(1) N(5)² + N(6) N(4) N(2)² = 0 for normEDS, for every b, c, d'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (A : Type) [CommRing A] (b c d : A),
+    normEDS b c d (2 + 5) * normEDS b c d (2 - 5)
+      - normEDS b c d (2 + 1) * normEDS b c d (2 - 1) * normEDS b c d 5 ^ 2
+      + normEDS b c d 6 * normEDS b c d 4 * normEDS b c d 2 ^ 2 = 0
+context: |
+  The starting point of the induction on m in the n = 5 case of the elliptic-net relation (bsd-320), in the same way
+  that bsd-267 is the base case of the n = 4 case. The left side is the bsd-210 relation at n = 5 and m = 2, so
+  this is an identity of normEDS for every b, c, d and needs no hypothesis. With N(−k) = −N(k) and N(1) = 1 it reads
+  −N(7) N(3) − N(3) N(5)² + N(6) N(4) N(2)² = 0. The values used are N(2) = b, N(3) = c, N(4) = d b, N(5) = d b⁴ − c³ and
+  N(6) = b c (N(5) − d²) (the last one from normEDS_even at m = 3 and the definition of normEDS, with no division
+  by b, since b may be a zero divisor in A). N(7) = N(5) N(3)³ − N(2) N(4)³ by normEDS_odd at m = 3.
+  Checked by computer algebra over Z[b, c, d] (sympy, exact), not in Lean.
+sketch: |
+  Prove the values N(4), N(5), N(6), N(7) as separate lemmas from the definition normEDS = preNormEDS (b⁴) c d n ·
+  (if Even n then b else 1) (Mathlib: normEDS_ofNat, normEDS_four, normEDS_odd, normEDS_even), without dividing by b.
+  Then unfold normEDS at 2 + 5, 2 − 5, 2 + 1, 2 − 1, 2 and 4, rewrite with normEDS_neg, and close by ring or
+  linear_combination. Compare with the proof of bsd-267 (the same pattern at n = 4).
+dead: []
