@@ -1,0 +1,27 @@
+id: bsd-284
+problem: bsd
+title: 'Bezout certificate for the 5-division polynomial: on a Weierstrass curve over a field in which 2, 3 and 5 are nonzero, preΨ′ 5 and its derivative generate the constant 5¹² Δ²² modulo polynomials'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (W : WeierstrassCurve K),
+    (2 : K) ≠ 0 → (3 : K) ≠ 0 → (5 : K) ≠ 0 →
+    ∃ A B : Polynomial K,
+      A * W.preΨ' 5 + B * Polynomial.derivative (W.preΨ' 5) = Polynomial.C ((5 : K) ^ 12 * W.Δ ^ 22)
+context: |
+  The resultant step for bsd-278 (squarefree preΨ′ 5). Numerically (sympy, exact arithmetic on the short b-coordinates
+  with b₈ = (b₂b₆ − b₄²)/4, for several integer triples with Δ ≠ 0) the resultant of f = preΨ′ 5 and f′ in x equals
+  5¹² Δ²², with Δ = −b₂²b₈ − 8b₄³ − 27b₆² + 9b₂b₄b₆ (Mathlib's W.Δ). The Sylvester identity then gives polynomial
+  cofactors A, B in x with A f + B f′ = Res. Their weight is large (weighted degree 240 and 242 in the b-variables,
+  with x of weight 2), so this is the computational core of bsd-278; it is a certificate to check, not a conceptual
+  step. The hypotheses 2, 3, 5 nonzero are used only to keep the b₈ substitution free of denominators. Not verified in
+  Lean; the constant and the sign were checked on samples only.
+sketch: |
+  Use bsd-283 to write f = preΨ₄ · Ψ₂Sq² − Ψ₃³. Substitute b₈ = (b₂b₆ − b₄²)/4 (b_relation, with 4 invertible).
+  Compute A, B with sympy, for example by subresultant or Bezout elimination over Q[b₂, b₄, b₆], clearing denominators
+  so that only 2, 3, 5 and Δ appear, then verify A f + B f′ = 5¹² Δ²² by linear_combination (with v = 2⁻¹ as in
+  bsd-276). Mathlib: Polynomial.derivative, Polynomial.C_mul, WeierstrassCurve.b_relation, WeierstrassCurve.Δ.
+dead: []

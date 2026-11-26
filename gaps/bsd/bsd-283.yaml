@@ -1,0 +1,21 @@
+id: bsd-283
+problem: bsd
+title: 'Five-division polynomial by the recursion: for a Weierstrass curve over any field, preΨ′ 5 = preΨ₄ · Ψ₂Sq² − Ψ₃³'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (W : WeierstrassCurve K),
+    W.preΨ' 5 = W.preΨ₄ * W.Ψ₂Sq ^ 2 - W.Ψ₃ ^ 3
+context: |
+  The explicit form of the univariate 5-division polynomial used in bsd-278 (squarefree preΨ′ 5) and bsd-284 (the
+  Bezout certificate for preΨ′ 5 and its derivative). Mathlib's preΨ'_odd gives preΨ′ 5 as a combination of preΨ′ 4,
+  preΨ′ 2, preΨ′ 1 and preΨ′ 3; with preΨ′ 1 = 1, preΨ′ 2 = 1, preΨ′ 3 = Ψ₃ and preΨ′ 4 = preΨ₄, the odd recursion
+  with m = 0 gives preΨ′ 5 = preΨ₄ · Ψ₂Sq² − Ψ₃³. It is a bookkeeping identity valid over every commutative ring.
+sketch: |
+  Rewrite 5 as 2 * (0 + 2) + 1 and apply preΨ'_odd 0; the if-conditions reduce by Even 0. Then simp with preΨ'_one,
+  preΨ'_two, preΨ'_three, preΨ'_four and ring. Mathlib: WeierstrassCurve.preΨ'_odd, preΨ'_one, preΨ'_two,
+  preΨ'_three, preΨ'_four, Even.zero.
+dead: []
