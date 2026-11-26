@@ -1,0 +1,24 @@
+id: bsd-338
+problem: bsd
+title: 'Finite check at p = 11: for every short cubic over F_11 with nonzero discriminant, the Toeplitz polynomial P(Y) of bsd-337 is nonzero at some y in F_11'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ a b : ZMod 11, 4 * a ^ 3 + 27 * b ^ 2 ≠ 0 → ∃ y : ZMod 11,
+    (a^25 - 25*a^22*b^2 + 450*a^19*b^4 + 575*a^16*b^6 - 13375*a^13*b^8 + 96750*a^10*b^10 + 53750*a^7*b^12 + 131250*a^4*b^14 - 37500*a*b^16) * y ^ 0 + (-155*a^18*b + 5110*a^15*b^3 - 115075*a^12*b^5 + 103500*a^9*b^7 + 4000*a^6*b^9 - 135000*a^3*b^11 + 20000*b^13) * y ^ 1 + (1490*a^14 - 9660*a^11*b^2 - 26075*a^8*b^4 + 20400*a^5*b^6 + 56500*a^2*b^8) * y ^ 2 + (-810*a^7*b + 6650*a^4*b^3 - 2300*a*b^5) * y ^ 3 + (10*a^3 + 10*b^2) * y ^ 4 ≠ 0
+context: |
+  The finite core of bsd-337 (the p = 11 instance of bsd-254), split off so that it can be closed by a decision procedure.
+  The polynomial displayed is det(c_{5+i−t} + d_{5+i−t} Y) for the 5×5 Toeplitz matrix of f⁵, f = X³ + aX + b over F_11,
+  written out as a polynomial in a, b, y by the symbolic expansion of the determinant (coefficients computed with sympy
+  over Z and then read mod 11; no reduction is needed in the statement). Its degree in y is 4. Over F_11 a nonzero
+  polynomial of degree at most 4 cannot vanish at all eleven points, so the statement is equivalent to: for each of the
+  110 nonsingular pairs (a, b), the polynomial is not identically zero. The statement was checked by the proposer in Lean
+  with decide (not in the checker). Not a Millennium step: only the p = 11 instance of the Toeplitz gap.
+sketch: |
+  Reduce to a finite check: intro a b h, then decide on the statement ∀ a b : ZMod 11, 4 * a ^ 3 + 27 * b ^ 2 ≠ 0 → ∃ y,
+  ... ≠ 0. Use `decide` (with set_option maxRecDepth if needed) on the universally quantified statement. If decide is too
+  slow, split on a and b with fin_cases and decide each of the 121 cases.
+dead: []
