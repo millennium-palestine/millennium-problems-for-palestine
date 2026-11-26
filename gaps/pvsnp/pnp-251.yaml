@@ -1,0 +1,28 @@
+id: pnp-251
+problem: pvsnp
+title: A primitive block with an up pair, a nonnegative zero-sum middle and a down pair is a nonnegative zero-sum walk
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (H : Bool × Bool → ℤ), (∀ b : Bool, H (false, b) = 1) → H (true, true) = -1 →
+    ∀ (a c : Bool × Bool) (mid : List (Bool × Bool)), a.1 = false → c = (true, true) →
+    (mid.map H).sum = 0 → (∀ j, j ≤ mid.length → 0 ≤ ((mid.map H).take j).sum) →
+    ((a :: (mid ++ [c])).map H).sum = 0 ∧
+      ∀ j, j ≤ (a :: (mid ++ [c])).length → 0 ≤ (((a :: (mid ++ [c])).map H).take j).sum
+context: |
+  The balance fact behind the primitive clause of the pnp-152 table. In the recurrence for the interval (i, j) of a
+  pair list, the primitive disjunct has an up pair at i (its first component is false), a down pair (true, true) at
+  j - 1, and a middle (i + 1, j - 1) that is a nonnegative zero-sum walk. This gap says that such a block is itself a
+  nonnegative zero-sum walk, with the height function H of pnp-133 written as a parameter with its two values fixed:
+  an up pair has height 1 and the pair (true, true) has height -1. So the primitive disjunct can only hold on a balanced
+  nonnegative interval. This is what lets the guarded table of the route be false on the intervals that are not
+  balanced, so that the recurrence holds on every interval and not only on the balanced ones. It is a fact about lists
+  of pairs and integer sums: no machine, no polynomial bound, no P, and it does not decide P vs NP.
+sketch: |
+  The map of the block is 1 :: (L ++ [-1]), where L is the map of mid. Its sum is 1 + 0 + (-1) = 0. For the prefix
+  sums, the empty prefix is 0. A prefix of length k + 1 with k ≤ mid.length is 1 plus the prefix of L of length k,
+  which is nonnegative by hypothesis. The prefix of length mid.length + 2 is the whole block, with sum 0.
+dead: []

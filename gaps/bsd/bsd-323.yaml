@@ -1,0 +1,28 @@
+id: bsd-323
+problem: bsd
+title: 'Elliptic-net relation at n = 2 for normEDS: for every integer m, normEDS(m + 2) normEDS(m − 2) − b² normEDS(m + 1) normEDS(m − 1) + c normEDS(m)² = 0'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (A : Type) [CommRing A] (b c d : A) (m : ℤ),
+    normEDS b c d (m + 2) * normEDS b c d (m - 2)
+      - b ^ 2 * normEDS b c d (m + 1) * normEDS b c d (m - 1)
+      + c * normEDS b c d m ^ 2 = 0
+context: |
+  The n = 2 instance of the elliptic-net relation ψ(m+n) ψ(m−n) = ψ(m+1) ψ(m−1) ψ(n)² − ψ(n+1) ψ(n−1) ψ(m)² for
+  normEDS, as in bsd-210. Here ψ(2) = b and ψ(3) = c, and normEDS is the one of Mathlib
+  (EllipticDivisibilitySequence.lean), whose lemmas normEDS_even and normEDS_odd give the values at 2m and 2m+1
+  in terms of values at smaller indices. The Weierstrass version for fields is bsd-214; this gap is the normEDS
+  version in an arbitrary commutative ring, which the n = 3, 4 and 5 steps of bsd-210 take as their input.
+  Checked numerically (exact rational arithmetic, b = 3, c = 5, d = 7, indices −8 to 8) against the recursion
+  of normEDS_even and normEDS_odd. Not checked in Lean.
+sketch: |
+  Split by the parity of m. For m = 2k or m = 2k + 1, rewrite the four values N(m±2), N(m±1) and N(m) with
+  normEDS_even and normEDS_odd at the appropriate half indices, then close the identity by linear_combination with
+  the same instances. Mathlib's rel_even and rel_odd (the elliptic relators ER(m+1, m−1, 1, 0) and ER(m+1, m, 1, 0))
+  are the closest existing identities. The relator form of this relation is not stated in Mathlib, so check it
+  against rel_even and rel_odd before use.
+dead: []

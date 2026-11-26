@@ -1,0 +1,30 @@
+id: bsd-325
+problem: bsd
+title: 'Elliptic-net relation at n = 4 for normEDS: for every integer m, normEDS(m + 4) normEDS(m − 4) − normEDS(4)² normEDS(m + 1) normEDS(m − 1) + normEDS(5) normEDS(3) normEDS(m)² = 0'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (A : Type) [CommRing A] (b c d : A) (m : ℤ),
+    normEDS b c d (m + 4) * normEDS b c d (m - 4)
+      - normEDS b c d 4 ^ 2 * normEDS b c d (m + 1) * normEDS b c d (m - 1)
+      + normEDS b c d 5 * normEDS b c d 3 * normEDS b c d m ^ 2 = 0
+context: |
+  The n = 4 instance of the elliptic-net relation for normEDS, as in bsd-210 (the statement is the bracket that
+  bsd-266 telescopes and bsd-267 starts from). It is the relation R4 of bsd-322. The proof plan is the one of
+  bsd-224 and bsd-226 for n = 3, one level up: in the universal domain MvPolynomial (Fin 3) ℤ, the telescoping
+  Y(m) B(m+1) = Y(m+1) B(m) with Y(m) = N(m−1) N(m) N(m+1) holds whenever the n = 2 and n = 3 relations hold at
+  the indices m−2, …, m+2 (bsd-266, using bsd-323 and bsd-324 as those inputs); the base case at m = 2 is bsd-267;
+  the induction principle of bsd-250 then gives B(m) = 0 for m ≥ 2 from the nonvanishing of N(m) N(m+1) N(m−1)
+  for m ≥ 2 (bsd-227 and bsd-228); the case m ≤ 1 follows from the symmetry N(−k) = −N(k), and the result is
+  transferred to an arbitrary commutative ring along the map sending the three variables to b, c, d.
+  Not checked in Lean; the numerical check (exact rationals, indices −8 to 8) passes.
+sketch: |
+  Take the statements of bsd-266, bsd-267, bsd-250, bsd-227 and bsd-228 as accepted imports, and bsd-323 and bsd-324
+  as the n = 2 and n = 3 inputs. Prove the relation first in MvPolynomial (Fin 3) ℤ with b, c, d the three variables,
+  using that domain for bsd-250. Then transfer it to a general commutative ring with the ring homomorphism that maps
+  the variables to b, c, d, using the same map_normEDS lemma as in bsd-225. The induction starts at 2 and needs the
+  relation at the index 2 (bsd-267 gives it) and at the negative indices by oddness of the net.
+dead: []

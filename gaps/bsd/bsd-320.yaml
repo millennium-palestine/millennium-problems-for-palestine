@@ -1,0 +1,33 @@
+id: bsd-320
+problem: bsd
+title: 'The n = 5 case of the elliptic-net addition formula: N(m+5) N(m−5) = N(m+1) N(m−1) N(5)² − N(6) N(4) N(m)² for normEDS, for every integer m'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (A : Type) [CommRing A] (b c d : A) (m : ℤ),
+    normEDS b c d (m + 5) * normEDS b c d (m - 5)
+      - normEDS b c d (m + 1) * normEDS b c d (m - 1) * normEDS b c d 5 ^ 2
+      + normEDS b c d 6 * normEDS b c d 4 * normEDS b c d m ^ 2 = 0
+context: |
+  The n = 5 instance of the elliptic-net relation ψ(m+n) ψ(m−n) = ψ(m+1) ψ(m−1) ψ(n)² − ψ(n+1) ψ(n−1) ψ(m)², written
+  for normEDS, as in bsd-210. Cases n = 2, 3 and 4 are on main (bsd-214, bsd-222/223/224, bsd-266/267 with bsd-250).
+  This is the next case of the chain that bsd-210 needs, and it is the first case not covered by a hand-sized
+  identity: the telescoping step of bsd-266 (with the multiplier Y(m) = N(m−1) N(m) N(m+1)) does not transfer to
+  n = 5 with the same multiplier, and the n = 2, 3, 4 relations at the indices m−4, …, m+4 are needed.
+  Checked numerically (not in Lean): the identity holds with normEDS values for m from −3 to 4, as a polynomial
+  identity in b, c, d (sympy, exact rational functions, using the Mathlib recursions normEDS_even and normEDS_odd,
+  with N(4) = d b, N(5) = d b⁴ − c³ and N(6) = b c (N(5) − d²)).
+  A Gröbner membership test in the atoms X(k) = N(m+k), |k| ≤ 6, with the windowed n = 2, 3, 4 relations, did not
+  finish in sympy within 500 s with a window of radius one. Not claimed by anyone else as of today.
+sketch: |
+  Route 1 (as in bsd-266 and bsd-224): prove the telescoping identity B5(m+1) · Y(m) = B5(m) · Y'(m) from the n = 2,
+  3, 4 relations at the indices m−4, …, m+4, where B5(m) is the left side minus the right side above, and then induct
+  on m from the base case of bsd-321 (m = 2) in both directions, with N(−k) = −N(k) for negative indices.
+  Route 2: find a linear_combination certificate for B5(m) directly in the atoms X(k) with b, c, d as parameters, by
+  pseudo-division or linear algebra modulo a prime, then recover the coefficients over Z[b, c, d].
+  Note for the prover: rewrite N(4), N(5), N(6) with their values from the Mathlib recursion before calling
+  linear_combination; without these substitutions the certificate does not close.
+dead: []

@@ -1,0 +1,25 @@
+id: bsd-326
+problem: bsd
+title: 'Degree form descent: for an integer p > 1, if m² − a m n + p n² is nonnegative whenever p does not divide m, then it is nonnegative for all integers m and n'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (a p : ℤ), 1 < p → (∀ m n : ℤ, ¬ p ∣ m → 0 ≤ m ^ 2 - a * m * n + p * n ^ 2) →
+    ∀ m n : ℤ, 0 ≤ m ^ 2 - a * m * n + p * n ^ 2
+context: |
+  The elementary part of the split of bsd-089 (degree form positivity). bsd-089 asks for nonnegativity of
+  m² − (p + 1 − #E) m n + p n² for all integers m and n. The geometric input, bsd-327, only gives it when p does not
+  divide m, since then m − nπ is a separable isogeny with a kernel of that size. This gap is the descent that turns the
+  restricted statement into the full one, and it uses nothing about curves. If p divides m, then with m = p m' the form
+  is p · (n² − a n m' + p m'²), which is the same form at (n, m'): the first coordinate n is not divisible by p, or else
+  both are divisible and the form is p² times the form at (m/p, n/p). Both cases reduce to smaller arguments.
+  The hypothesis 1 < p is needed: for p = 1 the hypothesis is vacuous and the conclusion is false for a = 3.
+sketch: |
+  Strong induction on |m| + |n|. If ¬ p ∣ m, use the hypothesis. If m = p m' and ¬ p ∣ n, the form equals
+  p · (n² − a n m' + p m'²), and the hypothesis applied to n (not divisible by p) gives the second factor. If m = p m'
+  and n = p n', the form equals p² times the form at (m', n'), which is nonnegative by the induction hypothesis since
+  |m'| + |n'| < |m| + |n|. Use Int.natAbs and omega for the size bound, with p ≥ 2.
+dead: []
