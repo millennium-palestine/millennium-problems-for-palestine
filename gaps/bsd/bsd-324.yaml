@@ -1,0 +1,25 @@
+id: bsd-324
+problem: bsd
+title: 'Elliptic-net relation at n = 3 for normEDS: for every integer m, normEDS(m + 3) normEDS(m − 3) − c² normEDS(m + 1) normEDS(m − 1) + normEDS(4) b normEDS(m)² = 0'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (A : Type) [CommRing A] (b c d : A) (m : ℤ),
+    normEDS b c d (m + 3) * normEDS b c d (m - 3)
+      - c ^ 2 * normEDS b c d (m + 1) * normEDS b c d (m - 1)
+      + normEDS b c d 4 * b * normEDS b c d m ^ 2 = 0
+context: |
+  The n = 3 instance of the elliptic-net relation for normEDS, as in bsd-210 (the Weierstrass version for fields is
+  bsd-223). Here ψ(3) = c and ψ(4) = d b, so the last coefficient is d b². The relation is the input R3 of bsd-322,
+  which is the n = 5 certificate, and it is the second of the relations that the n = 4 step (bsd-325) takes as
+  hypotheses in the telescoping of bsd-266. The n = 2 case is bsd-323.
+  Checked numerically (exact rational arithmetic, b = 3, c = 5, d = 7, indices −8 to 8) against the recursion
+  of normEDS_even and normEDS_odd. Not checked in Lean.
+sketch: |
+  Parity split on m as in bsd-323, with normEDS_even and normEDS_odd rewriting the six values N(m±3), N(m±1), N(m).
+  The n = 2 relation of bsd-323 at the neighbouring indices may be used as a hypothesis if it is proved first, or the
+  identity may be closed directly by linear_combination in the atoms N(k) for k near m, as in bsd-266.
+dead: []
