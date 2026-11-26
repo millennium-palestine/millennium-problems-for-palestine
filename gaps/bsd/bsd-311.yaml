@@ -1,0 +1,36 @@
+id: bsd-311
+problem: bsd
+title: 'Twelve roots give 25 five-torsion points: over an algebraically closed field with 2, 3 and 5 nonzero, twelve distinct roots of preΨ′ 5 give 25 distinct points on the curve that multiply to zero by 5'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-243
+- bsd-275
+- bsd-276
+- bsd-310
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] [IsAlgClosed K] (W : WeierstrassCurve K) [W.IsElliptic]
+    (R : Finset K),
+    (2 : K) ≠ 0 → (3 : K) ≠ 0 → (5 : K) ≠ 0 → R.card = 12 →
+    (∀ x ∈ R, (W.preΨ' 5).eval x = 0) →
+    ∃ S : Finset W.toAffine.Point, S.card = 25 ∧ ∀ P ∈ S, (5 : ℤ) • P = 0
+context: |
+  The counting half of bsd-279 (five-torsion lower bound). bsd-279 needs 25 ≤ Nat.card of the five-torsion
+  points; it follows from this gap, from bsd-278 (squarefree preΨ′ 5, which gives exactly 12 distinct roots over an
+  algebraically closed field) and from a finiteness step for the five-torsion set, which is not part of this split.
+  Here the statement is existential, so no finiteness is needed. Witnesses: S = {0} together with the points
+  (x, y) and −(x, y) for x in R, where y is given by bsd-243. Distinctness: the x-coordinate of −(x, y) is x,
+  so different roots give different points, and (x, y) ≠ −(x, y) because 2y + a₁x + a₃ ≠ 0 (bsd-310).
+  bsd-275 gives 5 • (x, y) = 0 once g(x) ≠ 0, and g(x) ≠ 0 at a root by bsd-276. Not checked in Lean.
+sketch: |
+  Let S := insert 0 (R.biUnion fun x => {P₊ x, −P₊ x}) with P₊ x chosen by bsd-243 (Classical.choose) and
+  nonsingular by its choose_spec. Show card = 25: the card of a biUnion of pairs with pairwise disjoint images is
+  2 · 12, and 0 is not an affine point (Point.some ≠ zero, or Point.zero is not in the image of some).
+  Use Finset.card_insert_of_not_mem, Finset.card_biUnion (disjointness from x-coordinates through
+  WeierstrassCurve.Affine.Point.neg_some and the injectivity of the x-coordinate), and Finset.card_pair (P ≠ −P
+  from bsd-310). For 5 • P = 0 use bsd-275 with the two hypotheses from bsd-310 and bsd-276, and
+  smul_neg for −P. Mathlib: WeierstrassCurve.Affine.Point.neg_some, WeierstrassCurve.Affine.Point.some,
+  Finset.card_biUnion, Finset.card_insert_of_not_mem, IsAlgClosed.
+dead: []
