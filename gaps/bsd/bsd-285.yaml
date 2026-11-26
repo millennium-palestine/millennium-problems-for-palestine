@@ -1,0 +1,22 @@
+id: bsd-285
+problem: bsd
+title: "Leading coefficient of the level-set power: for a prime p and a, b in F_p, the coefficient of X^(3K) in (X^3 + aX + b)^K is 1, where K = (p-1)/2"
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (a b : ZMod p),
+    ((Polynomial.X ^ 3 + Polynomial.C a * Polynomial.X + Polynomial.C b) ^ ((p - 1) / 2) : Polynomial (ZMod p)).coeff (3 * ((p - 1) / 2)) = 1
+context: |
+  Bookkeeping for the Toeplitz matrix of bsd-254. Write f = X^3 + aX + b and g = f^K with K = (p-1)/2. The polynomial f is monic
+  of degree 3, so g is monic of degree 3K, and its coefficient at X^(3K) is 1. This is the top entry of the superdiagonal of the
+  Y-coefficient matrix D, which bsd-254 uses to show that D is strictly upper triangular with superdiagonal entries 1.
+  It does not use any hypothesis on the discriminant and holds for every prime p (for p = 2 both sides are 1).
+sketch: |
+  f is monic of natDegree 3 (Polynomial.monic_X_pow_add or Polynomial.Monic of a sum with a lower-degree part), so Monic.pow gives
+  that f^K is monic with natDegree 3K (Polynomial.natDegree_pow, or Monic.natDegree_pow). Then the coefficient at natDegree is the
+  leading coefficient, which is 1 (Polynomial.coeff_natDegree, Polynomial.Monic.leadingCoeff). Watch the cast of 3 * ((p - 1) / 2)
+  as a natural number.
+dead: []

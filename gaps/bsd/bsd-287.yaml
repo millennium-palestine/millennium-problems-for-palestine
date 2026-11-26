@@ -1,0 +1,21 @@
+id: bsd-287
+problem: bsd
+title: "Superdiagonal of the level-set Toeplitz matrix: for a prime p > 2 and a, b in F_p, the coefficient of X^(K-1+p) in (X^3 + aX + b)^K is 1, where K = (p-1)/2"
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (a b : ZMod p), 2 < p →
+    ((Polynomial.X ^ 3 + Polynomial.C a * Polynomial.X + Polynomial.C b) ^ ((p - 1) / 2) : Polynomial (ZMod p)).coeff ((p - 1) / 2 - 1 + p) = 1
+context: |
+  Bookkeeping for the Toeplitz matrix of bsd-254. With K = (p-1)/2 and g = (X^3 + aX + b)^K, the superdiagonal entries of the
+  Y-coefficient matrix D are the coefficients d_(K-1) of X^(K-1+p) in g. The index K-1+p equals 3K, so this entry is the leading
+  coefficient of g, which is 1 by bsd-285. The statement is stated separately so that the superdiagonal can be cited by name.
+  It needs 2 < p, since for p = 2 the index K-1 is not a natural number of the intended size.
+sketch: |
+  Rewrite (p - 1) / 2 - 1 + p as 3 * ((p - 1) / 2) using omega with 2 < p, then apply bsd-285 (or repeat its proof:
+  Monic.pow and Polynomial.coeff_natDegree with natDegree 3K). Keep the rewrite in the goal as a Nat equation so that
+  simp does not normalise the division differently on the two sides.
+dead: []
