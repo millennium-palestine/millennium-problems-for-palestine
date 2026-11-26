@@ -1,0 +1,27 @@
+id: bsd-342
+problem: bsd
+title: 'Hasse bound from the degree form: for an elliptic curve over a prime field, if m² − (p + 1 − #E) m n + p n² is nonnegative whenever p does not divide m, then #E lies within 2√p of p + 1'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-340
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic],
+    (∀ m n : ℤ, ¬ (p : ℤ) ∣ m → 0 ≤ m ^ 2 - ((p : ℤ) + 1 - (Nat.card W.toAffine.Point : ℤ)) * m * n + (p : ℤ) * n ^ 2) →
+      |((Nat.card W.toAffine.Point : ℕ) : ℝ) - ((p : ℝ) + 1)| ≤ 2 * Real.sqrt (p : ℝ)
+context: |
+  The reduction of bsd-024 (Hasse's bound) to the degree form of bsd-327. The hypothesis is the conclusion of
+  bsd-327 for the curve W, so this gap is the conditional form of Hasse's bound: it is a theorem about every curve
+  once bsd-327 is known, and it says that the geometric input of bsd-024 is exactly the degree form. The algebra
+  is bsd-340 (the integer Hasse step: the degree form gives a² ≤ 4p with a = p + 1 − #E), followed by the
+  conversion from a² ≤ 4p to |a| ≤ 2√p in ℝ. Depends on bsd-340, which is proposed in the same pull request as
+  this gap; the solution must inline the integer step rather than import MPP.Solutions.Bsd340 until bsd-340 is
+  accepted. Not checked in Lean.
+sketch: |
+  Let N = #E and a = p + 1 − N (as integers). Apply bsd-340 with p ≥ 2 to get a² ≤ 4p. Cast to ℝ, so that
+  (p + 1 − N)² ≤ 4p in ℝ, and use Real.abs_le_sqrt to get |p + 1 − N| ≤ √(4p). Finally √(4p) = 2√p
+  (Real.sqrt_mul with √4 = 2), and |N − (p + 1)| = |p + 1 − N| by abs_sub_comm. The prime gives 1 < (p : ℤ)
+  via Fact.out and Nat.Prime.one_lt, and push_cast / exact_mod_cast handles the casts from ℤ to ℝ.
+dead: []
