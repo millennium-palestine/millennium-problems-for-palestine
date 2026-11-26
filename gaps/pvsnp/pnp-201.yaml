@@ -15,40 +15,20 @@ depends:
 - pnp-174
 - pnp-198
 statement: |
-  ∀ (ps qs : List (Bool × Bool)),
-    (∀ j, j ≤ ps.length → 0 ≤ ((ps.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) →
-    (ps.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 →
-    (∀ j, j ≤ qs.length → 0 ≤ ((qs.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) →
-    (qs.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 →
-    ∀ (t : List Bool) (v g : Bool),
-      (∃ w : List Bool, w.length = (ps ++ qs).countP (fun q => !q.1 && !q.2) ∧ ∃ w' : List Bool,
-        ((ps ++ qs).flatMap fun r : Bool × Bool => [r.1, r.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
-          match st.2.2 with
-          | none => (st.1, st.2.1, some b)
-          | some a =>
-            if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
-              else (st.1, st.2.1, none))
-            else (if b then (st.1.headD false :: st.1, st.2.1, none)
-              else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (v :: t, w, none) = (g :: t, w', none)) ↔
-      ∃ g1 : Bool,
-        (∃ w : List Bool, w.length = ps.countP (fun q => !q.1 && !q.2) ∧ ∃ w' : List Bool,
-          (ps.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
-            match st.2.2 with
-            | none => (st.1, st.2.1, some b)
-            | some a =>
-              if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
-                else (st.1, st.2.1, none))
-              else (if b then (st.1.headD false :: st.1, st.2.1, none)
-                else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (v :: t, w, none) = (g1 :: t, w', none)) ∧
-        (∃ w : List Bool, w.length = qs.countP (fun q => !q.1 && !q.2) ∧ ∃ w' : List Bool,
-          (qs.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
-            match st.2.2 with
-            | none => (st.1, st.2.1, some b)
-            | some a =>
-              if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
-                else (st.1, st.2.1, none))
-              else (if b then (st.1.headD false :: st.1, st.2.1, none)
-                else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (g1 :: t, w, none) = (g :: t, w', none))
+  ∀ (F : List Bool × List Bool × Option Bool → Bool → List Bool × List Bool × Option Bool), F = (fun (st : List Bool × List Bool × Option Bool) (b : Bool) => match st.2.2 with | none => (st.1, st.2.1, some b) | some a => if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none) else (st.1, st.2.1, none)) else (if b then (st.1.headD false :: st.1, st.2.1, none) else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) →
+    ∀ (ps qs : List (Bool × Bool)),
+      (∀ j, j ≤ ps.length → 0 ≤ ((ps.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) →
+      (ps.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 →
+      (∀ j, j ≤ qs.length → 0 ≤ ((qs.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) →
+      (qs.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 →
+      ∀ (t : List Bool) (v g : Bool),
+        (∃ w : List Bool, w.length = (ps ++ qs).countP (fun q : Bool × Bool => !q.1 && !q.2) ∧ ∃ w' : List Bool,
+          ((ps ++ qs).flatMap fun r : Bool × Bool => [r.1, r.2]).foldl F (v :: t, w, none) = (g :: t, w', none)) ↔
+        ∃ g1 : Bool,
+          (∃ w : List Bool, w.length = ps.countP (fun q : Bool × Bool => !q.1 && !q.2) ∧ ∃ w' : List Bool,
+            (ps.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl F (v :: t, w, none) = (g1 :: t, w', none)) ∧
+          (∃ w : List Bool, w.length = qs.countP (fun q : Bool × Bool => !q.1 && !q.2) ∧ ∃ w' : List Bool,
+            (qs.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl F (g1 :: t, w, none) = (g :: t, w', none))
 context: |
   Composition of balanced blocks in the CYK table for the pnp-133 language (route to pnp-152). A balanced
   nonnegative pair list has a top value that is replaced by one new value (pnp-198). The table entry for a
