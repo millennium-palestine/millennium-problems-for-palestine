@@ -1,0 +1,27 @@
+id: bsd-331
+problem: bsd
+title: 'Toeplitz symbol nonvanishing at p = 5: for a short cubic x³ + ax + b over F_5 with nonzero discriminant, the 2×2 determinant of the symbols c_s + d_s·Y, K = 2, is nonzero'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (a b : ZMod 5), 4 * a ^ 3 + 27 * b ^ 2 ≠ 0 →
+    ∀ g : Polynomial (ZMod 5),
+      g = (Polynomial.X ^ 3 + Polynomial.C a * Polynomial.X + Polynomial.C b) ^ ((5 - 1) / 2) →
+      (Matrix.of (fun (i t : Fin ((5 - 1) / 2)) =>
+        Polynomial.C (g.coeff ((5 - 1) / 2 + (i : ℕ) - (t : ℕ))) +
+          Polynomial.C (g.coeff ((5 - 1) / 2 + (i : ℕ) - (t : ℕ) + 5)) * (Polynomial.X : Polynomial (ZMod 5)))).det ≠ 0
+context: |
+  The p = 5 instance of bsd-254 (Toeplitz symbol nonvanishing), split off as a case that can be closed by a finite
+  coefficient computation. Here K = 2 and g = f² = X⁶ + 2aX⁴ + 2bX³ + a²X² + 2abX + b² (no X⁵ term, and the
+  coefficients at X^7 and X^8 vanish), so the 2×2 matrix has entries a², 2ab + Y, 2b, a². Its determinant is
+  a⁴ − 4ab² − 2bY. If b ≠ 0 the coefficient of Y is −2b ≠ 0. If b = 0 the determinant is a⁴, and the hypothesis
+  4a³ ≠ 0 gives a ≠ 0. The statement for all p is bsd-254; this gap only covers p = 5. Not checked in Lean.
+sketch: |
+  Show g = X^6 + C (2a) X^4 + C (2b) X^3 + C (a^2) X^2 + C (2ab) X + C (b^2) (by subst and ring), read off the needed
+  coefficients with simp (coeff_add, coeff_C_mul, coeff_X_pow, coeff_X, coeff_C; the indices are at most 8), and
+  rewrite the determinant with Matrix.det_fin_two. For nonvanishing, take the coefficient of X (it is −2b) and, when
+  b = 0, the constant term a⁴. Finish the finite cases with decide on ZMod 5 after reverting a and b.
+dead: []
