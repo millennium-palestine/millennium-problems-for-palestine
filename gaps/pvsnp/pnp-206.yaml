@@ -1,0 +1,39 @@
+id: pnp-206
+problem: pvsnp
+title: A leaf up-step, a middle of pair steps and a NAND down-step leave the NAND of the middle's output top and the first witness bit on the stack
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (mid : List (Bool × Bool)) (v : Bool) (t w w1 : List Bool) (g : Bool),
+    ((mid.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) ((w.headD false) :: v :: t, w.drop 1, none) = (g :: v :: t, w1, none)) →
+    ((((false, false) :: (mid ++ [(true, true)])).flatMap fun r : Bool × Bool => [r.1, r.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (v :: t, w, none) = ((!(g && v)) :: t, w1, none))
+context: |
+  Leaf companion of pnp-205. In the fold of pnp-133 a pair (false, false) is a leaf: it pushes the first
+  remaining witness bit and drops it from the witness. So a block that starts with a leaf, runs a middle of
+  pair steps on the pushed bit above the old top v, and ends with a NAND replaces v by the NAND of the middle's
+  output g and v, with the witness advanced by one bit. This is the leaf case of the excursion recurrence of
+  the pnp-152 route, with the same shape as pnp-205. No balance or nonnegativity is assumed.
+  Nothing here is checked in Lean until a proof is accepted.
+sketch: |
+  As in pnp-205: split the flattened left side as [false, false] ++ (mid flattened) ++ [true, true] and
+  use List.foldl_append. The leaf bits take (v :: t, w, none) to (w.headD false :: v :: t, w.drop 1, none),
+  which is the hypothesis's starting state. The middle then gives (g :: v :: t, w1, none), and the NAND bits
+  give ((!(g && v)) :: t, w1, none). No induction is needed.
+dead: []
