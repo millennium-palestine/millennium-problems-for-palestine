@@ -1,0 +1,35 @@
+id: pnp-223
+problem: pvsnp
+title: Reading k witness bits with k copies of the pair (false, false) pushes the first k bits, last read on top
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-149
+statement: |
+  let step := fun (st : List Bool × List Bool × Option Bool) (c : Bool) =>
+    match st.2.2 with
+    | none => (st.1, st.2.1, some c)
+    | some d =>
+      if d then (if c then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+        else (st.1, st.2.1, none))
+      else (if c then (st.1.headD false :: st.1, st.2.1, none)
+        else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))
+  ∀ (k : Nat) (s w : List Bool), k ≤ w.length →
+    ((List.replicate k [false, false]).flatten).foldl step (s, w, none) = ((w.take k).reverse ++ s, w.drop k, none)
+context: |
+  Witness-input lemma for pnp-141. A witness bit is read by the pair (false, false) (pnp-149): it pushes the first
+  witness bit onto the stack and drops it from the witness. This gap says that k such reads in a row, with k at most
+  the witness length, push the first k bits, the last one read ending on top, and leave the rest of the witness. So
+  a fan-out program that reads the witness in order has a closed form for its stack, which the circuit compiler of
+  pnp-141 uses to name each witness leaf. It does not decide P vs NP and is not the Cook-Levin step.
+sketch: |
+  Induction on k, generalizing the stack and the witness. For k + 1 with witness b :: w', the first pair reads b, so
+  the stack becomes b :: s and the witness w'. The induction hypothesis on the rest gives (take k of w').reverse ++ (b :: s),
+  and (b :: w').take (k + 1) reversed is (take k w').reverse ++ [b]. The two sides agree by List.append_assoc.
+  The base case is simp.
+dead: []
