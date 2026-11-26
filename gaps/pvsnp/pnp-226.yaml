@@ -1,0 +1,37 @@
+id: pnp-226
+problem: pvsnp
+title: All of the first k witness bits are true, with k the count of true bits of the instance, is decided in polynomial time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-006
+- pnp-008
+- pnp-021
+- pnp-025
+- pnp-026
+- pnp-093
+- pnp-122
+- pnp-136
+statement: |
+  ∃ L : Lang, InP L ∧ ∀ x w : List Bool,
+    L (pair x w) = decide (∀ b ∈ w.take (x.count true), b = true)
+context: |
+  A prefix predicate on the witness, read at a unary index. pnp-134 reads one witness bit at the index
+  given by the count of true bits of the instance; this gap asks for the predicate on the whole prefix of
+  that length: every one of the first k witness bits is true. It is the prefix version of the all-true
+  test of pnp-122, composed with the take of pnp-136 at the count of the instance. A DP over split points
+  takes a disjunction over a prefix of table entries, and this gap is the prefix-test step of that
+  disjunction. It is a closure lemma about one predicate, and it does not decide P vs NP.
+sketch: |
+  Let TW be the polynomial-time map z ↦ (witness of z).take (unary count of the instance of z), obtained
+  from pnp-025 (witness part), pnp-021 (instance part), pnp-093 (unary count), pnp-026 (pair), and pnp-136
+  (take), with pnp-006 for composition. Then TW (pair x w) = w.take (x.count true). The predicate
+  y ↦ decide (∀ b ∈ y, b = true) is in P by pnp-122. By pnp-008 (P is closed under polynomial-time
+  preprocessing) the language L = (predicate) ∘ TW is in P, and L (pair x w) is the predicate on
+  w.take (x.count true).
+dead: []
