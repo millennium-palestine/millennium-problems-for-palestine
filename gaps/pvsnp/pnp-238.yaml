@@ -1,0 +1,40 @@
+id: pnp-238
+problem: pvsnp
+title: Appending to the witness the bit of a disjunction of two witness reads at computed indices is polynomial-time on the pair encoding
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-237
+- pnp-127
+- pnp-026
+- pnp-021
+statement: |
+  ∀ a b : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) a) →
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) b) →
+    ∃ s : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) s) ∧
+      ∀ x w : List Bool,
+        s (pair x w) = pair x (w ++ [(List.range (x.length + 1)).any (fun m =>
+          w.getD (a (pair x (List.replicate m true))).length false &&
+            w.getD (b (pair x (List.replicate m true))).length false)])
+context: |
+  The append step of a table DP in the pair encoding. pnp-237 gives the one-bit list of the cell value, and this
+  gap appends that bit to the second component, keeping the instance. Its hypothesis form is the one of pnp-232:
+  for every pair x w the step adds exactly one bit to w. So pnp-232 applies to the map of this statement and gives
+  polynomially many iterations of it, with the table of all cells built one bit at a time. The statement fixes the
+  appended bit to the cell rule of pnp-237 and so is not a loop proof. It does not state the CYK recurrence, the
+  correctness of the table against the fold of pnp-133, or the ordering of the cells, and it does not decide
+  P vs NP.
+sketch: |
+  Let f be the map of pnp-237 for a and b, so f (pair x w) = [c] with c the bit of the statement. Let P be the
+  pair-rebuilding map: from z, take the first component and the second component, and form pair (first) (second
+  ++ f z). The first component is pair x w's instance part by pnp-021, the second is the witness part by pnp-025,
+  and the concatenation of the witness with the one-bit output of f is pnp-127. The map s = P composed with the
+  identity on z via pnp-006 and pnp-026 is polynomial-time and has the stated value on every pair.
+dead: []

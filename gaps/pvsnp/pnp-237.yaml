@@ -1,0 +1,46 @@
+id: pnp-237
+problem: pvsnp
+title: The bounded disjunction over unary split indices of the conjunction of two witness reads at computed indices is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-006
+- pnp-011
+- pnp-021
+- pnp-029
+- pnp-066
+- pnp-227
+statement: |
+  ∀ a b : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) a) →
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) b) →
+    ∃ f : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) ∧
+      ∀ x w : List Bool,
+        f (pair x w) = [(List.range (x.length + 1)).any (fun m =>
+          w.getD (a (pair x (List.replicate m true))).length false &&
+            w.getD (b (pair x (List.replicate m true))).length false)]
+context: |
+  The cell step of an interval table DP, with the table in the witness. The pnp-152 route needs one bit per
+  cell: an OR over the split points k of the AND of two table entries, each read at an index computed from the
+  instance and k (pnp-234 and pnp-236 give one read and the AND, each for an index that does not depend on k).
+  pnp-229 gives the OR over k, but only for a map h whose argument is pair x (replicate k true), which cannot see
+  the table. This gap takes the table as the witness part w of the input and reads it inside the loop over k.
+  The index of each read is the length of a polynomial-time map applied to pair x (replicate k true), so the
+  loop uses unary counts only.
+  It is a generic bounded-quantifier step for any two polynomial-time index maps a and b. It does not build the
+  interval table, does not state the CYK recurrence, and does not decide P vs NP.
+sketch: |
+  Let n = |x|. The loop over k = 0..n has state (x, w, accumulated bit). At step k, the index of the first read is
+  |a (pair x (replicate k true))|, which is read as a unary count by pnp-029 applied to the output of a (pnp-006),
+  and the read is pnp-227 applied to the pair of that unary count and w. The second read is the same with b. The
+  AND is pnp-011 and the OR into the accumulator is a fixed truth table on the state. Iterate the step n + 1 times
+  with the loop lemma of pnp-066, starting from the accumulator false, and pass the final bit through pnp-125
+  to get the one-bit list. The loop state carries w and the accumulator in separate pair components, so that
+  the reads see w alone (pnp-021 and pnp-025 decode the components). Every piece is polynomial in |pair x w|.
+dead: []
