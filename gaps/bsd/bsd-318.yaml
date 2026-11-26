@@ -4,7 +4,8 @@ title: 'Y-transfer for the level-set family: over F_p, if the Toeplitz determina
 status: open
 imports:
 - Mathlib
-open: []
+open:
+- Polynomial
 depends: []
 statement: |
   ∀ (p : ℕ) [Fact p.Prime] (K N : ℕ) (g : Polynomial (ZMod p)) (r : ℕ → Polynomial (ZMod p)),

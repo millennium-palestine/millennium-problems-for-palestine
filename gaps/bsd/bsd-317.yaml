@@ -4,7 +4,8 @@ title: 'Coefficient identity for the level-set family: for K ≤ ρ < p, the coe
 status: open
 imports:
 - Mathlib
-open: []
+open:
+- Polynomial
 depends: []
 statement: |
   ∀ (p : ℕ) [Fact p.Prime] (K J : ℕ) (g : Polynomial (ZMod p)) (r : ℕ → Polynomial (ZMod p)),
