@@ -1,32 +1,30 @@
 id: bsd-312
 problem: bsd
-title: 'Finite five-torsion: over a field with 5 nonzero, if every affine point killed by 5 has a root of preΨ′ 5 as its x-coordinate, then the points killed by 5 form a finite type'
+title: 'Finite five-torsion: over a field with 5 nonzero, the points of an elliptic curve killed by 5 form a finite type'
 status: open
 imports:
 - Mathlib
+- MPP.Solutions.Bsd246
 open: []
 depends:
 - bsd-217
-- bsd-198
+- bsd-246
 statement: |
-  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K),
-    (5 : K) ≠ 0 →
-    (∀ (x y : K) (h : W.toAffine.Nonsingular x y),
-      (5 : ℤ) • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) = 0 → (W.preΨ' 5).eval x = 0) →
-    Finite {P : W.toAffine.Point // (5 : ℤ) • P = 0}
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) [W.IsElliptic],
+    (5 : K) ≠ 0 → Finite {P : W.toAffine.Point // (5 : ℤ) • P = 0}
 context: |
   The finiteness step that bsd-279 needs before its Nat.card bound (bsd-279 counts Nat.card of the five-torsion
-  points, which is 0 for an infinite type). The hypothesis is the five-torsion case of bsd-198 (affine points killed by
-  5 are roots of preΨ′ 5); that case is being split in bsd-303 to bsd-306 (PR #1370), and this gap takes it as an
-  assumption, so it is provable without them. Proof idea: preΨ′ 5 ≠ 0 by the Mathlib lemma preΨ'_ne_zero (since
-  (5 : K) ≠ 0), so the roots of preΨ′ 5 form a finite set. For a fixed root x, bsd-217 says any two affine points with
-  x-coordinate x are equal or negatives of each other, so at most two affine points have x-coordinate x. Hence the
-  five-torsion set lies in {0} together with finitely many pairs. Not checked in Lean.
+  points, which is 0 for an infinite type). The five-torsion case of bsd-198 is bsd-246 (merged): an affine point killed by
+  5 has x-coordinate a root of preΨ′ 5. Proof: preΨ′ 5 ≠ 0 by the Mathlib lemma preΨ'_ne_zero (since (5 : K) ≠ 0), so its
+  roots form a finite set. For a fixed x, bsd-217 says any two affine points with x-coordinate x are equal or negatives of
+  each other, so at most two affine points have x-coordinate x. Hence the five-torsion set lies in {0} together with
+  finitely many pairs. This is a corollary of bsd-246 and bsd-217; it was first proposed with the bsd-246 conclusion as a
+  hypothesis (before bsd-246 was on main). Not checked in Lean.
 sketch: |
-  Let Rts := {x : K | (W.preΨ' 5).eval x = 0}, finite by Polynomial.finite_setOf_isRoot and preΨ'_ne_zero.
-  For each x, let A_x = {P : W.toAffine.Point | P ≠ 0 ∧ ∃ y h, P = some x y h}. By bsd-217 A_x is contained in {A, −A}
-  for any A in A_x, so it is finite (Set.Finite.subset of Set.toFinite of a pair). Then the five-torsion set is
-  contained in {0} ∪ ⋃_{x ∈ Rts} A_x, a finite union (Set.Finite.biUnion). Points with 5 • P = 0 that are not zero are
-  some x y h with x in Rts by the hypothesis. Mathlib: Polynomial.finite_setOf_isRoot, WeierstrassCurve.preΨ'_ne_zero,
-  Set.Finite.biUnion, Set.Finite.subset, Set.toFinite, Set.Finite.insert, WeierstrassCurve.Affine.Point.neg_some.
+  Apply the argument to the hypothesis supplied by bsd-246. Let Rts := {x : K | (W.preΨ' 5).eval x = 0}, finite by
+  Polynomial.finite_setOf_isRoot and preΨ'_ne_zero. For each x, let F x = {P | ∃ y h, P = some x y h}. If F x is
+  nonempty with a point some x y0 h0, bsd-217 puts F x inside {some x y0 h0, −some x y0 h0}; otherwise F x is empty.
+  The five-torsion set lies in insert 0 (⋃ x ∈ Rts, F x), a finite set (Set.Finite.biUnion, Set.Finite.insert).
+  Mathlib: Polynomial.finite_setOf_isRoot, WeierstrassCurve.preΨ'_ne_zero, Set.Finite.biUnion, Set.Finite.subset,
+  Set.Finite.to_subtype, WeierstrassCurve.Affine.Point.neg_some.
 dead: []
