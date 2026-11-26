@@ -1,0 +1,45 @@
+id: pnp-255
+problem: pvsnp
+title: Iterating a polynomial-time map whose growth is bounded by a preserved side value, a polynomially many times, is polynomial-time
+status: open
+imports:
+- Mathlib
+open:
+- Turing
+depends: []
+statement: |
+  ∀ (s w : List Bool → List Bool) (c : ℕ),
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) s) →
+    (∀ z : List Bool, w (s z) = w z) →
+    (∀ z : List Bool, (s z).length ≤ z.length + (w z).length) →
+    (∀ z : List Bool, (w z).length ≤ z.length + c) →
+    ∀ p : Polynomial ℕ, ∃ T : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) T) ∧
+      ∀ z : List Bool, T z = s^[p.eval z.length] z
+context: |
+  pnp-214 iterates a polynomial-time map that grows by at most a fixed constant c, p(|z|) times. The
+  constant is what makes the iterate polynomial: after m rounds the length is at most |z| + c·m. A map
+  whose growth is bounded by the current length is not enough (z ↦ z ++ z doubles the length each round),
+  and that is why the tableau closure for pnp-100 needs a side value. In a tableau the step appends one
+  row whose width is a fixed value of the input, and that width is preserved by the step.
+
+  This gap is the side-value form. The map s may grow its output by at most |w z|, where w is a side
+  value that s preserves, and |w z| is at most |z| + c. The length bookkeeping is the pnp-253 argument:
+  after m rounds the length is at most |z| + m·|w z|, and |w z| is constant along the iterates. So the
+  iterate after p(|z|) rounds has length at most |z| + p(|z|)·(|z| + c), which is polynomial. Each round
+  is then polynomial-time at that length, and the count p(|z|) is read from the input length as in
+  pnp-214. The map w is not required to be polynomial-time and the machine never computes it.
+
+  This is a structural closure lemma. It does not decide P vs NP, and it is not a bridge to any
+  particular tableau.
+sketch: |
+  Copy the loop machine of pnp-214 (Pnp214.lean: round_run, rounds_run, main_run, loop_main) and change only
+  the growth hypothesis. The machine does not depend on the growth constant, and the constant enters only
+  the time polynomial and the length bounds. Replace the uniform hypothesis by its values on the iterates
+  of the input z0: with V = w z0, the invariant w (s^[k] z0) = V is preserved by induction, so each round
+  has growth at most |V| ≤ |z0| + c. Round_run only needs the pointwise growth at its own data, and
+  rounds_run needs the invariant w x = V on the data x. The time bound of the loop is then monotone in
+  |V|, and |V| ≤ n + c where n = |z0|, so the time polynomial can be taken in n with c as a parameter, the
+  same way loopTime is built from cg in pnp-214. Finally the count p(|z|) comes from pnp-033, and the
+  composition is pnp-006 and pnp-026, as in pnp-214.
+dead: []
