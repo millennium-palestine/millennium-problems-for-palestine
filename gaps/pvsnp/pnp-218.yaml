@@ -1,0 +1,35 @@
+id: pnp-218
+problem: pvsnp
+title: A NOT gadget on the fan-out program negates the top value and reads no witness bit
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-216
+- pnp-217
+statement: |
+  let step := fun (st : List Bool × List Bool × Option Bool) (c : Bool) =>
+    match st.2.2 with
+    | none => (st.1, st.2.1, some c)
+    | some d =>
+      if d then (if c then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+        else (st.1, st.2.1, none))
+      else (if c then (st.1.headD false :: st.1, st.2.1, none)
+        else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))
+  ∀ (a w : List Bool),
+    [false, true, true, true].foldl step (a, w, none) = ((!(a.headD false)) :: a.drop 1, w, none)
+context: |
+  NOT gadget of pnp-141. The fan-out program copies the top value (pair (false, true), pnp-216) and then
+  applies the NAND pair (true, true) (pnp-217) to the two copies, so the top becomes the negation of the old
+  top. Every bit of the witness is left in place. This is the negation half of the Boolean basis that a
+  compiler from circuits to fan-out programs needs, so it is a step toward pnp-141. It does not decide P vs
+  NP and it does not by itself give the simulation of a TM2 run.
+sketch: |
+  Split on a: if a = [] the stack is [false] after the copy and the NAND gives [true], which is the right side.
+  If a = h :: t the copy gives h :: h :: t and the NAND takes its two top values h and h, leaving (!(h && h)) :: t,
+  which is (!h) :: t. Both cases close by simp [List.foldl] after cases on a. The witness is never touched.
+dead: []
