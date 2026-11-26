@@ -29,8 +29,9 @@ sketch: |
     B = −X¹¹a₂⁵⁹a₆¹⁷ + X¹¹a₂⁵⁶a₆¹⁸ − X¹⁰a₂⁶⁰a₆¹⁷ + X⁹a₂⁶¹a₆¹⁷ − X⁷a₂⁶⁰a₆¹⁸ − X⁶a₂⁶¹a₆¹⁸ − X⁶a₂⁵⁸a₆¹⁹ − X⁵a₂⁵⁹a₆¹⁹
       + X⁴a₂⁶³a₆¹⁸ − X⁴a₂⁶⁰a₆¹⁹ + X³a₂⁶¹a₆¹⁹ + X³a₂⁵⁸a₆²⁰ − X²a₂⁵⁹a₆²⁰ + X²a₂⁵⁶a₆²¹ − X a₂⁶³a₆¹⁹ + a₂⁶¹a₆²⁰ − a₂⁵⁸a₆²¹
   The Lean side needs the identity with the integer coefficients of f, which vanish mod 3 in K, so the check is a
-  linear_combination with a multiple of (3 : K) = 0. The step from a₄ = 0 to general a₄ is the shift of Step 1, which has
-  not been formalised. Step 2 is not checked in Lean yet.
+  linear_combination with a multiple of (3 : K) = 0. That identity compiles locally for an arbitrary field K with 3 = 0 (the
+  quotient by 3 has 73 terms; it needs maxHeartbeats 4000000). The step from a₄ = 0 to general a₄ is the shift of Step 1,
+  which has not been formalised, and the link from W.preΨ' 5 to the explicit polynomial is not written yet.
 dead:
   - |
     A sympy pseudo-Euclid over ℤ[a₂, a₆] for the a₄ = 0 slice did not finish: the coefficient growth made step 7 take about
