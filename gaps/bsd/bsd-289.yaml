@@ -1,0 +1,29 @@
+id: bsd-289
+problem: bsd
+title: 'Short form by a variable change: over a field with 2 and 3 nonzero, every Weierstrass curve has a curve with a₁ = a₂ = a₃ = 0, the same discriminant, and preΨ′ 5 equal to a shift of its preΨ′ 5'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (W : WeierstrassCurve K),
+    (2 : K) ≠ 0 → (3 : K) ≠ 0 →
+    ∃ (r : K) (W' : WeierstrassCurve K), W'.a₁ = 0 ∧ W'.a₂ = 0 ∧ W'.a₃ = 0 ∧ W'.Δ = W.Δ ∧
+      W.preΨ' 5 = (W'.preΨ' 5).comp (Polynomial.X - Polynomial.C r)
+context: |
+  The reduction step for bsd-284. Put r = −b₂/12 and let b₄′ = b₄ + r b₂ + 6r², b₆′ = b₆ + 2r b₄ + r² b₂ + 4r³,
+  b₈′ = (b₂′ b₆′ − b₄′²)/4 with b₂′ = b₂ + 12r = 0. The standard variable change x = x′ + r (u = 1, s = t = 0)
+  transforms the invariants this way and leaves Δ fixed. Checked by sympy: with f(b₂, b₄, b₆, b₈; x) the
+  polynomial preΨ′ 5 expression of bsd-283, f(b₂, b₄, b₆, b₈; x) = f(0, b₄′, b₆′, b₈′; x − r) holds identically
+  after substituting b₈ = (b₂b₆ − b₄²)/4, and Δ(0, b₄′, b₆′, b₈′) = Δ(b₂, b₄, b₆, b₈). The curve W′ is
+  WeierstrassCurve.mk 0 0 0 (b₄′/2) (b₆′/4), whose invariants are b₂ = 0, b₄ = b₄′, b₆ = b₆′, b₈ = −b₄′²/4. Combined with
+  bsd-288 this gives bsd-284 by composing the cofactors with X − C r (Polynomial.derivative_comp). Not checked in Lean.
+sketch: |
+  Take r = −W.b₂ / 12 (needs 12 ≠ 0, from 2 and 3), a₄′ = (W.b₄ + r W.b₂ + 6 r²) / 2, a₆′ = (W.b₆ + 2 r W.b₄ + r² W.b₂ +
+  4 r³) / 4, and W′ = WeierstrassCurve.mk 0 0 0 a₄′ a₆′. Show W′.b₂ = 0, W′.b₄ = 2 a₄′ and W′.b₆ = 4 a₆′ by simp; show
+  W′.Δ = W.Δ by unfolding Δ with the b-invariants and ring (the b₈ relation W.b_relation is needed, or unfold b₈ from the
+  a's). For the polynomial identity, unfold preΨ′ 5 by bsd-283 and the b-invariants, use Polynomial.ext-free ring
+  reasoning in K[X] with C of the explicit expressions, and clear the divisions by 2 and 4 with field_simp. Mathlib:
+  WeierstrassCurve.b₂, b₄, b₆, b₈, Δ, b_relation, Polynomial.comp, Polynomial.comp_X, Polynomial.X_sub_C.
+dead: []

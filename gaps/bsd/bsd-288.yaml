@@ -1,0 +1,28 @@
+id: bsd-288
+problem: bsd
+title: 'Short-form Bezout certificate for the 5-division polynomial: for a Weierstrass curve with a₁ = a₂ = a₃ = 0 over any field, preΨ′ 5 and its derivative generate the constant 5¹² Δ²² modulo polynomials'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (W : WeierstrassCurve K),
+    W.a₁ = 0 → W.a₂ = 0 → W.a₃ = 0 →
+    ∃ A B : Polynomial K,
+      A * W.preΨ' 5 + B * Polynomial.derivative (W.preΨ' 5) = Polynomial.C ((5 : K) ^ 12 * W.Δ ^ 22)
+context: |
+  The short-form core of bsd-284 (Bezout certificate for preΨ′ 5). When a₁ = a₂ = a₃ = 0 the Mathlib invariants are
+  b₂ = 0, b₄ = 2a₄, b₆ = 4a₆, b₈ = −a₄², and Δ = −64a₄³ − 432a₆². Writing a = a₄ and b = a₆, the polynomial
+  f = preΨ′ 5 = preΨ₄ · Ψ₂Sq² − Ψ₃³ (bsd-283) has integer coefficients, and an exact integer computation (sympy, Gauss
+  elimination on the weighted ansatz with x of weight 2, a of weight 4, b of weight 6) gives cofactors A, B with
+  integer coefficients (216 and 236 monomials, weighted degrees 240 and 242) such that A f + B f′ = 5¹² Δ²² identically
+  in ℤ[a, b, x]. So no division and no hypothesis on the characteristic is needed. The statement is the Bezout form used
+  by bsd-284; the general case follows from this one by a variable change (bsd-289).
+sketch: |
+  Rewrite preΨ′ 5 with bsd-283, unfold Ψ₂Sq, Ψ₃, preΨ₄ and the b-invariants (b₂ = 0 from a₁ = a₂ = a₃ = 0, b₄ = 2 a₄,
+  b₆ = 4 a₆, b₈ = −a₄²), and rewrite Δ with the explicit formula. Take A and B as polynomials in X with integer
+  coefficients in W.a₄ and W.a₆ (the explicit cofactors), take the derivative by simp with derivative_mul, derivative_pow,
+  derivative_X, derivative_C, and close the identity with ring (or linear_combination with no hypotheses). Mathlib:
+  WeierstrassCurve.Δ, WeierstrassCurve.b₂, b₄, b₆, b₈ and their simp lemmas, Polynomial.derivative.
+dead: []
