@@ -1,0 +1,28 @@
+id: bsd-306
+problem: bsd
+title: 'Five-division polynomial vanishes on five-torsion (m = 5 of bsd-198): over a field with 2 nonzero, for an elliptic Weierstrass curve and a nonsingular affine point P = (x, y) with 5P = 0, the 5-division polynomial preΨ′ 5 vanishes at x'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-303
+- bsd-305
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) [W.IsElliptic] (x y : K)
+    (h : W.toAffine.Nonsingular x y), (2 : K) ≠ 0 →
+    (5 : ℤ) • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) = 0 →
+    (W.preΨ' 5).eval x = 0
+context: |
+  The m = 5 case of bsd-198 (division polynomial vanishing on torsion) in characteristic not 2, assembled from the
+  two steps before it. Mathlib's preΨ'_odd (with preΨ'_two = 1, preΨ'_one = 1, preΨ'_three = Ψ₃, preΨ'_four = preΨ₄)
+  gives preΨ'(5) = preΨ₄·Ψ₂Sq² − Ψ₃³, the polynomial of bsd-303. Then bsd-303 gives Ψ₃(x)·preΨ'(5)(x) = 0 and
+  bsd-305 gives Ψ₃(x) ≠ 0, so the 5-division polynomial vanishes at x. The hypothesis 2 ≠ 0 is inherited from bsd-304
+  and is the only restriction against the full bsd-198 for m = 5; the characteristic 2 case is not covered here.
+  No assumption on 3 or 5 is needed. The steps are checked by hand; not yet a Lean proof.
+sketch: |
+  Unfold preΨ' 5 with Mathlib's preΨ'_odd (m = 0 in the statement, so 5 = 2·(0+2)+1), simplify the if-then-else
+  (Even 0 is true), then rewrite to the polynomial of bsd-303 and use its conclusion with eval. Get Ψ₃(x) ≠ 0 from
+  bsd-305 and cancel with mul_eq_zero. The 2y + a₁x + a₃ ≠ 0 hypothesis of bsd-303 and bsd-305 follows from 5P = 0:
+  if 2P = 0 then P = 5P − 2·(2P) = 0, but P is affine, so it is not zero. Use Point.some ≠ Point.zero.
+dead: []

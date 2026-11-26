@@ -1,0 +1,31 @@
+id: bsd-305
+problem: bsd
+title: 'Three-division value at a five-torsion point: over a field with 2 nonzero, for an elliptic Weierstrass curve and a nonsingular affine point P = (x, y) with 2y + a₁x + a₃ ≠ 0 and 5P = 0, Ψ₃(x) ≠ 0'
+status: open
+imports:
+- Mathlib
+- MPP.Solutions.Bsd264
+open: []
+depends:
+- bsd-304
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) [W.IsElliptic] (x y : K)
+    (h : W.toAffine.Nonsingular x y), (2 : K) ≠ 0 →
+    2 * y + W.a₁ * x + W.a₃ ≠ 0 →
+    (5 : ℤ) • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) = 0 →
+    3 * x ^ 4 + W.b₂ * x ^ 3 + 3 * W.b₄ * x ^ 2 + 3 * W.b₆ * x + W.b₈ ≠ 0
+context: |
+  Second step of the m = 5 case of bsd-198, the branch that bsd-303 cannot exclude. Suppose Ψ₃(x) = 0. Then
+  3P is either O or affine. If 3P = O then 2P = 5P − 3P = 0, which contradicts 2y + a₁x + a₃ ≠ 0 (2P = 0 forces
+  P = −P, i.e. 2y + a₁x + a₃ = 0). If 3P = (x₃, y₃) is affine, bsd-264 (accepted, imported here) gives
+  x₃·Ψ₃(x)² = x·Ψ₃(x)² − Ψ₂Sq(x)·preΨ₄(x), so Ψ₂Sq(x)·preΨ₄(x) = 0. Here Ψ₂Sq(x) = (2y + a₁x + a₃)² ≠ 0, hence
+  preΨ₄(x) = 0, and bsd-304 gives Δ = 0, contradicting W.IsElliptic. Notation as in bsd-264 and bsd-303.
+  The hypothesis 2 ≠ 0 is the one of bsd-304.
+sketch: |
+  By contradiction, assume Ψ₃(x) = 0. Case on 3P = O (Point.zero) or 3P = some x₃ y₃ h₃ (use the 3-multiple of
+  P as in bsd-264, with (3:ℤ)•P). In the O case, (2:ℤ)•P = (5:ℤ)•P − (3:ℤ)•P = 0, then the two-torsion criterion
+  for affine points gives 2y + a₁x + a₃ = 0. In the affine case apply MPP.Solutions.Bsd264.main, simplify with
+  Ψ₃(x) = 0 to get Ψ₂Sq(x)·preΨ₄(x) = 0, use the identity (2y + a₁x + a₃)² = Ψ₂Sq(x) from the curve equation, and
+  apply bsd-304 (once accepted, import it; until then the statement is a dependency) to get the discriminant zero,
+  contradicting IsElliptic (the discriminant is a unit).
+dead: []
