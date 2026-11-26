@@ -1,0 +1,28 @@
+id: pnp-224
+problem: pvsnp
+title: Iterating a length-preserving polynomial-time map, a polynomially many times, is polynomial-time
+status: open
+imports:
+- Mathlib
+open:
+- Turing
+depends:
+- pnp-214
+statement: |
+  ∀ (s : List Bool → List Bool),
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) s) →
+    (∀ z : List Bool, (s z).length = z.length) →
+    ∀ p : Polynomial ℕ, ∃ T : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) T) ∧
+      ∀ z : List Bool, T z = s^[p.eval z.length] z
+context: |
+  pnp-214 iterates a polynomial-time map whose output grows by at most a fixed constant c. The
+  special case c = 0 is the case of a map that keeps the length of its input, for example a row update
+  on a table that is padded to a fixed length. This gap records that case as its own statement, so that
+  a table DP can cite it without a growth bound. It follows from pnp-214 at c = 0 and does not decide
+  P vs NP. It removes one of the three objections in the stuck report on pnp-152 (issue 945): the
+  in-place table update is length-preserving, so the iteration needs no growth bound.
+sketch: |
+  Apply pnp-214 with c = 0. The hypothesis (s z).length ≤ z.length + 0 follows from the length
+  equality by simp and omega. The conclusion of pnp-214 is exactly the conclusion here.
+dead: []
