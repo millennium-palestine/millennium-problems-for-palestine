@@ -1,0 +1,35 @@
+id: pnp-241
+problem: pvsnp
+title: Iterating the length-indexed table cell step of pnp-240 a polynomially many times, on the pair encoding, is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-232
+- pnp-240
+statement: |
+  ∀ a b s : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) a) →
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) b) →
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) s) →
+    (∀ x w : List Bool, s (pair x w) = pair x (w ++ [(List.range ((pair x (List.replicate w.length false)).length + 1)).any
+          (fun m =>
+            w.getD (a (pair (pair x (List.replicate w.length false)) (List.replicate m true))).length false &&
+              w.getD (b (pair (pair x (List.replicate w.length false)) (List.replicate m true))).length false)])) →
+    ∀ p : Polynomial ℕ, ∃ T : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) T) ∧
+      ∀ x w : List Bool, T (pair x w) = s^[p.eval (pair x w).length] (pair x w)
+context: |
+  The iterated form of pnp-240, the length-indexed counterpart of pnp-239. The cell bit is appended to the witness, so
+  after k steps the witness has length k more than before, and the number of steps is p of the input length. Its proof
+  is the proof of pnp-239 with the cell formula of pnp-240 in place of the fixed-index one. It is a link of the table
+  chain for pnp-152. It does not state the CYK recurrence or the correctness of the table, and it does not decide P vs NP.
+sketch: |
+  Apply pnp-232 to s. Its hypothesis, for every pair x w there is a bit b with s (pair x w) = pair x (w ++ [b]), follows at
+  once from the hypothesis of this gap with b the value of the disjunction. Then pnp-232 gives T with
+  T z = s^[p |z|] z on pair inputs, which is the statement.
+dead: []

@@ -1,0 +1,44 @@
+id: pnp-240
+problem: pvsnp
+title: The table cell step whose reads are indexed by the current table length is polynomial-time on the pair encoding
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-021
+- pnp-025
+- pnp-026
+- pnp-029
+- pnp-127
+- pnp-237
+- pnp-238
+statement: |
+  ∀ a b : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) a) →
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) b) →
+    ∃ s : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) s) ∧
+      ∀ x w : List Bool,
+        s (pair x w) = pair x (w ++ [(List.range ((pair x (List.replicate w.length false)).length + 1)).any
+          (fun m =>
+            w.getD (a (pair (pair x (List.replicate w.length false)) (List.replicate m true))).length false &&
+              w.getD (b (pair (pair x (List.replicate w.length false)) (List.replicate m true))).length false)])
+context: |
+  pnp-238 appends to the witness the cell bit of pnp-237, where the reads are indexed by a map of the instance x and a
+  unary split index m. A table of the pnp-152 route has cells that are computed in order, so the cell being written is
+  the one at position w.length, and its reads depend on that position. pnp-238 cannot express this, because its
+  index maps see only x. This gap lets the index maps see the current table length: they receive the instance
+  pair x (replicate w.length false) together with the unary split index. The bit is appended to the witness as in
+  pnp-238. The gap is a closure lemma for the table chain. It does not state the CYK recurrence, the correctness of
+  the cells against the fold of pnp-133, or the table machine of pnp-152, and it does not decide P vs NP.
+sketch: |
+  Let x' = pair x (replicate w.length false), a polynomial-time function of the input pair x w (pnp-029, pnp-026). The
+  claimed bit is exactly the bit of pnp-237 at the instance x' and witness w, because the instance of pnp-237 is the
+  first argument of the pair and its range is x'.length + 1. So s is pair x (w ++ [f (pair x' w)]), where f is the map of
+  pnp-237 for the index maps a and b. The output is assembled with pnp-021 (decoding the instance), pnp-025 (the
+  witness), pnp-026 (pairing) and pnp-127 (concatenation), as in pnp-238. Composition is pnp-006.
+dead: []
