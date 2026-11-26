@@ -1,0 +1,29 @@
+id: pnp-253
+problem: pvsnp
+title: A step that preserves a side value w and grows by at most |w z| keeps the length at most |z| + m·|w z| after m steps
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ s w : List Bool → List Bool,
+    (∀ z : List Bool, w (s z) = w z) →
+    (∀ z : List Bool, (s z).length ≤ z.length + (w z).length) →
+    ∀ (m : ℕ) (z : List Bool), (s^[m] z).length ≤ z.length + m * (w z).length
+context: |
+  Arithmetic core of the side-input iteration closure needed for pnp-100 (Cook–Levin over TM2). A Cook–Levin
+  tableau is built by iterating a row step whose growth per round is the row width n, not the current length.
+  pnp-214 handles only a fixed constant growth c. Naive generalisations of pnp-214 with growth bounded by the
+  current length are false (see the stuck report on pnp-100). The correct closure carries the width as a side
+  value w z that the step preserves, and grows by at most |w z| per round. This gap is the length bookkeeping of
+  that closure, stated for arbitrary functions on lists: no machine, no polynomial bound, no P, and it does not
+  decide P vs NP. The machine part (that the iterate is polynomial-time, using a polynomial bound on |w z|) is a
+  separate later gap.
+sketch: |
+  Induction on m, generalising z. For m + 1, use Function.iterate_succ_apply to rewrite s^[m+1] z as s^[m] (s z).
+  The hypothesis w (s z) = w z keeps the side value, so the induction hypothesis at s z gives
+  |s^[m] (s z)| ≤ |s z| + m·|w z|. The growth hypothesis gives |s z| ≤ |z| + |w z|. Adding these yields
+  |z| + (m+1)·|w z|. In Lean: induction m generalizing z, simp only [Function.iterate_succ_apply], rewrite with
+  the preservation hypothesis, then nlinarith or omega after Nat.succ_mul.
+dead: []
