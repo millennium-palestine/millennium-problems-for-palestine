@@ -1,0 +1,26 @@
+id: bsd-295
+problem: bsd
+title: 'Characteristic 3 normal form: over a field with 2 nonzero, every Weierstrass curve has a curve with a₁ = a₃ = 0, the same discriminant, and the same preΨ′ 5'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (W : WeierstrassCurve K),
+    (2 : K) ≠ 0 →
+    ∃ W' : WeierstrassCurve K, W'.a₁ = 0 ∧ W'.a₃ = 0 ∧ W'.Δ = W.Δ ∧ W'.preΨ' 5 = W.preΨ' 5
+context: |
+  First half of the split of bsd-294 (squarefree preΨ′ 5 in characteristic 2 or 3). When 2 is nonzero, completing
+  the square removes a₁ and a₃: put a₂′ = a₂ + a₁²/4, a₄′ = a₄ + a₁a₃/2, a₆′ = a₆ + a₃²/4, a₁′ = a₃′ = 0. The
+  change y ↦ y + s x + t with x fixed does not move the invariants b₂, b₄, b₆, b₈, and preΨ′ n is a polynomial in
+  b₂, b₄, b₆, b₈ only (Mathlib: preΨ′ is defined through Ψ₂Sq, Ψ₃ and preΨ₄, which use only the b-invariants). So
+  the new curve keeps Δ and preΨ′ 5. Not checked in Lean.
+sketch: |
+  Take a₂′ = W.a₂ + W.a₁ ^ 2 / 4, a₄′ = W.a₄ + W.a₁ * W.a₃ / 2, a₆′ = W.a₆ + W.a₃ ^ 2 / 4 and W′ = WeierstrassCurve.mk 0 a₂′ 0
+  a₄′ a₆′. Show the four b-invariants of W′ equal those of W (b₂′ = 4 a₂′ = b₂, b₄′ = 2 a₄′ = b₄, b₆′ = 4 a₆′ = b₆), using
+  4 ≠ 0 from 2 ≠ 0 and field_simp. Then b₈ is determined by the others by 4 b₈ = b₂ b₆ − b₄² (WeierstrassCurve.b_relation),
+  so b₈′ = b₈ and Δ′ = Δ by unfolding Δ in the b-invariants. Finally preΨ′ 5 agrees because it unfolds to the
+  b-invariants only: unfold preΨ′, preNormEDS′, Ψ₂Sq, Ψ₃, preΨ₄ and rewrite the four equalities. Mathlib:
+  WeierstrassCurve.b₂, b₄, b₆, b₈, Δ, b_relation, preΨ', preΨ₄, Ψ₃, Ψ₂Sq.
+dead: []
