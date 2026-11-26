@@ -1,0 +1,39 @@
+id: pnp-244
+problem: pvsnp
+title: Unary remainder by a nonempty unary divisor, on the pair encoding, is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-011
+- pnp-021
+- pnp-025
+- pnp-028
+- pnp-029
+- pnp-030
+- pnp-032
+- pnp-127
+- pnp-237
+- pnp-242
+- pnp-243
+statement: |
+  ∃ R : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) R) ∧
+    ∀ u v : List Bool, v ≠ [] → R (pair u v) = List.replicate (u.length % v.length) true
+context: |
+  The remainder of two unary lengths, taken from the pair encoding, written in unary. With pnp-243 this gives
+  both halves of the decode of a table index t, read as row t / (n + 1) and column t % (n + 1), which the
+  length-indexed table step of pnp-240 needs in order to find the cells it reads. It is the second arithmetic
+  step after pnp-243, and it is stated without any table or CYK recurrence. It does not decide P vs NP.
+sketch: |
+  Let the bit at index k be [v * (u / v) at most k and k < |u|], evaluated at z = pair (pair u v) (replicate k false).
+  The product v * (u / v) is the unary product of pnp-032 of replicate |v| false and the unary quotient of
+  pnp-243, so it is computed as a polynomial-time map of z (pnp-021 and pnp-025 decode u, v and k). The two
+  comparisons are pnp-028 on pair (replicate k false) (product), and on pair u (replicate k false ++ [false]),
+  which has length k + 1, so k + 1 at most |u| is k < |u|. pnp-242 counts the true bits over k up to |pair u v|. The
+  count of k in [v * (u / v), |u|) is |u| - v * (u / v), which is |u| % |v| because v * (u / v) + |u| % |v| = |u|.
+dead: []
