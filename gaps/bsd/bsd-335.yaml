@@ -1,0 +1,26 @@
+id: bsd-335
+problem: bsd
+title: 'The n = 8 case of the elliptic-net addition formula: N(m+8) N(m−8) = N(m+1) N(m−1) N(8)² − N(9) N(7) N(m)² for normEDS, for every integer m'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (A : Type) [CommRing A] (b c d : A) (m : ℤ),
+    normEDS b c d (m + 8) * normEDS b c d (m - 8)
+      - normEDS b c d (m + 1) * normEDS b c d (m - 1) * normEDS b c d 8 ^ 2
+      + normEDS b c d 9 * normEDS b c d 7 * normEDS b c d m ^ 2 = 0
+context: |
+  The n = 8 instance of the elliptic-net relation ψ(m+n) ψ(m−n) = ψ(m+1) ψ(m−1) ψ(n)² − ψ(n+1) ψ(n−1) ψ(m)², written
+  for normEDS, as in bsd-210, bsd-320, bsd-328 and bsd-334. It follows the cases n = 2..7 (bsd-323, bsd-324, bsd-325,
+  bsd-320, bsd-328, bsd-334), so it is the next step of the chain that the general-n gap bsd-210 needs. The identity is
+  true: it is the elliptic-net relation with n = 8 for normEDS, which holds in every commutative ring. Checked numerically
+  for m = 9..29 with random rational b, c, d using Mathlib's recurrences normEDS_even and normEDS_odd. Not checked in Lean.
+sketch: |
+  Follow bsd-328 and bsd-334. Work in the atoms X(k) = normEDS b c d (m + k) and use the relations of n = 2..7 at shifted
+  indices. Two certificates, for the n = 8 bracket times N(m-4)N(m-3) and times N(m+1)N(m+2), with a linear algebra
+  search under the index-sum grading (every relation at shift j has index sum 2j) and the weight grading
+  (w(b) = 3, w(c) = 8, w(d) = 12, w(X_k) = k² − 1). Then the universal domain MvPolynomial (Fin 3) Z and evaluation at
+  ![b, c, d], as in bsd-328.
+dead: []

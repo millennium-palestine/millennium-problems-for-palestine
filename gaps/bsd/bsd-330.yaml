@@ -1,0 +1,26 @@
+id: bsd-330
+problem: bsd
+title: 'Toeplitz symbol nonvanishing at p = 3: for a short cubic x³ + ax + b over F_3 with nonzero discriminant, the 1×1 determinant of the symbol c_1 + d_1·Y, K = 1, is nonzero'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (a b : ZMod 3), 4 * a ^ 3 + 27 * b ^ 2 ≠ 0 →
+    ∀ g : Polynomial (ZMod 3),
+      g = (Polynomial.X ^ 3 + Polynomial.C a * Polynomial.X + Polynomial.C b) ^ ((3 - 1) / 2) →
+      (Matrix.of (fun (i t : Fin ((3 - 1) / 2)) =>
+        Polynomial.C (g.coeff ((3 - 1) / 2 + (i : ℕ) - (t : ℕ))) +
+          Polynomial.C (g.coeff ((3 - 1) / 2 + (i : ℕ) - (t : ℕ) + 3)) * (Polynomial.X : Polynomial (ZMod 3)))).det ≠ 0
+context: |
+  The p = 3 instance of bsd-254 (Toeplitz symbol nonvanishing), split off as a case that can be closed by hand. Here
+  K = (p − 1)/2 = 1, so the Toeplitz matrix is 1×1 and g = f, the cubic itself (c = 1). Its only entry is
+  c_1 + d_1·Y, where c_1 is the coefficient of X in f, which is a, and d_1 is the coefficient of X^4, which is 0.
+  So the determinant is the constant a. The hypothesis 4a³ + 27b² ≠ 0 in F_3 gives a ≠ 0, since 27 = 0 there.
+  The statement for all p is bsd-254; this gap only covers p = 3. Not checked in Lean.
+sketch: |
+  Reduce to a ≠ 0: if a = 0 then 4a³ + 27b² = 0 in ZMod 3, contradicting the hypothesis (decide over b). Then show
+  the matrix entry simplifies to C a, using Polynomial.coeff of X³ + C a * X + C b at 1 and at 4 (simp with
+  coeff_add, coeff_C_mul, coeff_X, coeff_X_pow, coeff_C), and Matrix.det_unique for the 1×1 case.
+dead: []
