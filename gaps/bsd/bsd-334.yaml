@@ -1,0 +1,28 @@
+id: bsd-334
+problem: bsd
+title: 'The n = 7 case of the elliptic-net addition formula: N(m+7) N(m−7) = N(m+1) N(m−1) N(7)² − N(8) N(6) N(m)² for normEDS, for every integer m'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-328
+statement: |
+  ∀ (A : Type) [CommRing A] (b c d : A) (m : ℤ),
+    normEDS b c d (m + 7) * normEDS b c d (m - 7)
+      - normEDS b c d (m + 1) * normEDS b c d (m - 1) * normEDS b c d 7 ^ 2
+      + normEDS b c d 8 * normEDS b c d 6 * normEDS b c d m ^ 2 = 0
+context: |
+  The n = 7 instance of the elliptic-net relation ψ(m+n) ψ(m−n) = ψ(m+1) ψ(m−1) ψ(n)² − ψ(n+1) ψ(n−1) ψ(m)², written
+  for normEDS, as in bsd-210, bsd-320 and bsd-328. The cases n = 2..6 are bsd-214 (n = 2 in a domain), bsd-323, bsd-324,
+  bsd-325, bsd-320 and bsd-328, and this is the next case of the chain that the general-n gap bsd-210 needs. The identity is
+  true: it is the elliptic-net relation with n = 7 for normEDS, which holds in every commutative ring. Checked numerically
+  for m = 8..29 with random rational b, c, d using Mathlib's recurrences normEDS_even and normEDS_odd. Not checked in Lean.
+sketch: |
+  Follow bsd-328. Work in the atoms X(k) = normEDS b c d (m + k) and use the relations of n = 2..6 at shifted indices
+  (bsd-323, bsd-324, bsd-325, bsd-320, bsd-328). A certificate for the n = 7 bracket times a product of two atoms
+  (two multipliers whose zero sets in m are disjoint, e.g. a pair of atoms near m-4 and a pair near m+1) gives the identity
+  in the universal domain MvPolynomial (Fin 3) Z, where normEDS is nonzero off zero (bsd-225), and the statement follows
+  by evaluation at ![b, c, d]. The index-sum grading (every relation at shift j has index sum 2j) and the weight grading
+  (w(b) = 3, w(c) = 8, w(d) = 12, w(X_k) = k² − 1) keep the ansatz small enough for a linear algebra search.
+dead: []
