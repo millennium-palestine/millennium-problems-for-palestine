@@ -1,0 +1,34 @@
+id: pnp-245
+problem: pvsnp
+title: Unary truncated subtraction, on the pair encoding, is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-021
+- pnp-025
+- pnp-026
+- pnp-028
+- pnp-127
+- pnp-242
+statement: |
+  ∃ S : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) S) ∧
+    ∀ u v : List Bool, S (pair u v) = List.replicate (u.length - v.length) true
+context: |
+  The truncated difference of two unary lengths, taken from the pair encoding, written in unary. The table of a
+  dynamic programme on n + 1 cells per row reads the cell at position w.length - (n + 1), one row up, and the
+  position is a unary difference of two lengths; pnp-031 gives sums but no difference. It is an arithmetic step
+  next to pnp-243 and pnp-244, and it is stated without any table or CYK recurrence. It does not decide P vs NP.
+sketch: |
+  Take the counting map of pnp-242 with the bit c z = [|v| at most k and k < |u|], where z = pair (pair u v) (replicate k false)
+  and k = |K| for K = the witness part of z (pnp-025). The components u and v come from the instance d(z) = pair u v of
+  pnp-021 and pnp-025. Then [|v| at most k] is pnp-028 on pair K v, and [k < |u|] is [k + 1 at most |u|], which is pnp-028
+  on pair u (K ++ [false]) with the concatenation of pnp-127. The bit is the conjunction, and c z = [bit] is polynomial-time
+  by pnp-026. Then pnp-242 gives the unary count over k up to |pair u v|, which is at least |u| - 1 since
+  |pair u v| = 2|u| + 2 + |v|. The count of k with |v| at most k < |u| is |u| - |v| (truncated), so the output is that count.
+dead: []
