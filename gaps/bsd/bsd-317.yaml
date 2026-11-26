@@ -1,0 +1,38 @@
+id: bsd-317
+problem: bsd
+title: 'Coefficient identity for the level-set family: for K ≤ ρ < p, the coefficient of X^(pq+ρ) in g·Σ_j X^(pj)·r_j is Σ_t (g_(ρ−t)·r_q[t] + g_(ρ−t+p)·r_(q−1)[t]), with deg r_j < K and deg g < 2p'
+status: open
+imports:
+- Mathlib
+open:
+- Polynomial
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (K J : ℕ) (g : Polynomial (ZMod p)) (r : ℕ → Polynomial (ZMod p)),
+    g.natDegree < 2 * p →
+    (∀ j, J ≤ j → r j = 0) →
+    (∀ j, (r j).natDegree < K) →
+    ∀ ρ q : ℕ, K ≤ ρ → ρ < p →
+      (g * ∑ j ∈ Finset.range J, (Polynomial.X : Polynomial (ZMod p)) ^ (p * j) * r j).coeff (p * q + ρ) =
+        ∑ t ∈ Finset.range K, (g.coeff (ρ - t) * (r q).coeff t +
+          (if 0 < q then g.coeff (ρ - t + p) * (r (q - 1)).coeff t else 0))
+context: |
+  Step 1 of the bsd-183 bridge (bookkeeping, not the Toeplitz core). Write B := Σ_j X^(p·j)·r_j with deg r_j < K = (p−1)/2,
+  and g = f^((p−1)/2) (only deg g < 2p is used here, so the lemma holds for any g). Write g_s(Y) := c_s + d_s·Y with c_s the
+  coefficient of X^s in g and d_s the coefficient of X^(s+p) (deg g < 2p makes this exact). The coefficient of X^(pq+ρ) in gB
+  comes from the pairs (j, t) with X^(pj + t) times the g-term at exponent pq + ρ − pj − t. For K ≤ ρ < p and t < K ≤ ρ,
+  only j ≤ q contributes: j = q gives g_(ρ−t) r_q[t], j = q−1 gives d_(ρ−t) r_(q−1)[t] (exponent p + ρ − t), and j ≤ q−2 is
+  zero because the exponent is ≥ 2p. The statement has no Frobenius, no cubic, and no primality beyond the Fact instance.
+  The output feeds bsd-318 (Y-transfer), which turns the vanishing of these coefficients into the square system.
+  Compare bsd-255 (support of A = Σ_j X^(pj)·r_{0j} modulo p) and bsd-253 (Toeplitz transfer for deg B < K).
+sketch: |
+  Rewrite the left side with Finset.sum_mul and the coefficient of X^n times a polynomial (Polynomial.coeff_X_pow_mul'
+  or Polynomial.coeff_mul_X_pow'), so each summand becomes (g * r_j).coeff (p*q + ρ − p*j) when p*j ≤ p*q + ρ, and 0 otherwise.
+  For j > q the index is negative, so the term vanishes. Expand (g * r_j).coeff m by Polynomial.coeff_mul as a sum over the
+  antidiagonal; since (r_j).natDegree < K, only the antidiagonal points with second coordinate t < K survive, which is
+  Finset.sum_subset or Polynomial.coeff_mul with a restriction to range K. For the surviving terms, the first coordinate is
+  g's index (p*q + ρ − p*j − t), so split on j ∈ {q, q−1, ≤ q−2} with Nat.sub arithmetic, using t < K ≤ ρ < p and
+  Polynomial.coeff_eq_zero_of_natDegree_lt for index ≥ 2p. Use omega for the Nat inequalities and avoid omega on % by variables.
+  Finally, reindex the sum over j ∈ range J with Finset.sum_eq_single or Finset.sum_range_succ, using the hypothesis
+  r j = 0 for j ≥ J so that both sides range over all j.
+dead: []
