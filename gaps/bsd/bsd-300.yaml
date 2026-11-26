@@ -1,0 +1,27 @@
+id: bsd-300
+problem: bsd
+title: 'Squarefree preΨ′ 5 in characteristic 2 with a₁ = a₂ = 0: over a field with 2 = 0 and W elliptic with a₁ = a₂ = 0, preΨ′ 5 is squarefree'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-282
+- bsd-283
+statement: |
+  ∀ (K : Type) [Field K] (W : WeierstrassCurve K) [W.IsElliptic],
+    (2 : K) = 0 → W.a₁ = 0 → W.a₂ = 0 → Squarefree (W.preΨ' 5)
+context: |
+  First piece of the split of bsd-297 (characteristic 2). With a₁ = a₂ = 0 and 2 = 0 the curve is y² + a₃ y = x³ + a₄ x + a₆,
+  and the discriminant is Δ = a₃⁴, a unit because W is elliptic. The case is a closed form, so it needs no
+  Bezout search: preΨ′ 5 = a₃⁸ − g³ with g = X⁴ + a₃² X + a₄², and g′ = a₃². A common root of f and f′ would be
+  a root of g, where f = a₃⁸ ≠ 0, so the polynomial is squarefree. The statement is the case a₁ = a₂ = 0 of
+  bsd-297. Nothing here is checked in Lean.
+sketch: |
+  Rewrite with bsd-283: preΨ′ 5 = preΨ₄ · Ψ₂Sq² − Ψ₃³. Over a field with 2 = 0, a₁ = a₂ = 0 gives b₂ = 0,
+  b₄ = 0, b₆ = a₃², b₈ = a₄² (use 4 = 0, 2 = 0, 3 = 1, 5 = 1, 10 = 0 as rewrites), so Ψ₂Sq = a₃², Ψ₃ = g and
+  preΨ₄ = a₃⁴. Hence f = C(a₃⁸) − g³ with g = X⁴ + C a₃² · X + C a₄². Δ = a₃⁴, so a₃ ≠ 0 from W.IsElliptic.
+  Certificate for bsd-282 with c = a₃¹⁰: with f′ = −g² · a₃² (derivative of g is C a₃² in characteristic 2),
+  C(a₃²) · f + (−g) · f′ = C(a₃¹⁰). Then bsd-282 gives Squarefree f.
+  Mathlib: WeierstrassCurve.preΨ'_odd, WeierstrassCurve.Ψ₃, Ψ₂Sq, preΨ₄, Polynomial.derivative, bsd-282, bsd-283.
+dead: []

@@ -1,0 +1,24 @@
+id: bsd-301
+problem: bsd
+title: 'Squarefree preΨ′ 5 in characteristic 2 with a₁ = 0 and a₂ ≠ 0: over a field with 2 = 0 and W elliptic with a₁ = 0, a₂ ≠ 0, preΨ′ 5 is squarefree'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (W : WeierstrassCurve K) [W.IsElliptic],
+    (2 : K) = 0 → W.a₁ = 0 → W.a₂ ≠ 0 → Squarefree (W.preΨ' 5)
+context: |
+  Second piece of the split of bsd-297 (characteristic 2). With a₁ = 0 and 2 = 0 the discriminant is Δ = a₃⁴, so W
+  elliptic gives a₃ ≠ 0. Here a₂ ≠ 0. In characteristic 2 with a₁ = 0, preΨ′ 5 has the closed form computed for
+  bsd-300 with b₈ = a₂ a₃² + a₄² in place of a₄², and the closed form does not immediately give a certificate,
+  because the extra term a₃⁴ b₈ X² is present. The statement is true: the 5-division
+  polynomial has simple roots, being the x-coordinates of the nonzero 5-torsion points of a nonsingular curve.
+  Nothing here is checked in Lean.
+sketch: |
+  Not yet split further. Candidate routes: a variable change x ↦ x + a₂ (characteristic 2 and a₁ = 0 give a₂ ↦ a₂ + r with
+  r = a₂) that reduces to bsd-300, but only once preΨ′ 5 transforms under the shift (the transport lemma is not in
+  Mathlib as used here); or a direct Bezout identity A·f + B·f′ = c·Δᵏ over 𝔽₂[a₂, a₃, a₄, a₆][X], found by weighted
+  linear algebra as for bsd-296. Mathlib: WeierstrassCurve.preΨ'_odd, bsd-282, bsd-300 once merged.
+dead: []
