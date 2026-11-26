@@ -1,0 +1,35 @@
+id: pnp-216
+problem: pvsnp
+title: A copy pair pushes a copy of the top of the stack and reads no witness bit
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  let step := fun (st : List Bool × List Bool × Option Bool) (c : Bool) =>
+    match st.2.2 with
+    | none => (st.1, st.2.1, some c)
+    | some d =>
+      if d then (if c then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+        else (st.1, st.2.1, none))
+      else (if c then (st.1.headD false :: st.1, st.2.1, none)
+        else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))
+  ∀ (a w : List Bool),
+    [false, true].foldl step (a, w, none) = (a.headD false :: a, w, none)
+context: |
+  Copy gadget of pnp-141. In the fan-out model the pair (false, true) is the copy instruction: it pushes
+  a second copy of the top of the stack, so one value can be shared by several later instructions. This
+  gap fixes its effect from a pair boundary: the stack gains its own top (false when the stack is empty),
+  the witness is not read, and the pending component is back to none. Together with pnp-217 (the NAND
+  gadget) and pnp-215 (padding) it gives the local rules that the fan-out construction of pnp-141 uses for
+  each cell of a run tableau. It does not decide P vs NP and it does not by itself give the simulation of a
+  TM2 run.
+sketch: |
+  Unfold the two steps of the list [false, true]. The first bit sets the pending component to some false,
+  the second bit takes the branch d = false, c = true, which pushes st.1.headD false onto st.1. Both sides
+  are then the same triple. The proof should be rfl or simp [List.foldl] after intro a w.
+dead: []

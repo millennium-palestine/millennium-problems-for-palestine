@@ -1,0 +1,40 @@
+id: pnp-215
+problem: pvsnp
+title: Padding a fan-out program with true-false pairs leaves its state unchanged
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-147
+statement: |
+  let step := fun (st : List Bool × List Bool × Option Bool) (c : Bool) =>
+    match st.2.2 with
+    | none => (st.1, st.2.1, some c)
+    | some d =>
+      if d then (if c then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+        else (st.1, st.2.1, none))
+      else (if c then (st.1.headD false :: st.1, st.2.1, none)
+        else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))
+  ∀ (p : List Bool) (k : Nat) (s : List Bool × List Bool × Option Bool),
+    (p.foldl step s).2.2 = none →
+      (p ++ (List.replicate k [true, false]).flatten).foldl step s = p.foldl step s
+context: |
+  Padding step of pnp-141. The sketch pads a fan-out program with (true, false) pairs until its length is
+  at least the witness bound of the NP verifier, so that the program can carry every witness bit. This gap
+  says the padding is invisible: when the pending component is none (the program is at a pair boundary),
+  each (true, false) pair leaves the stack and the witness unchanged, because the first bit only sets the
+  pending component and the second bit, with a pending true, is the no-op branch. It does not decide
+  P vs NP and it does not by itself give the Cook-Levin step of pnp-141; it is one of the three local
+  gadgets (with pnp-216 and pnp-217) that the fan-out construction composes.
+sketch: |
+  Use List.foldl_append to reduce to the fold of the padding from the state p leaves, which has pending
+  component none by hypothesis. Generalize that state and induct on k. For k + 1 the padding is one pair
+  followed by k pairs, and one pair from a state with pending none returns a state with pending none and
+  the same stack and witness: the first bit sets the pending component to true, and the second bit with
+  pending true takes the no-op branch. Destructure the state into its three components so that the
+  pending hypothesis and the equality close by simp or rfl.
+dead: []

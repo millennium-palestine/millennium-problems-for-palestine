@@ -1,0 +1,35 @@
+id: pnp-217
+problem: pvsnp
+title: A NAND pair replaces the two top stack values by their NAND and reads no witness bit
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends: []
+statement: |
+  let step := fun (st : List Bool × List Bool × Option Bool) (c : Bool) =>
+    match st.2.2 with
+    | none => (st.1, st.2.1, some c)
+    | some d =>
+      if d then (if c then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+        else (st.1, st.2.1, none))
+      else (if c then (st.1.headD false :: st.1, st.2.1, none)
+        else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))
+  ∀ (x y : Bool) (rest w : List Bool),
+    [true, true].foldl step (x :: y :: rest, w, none) = ((!(x && y)) :: rest, w, none)
+context: |
+  NAND gadget of pnp-141. In the fan-out model the pair (true, true) pops the two top values and pushes
+  their NAND. Together with the copy gadget of pnp-216 it lets a program compute, from shared values, the
+  NAND of any two cells of a run tableau, with each value used any number of times. From a pair boundary
+  with at least two values on the stack, the NAND pair leaves the rest of the stack and the witness
+  unchanged. It does not decide P vs NP, and it does not address the hard part of pnp-141, which is whether
+  the copy and NAND rules can simulate every verifier run with the witness bits as leaves.
+sketch: |
+  Unfold the two steps of [true, true] starting from x :: y :: rest. The first bit sets the pending
+  component to some true. The second bit takes the branch d = true, c = true, which replaces the first two
+  stack entries by the negated conjunction of their headD values and keeps the rest of the stack. Both sides
+  are then the same triple; the simplification drop 1 of a cons and drop 2 of a cons should close by simp.
+dead: []
