@@ -1,0 +1,32 @@
+id: bsd-292
+problem: bsd
+title: 'Top coefficient of a Toeplitz-type determinant: if N is zero on and below the diagonal with ones on the superdiagonal, the X^n coefficient of det(M + X·N) is (−1)^n·M(n,0)'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (n : ℕ) (M N : Matrix (Fin (n + 1)) (Fin (n + 1)) (ZMod p)),
+    (∀ i t : Fin (n + 1), t ≤ i → N i t = 0) →
+    (∀ i : Fin n, N (Fin.castSucc i) (Fin.succ i) = 1) →
+    (Matrix.of (fun i t : Fin (n + 1) =>
+      (Polynomial.C (M i t) + Polynomial.X * Polynomial.C (N i t) : Polynomial (ZMod p)))).det.coeff n =
+      (-1) ^ n * M (Fin.last n) 0
+context: |
+  Splits off the one algebraic step of the bsd-254 analysis (the K×K Toeplitz determinant of the symbols c_s + d_s·Y,
+  K = (p−1)/2). There the Y-part N_{it} = d_{K+i−t} is zero on and below the diagonal (deg g = 3K < p+K, so the
+  coefficients d_s vanish for s ≥ K) and has d_{K−1} = 1 on the superdiagonal (g is monic of degree 3(p−1)/2), so
+  this gap applies, and the Y^(K−1) coefficient of the determinant is (−1)^(K−1)·c_{2K−1}, where c_{2K−1} = c_{p−2} is
+  the coefficient of X^(p−2) in (X³ + aX + b)^((p−1)/2). Consequence (to be proved separately, not here): bsd-254 holds
+  for every short cubic with c_{p−2} ≠ 0 mod p. It does NOT settle bsd-254: c_{p−2} vanishes for many nonsingular cubics,
+  e.g. p = 7, (a, b) = (0, 1) (there (X³+1)³ has no X⁵ term), so the top coefficient can be zero and the rest is needed.
+  Numerical check (not a proof): the sign and value of the top coefficient agree for random integer matrices, n ≤ 5.
+sketch: |
+  The X^n coefficient of det(M + X·N) is the mixed term Σ_{i,t} M_{it} · cofactor_{it}(N) of the multilinear expansion
+  in the entries of M, with the X^n part of the row-wise expansion, since N has at most n nonzero factors per term.
+  Structure of N: column 0 is zero (t = 0 ≤ i forces N i 0 = 0 only when i ≥ 0, so take it from the hypothesis) and
+  row n is zero, and the minor deleting row n and column 0 is unitriangular (superdiagonal 1, zero below), so its
+  determinant is 1. Hence adj(N) = (−1)^n · e_0 e_n^T and the X^n coefficient is (−1)^n · M(n, 0). In Lean, prefer a
+  direct induction on n with Matrix.det_succ_row_zero / Fin.cons splitting over the adjugate API if that is simpler.
+dead: []
