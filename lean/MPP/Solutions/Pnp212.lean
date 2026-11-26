@@ -1,4 +1,6 @@
 import Mathlib
+import MPP.Solutions.Pnp170
+import MPP.Solutions.Pnp174
 import MPP.Solutions.Pnp198
 
 namespace MPP.Solutions.Pnp212
