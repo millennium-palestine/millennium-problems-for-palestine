@@ -1,0 +1,33 @@
+id: bsd-339
+problem: bsd
+title: 'Toeplitz symbol nonvanishing at p = 13: for a short cubic x³ + ax + b over F_13 with nonzero discriminant, the 6×6 determinant of the symbols c_s + d_s·Y, K = 6, is nonzero'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (a b : ZMod 13), 4 * a ^ 3 + 27 * b ^ 2 ≠ 0 →
+    ∀ g : Polynomial (ZMod 13),
+      g = (Polynomial.X ^ 3 + Polynomial.C a * Polynomial.X + Polynomial.C b) ^ ((13 - 1) / 2) →
+      (Matrix.of (fun (i t : Fin ((13 - 1) / 2)) =>
+        Polynomial.C (g.coeff ((13 - 1) / 2 + (i : ℕ) - (t : ℕ))) +
+          Polynomial.C (g.coeff ((13 - 1) / 2 + (i : ℕ) - (t : ℕ) + 13)) * (Polynomial.X : Polynomial (ZMod 13)))).det ≠ 0
+context: |
+  The p = 13 instance of bsd-254 (Toeplitz symbol nonvanishing), split off in the same way as the p = 7 and p = 11
+  instances (bsd-333, bsd-337/338). Here K = (p − 1)/2 = 6 and g = f⁶ with f = X³ + aX + b, so deg g = 18 < 2p = 26.
+  The Y-part of the matrix comes from the coefficients at indices K + i − t + 13 with |i − t| ≤ 5, and it is nonzero
+  only at the coefficients of X^14..X^18 of g. Writing P(a, b, y) for the determinant of the matrix with Y replaced by
+  a value y in F_13, the determinant is a polynomial in y of degree 5 (leading coefficient −60a²b, so the
+  statement is not a consequence of degree alone). The statement is equivalent to: for every nonsingular pair (a, b)
+  there is y in F_13 with P(a, b, y) ≠ 0. The proposer checked this with sympy (exhaustively over the 169 pairs with
+  nonzero discriminant, as in bsd-254's computer checks for p ≤ 61). Not a Millennium step: only the p = 13 instance.
+sketch: |
+  Follow the p = 11 bridge (bsd-337): write g explicitly as a polynomial in X with coefficients in a, b (computed by
+  ring after unfolding the power), read off the coefficients by simp with Polynomial.coeff_add, coeff_C_mul_X_pow and
+  coeff_X_pow, and rewrite the matrix entrywise as a !![...] matrix with entries of the form c + d * y. The finite
+  statement ∀ a b : ZMod 13, 4 a³ + 27 b² ≠ 0 → ∃ y : ZMod 13, det !![...] ≠ 0 is then closed by decide +kernel
+  (or by splitting on a and b with fin_cases if decide is too slow). Transfer back with RingHom.map_det for
+  Polynomial.evalRingHom y. If the 6×6 decision is too slow, reduce it to the closed polynomial P(a, b, y) of degree 5
+  in y (computed by sympy) and decide on that.
+dead: []
