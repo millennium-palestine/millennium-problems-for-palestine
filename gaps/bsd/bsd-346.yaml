@@ -1,0 +1,36 @@
+id: bsd-346
+problem: bsd
+title: 'Assembly of the addition formula: the step of bsd-344 and the base cases of bsd-345 give the elliptic-net relation of bsd-210 for every integer n'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (W : WeierstrassCurve K),
+    (∀ (k : ℤ),
+      (∀ m : ℤ, W.ψ (m + k) * W.ψ (m - k) =
+        W.ψ (m + 1) * W.ψ (m - 1) * W.ψ k ^ 2 - W.ψ (k + 1) * W.ψ (k - 1) * W.ψ m ^ 2) →
+      (∀ m : ℤ, W.ψ (m + (k + 1)) * W.ψ (m - (k + 1)) =
+        W.ψ (m + 1) * W.ψ (m - 1) * W.ψ (k + 1) ^ 2 - W.ψ (k + 1 + 1) * W.ψ (k + 1 - 1) * W.ψ m ^ 2) →
+      ∀ m : ℤ, W.ψ (m + (k + 2)) * W.ψ (m - (k + 2)) =
+        W.ψ (m + 1) * W.ψ (m - 1) * W.ψ (k + 2) ^ 2 - W.ψ (k + 2 + 1) * W.ψ (k + 2 - 1) * W.ψ m ^ 2) →
+    (∀ m : ℤ, W.ψ (m + 0) * W.ψ (m - 0) =
+      W.ψ (m + 1) * W.ψ (m - 1) * W.ψ 0 ^ 2 - W.ψ (0 + 1) * W.ψ (0 - 1) * W.ψ m ^ 2) →
+    (∀ m : ℤ, W.ψ (m + 1) * W.ψ (m - 1) =
+      W.ψ (m + 1) * W.ψ (m - 1) * W.ψ 1 ^ 2 - W.ψ (1 + 1) * W.ψ (1 - 1) * W.ψ m ^ 2) →
+    ∀ m n : ℤ, W.ψ (m + n) * W.ψ (m - n) =
+      W.ψ (m + 1) * W.ψ (m - 1) * W.ψ n ^ 2 - W.ψ (n + 1) * W.ψ (n - 1) * W.ψ m ^ 2
+context: |
+  The assembly of bsd-210 from its induction step (bsd-344) and its base cases (bsd-345). The statement takes the step
+  and the two base cases as hypotheses, so it is a pure induction, with no use of the Weierstrass curve beyond W.ψ.
+  The two-step induction runs from n = 0 and n = 1 through the step, which gives every natural n. The cases n < 0 follow
+  from the symmetry ψ(−n) = −ψ(n), which leaves the relation unchanged after substituting n ↦ −n. Writing the inputs
+  as hypotheses keeps this gap independent of bsd-344 and bsd-345 being proved. Not checked in Lean.
+sketch: |
+  Let H(k) be the relation at n = k for every m. Prove by induction on j : ℕ that H(j) and H(j + 1) both hold, starting
+  from the two base hypotheses and using the step hypothesis at k = j to get H(j + 2) from H(j) and H(j + 1). Then for an
+  integer n ≥ 0 use the natural number n.toNat. For n < 0, apply the result to −n and rewrite ψ(−n) = −ψ(n) (Mathlib: the
+  negation lemmas in DivisionPolynomial/Basic.lean), using the commutativity of multiplication; the relation for n is
+  the one for −n after swapping the two factors of the left side. Use Int.induction_on or Nat.strong_induction_on for the index.
+dead: []
