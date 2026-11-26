@@ -1,0 +1,43 @@
+id: bsd-302
+problem: bsd
+title: 'Five-torsion count from squarefreeness: over an algebraically closed field with 2, 3 and 5 nonzero, if preΨ′ 5 is squarefree then at least twenty-five points are killed by 5'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-217
+- bsd-243
+- bsd-246
+- bsd-275
+- bsd-276
+- bsd-283
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] [IsAlgClosed K] (W : WeierstrassCurve K) [W.IsElliptic],
+    (2 : K) ≠ 0 → (3 : K) ≠ 0 → (5 : K) ≠ 0 → Squarefree (W.preΨ' 5) →
+    25 ≤ Nat.card {P : W.toAffine.Point // (5 : ℤ) • P = 0}
+context: |
+  The conditional form of bsd-279 (five-torsion lower bound). bsd-279 needs the twelve roots of preΨ′ 5 to be distinct,
+  which is the squarefreeness of preΨ′ 5 (bsd-293 in characteristic away from 2 and 3, whose Bezout input bsd-288 is
+  still open). This gap takes squarefreeness as a hypothesis, so the counting argument can be proved now from merged
+  lemmas, and bsd-279 then reduces to bsd-293 alone. The statement is true: over an algebraically closed field the
+  squarefree polynomial of degree 12 has twelve distinct roots, and each root gives a pair ±P of five-torsion points;
+  the zero point gives 1 + 2 · 12 = 25.
+  Not checked against Lean yet.
+sketch: |
+  (1) Degree: natDegree (W.preΨ' 5) = 12 when (5 : K) ≠ 0 (Mathlib lemma on natDegree of preΨ'), and the leading
+  coefficient is nonzero, so the root multiset has card 12 by IsAlgClosed (Polynomial.splits, card_roots). Squarefree
+  gives roots.Nodup (Polynomial.nodup_roots), so the root finset R has R.card = 12.
+  (2) For x0 ∈ R: (W.preΨ' 5).eval x0 = 0 and bsd-276 gives 3 x0⁴ + b₂ x0³ + 3 b₄ x0² + 3 b₆ x0 + b₈ ≠ 0 (contrapositive
+  of its hypothesis, i.e. the 3-division term is nonzero). bsd-243 gives y0 with W.toAffine.Nonsingular x0 y0.
+  (3) If 2 y0 + a₁ x0 + a₃ = 0 then the curve equation forces the 3-division term to vanish, contradicting (2); so the
+  hypothesis of bsd-275 holds and 5 • P = 0 for P = some x0 y0 h, and also for −P.
+  (4) Injection R × Bool → subtype (the affine points P and −P, with −P ≠ P since 2y0 + a₁x0 + a₃ ≠ 0), together with the
+  zero point. Points over different x0 are apart by bsd-217. So the image of R × Bool lies in the subtype minus zero and has
+  24 elements; with the zero point that is 25.
+  (5) Finiteness of the subtype: every five-torsion point lies in the range of the map from Option (R × Bool), using bsd-246
+  (roots) and bsd-217 (the two points over x), so the set is finite. Then Nat.card_le_card_of_injective for the 25-element
+  domain, with Finite.card_option and Nat.card_prod.
+  Mathlib: Polynomial.nodup_roots, IsAlgClosed.card_roots_eq_natDegree (or Polynomial.card_roots'), Point.neg_some,
+  Point.some_ne_zero, Nat.card_eq_fintype_card.
+dead: []
