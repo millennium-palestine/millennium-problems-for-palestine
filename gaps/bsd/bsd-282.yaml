@@ -1,0 +1,21 @@
+id: bsd-282
+problem: bsd
+title: 'Squarefree from a Bezout identity: over a field, if u·f + v·f′ is a nonzero constant then f is squarefree'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (f u v : Polynomial K) (c : K), c ≠ 0 →
+    u * f + v * Polynomial.derivative f = Polynomial.C c → Squarefree f
+context: |
+  The generic step of the ℓ = 5 separability input bsd-278. A Bezout identity with a nonzero constant on the right
+  makes f coprime to its derivative, hence separable, hence squarefree. This is the reduction that turns the explicit
+  certificate of bsd-284 into the squarefree statement of bsd-278. Mathlib has Polynomial.Separable (defined as
+  IsCoprime f f′) and Polynomial.Separable.squarefree.
+sketch: |
+  Separable f is IsCoprime f (derivative f), i.e. ∃ a b, a * f + b * f' = 1. Take a = C c⁻¹ * u and b = C c⁻¹ * v;
+  the identity is u f + v f' = C c, so a f + b f' = C c⁻¹ * C c = 1 (map_mul, mul_inv_cancel₀, C_1). Then
+  Separable.squarefree. Mathlib: Polynomial.Separable, Polynomial.Separable.squarefree, Polynomial.C_mul.
+dead: []
