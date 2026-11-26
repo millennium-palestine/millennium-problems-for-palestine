@@ -1,0 +1,34 @@
+id: pnp-221
+problem: pvsnp
+title: A constant-true gadget on the fan-out program pushes true over a nonempty stack and reads no witness bit
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-216
+- pnp-217
+statement: |
+  let step := fun (st : List Bool × List Bool × Option Bool) (c : Bool) =>
+    match st.2.2 with
+    | none => (st.1, st.2.1, some c)
+    | some d =>
+      if d then (if c then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+        else (st.1, st.2.1, none))
+      else (if c then (st.1.headD false :: st.1, st.2.1, none)
+        else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))
+  ∀ (x : Bool) (t w : List Bool),
+    [false, true, false, true, true, true, true, true].foldl step ((x :: t), w, none) = ((true :: t), w, none)
+context: |
+  Constant gadget of pnp-141. The fan-out program copies the top value twice (two copy pairs, pnp-216), then applies
+  the NAND pair twice (pnp-217). The first NAND gives !x over x, and the second NAND of !x and x is true. So the top
+  becomes the constant true, computed from whatever value is on top, and the witness is not read. Constant leaves
+  of a circuit are needed by the circuit compiler of pnp-141; with pnp-218 (NOT) the false constant follows. It is a
+  step toward pnp-141 and does not decide P vs NP.
+sketch: |
+  Unfold the eight bits. The copies give x :: x :: x :: t, the first NAND gives (!(x && x)) :: x :: t, that is (!x) :: x :: t,
+  and the second NAND gives (!(!x && x)) :: t, which is true :: t. Split on x (cases x) and close each case by rfl.
+dead: []
