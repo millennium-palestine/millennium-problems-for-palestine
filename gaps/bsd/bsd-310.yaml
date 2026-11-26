@@ -1,0 +1,31 @@
+id: bsd-310
+problem: bsd
+title: 'Ψ₂ nonvanishing at a root of preΨ′ 5: over a field with 2, 3 and 5 nonzero, a nonsingular point over a root x of preΨ′ 5 has 2y + a₁x + a₃ nonzero'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-276
+- bsd-283
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) [W.IsElliptic] (x y : K),
+    W.toAffine.Nonsingular x y → (2 : K) ≠ 0 → (3 : K) ≠ 0 → (5 : K) ≠ 0 →
+    (W.preΨ' 5).eval x = 0 → 2 * y + W.a₁ * x + W.a₃ ≠ 0
+context: |
+  Step of bsd-279 (five-torsion lower bound), used in the split pair bsd-310 and bsd-311. The point of this
+  gap is that a root x of preΨ′ 5 is never the x-coordinate of a 2-torsion point (2y + a₁x + a₃ = 0), so that
+  the two points (x, y) and −(x, y) are distinct and bsd-275 applies to both. Argument: if 2y + a₁x + a₃ = 0,
+  then on the curve 4x³ + b₂x² + 2b₄x + b₆ = (2y + a₁x + a₃)² = 0, so Ψ₂Sq(x) = 0. By bsd-283,
+  preΨ′ 5 = preΨ₄ · Ψ₂Sq² − Ψ₃³, so preΨ′ 5 (x) = −Ψ₃(x)³, and preΨ′ 5 (x) = 0 forces Ψ₃(x) = 0, that is
+  3x⁴ + b₂x³ + 3b₄x² + 3b₆x + b₈ = 0. bsd-276 says this is impossible at a root of preΨ′ 5. Not checked in Lean.
+sketch: |
+  Intro the hypotheses, by_contra on 2 * y + W.a₁ * x + W.a₃ = 0. From W.toAffine.Nonsingular, get the curve
+  equation (W.toAffine.Equation x y, via the Nonsingular hypothesis). From the equation and the zero case, prove
+  4x³ + b₂x² + 2b₄x + b₆ = 0 by linear_combination (ring identity in the b-invariants, using b_relation).
+  Rewrite preΨ′ 5 with bsd-283 (the lemma proved there), simp the eval with Polynomial.eval_sub, eval_mul,
+  eval_pow, so preΨ′ 5 (x) = −Ψ₃(x)³, and conclude Ψ₃(x) = 0, that is the explicit quartic. Then bsd-276 at x
+  gives a contradiction.
+  Mathlib: WeierstrassCurve.b₂, b₄, b₆, b₈, b_relation, Polynomial.eval_sub, Polynomial.eval_mul,
+  Polynomial.eval_pow, pow_eq_zero_iff.
+dead: []
