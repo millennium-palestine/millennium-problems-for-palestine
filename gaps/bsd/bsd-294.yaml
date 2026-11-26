@@ -1,0 +1,24 @@
+id: bsd-294
+problem: bsd
+title: 'Squarefree preΨ′ 5 in characteristic 2 or 3: over a field with 2 = 0 or 3 = 0 and 5 nonzero, preΨ′ 5 of every Weierstrass curve is squarefree'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) [W.IsElliptic],
+    ((2 : K) = 0 ∨ (3 : K) = 0) → (5 : K) ≠ 0 → Squarefree (W.preΨ' 5)
+context: |
+  The other half of bsd-278 (squarefree preΨ′ 5). In characteristic 2 or 3 the short-form reduction of bsd-293 is not
+  available, because r = −W.b₂/12 needs 12 invertible. For odd n prime to the characteristic, preΨ′ n is the
+  n-division polynomial, and its roots are the x-coordinates of the nonzero n-torsion points. The claim is that these
+  roots are simple when 5 is nonzero and the discriminant is nonzero. Nothing here is checked in Lean. A counterexample
+  to the statement, or a reason it is false, counts as much as a proof.
+sketch: |
+  Not yet split. Candidate routes: a Bezout certificate over ℤ[a₁, a₂, a₃, a₄, a₆] (no division, so every characteristic
+  is covered; the weighted ansatz used for bsd-288 is too large there and needs a smarter reduction, e.g. the
+  elementary symmetric form of the roots); or a direct argument that a repeated root of preΨ′ 5 gives a point of order 5
+  with vanishing discriminant. Mathlib: Polynomial.Separable, Polynomial.squarefree_iff_..., WeierstrassCurve.preΨ'_odd,
+  WeierstrassCurve.Δ.
+dead: []
