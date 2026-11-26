@@ -1,0 +1,43 @@
+id: pnp-257
+problem: pvsnp
+title: Padding a postfix program of even length with no-op pairs (true, false) does not change the fold of pnp-141
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (g : List Bool) (k : ℕ) (w : List Bool), g.length % 2 = 0 →
+    (g ++ (List.replicate k [true, false]).flatten).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) ([], w, none)
+    = g.foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) ([], w, none)
+context: |
+  Second padding step of pnp-141. pnp-141 pads a program with no-op pairs (true, false) up to the witness
+  bound, so the padded program must still compute the same value. This gap says that appending k such
+  pairs to a program of even length leaves the final state of the fold unchanged, starting from the
+  empty state with witness w. Evenness is needed so that no bit is pending at the end of g: the fold
+  stores a bit at an odd position and consumes it at the next one. The statement is true by induction on k,
+  using that a pair (true, false) acts as the identity on states with no pending bit (the local step of
+  pnp-256), and that folding an even-length list from a state with no pending bit ends with no pending
+  bit. It is an hour-sized lemma and it does not decide P vs NP: the simulation of the TM2 verifier in
+  pnp-141 is untouched.
+sketch: |
+  Two facts, each by induction. (1) For every even-length list g and every state s with no pending bit,
+  the fold of g from s has no pending bit: a pair of bits takes none to some to none. (2) By induction on k,
+  using List.replicate_succ, List.flatten and List.foldl_append: appending one pair (true, false) to a
+  state with no pending bit changes nothing, by the local identity of pnp-256. Combine: the fold of
+  g ++ pad k equals the fold of g from the initial state, since g leaves no pending bit.
+dead: []

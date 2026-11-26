@@ -1,0 +1,33 @@
+id: pnp-256
+problem: pvsnp
+title: A no-op pair (true, false) leaves the state of the postfix fold unchanged when the pending bit is empty
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ s : List Bool × List Bool × Option Bool, s.2.2 = none →
+    [true, false].foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) s = s
+context: |
+  Padding step of pnp-141 (every NP language reduces to the postfix circuit language of pnp-133). The
+  fold in pnp-141 reads its program two bits at a time: a pending bit is stored when the state has none,
+  and the second bit of the pair executes an instruction. The pair (true, false) is the no-op instruction:
+  it changes neither the stack nor the witness stream. This gap says exactly that for one pair, starting
+  from a state with no pending bit. It is the local computation that the padding of pnp-141 needs, and it
+  is true by unfolding the match: the first bit stores some true, and the second bit with a = true and
+  b = false returns the stack and witness unchanged with no pending bit. It does not decide P vs NP and
+  does not touch the tableau of the Cook-Levin step, which remains the open part of pnp-141.
+sketch: |
+  Take s = (st, w, p) and unfold it: the hypothesis says p = none. The first foldl step with pending none
+  gives (st, w, some true). The second step with pending some true and b = false takes the branch
+  "if a then (if b then ... else (st.1, st.2.1, none))", giving (st, w, none), which is s. Use
+  obtain for the triple, simp only [List.foldl] with the hypothesis, then rfl.
+dead: []
