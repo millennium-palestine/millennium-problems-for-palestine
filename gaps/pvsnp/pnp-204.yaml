@@ -1,0 +1,52 @@
+id: pnp-204
+problem: pvsnp
+title: A balanced nonnegative block followed by a NAND pair runs as the rest from the stack with the top replaced by the NAND of the block's top and the value below
+status: open
+imports:
+- Mathlib
+- MPP.Solutions.Pnp170
+- MPP.Solutions.Pnp173
+- MPP.Solutions.Pnp174
+- MPP.Solutions.Pnp198
+open: []
+depends:
+- pnp-170
+- pnp-173
+- pnp-174
+- pnp-198
+statement: |
+  ∀ (p s : List (Bool × Bool)) (c : Bool × Bool), c = (true, true) →
+    (p.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 →
+    (∀ j, j ≤ p.length → 0 ≤ ((p.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) →
+    ∀ (v : Bool) (t w : List Bool), ∃ g : Bool,
+      ((p ++ c :: s).flatMap fun r : Bool × Bool => [r.1, r.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+        match st.2.2 with
+        | none => (st.1, st.2.1, some b)
+        | some a =>
+          if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+            else (st.1, st.2.1, none))
+          else (if b then (st.1.headD false :: st.1, st.2.1, none)
+            else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (v :: t, w, none) =
+      ((s.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+        match st.2.2 with
+        | none => (st.1, st.2.1, some b)
+        | some a =>
+          if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+            else (st.1, st.2.1, none))
+          else (if b then (st.1.headD false :: st.1, st.2.1, none)
+            else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) ((!(g && t.headD false)) :: t.drop 1, w.drop (p.countP fun q : Bool × Bool => !q.1 && !q.2), none))
+context: |
+  Pushdown step for the pnp-152 route. A first-passage split (pnp-203) gives a program as a balanced block p, then a NAND
+  pair that pops below the start, then the rest s. The block p leaves the stack as g :: t for some g (pnp-198), with the
+  witness it did not read (pnp-174), and the NAND pair then replaces the top two entries by one value, NAND(g, head of t),
+  on the stack t without its head. So the rest s runs on a stack whose top was rewritten by a fixed rule. This is the
+  transition of the pushdown automaton that a CYK-style decomposition of the pnp-133 language needs. It is a fact about
+  lists of pairs and the fold of pnp-133: no machine, no polynomial bound, no P, and it does not decide P vs NP.
+sketch: |
+  Split the flatMap with List.flatMap_append and List.foldl_append, so the left side is the fold of s from the state
+  after p and c. The state after p, from (v :: t, w, none), is (g :: t, w.drop cnt, none) for the g of pnp-198 applied
+  to w.take cnt: the stack by pnp-170 (w and w.take cnt agree on the first cnt entries), the witness by pnp-174, and
+  the pending bit is none because a pair leaves no pending bit. Then the pair c = (true, true) turns (g :: t, w.drop cnt,
+  none) into (!(g && t.headD false) :: t.drop 1, w.drop cnt, none), which is a computation on concrete bits and an
+  unfolding of headD, drop 1 and drop 2 on a cons. Rewrite the left side with these equalities and close by rfl.
+dead: []
