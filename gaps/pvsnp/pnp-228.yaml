@@ -1,0 +1,48 @@
+id: pnp-228
+problem: pvsnp
+title: Writing a polynomial-time bit at the unary index given by the instance, with the written list computed from the whole input, is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-006
+- pnp-021
+- pnp-025
+- pnp-026
+- pnp-037
+- pnp-052
+- pnp-093
+- pnp-117
+- pnp-120
+- pnp-127
+- pnp-136
+statement: |
+  ∀ g : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) g) →
+    ∃ f : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) ∧
+      ∀ (x w : List Bool) (b : Bool), g (pair x w) = [b] →
+        f (pair x w) = pair x (w.set (x.count true) b)
+context: |
+  The general write step of a table DP. pnp-225 writes the constant true at the witness position given by
+  the number of true bits of the instance. A DP round writes a bit that is itself computed from the
+  current state, for example the NAND or the OR of two entries read at indices. This gap takes any
+  polynomial-time map g on the pair encoding whose value is a one-bit list [b] wherever the write is
+  needed, and writes that bit at position x.count true of the witness. Where g does not return a one-bit
+  list, the statement says nothing. The write keeps the length of the witness, and the instance is copied
+  unchanged. It is the write of pnp-225 with the bit computed, and it does not build a table, a DP, or a
+  verifier. It does not decide P vs NP.
+sketch: |
+  Let k be the count of true bits of the instance, with the unary mark list from pnp-093 applied to the
+  decoded instance (pnp-021). Split the witness as w.take k (pnp-136) and w.drop k (pnp-120). Let
+  DW be the drop. The tail of DW is pnp-117. The new second part is (g z ++ (DW z).tail).take (DW z).length:
+  pair g z with the tail (pnp-026), concatenate (pnp-052), then take by the length of DW (pnp-136). Concatenate
+  the take of w with this part (pnp-127), pair the decoded instance with the result (pnp-026), and compose
+  (pnp-006). When g z = [b], the list ([b] ++ (w.drop k).tail).take (w.drop k).length is w.set k b after the
+  take of w, by the lemma w.take k ++ (b :: (w.drop k).tail).take (w.drop k).length = w.set k b, proved by
+  induction on w (the same identity as in pnp-225).
+dead: []
