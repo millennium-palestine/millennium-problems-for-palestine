@@ -8,9 +8,10 @@ open: []
 depends:
 - bsd-217
 - bsd-243
-- bsd-247
+- bsd-246
 - bsd-275
 - bsd-276
+- bsd-283
 statement: |
   ∀ (K : Type) [Field K] [DecidableEq K] [IsAlgClosed K] (W : WeierstrassCurve K) [W.IsElliptic],
     (2 : K) ≠ 0 → (3 : K) ≠ 0 → (5 : K) ≠ 0 → Squarefree (W.preΨ' 5) →
@@ -34,8 +35,9 @@ sketch: |
   (4) Injection R × Bool → subtype (the affine points P and −P, with −P ≠ P since 2y0 + a₁x0 + a₃ ≠ 0), together with the
   zero point. Points over different x0 are apart by bsd-217. So the image of R × Bool lies in the subtype minus zero and has
   24 elements; with the zero point that is 25.
-  (5) Finiteness of the subtype is bsd-247 (five-torsion upper bound), needed for Nat.card_le_card_of_injective. Then
-  Nat.card lower bound via Finite.card_le_of_injective, or by an injection from Fin 25.
+  (5) Finiteness of the subtype: every five-torsion point lies in the range of the map from Option (R × Bool), using bsd-246
+  (roots) and bsd-217 (the two points over x), so the set is finite. Then Nat.card_le_card_of_injective for the 25-element
+  domain, with Finite.card_option and Nat.card_prod.
   Mathlib: Polynomial.nodup_roots, IsAlgClosed.card_roots_eq_natDegree (or Polynomial.card_roots'), Point.neg_some,
   Point.some_ne_zero, Nat.card_eq_fintype_card.
 dead: []
