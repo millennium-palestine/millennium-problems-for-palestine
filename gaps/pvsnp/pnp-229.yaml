@@ -1,0 +1,40 @@
+id: pnp-229
+problem: pvsnp
+title: A polynomial-time map that outputs the OR over the unary indices m up to the input length of a polynomial-time bit at pair x (replicate m true) is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-006
+- pnp-026
+- pnp-066
+- pnp-122
+statement: |
+  ∀ h : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) h) →
+    ∃ f : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) ∧
+      ∀ x : List Bool,
+        f x = [(List.range (x.length + 1)).any (fun m => (h (pair x (List.replicate m true))).headD false)]
+context: |
+  The bounded existential step of a table DP. The interval DP of the pnp-152 route takes, for each cell, an OR over
+  the split points of an AND of two table entries read at computed indices. pnp-228 writes a computed bit, and
+  pnp-225 and pnp-227 read and write at a unary index, but no gap yet gives the OR over a range of indices. This
+  gap takes any polynomial-time map h on the pair encoding and returns the OR over the unary indices m of
+  h (pair x (replicate m true)), for m up to the length of the instance. The index m is the unary count that the
+  loop lemmas of pnp-066 and pnp-067 use. The output is a one-bit list.
+  It does not build the interval table, does not read a table, and does not decide P vs NP. It is a generic
+  bounded-quantifier step, stated for any h, so that the DP can instantiate it with its own split test.
+sketch: |
+  Let n be the length of x. Iterate, with the loop lemma of pnp-066 and a fixed counter, a polynomial-time step on
+  a state that holds x, the unary index k so far (as a run of true bits), and one accumulated bit a. The step
+  applies h to pair x (replicate k true), ORs the one-bit result into a (the OR of two bits is a fixed truth table,
+  a polynomial-time map on the state), and increments k. The number of steps is n + 1, a polynomial in the
+  length of the state, so the iteration bound of pnp-066 applies. At the end the accumulated bit is the output.
+  The composition of the steps uses pnp-006 and the pair maps of pnp-026. The final OR over the bits, if the bits
+  are kept in a list, is the all-true test of pnp-122 applied to their negations.
+dead: []
