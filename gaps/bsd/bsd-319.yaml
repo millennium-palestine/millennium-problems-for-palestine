@@ -1,0 +1,44 @@
+id: bsd-319
+problem: bsd
+title: 'Shaped independence reduced to the Toeplitz determinant: if the K×K Toeplitz matrix of the symbols of (X³+aX+b)^((p−1)/2) with K = (p−1)/2 has nonzero determinant in F_p[Y], then the shaped family of bsd-183 is independent'
+status: open
+imports:
+- Mathlib
+open:
+- Polynomial
+depends:
+- bsd-317
+- bsd-318
+- bsd-255
+- bsd-182
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (a b : ZMod p), 2 < p → 4 * a ^ 3 + 27 * b ^ 2 ≠ 0 →
+    (Matrix.of (fun (i t : Fin ((p - 1) / 2)) =>
+      Polynomial.C (((Polynomial.X ^ 3 + Polynomial.C a * Polynomial.X + Polynomial.C b) ^ ((p - 1) / 2)).coeff
+          ((p - 1) / 2 + (i : ℕ) - (t : ℕ))) +
+        Polynomial.C (((Polynomial.X ^ 3 + Polynomial.C a * Polynomial.X + Polynomial.C b) ^ ((p - 1) / 2)).coeff
+          ((p - 1) / 2 + (i : ℕ) - (t : ℕ) + p)) * (Polynomial.X : Polynomial (ZMod p)))).det ≠ 0 →
+    ∀ (J : ℕ) (r₀ r₁ : Fin J → Polynomial (ZMod p)),
+      (∀ j, (r₀ j).natDegree < (p - 1) / 2) → (∀ j, (r₁ j).natDegree < (p - 1) / 2) →
+      ∑ j : Fin J, (Polynomial.X : Polynomial (ZMod p)) ^ (p * (j : ℕ)) *
+        (r₀ j + r₁ j * (Polynomial.X ^ 3 + Polynomial.C a * Polynomial.X + Polynomial.C b) ^ ((p - 1) / 2)) = 0 →
+      ∀ j, r₀ j = 0 ∧ r₁ j = 0
+context: |
+  Assembly of the bsd-183 bridge, conditional on the Toeplitz determinant that bsd-254 asks for. It is bsd-183 itself with the
+  determinant as a hypothesis, so it is a true reduction: bsd-183 follows from bsd-254 once this is on main. The proof uses only
+  merged or proposed pieces. Let g = (X³+aX+b)^K with K = (p−1)/2 and B = Σ_j X^(pj)·r_{1j}, A = Σ_j X^(pj)·r_{0j}. Then
+  A + g·B = 0. (1) bsd-255 gives A.coeff u = 0 when u mod p ≥ K, so (g·B).coeff u = 0 there. (2) bsd-317 turns these into the
+  explicit system for the coefficients of the r_{1j} (for each q and each ρ = K+i with i < K). (3) bsd-318 with the determinant
+  hypothesis forces every r_{1j} to vanish. (4) Then A = −g·B = 0, and bsd-182 (linear independence of the monomials X^(pj+t) for
+  t < K ≤ p) forces every r_{0j} to vanish. The bookkeeping is the conversion between sums over Fin J and sums over range J, and
+  the bound deg g ≤ 3K < 2p (from natDegree of a cubic power). The determinant is not proved here; it is the open gap bsd-254.
+sketch: |
+  Set K := (p−1)/2 and g := (X^3 + C a * X + C b)^K. Get natDegree g ≤ 3K < 2p with Polynomial.natDegree_pow_le and compute_degree.
+  Define R₀ j := if h : j < J then r₀ ⟨j, h⟩ else 0 (and R₁ likewise) so that the Fin-indexed sums become sums over Finset.range J
+  by Fin.sum_univ_eq_sum_range, and the hypotheses bsd-317 and bsd-318 apply with N := J. The natDegree bound for the zero
+  extension needs K ≥ 1, which holds since p > 2. For step (1), use bsd-255 on the Fin-indexed sum of r₀ (the same shape), then
+  Polynomial.coeff_add to pass from A + g·B = 0 to (g·B).coeff u = 0. For step (4), the monomials X^(p·j + t) are linearly
+  independent by bsd-182; write A = Σ_(u : Fin J × Fin K) (r₀ u.1).coeff u.2 • X^(p·u.1 + u.2) using Polynomial.as_sum_range' and
+  Fintype.sum_prod_type, then Fintype.linearIndependent_iff gives every coefficient zero, and Polynomial.ext finishes.
+  Watch the Fin casts and the natural-number subtraction in (p−1)/2 + i − t (fine since t < K).
+dead: []
