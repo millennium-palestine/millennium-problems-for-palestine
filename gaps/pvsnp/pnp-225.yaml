@@ -9,7 +9,18 @@ open:
 - MPP.PvsNP
 - Turing
 depends:
-- pnp-134
+- pnp-006
+- pnp-021
+- pnp-025
+- pnp-026
+- pnp-037
+- pnp-052
+- pnp-093
+- pnp-117
+- pnp-120
+- pnp-126
+- pnp-127
+- pnp-136
 statement: |
   ∃ f : List Bool → List Bool,
     Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) ∧
@@ -22,11 +33,12 @@ context: |
   statement needs no length hypothesis. This gap is only the write. It does not build a table, does not
   simulate a verifier, and does not decide P vs NP.
 sketch: |
-  Five stacks, as in pnp-134: the pair encoding, an output stack, a unary counter, a buffer, and the
-  instance. Phase 0 moves the doubled instance to the output while counting its true bits in unary on
-  the counter (the counting is pnp-093). Phase 1 moves the witness to the output one symbol at a time,
-  dropping one symbol per counter mark; when the counter is exhausted, the next witness symbol is
-  replaced by true and the rest of the witness is moved unchanged. If the witness ends before the
-  counter, the machine copies the witness unchanged, which agrees with List.set past the end. The step
-  count is linear in the pair length times the counter, so the running time is polynomial.
+  Compose accepted pieces; no new machine is built. Let k be the count of true bits of the instance,
+  with the unary mark list 1^k from pnp-093 applied to the decoded instance (pnp-021). Pair the witness
+  with the marks (pnp-026) and take and drop by the mark count (pnp-136, pnp-120), so the witness splits
+  as w.take k and w.drop k. The rest of the witness is replaced by its head set to true: the list
+  (true :: d.tail).take d.length, built from pnp-117, the constant map pnp-126 and concatenation pnp-052.
+  Then w.set k true = w.take k ++ (true :: (w.drop k).tail).take (w.drop k).length for every w,
+  including k past the end, by induction on w. Concatenate the two parts (pnp-127) and pair the decoded
+  instance with the result (pnp-026). Composition is pnp-006. The equation is the one above.
 dead: []
