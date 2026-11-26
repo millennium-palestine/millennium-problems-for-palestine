@@ -1,0 +1,24 @@
+id: bsd-291
+problem: bsd
+title: 'Degree form from the discriminant: if a² ≤ 4p, then m² − a m n + p n² is nonnegative for all integers m and n'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) (a : ℤ), a ^ 2 ≤ 4 * (p : ℤ) →
+    ∀ m n : ℤ, 0 ≤ m ^ 2 - a * m * n + (p : ℤ) * n ^ 2
+context: |
+  Converse of bsd-273. That gap shows that nonnegativity of m² − a m n + p n² on all integer pairs forces
+  a² ≤ 4p. This gap is the other direction: the discriminant bound is enough for nonnegativity. Together
+  they show that the degree-form statement bsd-089 is equivalent, over the integers, to the square form
+  (p + 1 − #E)² ≤ 4p, which is the Hasse bound (bsd-024) squared. So bsd-089 can be split as this gap
+  plus the discriminant bound for the trace a = p + 1 − #E. This gap is elementary: it does not use
+  any geometry, and it does not prove any Hasse bound.
+sketch: |
+  Put X = m² − a m n + p n². Then 4X = (2m − a n)² + (4p − a²) n², an identity in ℤ. Both summands are
+  nonnegative under the hypothesis a² ≤ 4p (sq_nonneg for the first, and mul_nonneg with sub_nonneg for the
+  second), so 4X ≥ 0, hence X ≥ 0. In Lean: nlinarith [sq_nonneg (2 * m - a * n),
+  mul_nonneg (sub_nonneg.2 h) (sq_nonneg n)], where h is the hypothesis a ^ 2 ≤ 4 * (p : ℤ).
+dead: []
