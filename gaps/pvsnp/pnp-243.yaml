@@ -1,0 +1,31 @@
+id: pnp-243
+problem: pvsnp
+title: Unary quotient by a nonempty unary divisor, on the pair encoding, is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-028
+- pnp-032
+- pnp-242
+statement: |
+  ∃ Q : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) Q) ∧
+    ∀ u v : List Bool, v ≠ [] → Q (pair u v) = List.replicate (u.length / v.length) true
+context: |
+  The quotient of two unary lengths, taken from the pair encoding, written in unary. It is the first arithmetic step of a
+  table index decode: a dynamic programme on a table of n + 1 cells per row reads the row and column of a cell index t
+  as t / (n + 1) and t % (n + 1). pnp-242 gives the count, and the quotient is the count of j in 1, ..., |u| with
+  j * |v| at most |u|. This gap is only the quotient; the remainder is then unary subtraction. It does not state any table
+  or CYK recurrence, and it does not decide P vs NP.
+sketch: |
+  Let the bit at index k be c(z) = [(k + 1) * |v| at most |u|], for z = pair (pair u v) (replicate k false). It is computed
+  from pnp-028 (length comparison of u against the unary string of length (k+1)|v|, made by pnp-032 from replicate (k+1)
+  false and v) after decoding u, v and k with pnp-021 and pnp-025. pnp-242 gives the unary count over k up to |u| of these
+  bits. For v nonempty, the count of k in range (|u| + 1) with (k + 1) |v| at most |u| is |u| / |v|, since (k + 1) |v| at most
+  |u| is equivalent to k < |u| / |v| (Nat.le_div_iff_mul_le) and |u| / |v| at most |u|.
+dead: []
