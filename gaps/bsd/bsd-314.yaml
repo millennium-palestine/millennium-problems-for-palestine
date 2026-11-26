@@ -1,0 +1,26 @@
+id: bsd-314
+problem: bsd
+title: 'Root count of the division polynomial: for odd m with m nonzero in the field, every finite set of roots of the division polynomial preΨ m has at most (m^2 - 1)/2 elements'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (W : WeierstrassCurve K) (m : ℕ),
+    Odd m → (m : K) ≠ 0 → ∀ S : Finset K, (∀ x ∈ S, (W.preΨ' m).eval x = 0) → S.card ≤ (m ^ 2 - 1) / 2
+context: |
+  Step (2) of bsd-192 (m-torsion upper bound, odd m). Counting the x-coordinates of nonzero m-torsion points
+  needs only that a nonzero polynomial of degree (m^2 - 1)/2 has at most that many roots. Mathlib gives the degree
+  (WeierstrassCurve.natDegree_preΨ' with (m : K) ≠ 0 and the (m^2 - 1)/2 formula for odd m) and nonvanishing
+  (WeierstrassCurve.preΨ'_ne_zero). Note the bound is about any finite set of roots, not the roots of a fixed
+  polynomial counted with multiplicity, so the proof is Finset.card_le_card of S into roots.toFinset plus
+  Multiset.card_le_card and Polynomial.card_roots'. Not an hour-sized gap for the whole of bsd-192, but this step
+  is small. Not checked in Lean.
+sketch: |
+  Let f := W.preΨ' m. f ≠ 0 by WeierstrassCurve.preΨ'_ne_zero. For x ∈ S, Polynomial.mem_roots gives x ∈ f.roots,
+  so S ⊆ f.roots.toFinset. Then S.card ≤ f.roots.toFinset.card ≤ Multiset.card f.roots (Multiset.toFinset_card_le)
+  ≤ f.natDegree (Polynomial.card_roots') = (m^2 - 1)/2 (WeierstrassCurve.natDegree_preΨ' with the Odd hypothesis
+  turning the Even-case term into 1). Mathlib: Finset.card_le_card, Multiset.toFinset_card_le, Polynomial.card_roots',
+  Polynomial.mem_roots, WeierstrassCurve.natDegree_preΨ', WeierstrassCurve.preΨ'_ne_zero.
+dead: []
