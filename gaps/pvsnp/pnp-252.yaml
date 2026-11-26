@@ -1,0 +1,35 @@
+id: pnp-252
+problem: pvsnp
+title: The balanced-block interval table of a pair list satisfies the recurrence of pnp-250 with empty tail
+status: open
+imports:
+- Mathlib
+- MPP.Solutions.Pnp200
+- MPP.Solutions.Pnp213
+open: []
+depends: []
+statement: |
+  ∀ (s : ℕ → Bool × Bool) (H : Bool × Bool → ℤ) (F : List Bool × List Bool × Option Bool → Bool → List Bool × List Bool × Option Bool) (Q : ℕ → ℕ → List (Bool × Bool)) (X : ℕ → ℕ → Bool × Bool → Prop),
+    H = (fun r => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1) →
+    F = (fun st b => match st.2.2 with | none => (st.1, st.2.1, some b) | some a => if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none) else (st.1, st.2.1, none)) else (if b then (st.1.headD false :: st.1, st.2.1, none) else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) →
+    (∀ i j, Q i j = (List.range (j - i)).map fun m => s (i + m)) →
+    (∀ i j p, X i j p ↔ ((((∀ k, k ≤ (Q i j).length → 0 ≤ (((Q i j).map H).take k).sum) ∧ ((Q i j).map H).sum = 0) ∧ ∃ w : List Bool, w.length = (Q i j).countP (fun x => !x.1 && !x.2) ∧ ∃ w' : List Bool, ((Q i j).flatMap fun r => [r.1, r.2]).foldl F (p.1 :: [], w, none) = (p.2 :: [], w', none)))) →
+    (∀ i p, X i i p ↔ p.1 = p.2) ∧ (∀ i p, X i (i + 1) p ↔ s i = (true, false) ∧ p.1 = p.2) ∧
+    (∀ i j p, i + 2 ≤ j → (X i j p ↔ ((((s i).1 = false ∧ ∃ u : Bool, ((s i).2 = true → u = p.1) ∧ s (j - 1) = (true, true) ∧ (((∀ k, k ≤ (Q (i + 1) (j - 1)).length → 0 ≤ (((Q (i + 1) (j - 1)).map H).take k).sum) ∧ ((Q (i + 1) (j - 1)).map H).sum = 0) ∧ ∃ g' : Bool, X (i + 1) (j - 1) (u, g') ∧ p.2 = !(g' && p.1))) ∨ (∃ k : ℕ, i < k ∧ k < j ∧ ∃ g1 : Bool, X i k (p.1, g1) ∧ X k j (g1, p.2))))))
+context: |
+  The table of pnp-250 is the interval table of a pair list. Its entry X i j p says that the segment of the pair list from
+  position i to position j, read as a balanced block with the top value p.1 at its bottom, carries p.1 to p.2 with an
+  empty stack below, and that the segment is a nonnegative zero-sum walk. The statement fixes this entry for an
+  arbitrary sequence s of pair steps, with the height H and the stack step F written out, and proves the three facts
+  that pnp-250 needs: the empty interval is the identity, a single step is a balanced block exactly when it is the
+  pair (true, false), and the recurrence of pnp-213 holds on every interval of length at least two. The recurrence
+  uses the empty tail, which is legitimate by the frame lemma of pnp-200: the output of a nonnegative zero-sum run
+  does not depend on the stack below its top. This is a fact about lists of pairs and sequences of Booleans. It does
+  not decide P vs NP, and it uses no machine and no polynomial bound.
+sketch: |
+  The segment is seg i j = map of s over range (j - i). Split the segment at a middle position (seg_split) and
+  peel the first and last step (seg_cons). A single step is balanced exactly when it is (true, false) (bal_single).
+  For the recurrence, the primitive and concatenation cases of pnp-213 at the empty tail give the two disjuncts. The
+  middle run is moved from the stack u :: v :: [] to u :: [] by the frame lemma of pnp-200, in both directions. The
+  balance of the primitive block is the balance fact of pnp-251.
+dead: []
