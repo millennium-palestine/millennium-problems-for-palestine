@@ -1,0 +1,35 @@
+id: pnp-219
+problem: pvsnp
+title: An AND gadget on the fan-out program replaces the two top stack values by their conjunction and reads no witness bit
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-216
+- pnp-217
+- pnp-218
+statement: |
+  let step := fun (st : List Bool × List Bool × Option Bool) (c : Bool) =>
+    match st.2.2 with
+    | none => (st.1, st.2.1, some c)
+    | some d =>
+      if d then (if c then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+        else (st.1, st.2.1, none))
+      else (if c then (st.1.headD false :: st.1, st.2.1, none)
+        else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))
+  ∀ (x y : Bool) (t w : List Bool),
+    [true, true, false, true, true, true].foldl step ((x :: y :: t), w, none) = ((x && y) :: t, w, none)
+context: |
+  AND gadget of pnp-141. The NAND pair (true, true) turns the top two values x and y into !(x && y), and the
+  NOT gadget of pnp-218 negates that top value again, so the result is x && y on top of the rest of the stack.
+  The witness is not read. Like pnp-218 it is a building block of the Boolean basis that the circuit compiler of
+  pnp-141 needs, and it does not decide P vs NP.
+sketch: |
+  Unfold the six bits: the first pair is the NAND, which gives (!(x && y)) :: t with pending none; the next
+  three bits are the copy and the NAND of pnp-218 applied to that top value, which gives !(!(x && y)) :: t.
+  Rewrite with Bool.not_not and close by rfl or simp [List.foldl].
+dead: []

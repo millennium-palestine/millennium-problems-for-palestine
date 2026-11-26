@@ -1,0 +1,35 @@
+id: pnp-220
+problem: pvsnp
+title: Three values on the fan-out stack are replaced by their conjunction, reading no witness bit
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-219
+statement: |
+  let step := fun (st : List Bool × List Bool × Option Bool) (c : Bool) =>
+    match st.2.2 with
+    | none => (st.1, st.2.1, some c)
+    | some d =>
+      if d then (if c then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+        else (st.1, st.2.1, none))
+      else (if c then (st.1.headD false :: st.1, st.2.1, none)
+        else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))
+  ∀ (x y z : Bool) (t w : List Bool),
+    ([true, true, false, true, true, true] ++ [true, true, false, true, true, true]).foldl step
+      ((x :: y :: z :: t), w, none) = ((x && y && z) :: t, w, none)
+context: |
+  Chaining of the AND gadget of pnp-219. Two AND gadgets in a row, the first on the top two values and the second
+  on its result and the third value, leave the conjunction of the three top values on top of the rest of the
+  stack. The witness is not read. The statement is the composition law of pnp-141's gadgets for a
+  three-input gate, so it is a step toward a compiler from circuits to fan-out programs. It does not decide
+  P vs NP.
+sketch: |
+  Apply pnp-219 twice: the first application turns x :: y :: z :: t into (x && y) :: z :: t and the second
+  turns that into ((x && y) && z) :: t. Since x && y && z is (x && y) && z, the two sides agree. In Lean use
+  List.foldl_append and rewrite with the lemma of pnp-219, or unfold the twelve bits and simp.
+dead: []
