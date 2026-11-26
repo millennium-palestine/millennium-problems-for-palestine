@@ -1,0 +1,25 @@
+id: bsd-290
+problem: bsd
+title: 'Degree form as a norm: if π + σ = a and π σ = p in a commutative ring, then (m − nπ)(m − nσ) = m² − a m n + p n²'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (R : Type) [CommRing R] (π σ : R) (a p m n : ℤ),
+    π + σ = (a : R) → π * σ = (p : R) →
+    ((m : R) - (n : R) * π) * ((m : R) - (n : R) * σ) = ((m ^ 2 - a * m * n + p * n ^ 2 : ℤ) : R)
+context: |
+  Algebraic core of the degree-form step of bsd-089. For the Frobenius π of an elliptic curve over F_p
+  (acting on points over the algebraic closure) and its conjugate σ = a − π, with a = p + 1 − #E and
+  π σ = p, the degree of m − nπ is the product (m − nπ)(m − nσ) of the two factors, which is the
+  integer form m² − a m n + p n². This gap is only the ring identity behind that step. It does not
+  use any geometry, so it does not by itself give the nonnegativity or the Hasse bound (bsd-024).
+  Nothing in it is new: it records the split of bsd-089 so that the geometric input can be stated
+  as the degree of m − nπ, with π and σ as the two roots of x² − a x + p.
+sketch: |
+  Expand: (m − nπ)(m − nσ) = m² − mn(π + σ) + n² πσ. Substitute π + σ = a and π σ = p (cast from ℤ to R),
+  then the right side is the cast of m² − a m n + p n². In Lean: push_cast, rewrite with the two
+  hypotheses, then ring, or linear_combination (-(m:R) * n) * h₁ + (n:R)^2 * h₂ after push_cast.
+dead: []
