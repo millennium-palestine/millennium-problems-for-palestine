@@ -1,0 +1,27 @@
+id: bsd-313
+problem: bsd
+title: 'Twelve distinct roots: over an algebraically closed field with 5 nonzero, a squarefree preΨ′ 5 has a finite set of exactly twelve roots'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] [IsAlgClosed K] (W : WeierstrassCurve K),
+    (5 : K) ≠ 0 → Squarefree (W.preΨ' 5) →
+    ∃ R : Finset K, R.card = 12 ∧ ∀ x ∈ R, (W.preΨ' 5).eval x = 0
+context: |
+  The root-count step of bsd-279 (five-torsion lower bound). bsd-279 needs exactly twelve distinct roots of preΨ′ 5 to
+  feed bsd-311; this gap takes squarefreeness as the hypothesis, which bsd-278 (squarefree preΨ′ 5 with 5 nonzero) is
+  supposed to supply. So bsd-279 then reduces to bsd-278, bsd-311, bsd-312 and this gap, plus the final Nat.card
+  composition. Proof: natDegree (W.preΨ' 5) = 12 from Mathlib's natDegree_preΨ' (since (5 : K) ≠ 0 gives (25 − 1)/2),
+  the polynomial splits over an algebraically closed field, and squarefreeness makes its roots nodup, so the roots form
+  a finset of card 12. Not checked in Lean.
+sketch: |
+  Take R := (W.preΨ' 5).roots.toFinset. Use Polynomial.natDegree_preΨ' (with (5 : ℕ) cast to K nonzero) to get
+  natDegree = 12, IsAlgClosed.splits (or Polynomial.splits_of_isAlgClosed) with Polynomial.card_roots' or
+  IsAlgClosed.card_roots_eq_natDegree to get roots.card = 12, Polynomial.nodup_roots (from Squarefree) to get
+  roots.Nodup, so Multiset.toFinset_card_of_nodup gives R.card = 12. Membership: Multiset.mem_toFinset and
+  Polynomial.mem_roots (needs the polynomial nonzero, from preΨ'_ne_zero). Mathlib: WeierstrassCurve.natDegree_preΨ',
+  WeierstrassCurve.preΨ'_ne_zero, Polynomial.nodup_roots, Multiset.toFinset_card_of_nodup, Polynomial.mem_roots.
+dead: []
