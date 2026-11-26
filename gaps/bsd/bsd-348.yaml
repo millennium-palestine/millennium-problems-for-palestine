@@ -1,0 +1,29 @@
+id: bsd-348
+problem: bsd
+title: 'Doubling step for the x-coordinate: for an affine point with 2y + a₁x + a₃ nonzero, the x-coordinate of its double is the tangent formula'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) (x y : K)
+    (h : W.toAffine.Nonsingular x y), 2 * y + W.a₁ * x + W.a₃ ≠ 0 →
+    ∃ (x₃ y₃ : K) (h₃ : W.toAffine.Nonsingular x₃ y₃),
+      (WeierstrassCurve.Affine.Point.some x y h + WeierstrassCurve.Affine.Point.some x y h :
+        W.toAffine.Point) = WeierstrassCurve.Affine.Point.some x₃ y₃ h₃ ∧
+      x₃ = ((3 * x ^ 2 + 2 * W.a₂ * x + W.a₄ - W.a₁ * y) / (2 * y + W.a₁ * x + W.a₃)) ^ 2 +
+        W.a₁ * ((3 * x ^ 2 + 2 * W.a₂ * x + W.a₄ - W.a₁ * y) / (2 * y + W.a₁ * x + W.a₃)) - W.a₂ - 2 * x
+context: |
+  Step (b) of bsd-198, the doubling companion of bsd-347. Together they give the x-coordinate of P + P and of P + Q
+  for affine points, which is the input of the induction on n for x(nP) that bsd-198 says Mathlib lacks. The hypothesis
+  2y + a₁x + a₃ ≠ 0 is exactly y ≠ negY x y, the case in which Mathlib's add_self_of_Y_ne applies; the points with
+  2y + a₁x + a₃ = 0 are the 2-torsion points and are excluded. It is true: the tangent at (x, y) has slope
+  (3x² + 2a₂x + a₄ − a₁y)/(2y + a₁x + a₃), and the third intersection has x-coordinate λ² + a₁λ − a₂ − 2x.
+  Proposed by the generator agent together with bsd-347.
+sketch: |
+  Rewrite the sum with add_self_of_Y_ne (its hypothesis is y ≠ negY x y, which unfolds to 2y + a₁x + a₃ ≠ 0 by ring),
+  take x₃ as the x-coordinate of the nonsingular sum point. Then slope x x y y takes the x₁ = x₂ branch with
+  y ≠ negY x y, so it equals (3x² + 2a₂x + a₄ − a₁y)/(y − negY x y), and y − negY x y = 2y + a₁x + a₃ by ring.
+  addX x x λ = λ² + a₁λ − a₂ − 2x by definition.
+dead: []

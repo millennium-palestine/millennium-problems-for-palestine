@@ -1,0 +1,27 @@
+id: bsd-347
+problem: bsd
+title: 'Chord step for the x-coordinate: for two affine points with distinct x-coordinates, the x-coordinate of their sum is the chord formula'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) (x₁ y₁ x₂ y₂ : K)
+    (h₁ : W.toAffine.Nonsingular x₁ y₁) (h₂ : W.toAffine.Nonsingular x₂ y₂), x₁ ≠ x₂ →
+    ∃ (x₃ y₃ : K) (h₃ : W.toAffine.Nonsingular x₃ y₃),
+      (WeierstrassCurve.Affine.Point.some x₁ y₁ h₁ + WeierstrassCurve.Affine.Point.some x₂ y₂ h₂ :
+        W.toAffine.Point) = WeierstrassCurve.Affine.Point.some x₃ y₃ h₃ ∧
+      x₃ = ((y₁ - y₂) / (x₁ - x₂)) ^ 2 + W.a₁ * ((y₁ - y₂) / (x₁ - x₂)) - W.a₂ - x₁ - x₂
+context: |
+  Step (a) of bsd-198 (the sketch there names it as the x(P + Q) formula for distinct affine points), and a building
+  block of the x(nP) identity that bsd-198, bsd-218 and bsd-192 need. Mathlib has the sum of two affine points with
+  distinct x-coordinates (Affine/Point.lean, add_of_X_ne) and the slope and addX definitions (Affine/Formula.lean), but
+  no statement in coordinates that a reader can use as a rewrite rule. This gap is that statement, with no division
+  polynomial in it. It is true: the chord through two points with x₁ ≠ x₂ has slope (y₁ − y₂)/(x₁ − x₂), and the third
+  intersection has x-coordinate λ² + a₁λ − a₂ − x₁ − x₂. Proposed by the generator agent together with bsd-348.
+sketch: |
+  Unfold Point addition with x₁ ≠ x₂ (add_of_X_ne gives a nonsingular sum point; take x₃ as its x-coordinate). Then
+  the slope of Mathlib's slope function is (y₁ − y₂)/(x₁ − x₂) by the if_neg branch, and addX x₁ x₂ λ = λ² + a₁λ − a₂ − x₁ − x₂
+  by definition. The equation then holds by rfl after the rewrites.
+dead: []
