@@ -1,0 +1,28 @@
+id: bsd-343
+problem: bsd
+title: 'The n = 10 case of the elliptic-net addition formula: N(m+10) N(m−10) = N(m+1) N(m−1) N(10)² − N(11) N(9) N(m)² for normEDS, for every integer m'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-336
+statement: |
+  ∀ (A : Type) [CommRing A] (b c d : A) (m : ℤ),
+    normEDS b c d (m + 10) * normEDS b c d (m - 10)
+      - normEDS b c d (m + 1) * normEDS b c d (m - 1) * normEDS b c d 10 ^ 2
+      + normEDS b c d 11 * normEDS b c d 9 * normEDS b c d m ^ 2 = 0
+context: |
+  The n = 10 instance of the elliptic-net relation ψ(m+n) ψ(m−n) = ψ(m+1) ψ(m−1) ψ(n)² − ψ(n+1) ψ(n−1) ψ(m)², written
+  for normEDS, as in bsd-210, bsd-320, bsd-328, bsd-334, bsd-335 and bsd-336. It follows the cases n = 2..9
+  (bsd-323, bsd-324, bsd-325, bsd-320, bsd-328, bsd-334, bsd-335, bsd-336), so it is the next step of the chain that the
+  general-n gap bsd-210 needs. The identity is true: it is the elliptic-net relation with n = 10 for normEDS, which
+  holds in every commutative ring (checked numerically for m in [−12, 12] by exact arithmetic). Not checked in Lean.
+sketch: |
+  Follow bsd-336. Work in the atoms X(k) = normEDS b c d (m + k) and use the relations of n = 2..9 at shifted indices.
+  Two integer certificates, for the n = 10 bracket times X(−6)X(−1) and times X(−8)X(1), found by an L1 search under the
+  index-sum grading (every relation at shift j has index sum 2j) and the weight grading (w(b) = 3, w(c) = 8, w(d) = 12,
+  w(X_k) = k² − 1), then made exact and scaled to integer coefficients. The bracket is zero in the universal domain
+  MvPolynomial (Fin 3) Z, where normEDS is nonzero off zero (bsd-225), and the identity transfers to A by evaluation at
+  ![b, c, d]. The n = 9 relation is the newest ingredient; its proof is bsd-336, so the file imports it once accepted.
+dead: []
