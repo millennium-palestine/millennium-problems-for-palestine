@@ -1,0 +1,40 @@
+id: pnp-214
+problem: pvsnp
+title: Iterating a polynomial-time map that grows by at most a fixed constant, a polynomially many times, is polynomial-time
+status: open
+imports:
+- Mathlib
+open:
+- Turing
+depends:
+- pnp-061
+- pnp-063
+- pnp-066
+statement: |
+  ∀ (s : List Bool → List Bool) (c : ℕ),
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) s) →
+    (∀ z : List Bool, (s z).length ≤ z.length + c) →
+    ∀ p : Polynomial ℕ, ∃ T : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) T) ∧
+      ∀ z : List Bool, T z = s^[p.eval z.length] z
+context: |
+  pnp-061 iterates a polynomial-time map that appends exactly one symbol, p(|z|) times, and pnp-066
+  does the same for the one-bit extension with a unary count. Both assume the length grows by exactly
+  one per step. This gap drops that assumption: the map may grow its output by at most a fixed
+  constant c (and may also shrink it). Then the iterate after p(|z|) steps has length at most
+  |z| + c·p(|z|), which is polynomial, so each step stays polynomial-time and the whole iteration is
+  polynomial-time. This is the form needed to compute a dynamic programme by iterating a row update
+  over a table whose size is bounded by a polynomial. It is a structural closure lemma: it does not
+  decide P vs NP, and it is not a bridge to any particular table.
+  The count p(|z|) is read from the input length, as in pnp-061, so this is strictly stronger than
+  pnp-063 (fixed count) and is not implied by pnp-061 (exact one-bit growth).
+sketch: |
+  Copy the loop machine of pnp-066 (counter on a stack, body run on the data stack, output moved back,
+  return to the counter test) and replace the exact length hypothesis by the bound
+  (s z).length ≤ z.length + c. The stack lengths are no longer fixed by the step count, so each
+  round must be stated with an inequality on the data length, and the time bound of the round is the
+  body time at the current length, bounded by the length after m rounds, which is at most
+  |z| + c·m, using monotonicity of the polynomial. Finally, the count p(|z|) is produced in unary from
+  z by pnp-033, and the composition is pnp-006. The equation T z = s^[p(|z|)] z follows by induction on
+  the number of rounds, with s^[m+1] z = s^[m] (s z) applied to the right iterate.
+dead: []
