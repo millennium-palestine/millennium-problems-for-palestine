@@ -1,0 +1,37 @@
+id: pnp-248
+problem: pvsnp
+title: Two tables that satisfy the interval recurrence agree on every nonempty interval
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (B : ℕ → Bool × Bool → Prop) (P : ℕ → Bool → Bool → Prop) (X Y : ℕ → ℕ → Bool × Bool → Prop),
+    (∀ (i : ℕ) (p : Bool × Bool), X i i p ↔ p.1 = p.2) → (∀ (i : ℕ) (p : Bool × Bool), Y i i p ↔ p.1 = p.2) →
+    (∀ (i : ℕ) (p : Bool × Bool), X i (i + 1) p ↔ B i p) → (∀ (i : ℕ) (p : Bool × Bool), Y i (i + 1) p ↔ B i p) →
+    (∀ (i j : ℕ) (p : Bool × Bool), i + 2 ≤ j → (X i j p ↔
+      ((∃ u : Bool, P i u p.1 ∧ ∃ g' : Bool, X (i + 1) (j - 1) (u, g') ∧ p.2 = !(g' && p.1)) ∨
+       (∃ k : ℕ, i < k ∧ k < j ∧ ∃ g1 : Bool, X i k (p.1, g1) ∧ X k j (g1, p.2))))) →
+    (∀ (i j : ℕ) (p : Bool × Bool), i + 2 ≤ j → (Y i j p ↔
+      ((∃ u : Bool, P i u p.1 ∧ ∃ g' : Bool, Y (i + 1) (j - 1) (u, g') ∧ p.2 = !(g' && p.1)) ∨
+       (∃ k : ℕ, i < k ∧ k < j ∧ ∃ g1 : Bool, Y i k (p.1, g1) ∧ Y k j (g1, p.2))))) →
+    ∀ (i j : ℕ) (p : Bool × Bool), i < j → (X i j p ↔ Y i j p)
+context: |
+  The table step behind the table-correctness lemma of the pnp-152 route. The CYK-style recurrence for the
+  fold of pnp-133 on a balanced pair list has three clauses: a single step (the base B), a primitive block
+  (an up step, a middle of length j - i - 2 run from a top u, and a NAND down step), and a split at an
+  interior index k. Each clause refers only to strictly shorter intervals, or to the empty interval, which
+  both tables fix by the same axiom. This gap says that any two tables obeying the same recurrence agree on
+  every nonempty interval. It is the induction that turns "the table equals the list relation" into a
+  statement about the recurrence alone, so the row-major order of the table never has to be fixed. It is a
+  statement about functions on the naturals and Bool pairs: no machine, no polynomial bound, no P, and it
+  does not decide P vs NP. Instantiating X with the list relation of pnp-213 is a separate step.
+sketch: |
+  Let key n be the claim for all intervals of length n. Use strong induction on n. If j = i + 1, both sides
+  are B i p by the base hypotheses. Otherwise i + 2 ≤ j, and the recurrence rewrites both sides. The middle
+  interval (i + 1, j - 1) is either empty, where both tables give u = g' by the empty axiom, or nonempty and
+  shorter, where the induction hypothesis applies. Each split interval (i, k) and (k, j) is shorter than
+  (i, j) because i < k < j. Both directions of the disjunction and the existential are then matched term
+  by term.
+dead: []

@@ -1,0 +1,35 @@
+id: pnp-249
+problem: pvsnp
+title: Two tables with explicit up and down steps that satisfy the interval recurrence agree on every nonempty interval
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (B : ℕ → Bool × Bool → Prop) (U : ℕ → Prop) (D : ℕ → Prop) (P : ℕ → Bool → Bool → Prop) (X Y : ℕ → ℕ → Bool × Bool → Prop),
+    (∀ (i : ℕ) (p : Bool × Bool), X i i p ↔ p.1 = p.2) → (∀ (i : ℕ) (p : Bool × Bool), Y i i p ↔ p.1 = p.2) →
+    (∀ (i : ℕ) (p : Bool × Bool), X i (i + 1) p ↔ B i p) → (∀ (i : ℕ) (p : Bool × Bool), Y i (i + 1) p ↔ B i p) →
+    (∀ (i j : ℕ) (p : Bool × Bool), i + 2 ≤ j → (X i j p ↔
+      ((U i ∧ ∃ u : Bool, P i u p.1 ∧ D (j - 1) ∧ ∃ g' : Bool, X (i + 1) (j - 1) (u, g') ∧ p.2 = !(g' && p.1)) ∨
+       (∃ k : ℕ, i < k ∧ k < j ∧ ∃ g1 : Bool, X i k (p.1, g1) ∧ X k j (g1, p.2))))) →
+    (∀ (i j : ℕ) (p : Bool × Bool), i + 2 ≤ j → (Y i j p ↔
+      ((U i ∧ ∃ u : Bool, P i u p.1 ∧ D (j - 1) ∧ ∃ g' : Bool, Y (i + 1) (j - 1) (u, g') ∧ p.2 = !(g' && p.1)) ∨
+       (∃ k : ℕ, i < k ∧ k < j ∧ ∃ g1 : Bool, Y i k (p.1, g1) ∧ Y k j (g1, p.2))))) →
+    ∀ (i j : ℕ) (p : Bool × Bool), i < j → (X i j p ↔ Y i j p)
+context: |
+  The variant of pnp-248 that matches the shape of the primitive block in the pnp-152 route. A primitive block
+  of pair steps has an up step at its first position (U i, the first component of the pair is false) and a
+  down step at its last position (D (j - 1), the pair is (true, true)), with a middle that runs from a top u
+  allowed by the step at i. Pnp-248 has no way to state the down step, so this gap adds U and D as predicates
+  on positions. The statement says that two tables obeying the same recurrence with these conditions agree on
+  every nonempty interval. The proof is the proof of pnp-248 with the two extra conjuncts carried along. It is
+  a fact about functions on the naturals and Bool pairs: no machine, no polynomial bound, no P, and it does not
+  decide P vs NP. Its use is the instantiation of the table by the balanced-block relation of pnp-213, which is
+  a separate step.
+sketch: |
+  Repeat the induction of pnp-248. The base cases and the empty-interval axiom are unchanged. In the
+  recurrence step, the primitive clause carries U i and D (j - 1) through both directions unchanged, and the
+  middle interval is handled as in pnp-248. The split clause is unchanged. Both directions of the disjunction
+  are then matched term by term.
+dead: []
