@@ -1,0 +1,26 @@
+id: bsd-296
+problem: bsd
+title: 'Squarefree preΨ′ 5 with a₁ = a₃ = 0 in characteristic 3: over a field with 3 = 0 and 5 nonzero, the preΨ′ 5 of every elliptic Weierstrass curve with a₁ = a₃ = 0 is squarefree'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (W : WeierstrassCurve K) [W.IsElliptic],
+    (3 : K) = 0 → (5 : K) ≠ 0 → W.a₁ = 0 → W.a₃ = 0 → Squarefree (W.preΨ' 5)
+context: |
+  Second half of the characteristic 3 case of bsd-294, after bsd-295 has reduced to a₁ = a₃ = 0. The curve is
+  y² = x³ + a₂ x² + a₄ x + a₆ with a₂ possibly nonzero: in characteristic 3 the shift x ↦ x + r does not change b₂ = 4a₂,
+  so bsd-288 (which needs a₂ = 0 and r = −b₂/12) does not apply, and bsd-289 needs 3 invertible. The claim is the
+  characteristic-free squarefreeness of the 5-division polynomial when Δ is a unit and 5 is nonzero. Mathematically
+  the roots of preΨ′ 5 are the x-coordinates of the nonzero 5-torsion points, which come in pairs ±P, and they are
+  simple because the 5-torsion has 25 points over the algebraic closure. Nothing here is checked in Lean. A
+  counterexample to the statement counts as much as a proof.
+sketch: |
+  Not yet split. A route with no division: a Bezout certificate A·f + B·f′ = c·Δ^k over ℤ[a₂, a₄, a₆] for f = preΨ′ 5
+  with a₁ = a₃ = 0, where c is a power of 5 (bsd-282 turns such a certificate into squarefreeness). The weighted ansatz
+  (a₂ weight 2, a₄ weight 4, a₆ weight 6, X weight 2) solves linearly, as in the bsd-288 note, but the certificate is
+  larger than the a₄, a₆ case and needs a chunked Lean encoding. Mathlib: Polynomial.Separable, Polynomial.Squarefree,
+  WeierstrassCurve.Δ, WeierstrassCurve.preΨ'_odd, bsd-282 once merged.
+dead: []

@@ -1,0 +1,25 @@
+id: bsd-297
+problem: bsd
+title: 'Squarefree preΨ′ 5 in characteristic 2: over a field with 2 = 0 and 5 nonzero, preΨ′ 5 of every elliptic Weierstrass curve is squarefree'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (W : WeierstrassCurve K) [W.IsElliptic],
+    (2 : K) = 0 → (5 : K) ≠ 0 → Squarefree (W.preΨ' 5)
+context: |
+  Third piece of the split of bsd-294. In characteristic 2 neither completing the square nor the short form is
+  available: a₁ and a₃ can be nonzero, and b₂ = a₁² is a square. The claim is still characteristic-free in the sense
+  that the 5-division polynomial has simple roots whenever 5 is nonzero and Δ is a unit, since the roots are the
+  x-coordinates of the nonzero 5-torsion points and E[5] has 25 points over the algebraic closure. This case has no
+  reduction in the other split pieces, so it needs its own certificate or its own argument. Nothing here is checked in
+  Lean. A counterexample to the statement counts as much as a proof.
+sketch: |
+  Not yet split. Candidate routes: a Bezout identity A·f + B·f′ = c·Δ^k over ℤ[a₁, a₂, a₃, a₄, a₆] with c a power of 5
+  (no division, so it specialises to every characteristic, with 2 = 0 giving this case), then bsd-282 for
+  squarefreeness; or a direct argument that a
+  repeated root of preΨ′ 5 forces a point of order 5 with Δ = 0. Mathlib: Polynomial.Separable, Polynomial.Squarefree,
+  WeierstrassCurve.Δ, WeierstrassCurve.preΨ'_odd, bsd-282 once merged.
+dead: []
