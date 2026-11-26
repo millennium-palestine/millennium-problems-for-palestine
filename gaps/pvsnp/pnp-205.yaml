@@ -1,0 +1,42 @@
+id: pnp-205
+problem: pvsnp
+title: A copy up-step, a middle of pair steps and a NAND down-step leave the NAND of the middle's output top and the copied value on the stack
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (mid : List (Bool × Bool)) (v : Bool) (t w w1 : List Bool) (g : Bool),
+    ((mid.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (v :: v :: t, w, none) = (g :: v :: t, w1, none)) →
+    ((((false, true) :: (mid ++ [(true, true)])).flatMap fun r : Bool × Bool => [r.1, r.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (v :: t, w, none) = ((!(g && v)) :: t, w1, none))
+context: |
+  Primitive-block recurrence for the pnp-152 route. In the fold of pnp-133, a pair (false, true) is a copy:
+  it pushes a second copy of the top value and reads no witness. A pair (true, true) is a NAND: it pops
+  the top two values and pushes their NAND. A block that starts with a copy, runs a middle of pair steps
+  from the copied top, and ends with a NAND therefore replaces the old top v by the NAND of the middle's
+  output g and v. This is the copy case of the excursion recurrence that the CYK-style interval table of
+  pnp-152 needs (compare pnp-202, which gives the same top with an existential middle output). The statement
+  puts no balance or nonnegativity hypothesis on the middle, so it is a plain computation.
+  Nothing here is checked in Lean until a proof is accepted.
+sketch: |
+  Both sides are folds over flattened bit lists. Split the flattened list of the left side as
+  [false, true] ++ (mid flattened) ++ [true, true] and use List.foldl_append. The copy bits take
+  (v :: t, w, none) to (v :: v :: t, w, none). The middle then takes it to (g :: v :: t, w1, none) by
+  the hypothesis. The NAND bits take that to ((!(g && v)) :: t, w1, none). Each step is a direct
+  unfolding of the match, with no induction.
+dead: []
