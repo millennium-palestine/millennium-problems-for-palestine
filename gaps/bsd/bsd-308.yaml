@@ -1,0 +1,25 @@
+id: bsd-308
+problem: bsd
+title: 'Three-division value at a five-torsion point in characteristic 2: over a field with 2 = 0, for an elliptic Weierstrass curve and a nonsingular affine point P = (x, y) with 2y + a₁x + a₃ ≠ 0 and 5P = 0, Ψ₃(x) ≠ 0'
+status: open
+imports:
+- Mathlib
+- MPP.Solutions.Bsd264
+open: []
+depends:
+- bsd-307
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) [W.IsElliptic] (x y : K)
+    (h : W.toAffine.Nonsingular x y), (2 : K) = 0 →
+    2 * y + W.a₁ * x + W.a₃ ≠ 0 →
+    (5 : ℤ) • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) = 0 →
+    3 * x ^ 4 + W.b₂ * x ^ 3 + 3 * W.b₄ * x ^ 2 + 3 * W.b₆ * x + W.b₈ ≠ 0
+context: |
+  Characteristic 2 version of bsd-305, with bsd-307 in place of bsd-304. The argument is the same: if Ψ₃(x) = 0 then 3P is
+  O or affine. O gives 2P = 0, which is impossible when 2y + a₁x + a₃ ≠ 0. Affine gives, via bsd-264 (accepted, no
+  characteristic assumption), Ψ₂Sq(x)·preΨ₄(x) = 0, and Ψ₂Sq(x) = (2y + a₁x + a₃)² ≠ 0, so preΨ₄(x) = 0. Then bsd-307
+  gives Δ = 0, contradicting W.IsElliptic.
+sketch: |
+  Copy the proof of bsd-305 (MPP.Solutions.Bsd305) and replace the call to MPP.Solutions.Bsd304.main by the call to
+  bsd-307 with the hypothesis h2 : (2 : K) = 0 in place of (2 : K) ≠ 0. The rest is unchanged.
+dead: []

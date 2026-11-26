@@ -1,0 +1,27 @@
+id: bsd-309
+problem: bsd
+title: 'Five-division polynomial vanishes on five-torsion in every characteristic (m = 5 of bsd-198): for an elliptic Weierstrass curve and a nonsingular affine point P = (x, y) with 5P = 0, the 5-division polynomial preΨ′ 5 vanishes at x'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-303
+- bsd-305
+- bsd-307
+- bsd-308
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) [W.IsElliptic] (x y : K)
+    (h : W.toAffine.Nonsingular x y),
+    (5 : ℤ) • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) = 0 →
+    (W.preΨ' 5).eval x = 0
+context: |
+  The m = 5 case of bsd-198 with no characteristic assumption. It is bsd-306 without its hypothesis 2 ≠ 0: the case
+  2 ≠ 0 uses bsd-305 and the case 2 = 0 uses bsd-308 (characteristic 2 version). Both branches use bsd-303 (accepted
+  in every characteristic) and Mathlib's preΨ'_odd for preΨ′ 5 = preΨ₄·Ψ₂Sq² − Ψ₃³. The hypothesis 2y + a₁x + a₃ ≠ 0
+  follows from 5P = 0 as in bsd-306. Completes the m = 5 case of bsd-198 (its odd m = 5 instance, with IsElliptic).
+sketch: |
+  By cases on (2 : K) = 0. Let hne follow from 5P = 0 as in bsd-306. Then the two branches are exactly the proof of
+  bsd-306 with bsd-305 (for 2 ≠ 0) or bsd-308 (for 2 = 0) in place of the Ψ₃(x) ≠ 0 step. The product identity
+  from bsd-303 and the unfolding of preΨ′ 5 are unchanged.
+dead: []

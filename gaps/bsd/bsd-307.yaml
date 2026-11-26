@@ -1,0 +1,31 @@
+id: bsd-307
+problem: bsd
+title: 'Resultant of the 3-division and 4-division polynomials in characteristic 2: over a field with 2 = 0, a common root of Ψ₃ and preΨ₄ of a Weierstrass curve forces the discriminant to vanish'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (W : WeierstrassCurve K) (x : K), (2 : K) = 0 →
+    3 * x ^ 4 + W.b₂ * x ^ 3 + 3 * W.b₄ * x ^ 2 + 3 * W.b₆ * x + W.b₈ = 0 →
+    2 * x ^ 6 + W.b₂ * x ^ 5 + 5 * W.b₄ * x ^ 4 + 10 * W.b₆ * x ^ 3 + 10 * W.b₈ * x ^ 2 +
+      (W.b₂ * W.b₈ - W.b₄ * W.b₆) * x + (W.b₄ * W.b₈ - W.b₆ ^ 2) = 0 →
+    -W.b₂ ^ 2 * W.b₈ - 8 * W.b₄ ^ 3 - 27 * W.b₆ ^ 2 + 9 * W.b₂ * W.b₄ * W.b₆ = 0
+context: |
+  Characteristic 2 version of bsd-304, which is stated for 2 ≠ 0 and so does not cover characteristic 2. Over a field
+  with 2 = 0 the relation of W.b_relation reads b₂b₆ = b₄² (Mathlib: b_relation_of_char_two), and the discriminant
+  reduces to b₂²b₈ + b₆² + b₂b₄b₆ = b₂²b₈ + b₆² + b₄³. Modulo 2 and the relation b₂b₆ − b₄², the resultant of
+  f = x⁴ + b₂x³ + b₄x² + b₆x + b₈ and g = b₂x⁵ + b₄x⁴ + (b₂b₈ + b₄b₆)x + (b₄b₈ + b₆²) (the reductions mod 2 of Ψ₃ and
+  preΨ₄ with the leading term of preΨ₄ kept, as the degree of g is 5 in characteristic 2) is the fourth power of the
+  discriminant. The resultant identity U·f + V·g = Res over Z, then a 2-adic correction, gives the Lean certificate.
+  Checked by computer algebra: Res(f, g) − Δ⁴ lies in the ideal (2, b₂b₆ − b₄²) over Z (Gröbner basis over GF(2) is
+  {b₂b₆ + b₄²}). Not yet a Lean proof; the cofactors are large and may need to be split by powers of x.
+sketch: |
+  Work in K with h2 : (2 : K) = 0. Let Res ∈ Z[b₂, b₄, b₆, b₈] be the resultant of f and g (formal degrees 4 and 5). Then
+  Res = U·f + V·g with U, V ∈ Z[x, b] from the adjugate of the Sylvester matrix, and Res − Δ⁴ = 2A + B·(b₂b₆ − b₄²) for
+  integer A, B (from the Gröbner check). Since Ψ₃ − f and preΨ₄ − g are multiples of 2 over Z, the identity
+  Δ⁴ = U·Ψ₃ + V·preΨ₄ + (correction)·h2 + B·(b_relation) holds, and linear_combination closes the goal. Then Δ = 0 by
+  pow_eq_zero. If the cofactors are too big for ring, state the identity in a commutative ring R with 2 = 0 and
+  the relation as hypotheses, and split by the x-degree of U and V.
+dead: []
