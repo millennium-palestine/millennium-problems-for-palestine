@@ -1,0 +1,32 @@
+id: pnp-225
+problem: pvsnp
+title: Setting the witness bit at the unary index given by the instance is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-134
+statement: |
+  ∃ f : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) ∧
+    ∀ x w : List Bool, f (pair x w) = pair x (w.set (x.count true) true)
+context: |
+  The write side of pnp-134. pnp-134 reads the witness bit at the index given by the number of true
+  bits of the instance. A table DP that updates one entry per round needs the matching write: the new
+  witness has the same length, with position x.count true set to true, and the instance and separator
+  are copied unchanged. List.set leaves the list unchanged when the index is past the end, so the
+  statement needs no length hypothesis. This gap is only the write. It does not build a table, does not
+  simulate a verifier, and does not decide P vs NP.
+sketch: |
+  Five stacks, as in pnp-134: the pair encoding, an output stack, a unary counter, a buffer, and the
+  instance. Phase 0 moves the doubled instance to the output while counting its true bits in unary on
+  the counter (the counting is pnp-093). Phase 1 moves the witness to the output one symbol at a time,
+  dropping one symbol per counter mark; when the counter is exhausted, the next witness symbol is
+  replaced by true and the rest of the witness is moved unchanged. If the witness ends before the
+  counter, the machine copies the witness unchanged, which agrees with List.set past the end. The step
+  count is linear in the pair length times the counter, so the running time is polynomial.
+dead: []
