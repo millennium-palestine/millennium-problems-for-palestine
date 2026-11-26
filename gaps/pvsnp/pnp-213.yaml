@@ -1,0 +1,49 @@
+id: pnp-213
+problem: pvsnp
+title: A balanced nonnegative pair list runs from v to g exactly when it is a no-op, a primitive copy or leaf block, or a concatenation of two balanced blocks with a middle top
+status: open
+imports:
+- Mathlib
+- MPP.Solutions.Pnp201
+- MPP.Solutions.Pnp211
+- MPP.Solutions.Pnp212
+open: []
+depends:
+- pnp-201
+- pnp-211
+- pnp-212
+statement: |
+  ∀ (F : List Bool × List Bool × Option Bool → Bool → List Bool × List Bool × Option Bool), F = (fun st b => match st.2.2 with | none => (st.1, st.2.1, some b) | some a => if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none) else (st.1, st.2.1, none)) else (if b then (st.1.headD false :: st.1, st.2.1, none) else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) →
+  ∀ (H : Bool × Bool → ℤ), H = (fun r => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1) →
+  ∀ q : List (Bool × Bool), 0 < q.length → (∀ j, j ≤ q.length → 0 ≤ ((q.map H).take j).sum) → (q.map H).sum = 0 →
+  ∀ (v g : Bool) (t : List Bool),
+    (∃ w : List Bool, w.length = q.countP (fun x => !x.1 && !x.2) ∧ ∃ w' : List Bool,
+      (q.flatMap fun r => [r.1, r.2]).foldl F (v :: t, w, none) = (g :: t, w', none)) ↔
+    (q = [(true, false)] ∧ g = v) ∨
+    (∃ (a c : Bool × Bool) (mid : List (Bool × Bool)), q = a :: (mid ++ [c]) ∧ a.1 = false ∧ c = (true, true) ∧
+      (mid.map H).sum = 0 ∧ (∀ j, j ≤ mid.length → 0 ≤ ((mid.map H).take j).sum) ∧
+      ∃ u : Bool, (a.2 = true → u = v) ∧ ∃ g' : Bool,
+        (∃ w1 : List Bool, w1.length = mid.countP (fun x => !x.1 && !x.2) ∧ ∃ w2 : List Bool,
+          (mid.flatMap fun r => [r.1, r.2]).foldl F (u :: v :: t, w1, none) = (g' :: v :: t, w2, none)) ∧
+        g = !(g' && v)) ∨
+    (∃ p s : List (Bool × Bool), q = p ++ s ∧ 0 < p.length ∧ 0 < s.length ∧
+      (∀ j, j ≤ p.length → 0 ≤ ((p.map H).take j).sum) ∧ (p.map H).sum = 0 ∧
+      (∀ j, j ≤ s.length → 0 ≤ ((s.map H).take j).sum) ∧ (s.map H).sum = 0 ∧
+      ∃ g1 : Bool,
+        (∃ w : List Bool, w.length = p.countP (fun x => !x.1 && !x.2) ∧ ∃ w' : List Bool,
+          (p.flatMap fun r => [r.1, r.2]).foldl F (v :: t, w, none) = (g1 :: t, w', none)) ∧
+        (∃ w : List Bool, w.length = s.countP (fun x => !x.1 && !x.2) ∧ ∃ w' : List Bool,
+          (s.flatMap fun r => [r.1, r.2]).foldl F (g1 :: t, w, none) = (g :: t, w', none)))
+context: |
+  The full CYK-style recurrence for the pnp-152 route, at the level of lists. A balanced nonnegative pair list
+  either is a single no-op pair, or is a primitive copy or leaf block (pnp-212), or splits at its first return into two
+  balanced nonnegative blocks (pnp-211, pnp-201). This gap says that the run of the pnp-133 fold from a top v to a top g
+  is exactly one of these three clauses. It combines pnp-201 and pnp-211 and pnp-212 and adds the no-op clause. It is a
+  fact about lists of pairs and the fold: no machine, no polynomial bound, no P, and it does not decide P vs NP. Its
+  statement quantifies over the fold and the height function instead of writing them out, to keep it short.
+sketch: |
+  Split q by pnp-211 into the three cases. In the no-op case q = [(true, false)], the fold leaves the stack unchanged, so
+  g = v, and the witness is empty. In the primitive case, rewrite q as a :: (mid ++ [c]) and apply pnp-212. In the
+  concatenation case, rewrite q as p ++ s and apply pnp-201. The converse direction is the same three lemmas read
+  backwards: each clause of the right-hand side determines q's shape, so the matching lemma gives the left-hand side.
+dead: []
