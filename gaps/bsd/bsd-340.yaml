@@ -1,0 +1,25 @@
+id: bsd-340
+problem: bsd
+title: 'Hasse bound from the integer degree form: if m² − a m n + p n² is nonnegative whenever p does not divide m, then a² ≤ 4p'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (a p : ℤ), 1 < p → (∀ m n : ℤ, ¬ p ∣ m → 0 ≤ m ^ 2 - a * m * n + p * n ^ 2) → a ^ 2 ≤ 4 * p
+context: |
+  The integer step between the degree form and Hasse's bound. bsd-327 gives the nonnegativity of
+  m² − a m n + p n² for every curve with a = p + 1 − #E and p not dividing m, and bsd-024 is the bound a² ≤ 4p.
+  This gap says that the first implies the second on the integers, with no curve in sight. The bsd-024 context
+  warns that the quadratic in m alone does not force a² ≤ 4p (for p = 2, a = 3 every integer m satisfies it),
+  so the proof has to use the second variable: n = 2 gives 4p − a² when p does not divide a, and when p divides a,
+  n = 2 at m = a + 1 gives 4p + 1 − a², which still forces a² ≤ 4p because p² k² = a² cannot equal 4p + 1. Together with bsd-341 (the converse
+  direction) this makes bsd-024 and bsd-327 equivalent, so the open geometric content is a single statement.
+  Not checked in Lean.
+sketch: |
+  Put m = a and n = 2 when ¬ p ∣ a: the hypothesis gives 0 ≤ a² − 2a² + 4p = 4p − a², which is the goal.
+  If p ∣ a, then ¬ p ∣ (a + 1) because p > 1, and m = a + 1, n = 2 gives 0 ≤ 4p + 1 − a². So a² ≤ 4p + 1.
+  Write a = p k. Then p² k² ≤ 4p + 1, so p k² ≤ 4 (since p k² is an integer and p k² ≤ (4p + 1)/p < 5), hence a² = p · p k² ≤ 4p.
+  Use nlinarith or omega after the case split, with Int.emod_emod_of_dvd style facts for the divisibility.
+dead: []

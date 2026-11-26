@@ -1,0 +1,22 @@
+id: bsd-341
+problem: bsd
+title: 'Degree form from the Hasse bound: if 0 < p and a² ≤ 4p, then m² − a m n + p n² is nonnegative for all integers m and n'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (a p m n : ℤ), 0 < p → a ^ 2 ≤ 4 * p → 0 ≤ m ^ 2 - a * m * n + p * n ^ 2
+context: |
+  The converse of bsd-340, on the integers. If the discriminant a² − 4p is not positive, then the form
+  m² − a m n + p n² is positive semidefinite, for every m and n, with no divisibility hypothesis. The identity
+  4p (m² − a m n + p n²) = (2 p n − a m)² + (4p − a²) m² does it. Together with bsd-340 this shows that the
+  curve-level statements bsd-024 (Hasse's bound) and bsd-327 (degree form, p not dividing m) are equivalent, and
+  that the only deep input for both is the bound itself. Not checked in Lean.
+sketch: |
+  Multiply out: 4p (m² − a m n + p n²) = (2 p n − a m)² + (4p − a²) m². Both summands are nonnegative
+  (the second because 4p − a² ≥ 0), and 4p > 0. So the product with 4p is nonnegative, and therefore the form is.
+  In Lean: have h : 4 * p * (m ^ 2 - a * m * n + p * n ^ 2) = (2 * p * n - a * m) ^ 2 + (4 * p - a ^ 2) * m ^ 2 := by ring,
+  then conclude from 0 < 4 * p with nonneg_of_mul_nonneg_right or nlinarith [sq_nonneg (2 * p * n - a * m), sq_nonneg m].
+dead: []
