@@ -5,8 +5,7 @@ status: open
 imports:
 - Mathlib
 open: []
-depends:
-- bsd-334
+depends: []
 statement: |
   ∀ (A : Type) [CommRing A] (b c d : A) (m : ℤ),
     normEDS b c d (m + 8) * normEDS b c d (m - 8)
