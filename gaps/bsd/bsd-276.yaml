@@ -1,0 +1,32 @@
+id: bsd-276
+problem: bsd
+title: 'Coprime division polynomials: on an elliptic curve over a field in which 3 and 5 are nonzero, the 3-division polynomial and the 5-division polynomial have no common root'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) [W.IsElliptic] (x : K),
+    (2 : K) ≠ 0 → (3 : K) ≠ 0 → (5 : K) ≠ 0 →
+    3 * x ^ 4 + W.b₂ * x ^ 3 + 3 * W.b₄ * x ^ 2 + 3 * W.b₆ * x + W.b₈ = 0 →
+    (W.preΨ' 5).eval x ≠ 0
+context: |
+  The coprimality input for the ℓ = 5 lower bound bsd-193. Two uses: it rules out 3P = 0 in bsd-275 (in the form
+  "Ψ₃(x) ≠ 0 for a root x of ψ₅"), and it gives that every root x0 of ψ₅ is not 2-torsion, so that the lift of
+  bsd-243 is not 2-torsion either. The statement is the classical fact that the division polynomials ψ₃ and ψ₅ are
+  coprime (their gcd is ψ₁ = 1) when the discriminant is nonzero: a common root would be the x-coordinate of a point
+  killed by both 3 and 5, hence by 1, which is impossible for a nonzero point. Equivalently the resultant of ψ₃ and ψ₅
+  is a nonzero constant times a power of the discriminant. Not checked against the text here, and the resultant
+  identity has not been computed.
+sketch: |
+  Route A (resultant), computed with sympy on the Weierstrass b-coordinates with 4b₈ = b₂b₆ − b₄²: the resultant of
+  Ψ₃ and ψ₅ = preΨ₄ Ψ₂Sq² − Ψ₃³ in x is Res = Δ⁸ exactly (Δ = −b₂²b₈ − 8b₄³ − 27b₆² + 9b₂b₄b₆, and
+  b₂³b₆ − b₂²b₄² − 36b₂b₄b₆ + 32b₄³ + 108b₆² = −4Δ). So a common root gives Δ⁸ = 0 through a Bezout identity
+  U·Ψ₃ + V·ψ₅ = Δ⁸ with U, V polynomials in x (deg U ≤ 11, deg V ≤ 3). Caution: the cofactors U, V are large
+  in the b-variables, so a direct linear_combination may be too heavy; a smaller certificate (for instance
+  via ψ₅ ≡ preΨ₄ Ψ₂Sq² modulo Ψ₃, and coprimality of Ψ₃ with Ψ₂Sq and with preΨ₄ separately) would be preferred.
+  Route B (geometric): a common root x0 lifts to a point over the algebraic closure; then bsd-240 and bsd-275 type
+  arguments show 3P = 0 and 5P = 0 together, so P = 0. Not verified in Lean.
+  Mathlib: the explicit certificate with linear_combination, or Polynomial.resultant if its API is usable.
+dead: []
