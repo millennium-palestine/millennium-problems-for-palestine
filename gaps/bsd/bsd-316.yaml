@@ -1,0 +1,30 @@
+id: bsd-316
+problem: bsd
+title: 'Torsion count from the division polynomial: for odd m with m nonzero in the field, if every nonzero m-torsion point has a root of the division polynomial as x-coordinate, the m-torsion has at most m^2 points'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) (m : ℕ),
+    Odd m → (m : K) ≠ 0 →
+    (∀ (x y : K) (h : W.toAffine.Nonsingular x y),
+      m • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) = 0 → (W.preΨ' m).eval x = 0) →
+    (Nat.card {P : W.toAffine.Point // m • P = 0} : ℤ) ≤ (m : ℤ) ^ 2
+context: |
+  The assembly step of bsd-192 (m-torsion upper bound, odd m), with the vanishing of the division polynomial taken as
+  a hypothesis. It is the step that combines three pieces: the vanishing at x-coordinates (hypothesis here, which is
+  bsd-198 once proved), the root count (bsd-314: at most (m^2 - 1)/2 distinct x-coordinates), and the two-point fibres
+  (bsd-315: at most two points with a given x). The zero point contributes 1, and each root gives at most two nonzero
+  points, so the count is at most 2 (m^2 - 1)/2 + 1 = m^2. Nat.card of an infinite type is 0, so the bound is
+  trivial when the torsion is infinite. Not checked in Lean.
+sketch: |
+  Let T := {P // m • P = 0} and split T into the zero point and the nonzero points. For a nonzero P = some x y h with
+  m • P = 0, the hypothesis gives (W.preΨ' m).eval x = 0. Let R := image of x over the nonzero torsion points (a Finset
+  when T is finite, otherwise the bound is trivial since Nat.card = 0). Then R has at most (m^2 - 1)/2 elements, as
+  every element is a root of W.preΨ' m (bsd-314). The fibre over each x in R has at most two points (bsd-315, applied to
+  the y-coordinates, since two points with the same x and different y are P and -P). Use Finset.card_le_mul_card_image
+  or Finset.card_biUnion_le. Mathlib: Nat.card_eq_fintype_card or Nat.card_eq_card_toFinset, Finset.card_le_mul_card_image,
+  WeierstrassCurve.Affine.Point.some, WeierstrassCurve.Affine.Nonsingular.
+dead: []
