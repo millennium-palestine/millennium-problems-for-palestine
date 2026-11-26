@@ -1,0 +1,41 @@
+id: pnp-232
+problem: pvsnp
+title: Iterating a polynomial-time map that appends one bit to the second component of the pair encoding, a polynomially many times, is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-006
+- pnp-012
+- pnp-026
+- pnp-033
+- pnp-061
+- pnp-127
+- pnp-136
+statement: |
+  ∀ s : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) s) →
+    (∀ x w : List Bool, ∃ b : Bool, s (pair x w) = pair x (w ++ [b])) →
+    ∀ p : Polynomial ℕ, ∃ T : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) T) ∧
+      ∀ x w : List Bool, T (pair x w) = s^[p.eval (pair x w).length] (pair x w)
+context: |
+  Closure step for the tableau of pnp-100 with a side input. pnp-061 iterates a map with exact one-symbol growth on
+  every input, but the windowed step of pnp-233 only grows pair encodings on pair inputs, and it has no
+  pair-shape test to extend it to all inputs. This statement restricts the hypothesis to pair inputs. The iterates
+  stay pair encodings, the instance x is preserved, and the count p(|pair x w|) is read from the input, so the time
+  bound is polynomial in the input length.
+  It is not a loop proof: the total map s' z = take (|z|+1) (s z ++ replicate (|z|+1) false) has exact one-symbol
+  growth on every input, agrees with s on pair inputs, and so pnp-061 applies. It does not decide P vs NP and it is
+  not the universal window rule of pnp-100.
+sketch: |
+  Let U z = replicate (|z|+1) false (pnp-033 with X + 1). Let A = s concatenated with U (pnp-127), P = pair A U
+  (pnp-026), and t the take map of pnp-136, so t (P z) = take (|z|+1) (s z ++ U z). Then s' = t ∘ P is polynomial-time
+  (pnp-006) with exact growth by one on every input, so pnp-061 gives T with T z = s'^[p |z|] z. Induction on the
+  count shows that the iterates of s' from a pair encoding are those of s, because each s-iterate on a pair encoding
+  is pair x v with one more symbol, and the take keeps exactly that prefix.
+dead: []
