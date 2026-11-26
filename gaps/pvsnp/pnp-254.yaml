@@ -1,0 +1,30 @@
+id: pnp-254
+problem: pvsnp
+title: A step that preserves a side value w, grows by at most |w z| and has |w z| at most |z| + c keeps the length at most |z| + m·(|z| + c) after m steps
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (s w : List Bool → List Bool) (c : ℕ),
+    (∀ z : List Bool, w (s z) = w z) →
+    (∀ z : List Bool, (s z).length ≤ z.length + (w z).length) →
+    (∀ z : List Bool, (w z).length ≤ z.length + c) →
+    ∀ (m : ℕ) (z : List Bool), (s^[m] z).length ≤ z.length + m * (z.length + c)
+context: |
+  Second arithmetic step of the side-input iteration closure needed for pnp-100 (Cook–Levin over TM2). pnp-253
+  bounds the length after m rounds by |z| + m·|w z|, using the preservation of the side value. This gap turns
+  that into a bound that does not mention w: when the side value is at most the input length plus a fixed
+  constant c, the output after m rounds is at most |z| + m·(|z| + c). With m a polynomial in |z| this is a
+  polynomial, which is the output-size half of the tableau closure. It is stated for arbitrary functions on
+  lists: no machine, no polynomial-time claim, no P, and it does not decide P vs NP. The machine part (that the
+  iterate is polynomial-time) is a separate gap. This gap is self-contained and does not import pnp-253.
+sketch: |
+  Prove the stronger statement ∀ m z, |s^[m] z| ≤ |z| + m·|w z| by induction on m, generalising z, exactly as in
+  pnp-253: rewrite s^[m+1] z as s^[m] (s z) with Function.iterate_succ_apply, use the preservation hypothesis to
+  replace w (s z) by w z in the induction hypothesis, and combine it with |s z| ≤ |z| + |w z|. Then the final
+  bound follows from m·|w z| ≤ m·(|z| + c), which is Nat.mul_le_mul_left m applied to the hypothesis on w z. In
+  Lean: induction m generalizing z, simp only [Function.iterate_succ_apply], rw [hw z] at the hypothesis, rw
+  [Nat.succ_mul], then linarith (products of m are atoms for linarith; omega rejects them).
+dead: []
