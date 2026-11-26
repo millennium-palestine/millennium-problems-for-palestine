@@ -1,0 +1,39 @@
+id: pnp-234
+problem: pvsnp
+title: Indexed read of the witness at a unary index that a polynomial-time map computes from the instance is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+- MPP.Solutions.Pnp006
+- MPP.Solutions.Pnp022
+- MPP.Solutions.Pnp227
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-006
+- pnp-022
+- pnp-227
+statement: |
+  ∀ h : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) h) →
+    (∀ x : List Bool, h x = List.replicate (h x).length true) →
+    ∃ L : Lang, InP L ∧ ∀ x w : List Bool, L (pair x w) = w.getD (h x).length false
+context: |
+  The computed-index form of pnp-227. pnp-227 reads the witness at a unary index that is given by the
+  instance itself (a run of m true bits, the index m). A table DP needs an index that is computed from
+  the instance by unary arithmetic (pnp-031 addition, pnp-032 multiplication): the cell (i, j) of an
+  interval table lives at position i·(n+1)+j. This gap lets a polynomial-time map h compute that unary
+  index from the whole instance x, and asks that reading the witness w at position |h x| is again
+  polynomial-time on the pair encoding. The hypothesis says that h x is a run of true bits, so the
+  index is read by pnp-227 after h is run. It is a composition lemma: it does not build a table, does
+  not simulate a verifier, and does not decide P vs NP.
+sketch: |
+  Let r be the map from pnp-022 applied to h, so that r (pair x w) = pair (h x) w. Let L be the
+  language of pnp-227, which is in P and satisfies L (pair (replicate m true) w) = w.getD m false.
+  Compose: L ∘ r is in P by pnp-006, since r is polynomial-time and L is in P with the identity
+  encoding of its input. For every x and w, the hypothesis h x = replicate (h x).length true turns
+  L (r (pair x w)) = L (pair (h x) w) into L (pair (replicate m true) w) with m = (h x).length, and
+  pnp-227 gives w.getD m false.
+dead: []

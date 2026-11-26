@@ -1,0 +1,39 @@
+id: pnp-235
+problem: pvsnp
+title: Writing a polynomial-time bit at a unary index that a polynomial-time map computes from the instance, with the bit computed from the whole input, is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-228
+- pnp-234
+statement: |
+  ∀ h : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) h) →
+    (∀ x : List Bool, h x = List.replicate (h x).length true) →
+    ∀ g : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) g) →
+      ∃ f : List Bool → List Bool,
+        Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) f) ∧
+        ∀ (x w : List Bool) (b : Bool), g (pair x w) = [b] →
+          f (pair x w) = pair x (w.set (h x).length b)
+context: |
+  The computed-index form of pnp-228. pnp-228 writes a computed bit at the unary index given by the count of
+  true bits of the instance. A DP round writes the cell (i, j) of its table, and that index is computed by
+  unary arithmetic from the instance, not read off it. This gap takes a polynomial-time unary index map h,
+  as in pnp-234, and a polynomial-time map g whose value is a one-bit list [b] wherever the write is
+  needed, and writes b at position |h x| of the witness. The write keeps the length of the witness and
+  copies the instance unchanged. Where g does not return a one-bit list the statement says nothing. It
+  builds no table and no DP and does not decide P vs NP.
+sketch: |
+  Run the construction of pnp-228 with the mark list of h x in place of the mark list of the instance: h
+  produces the unary count k = |h x| on a stack (pnp-234 style), the witness is split into its first k
+  symbols and the rest (take and drop by a unary count, as in pnp-136 and pnp-120), the head of the rest is
+  replaced by the bit computed by g (pnp-228, with the pair g z in place of the bit), and the pieces are
+  reassembled by pnp-052, pnp-127 and pnp-026, then composed by pnp-006. The identity
+  w.take k ++ (b :: (w.drop k).tail) = w.set k b is the one used in pnp-225.
+dead: []
