@@ -1,0 +1,25 @@
+id: pnp-227
+problem: pvsnp
+title: Lookup in the witness at a unary index, with the index written as a run of true bits, is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-134
+statement: |
+  ∃ L : Lang, InP L ∧ ∀ (m : ℕ) (w : List Bool),
+    L (pair (List.replicate m true) w) = w.getD m false
+context: |
+  The unary-index form of pnp-134. pnp-134 reads the witness bit at the number of true bits of the
+  instance. When the index is held as a run of m true bits, as the unary arithmetic of pnp-031 and
+  pnp-032 produces, the count is m, so the same machine reads position m. A table DP computes each
+  index by unary addition and multiplication and then reads the table at that index; this gap is the
+  read step in that form. It is a restatement of pnp-134 and does not decide P vs NP.
+sketch: |
+  Take L from pnp-134. For the instance x = replicate m true, the count of true bits of x is m
+  (List.count_replicate_self), so L (pair x w) = w.getD (x.count true) false = w.getD m false.
+dead: []
