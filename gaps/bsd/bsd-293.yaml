@@ -1,0 +1,28 @@
+id: bsd-293
+problem: bsd
+title: 'Squarefree preΨ′ 5 away from characteristic 2 and 3: over a field with 2, 3 and 5 nonzero, preΨ′ 5 of every Weierstrass curve is squarefree'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-282
+- bsd-288
+- bsd-289
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) [W.IsElliptic],
+    (2 : K) ≠ 0 → (3 : K) ≠ 0 → (5 : K) ≠ 0 → Squarefree (W.preΨ' 5)
+context: |
+  The part of bsd-278 (squarefree preΨ′ 5) where 2 and 3 are invertible. It is the easy half of bsd-278: the variable
+  change of bsd-289 moves W to a short form W′ with the same discriminant and with preΨ′ 5 of W equal to a shift of
+  preΨ′ 5 of W′. The Bezout certificate of bsd-288 holds for W′ with constant 5¹² Δ²², and Squarefree is invariant under
+  composing with X − C r. The remaining case, 2 = 0 or 3 = 0, is bsd-294. Nothing here is checked in Lean.
+sketch: |
+  Take W′ and r from bsd-289 (r = −W.b₂/12 needs 12 ≠ 0, i.e. 2 and 3 nonzero). By bsd-288 there are A′, B′ with
+  A′·preΨ′5(W′) + B′·derivative(preΨ′5(W′)) = C(5¹² Δ²²). Let A = A′.comp(X − C r) and B = B′.comp(X − C r). Since
+  preΨ′5(W) = preΨ′5(W′).comp(X − C r), the derivative of the composite is the derivative of preΨ′5(W′) composed with
+  X − C r (Polynomial.derivative_comp, derivative_sub, derivative_X, derivative_C), so A·preΨ′5(W) + B·derivative(preΨ′5(W))
+  = C(5¹² Δ²²) by comp applied to the identity. The constant is nonzero because 5 ≠ 0 and W.Δ is a unit (W.IsElliptic).
+  Squarefree follows from bsd-282 (u·f + v·f′ = C c with c ≠ 0 gives Squarefree f). Mathlib: Polynomial.comp, Polynomial.derivative_comp,
+  Polynomial.C_mul, WeierstrassCurve.Δ, WeierstrassCurve.IsElliptic.
+dead: []
