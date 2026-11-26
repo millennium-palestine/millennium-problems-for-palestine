@@ -1,0 +1,32 @@
+id: bsd-337
+problem: bsd
+title: 'Toeplitz symbol nonvanishing at p = 11: for a short cubic x³ + ax + b over F_11 with nonzero discriminant, the 5×5 determinant of the symbols c_s + d_s·Y, K = 5, is nonzero'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (a b : ZMod 11), 4 * a ^ 3 + 27 * b ^ 2 ≠ 0 →
+    ∀ g : Polynomial (ZMod 11),
+      g = (Polynomial.X ^ 3 + Polynomial.C a * Polynomial.X + Polynomial.C b) ^ ((11 - 1) / 2) →
+      (Matrix.of (fun (i t : Fin ((11 - 1) / 2)) =>
+        Polynomial.C (g.coeff ((11 - 1) / 2 + (i : ℕ) - (t : ℕ))) +
+          Polynomial.C (g.coeff ((11 - 1) / 2 + (i : ℕ) - (t : ℕ) + 11)) * (Polynomial.X : Polynomial (ZMod 11)))).det ≠ 0
+context: |
+  The p = 11 instance of bsd-254 (Toeplitz symbol nonvanishing), split off as a finite computation in the same way as
+  the p = 3, 5, 7 instances (bsd-330, bsd-331, bsd-333). Here K = 5 and g = f⁵ with f = X³ + aX + b has degree 15. Its
+  coefficients at X^1..X^9 are the constant parts c_s, and at X^12..X^15 they are 5b, 5a, 0, 1 (the only nonzero
+  coefficients at index ≥ 11 that enter the Y-part, which sits strictly above the diagonal). Expanding the determinant
+  gives a polynomial P(Y) of degree at most 4 in Y with explicit coefficients in a, b (the Y^4 coefficient is
+  10(a³ + b²)). The finite statement bsd-338 says that for every nonsingular (a, b) over F_11 some value P(y), y ∈ F_11,
+  is nonzero; since deg P ≤ 4 < 11, P is then a nonzero polynomial, so the determinant is nonzero. Not checked in Lean.
+sketch: |
+  Show g = f⁵ expanded (ring after unfolding, using map_mul / map_ofNat as in the p = 7 case) and read off the coefficients
+  at indices 1..9 and 12..20 with simp (coeff_add, coeff_C_mul_X_pow, coeff_C_mul_X, coeff_C, coeff_X_pow) and norm_num.
+  Expand the determinant with Matrix.det_succ_row_zero and Fin.sum_univ_succ. Evaluate the determinant polynomial at each
+  y : ZMod 11 with Polynomial.eval (the evaluation of the determinant is the determinant of the evaluated matrix; RingHom.map_det
+  or simp with eval lemmas), and identify it with the explicit polynomial in y from bsd-338 by ring. Apply bsd-338 to the
+  hypothesis to get y with the evaluated determinant nonzero, which contradicts the assumption det = 0 (evaluate the zero
+  polynomial). The finite statement is checked by decide on ZMod 11, as in bsd-331.
+dead: []
