@@ -1,0 +1,36 @@
+id: pnp-239
+problem: pvsnp
+title: Iterating the table cell step of pnp-238 a polynomially many times, on the pair encoding, is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-232
+- pnp-238
+statement: |
+  ∀ a b s : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) a) →
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) b) →
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) s) →
+    (∀ x w : List Bool, s (pair x w) = pair x (w ++ [(List.range (x.length + 1)).any (fun m =>
+          w.getD (a (pair x (List.replicate m true))).length false &&
+            w.getD (b (pair x (List.replicate m true))).length false)])) →
+    ∀ p : Polynomial ℕ, ∃ T : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) T) ∧
+      ∀ x w : List Bool, T (pair x w) = s^[p.eval (pair x w).length] (pair x w)
+context: |
+  The table of the pnp-152 route is built one cell bit at a time: pnp-238 appends the cell bit of pnp-237 to the
+  witness, and pnp-232 iterates any map with that one-bit append property a polynomially many times. This gap
+  states the iterated table map for the cell rule itself, with the number of cells given by p of the input length.
+  It is a link of the table chain, not a new idea: the hypothesis of pnp-232 follows at once from the cell formula.
+  It does not state the CYK recurrence, the correctness of the cells against the fold of pnp-133, or the order of
+  the cells, and it does not decide P vs NP.
+sketch: |
+  Apply pnp-232 to s. Its hypothesis, for every pair x w there is a bit b with s (pair x w) = pair x (w ++ [b]), is
+  the cell formula with b the value of the disjunction. Then pnp-232 gives T with T z = s^[p |z|] z on pair inputs,
+  which is the statement.
+dead: []
