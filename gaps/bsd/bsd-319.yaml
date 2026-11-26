@@ -7,8 +7,6 @@ imports:
 open:
 - Polynomial
 depends:
-- bsd-317
-- bsd-318
 - bsd-255
 - bsd-182
 statement: |
