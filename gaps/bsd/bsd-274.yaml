@@ -1,0 +1,26 @@
+id: bsd-274
+problem: bsd
+title: 'Hasse bound from the degree form: if m² − (p + 1 − #E) m n + p n² is nonnegative for all integers m and n, then |#E − (p + 1)| ≤ 2√p'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic],
+    (∀ m n : ℤ, 0 ≤ m ^ 2 - ((p : ℤ) + 1 - (Nat.card W.toAffine.Point : ℤ)) * m * n + (p : ℤ) * n ^ 2) →
+    |((Nat.card W.toAffine.Point : ℕ) : ℝ) - ((p : ℝ) + 1)| ≤ 2 * Real.sqrt (p : ℝ)
+context: |
+  Reduction of the Hasse bound (bsd-024) to its degree-form input (bsd-089). Once bsd-089 is proved,
+  this statement with its hypothesis discharged gives bsd-024 at once. The step that is not elementary
+  is bsd-089 itself, which must show the degree form is nonnegative on integer pairs. This gap only
+  converts that nonnegativity into the Hasse bound: the discriminant step of bsd-273 (a² ≤ 4p from
+  nonnegativity over the integers) followed by the square-root step of bsd-143. The solution should
+  inline the discriminant argument instead of importing bsd-273, which is not accepted yet.
+sketch: |
+  Put a = p + 1 − #E as an integer. The hypothesis is then 0 ≤ m² − a m n + p n² for all integers m, n.
+  Prove a² ≤ 4p in ℤ by the contradiction argument of bsd-273: if a² > 4p, pick a rational q strictly
+  between the real roots (a ± √(a² − 4p))/2 of x² − a x + p, and use m = q.num, n = q.den to get a
+  negative value. Then (#E − (p + 1))² ≤ 4p in ℝ by push_cast, and the absolute value bound
+  |#E − (p + 1)| ≤ 2√p follows as in bsd-143 (Real.sqrt_le_sqrt, Real.sqrt_sq_eq_abs, Real.sqrt_mul).
+dead: []

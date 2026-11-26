@@ -1,0 +1,27 @@
+id: bsd-273
+problem: bsd
+title: 'Quadratic-form discriminant: if m² − a m n + p n² is nonnegative for all integers m and n, then a² ≤ 4p'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) (a : ℤ), 0 < p →
+    (∀ m n : ℤ, 0 ≤ m ^ 2 - a * m * n + (p : ℤ) * n ^ 2) →
+    a ^ 2 ≤ 4 * (p : ℤ)
+context: |
+  Elementary input for the Hasse bound (bsd-024). The degree form m² − (p + 1 − #E) m n + p n² of
+  bsd-089 is nonnegative for all integer pairs, and bsd-089 is the deep step. This lemma is the
+  elementary step that turns that nonnegativity into the discriminant bound a² ≤ 4p, which bsd-143
+  already converts into |#E − (p + 1)| ≤ 2√p. Nonnegativity on the integers must be used with
+  integer pairs (m, n) that are not of the form (m, 1): for p = 2 and a = 3 the values with n = 1 are
+  all nonnegative, but m = 3, n = 2 gives 9 − 18 + 8 = −1.
+sketch: |
+  Argue by contradiction: assume a² > 4p. Then the real quadratic x² − a x + p has two distinct real
+  roots t₋ < t₊ with t₋ + t₊ = a and t₋ t₊ = p, namely t± = (a ± √(a² − 4p)) / 2, using Real.sqrt and
+  Real.sq_sqrt. Its values are negative strictly between the roots. Choose a rational q strictly
+  between t₋ and t₊ (exists_rat_btwn), and put m = q.num, n = q.den, so n > 0 and q = m / n. Then
+  m² − a m n + p n² = n² (q² − a q + p) < 0, contradicting the hypothesis at (m, n). Finish the
+  integer and real casts with push_cast and nlinarith or linear_combination.
+dead: []
