@@ -1,0 +1,39 @@
+id: pnp-211
+problem: pvsnp
+title: A nonempty nonnegative zero-sum pair list is a single no-op, a primitive up-middle-down block, or a concatenation of two nonempty nonnegative zero-sum blocks
+status: open
+imports:
+- Mathlib
+- MPP.Solutions.Pnp193
+- MPP.Solutions.Pnp196
+open: []
+depends:
+- pnp-193
+- pnp-196
+statement: |
+  ∀ q : List (Bool × Bool), 0 < q.length →
+    (∀ j, j ≤ q.length → 0 ≤ ((q.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) →
+    (q.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 →
+    q = [(true, false)] ∨
+    (∃ (a c : Bool × Bool) (mid : List (Bool × Bool)), q = a :: (mid ++ [c]) ∧ a.1 = false ∧ c = (true, true) ∧
+      (mid.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 ∧
+      ∀ j, j ≤ mid.length → 0 ≤ ((mid.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) ∨
+    (∃ p s : List (Bool × Bool), q = p ++ s ∧ 0 < p.length ∧ 0 < s.length ∧
+      (∀ j, j ≤ p.length → 0 ≤ ((p.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) ∧
+      (p.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 ∧
+      (∀ j, j ≤ s.length → 0 ≤ ((s.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) ∧
+      (s.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0)
+context: |
+  Case split for the CYK-style interval table of the pnp-152 route. A nonempty nonnegative zero-sum list of pair steps
+  either is a single no-op pair, or is a primitive excursion (an up step, a nonnegative zero-sum middle, a down step,
+  as in pnp-196), or splits at its first return into a nonempty nonnegative zero-sum block followed by a nonempty
+  nonnegative zero-sum rest (pnp-193). A table indexed by such blocks is then determined by its three clauses. This is
+  a fact about lists of integers and pairs: no machine, no polynomial bound, no P, and it does not decide P vs NP.
+sketch: |
+  Let d be the height list of q. Apply pnp-193 to d to get the first return m with 0 < m ≤ q.length. Take p = q.take m
+  and s = q.drop m. The heights of p are the prefix of d of length m, so p is nonnegative with zero sum, and s is
+  nonnegative with zero sum by pnp-193 (List.take_take, List.drop_map). If m < q.length, the third disjunct holds with
+  these p and s. If m = q.length, then q is primitive. When q.length = 1, its only pair has height 0, so q = [(true, false)].
+  When q.length ≥ 2, pnp-196 gives a, c, mid with the height conditions; a has height 1 so a.1 = false, and c has
+  height -1 so c = (true, true), by cases on the two bits.
+dead: []
