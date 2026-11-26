@@ -1,0 +1,21 @@
+id: bsd-327
+problem: bsd
+title: 'Degree form on the prime-field curve, away from p: for an elliptic curve over a prime field and integers m, n with p not dividing m, m² − (p + 1 − #E) m n + p n² is nonnegative'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic] (m n : ℤ), ¬ (p : ℤ) ∣ m →
+    0 ≤ m ^ 2 - ((p : ℤ) + 1 - (Nat.card W.toAffine.Point : ℤ)) * m * n + (p : ℤ) * n ^ 2
+context: |
+  The geometric half of the split of bsd-089 (degree form positivity). Together with the descent gap bsd-326, it gives
+  bsd-089: bsd-326 applies to a = p + 1 − #E, and this gap supplies its hypothesis. It is weaker than bsd-161, the
+  kernel count of m − nφ, which gives the form as a cardinality when p does not divide m. Mathlib has no Frobenius
+  endomorphism and no isogeny degree, so this gap is the open geometric step and is not claimed here. Not checked in Lean.
+sketch: |
+  Not an hour's work. The route is bsd-161 (the kernel of m − nφ has m² − a m n + p n² points when p ∤ m), which gives
+  nonnegativity as a natural number cast. The missing input is the separability and degree theory of the Frobenius
+  isogeny, as in Silverman, The Arithmetic of Elliptic Curves, Chapter III and V.
+dead: []
