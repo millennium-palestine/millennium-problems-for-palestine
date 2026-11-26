@@ -8,7 +8,7 @@ open: []
 depends: []
 statement: |
   ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) [W.IsElliptic] (x : K),
-    (3 : K) ≠ 0 → (5 : K) ≠ 0 →
+    (2 : K) ≠ 0 → (3 : K) ≠ 0 → (5 : K) ≠ 0 →
     3 * x ^ 4 + W.b₂ * x ^ 3 + 3 * W.b₄ * x ^ 2 + 3 * W.b₆ * x + W.b₈ = 0 →
     (W.preΨ' 5).eval x ≠ 0
 context: |
