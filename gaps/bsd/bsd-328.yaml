@@ -1,0 +1,29 @@
+id: bsd-328
+problem: bsd
+title: 'The n = 6 case of the elliptic-net addition formula: N(m+6) N(m−6) = N(m+1) N(m−1) N(6)² − N(7) N(5) N(m)² for normEDS, for every integer m'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-320
+statement: |
+  ∀ (A : Type) [CommRing A] (b c d : A) (m : ℤ),
+    normEDS b c d (m + 6) * normEDS b c d (m - 6)
+      - normEDS b c d (m + 1) * normEDS b c d (m - 1) * normEDS b c d 6 ^ 2
+      + normEDS b c d 7 * normEDS b c d 5 * normEDS b c d m ^ 2 = 0
+context: |
+  The n = 6 instance of the elliptic-net relation ψ(m+n) ψ(m−n) = ψ(m+1) ψ(m−1) ψ(n)² − ψ(n+1) ψ(n−1) ψ(m)², written
+  for normEDS, as in bsd-210 and bsd-320. The cases n = 2, 3, 4, 5 are on main or proposed (bsd-214, bsd-222/223/224,
+  bsd-266/267, bsd-320). This is the next case of the chain that the general-n gap bsd-210 needs. The n = 5 case was
+  proved by a weight-graded certificate in the atoms X(k) = N(m+k), using the n = 2, 3, 4 relations at nearby indices
+  (bsd-320 and its split bsd-322..325). The same method should apply at n = 6 with the n = 2..5 relations as input.
+  The identity is true: it is the elliptic-net relation with n = 6, a polynomial identity in Z[b, c, d].
+  Not checked in Lean.
+sketch: |
+  Follow bsd-320. Work in the atoms X(k) = normEDS b c d (m + k) for |k| ≤ 7 and find a certificate that expresses the
+  n = 6 bracket, multiplied by a suitable product of two atoms, as a combination of the n = 2, 3, 4, 5 relations at
+  indices near m. A weight-graded linear algebra search (weights w(b) = 3, w(c) = 8, w(d) = 12, w(X_k) = k² − 1 in doubled
+  units) makes every relation homogeneous and keeps the search small. Then verify the identity in Lean by linear_combination
+  with the Mathlib recursions normEDS_even and normEDS_odd.
+dead: []
