@@ -1,0 +1,38 @@
+id: bsd-318
+problem: bsd
+title: 'Y-transfer for the level-set family: over F_p, if the Toeplitz determinant det(c_(K+i−t) + d_(K+i−t)·Y) is nonzero in F_p[Y] and the explicit coefficient system vanishes for all q and i < K, then every r_j of degree below K is zero'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (K N : ℕ) (g : Polynomial (ZMod p)) (r : ℕ → Polynomial (ZMod p)),
+    (∀ j, N ≤ j → r j = 0) →
+    (∀ j, (r j).natDegree < K) →
+    (Matrix.of (fun (i t : Fin K) =>
+      Polynomial.C (g.coeff (K + (i : ℕ) - (t : ℕ))) +
+        Polynomial.C (g.coeff (K + (i : ℕ) - (t : ℕ) + p)) * (Polynomial.X : Polynomial (ZMod p)))).det ≠ 0 →
+    (∀ q : ℕ, ∀ i : Fin K,
+      ∑ t ∈ Finset.range K, (g.coeff (K + (i : ℕ) - t) * (r q).coeff t +
+        (if 0 < q then g.coeff (K + (i : ℕ) - t + p) * (r (q - 1)).coeff t else 0)) = 0) →
+    ∀ j, r j = 0
+context: |
+  Step 2 of the bsd-183 bridge, the square-system transfer over the ring F_p[Y] (Y stands for X^p). Put
+  V_t(Y) := Σ_q (r_q)_t · Y^q, the generating function of the t-th coefficients of the r_q. Then
+  Σ_{t<K} (c_(K+i−t) + d_(K+i−t)·Y) · V_t(Y) has Y^q-coefficient Σ_t (c_(K+i−t)·(r_q)_t + d_(K+i−t)·(r_(q−1))_t),
+  which is the hypothesis, so the matrix M(Y) = (c_(K+i−t) + d_(K+i−t)·Y) kills the vector V. A nonzero determinant over the
+  domain F_p[Y] forces V = 0, so all coefficients (r_q)_t vanish, and each r_q has degree below K, so r_q = 0.
+  This is the vector form of bsd-253 (which treats the scalar-coefficient case with X in place of Y). It is elementary linear
+  algebra over a domain. It does not use that g is a power of a cubic. The determinant hypothesis is the open Toeplitz core bsd-254.
+  Together with bsd-317 (which produces the hypothesis from the coefficient equations of g·B) and bsd-255 (the support of A),
+  this reduces bsd-183 to bsd-254.
+sketch: |
+  Set M : Matrix (Fin K) (Fin K) (Polynomial (ZMod p)) as in the statement, and the vector v : Fin K → Polynomial (ZMod p),
+  v t := Σ_{q ∈ range N} C ((r q).coeff t) * X^q. Show M *ᵥ v = 0 by Polynomial.ext: compare the coefficient of X^q on both
+  sides, using Polynomial.finset_sum_coeff, Polynomial.coeff_C_mul, Polynomial.coeff_X_pow_mul' (and coeff_mul_X),
+  together with the hypothesis for q (and r q = 0 for q ≥ N). Then Matrix.eq_zero_of_mulVec_eq_zero (for a domain) with
+  hdet gives v = 0. Finally, (r j).coeff t = 0 for t < K (read off the coefficient of X^j in v t, using j < N, or r j = 0
+  when j ≥ N), so r j = 0 by natDegree < K via Polynomial.ext. Watch the Fin casts in the matrix entries and the
+  natural-number subtraction K + i − t, which is fine since t < K.
+dead: []
