@@ -1,0 +1,38 @@
+id: pnp-231
+problem: pvsnp
+title: Appending the bit of a polynomial-time predicate on the last x.length symbols of w is polynomial-time on the pair encoding
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-008
+- pnp-021
+- pnp-025
+- pnp-026
+- pnp-127
+- pnp-230
+statement: |
+  ∀ g : Lang, InP g →
+    ∃ s : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) s) ∧
+      ∀ w x : List Bool, s (pair w x) = pair (w ++ [g ((w.reverse.take x.length).reverse)]) x
+context: |
+  One cell of a Cook–Levin tableau, as a step on the pair encoding. The row is the first component w, the window
+  width is the second component x, and the new cell is the bit g of the window at the end of the row. pnp-121 does
+  the same with the window read from the fixed first component; here the window is read from the growing row, which
+  is what a tableau step needs. The row grows by exactly one bit at each application, and the second component is
+  unchanged, so the step keeps the instance.
+  This is a single step. It does not iterate, and it does not give the universal window rule of pnp-100, which
+  must simulate every TM2 machine and is not a predicate g of a fixed window. It does not decide P vs NP.
+sketch: |
+  Let W(z) = (reverse (decode1 z)).take (decode2 z).length reversed, where decode1 and decode2 are the maps of
+  pnp-021 and pnp-025 (first and second component of the pair encoding). W is polynomial-time: pnp-230 gives it on
+  pair inputs. The bit map z ↦ [g (W z)] is polynomial-time by pnp-008 (g is in P, and W is polynomial-time), with the
+  Bool output written as a one-bit list. The first component of the output is decode1 z ++ [g (W z)] (pnp-127), and the
+  second is decode2 z (pnp-025). Pair them with pnp-026. On pair w x, decode1 gives w and decode2 gives x (pnp-021,
+  pnp-025), so the output is pair (w ++ [g (W (pair w x))]) x, as stated.
+dead: []

@@ -1,0 +1,30 @@
+id: pnp-230
+problem: pvsnp
+title: The last x.length symbols of a binary string are polynomial-time computable on the pair encoding, with the width read from the second component
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-022
+- pnp-087
+- pnp-136
+statement: |
+  ∃ T : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) T) ∧
+    ∀ w x : List Bool, T (pair w x) = (w.reverse.take x.length).reverse
+context: |
+  Window read for the tableau of pnp-100. A cell of a row is computed from a window of the previous cells, and the
+  window is the last few symbols of the growing row. Here the row is the first component w of the pair encoding and
+  the window width is the length of the second component x (the instance). pnp-136 takes from the first component as
+  many symbols as the second has, but reads the front of the string. Reversing the row before and after turns it
+  into the last symbols. This gap fixes that reading and nothing else: it does not append a bit, does not iterate,
+  and does not decide P vs NP.
+sketch: |
+  The map pair w x ↦ pair (reverse w) x is polynomial-time by pnp-022 applied to reverse (pnp-087). Then pnp-136
+  gives (reverse w).take x.length on that pair. Reversing the result (pnp-087) gives the last x.length symbols of w,
+  in their original order. The three maps compose by pnp-006. No new machine is needed.
+dead: []
