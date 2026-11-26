@@ -1,0 +1,41 @@
+id: pnp-202
+problem: pvsnp
+title: The top after an up step, a nonnegative zero-sum middle and a down step is the NAND of the middle's top with the value below
+status: open
+imports:
+- Mathlib
+- MPP.Solutions.Pnp198
+open: []
+depends:
+- pnp-198
+statement: |
+  ∀ (a c : Bool × Bool) (mid : List (Bool × Bool)), a.1 = false → c = (true, true) →
+    (mid.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 →
+    (∀ j, j ≤ mid.length → 0 ≤ ((mid.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) →
+    ∀ (v : Bool) (t w : List Bool), ∃ (g : Bool) (w' : List Bool),
+      ((a :: (mid ++ [c])).flatMap fun r : Bool × Bool => [r.1, r.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+        match st.2.2 with
+        | none => (st.1, st.2.1, some b)
+        | some a =>
+          if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+            else (st.1, st.2.1, none))
+          else (if b then (st.1.headD false :: st.1, st.2.1, none)
+            else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (v :: t, w, none) = ((!(g && v)) :: t, w', none)
+context: |
+  Top recurrence for a primitive excursion, for the pnp-152 route. By pnp-196, a primitive block of two or more pairs
+  is an up step a, a nonnegative zero-sum middle, and a down step c. This gap says what the block does to the top of
+  the stack. The up step pushes a copy of the top (a = (false, true)) or a fresh witness bit (a = (false, false)), so
+  the stack becomes u :: v :: t for some u. The middle is a nonnegative zero-sum block, so by pnp-198 it replaces its
+  top u by some g and leaves v :: t below untouched. The down step pops g and v and pushes their NAND. So the top
+  after the block is NAND(g, v) for some g. This is the grammar rule of a CYK-style table: a block's top value is a
+  function of the top value of its middle and the value below. It is a fact about lists of pairs and the fold of
+  pnp-133. No machine, no polynomial bound, no P, and it does not decide P vs NP.
+sketch: |
+  Put a = (false, x) and c = (true, true). The up step: if x = true, the bits false, true give stack (v :: v :: t) with
+  the witness unchanged; if x = false, the bits false, false give stack (w.headD false :: v :: t) with witness w.drop 1.
+  Either way the stack is u :: v :: t for some u and some witness w0 (take u as w.headD false or v, by cases on x).
+  Apply pnp-198 to mid with top u and tail v :: t: this gives g and w'' with the run ending at g :: v :: t. The down
+  step on bits true, true pops g and v and pushes !(g && v) with the witness w'' unchanged, which is the goal. Split
+  the fold over the append with List.flatMap_cons, List.flatMap_append and List.foldl_append, then compute the three
+  pieces by cases on the bits (rfl for concrete bits).
+dead: []
