@@ -1,0 +1,32 @@
+id: pnp-236
+problem: pvsnp
+title: The conjunction of two reads of the witness at computed unary indices is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-011
+- pnp-234
+statement: |
+  ∀ a b : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) a) →
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) b) →
+    (∀ x : List Bool, a x = List.replicate (a x).length true) →
+    (∀ x : List Bool, b x = List.replicate (b x).length true) →
+    ∃ L : Lang, InP L ∧ ∀ x w : List Bool,
+      L (pair x w) = (w.getD (a x).length false && w.getD (b x).length false)
+context: |
+  The two-read step of a table DP cell. A cell of an interval table is the disjunction over split points of
+  the conjunction of two cells read at computed indices (pnp-234 gives each read). This gap says that the
+  conjunction of the two reads is again a polynomial-time language on the pair encoding. It is pnp-234
+  combined with the conjunction closure of pnp-011, so it is a composition lemma: it does not build the
+  table, the sweep over cells, or the disjunction over split points, and it does not decide P vs NP.
+sketch: |
+  Apply pnp-234 to a and to b to get languages L1 and L2 in P with L1 (pair x w) = w.getD (a x).length false
+  and L2 (pair x w) = w.getD (b x).length false. By pnp-011 the language fun y => L1 y && L2 y is in P.
+  Its value at pair x w is the conjunction of the two reads.
+dead: []
