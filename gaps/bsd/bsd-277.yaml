@@ -1,0 +1,30 @@
+id: bsd-277
+problem: bsd
+title: 'Frobenius fixed points: on an elliptic curve over a prime field, the points over the algebraic closure fixed by the p-power Frobenius are exactly the F_p-points, so there are #E(F_p) of them'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] [DecidableEq (AlgebraicClosure (ZMod p))] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic],
+    Nat.card {P : (W.baseChange (AlgebraicClosure (ZMod p))).toAffine.Point //
+      WeierstrassCurve.Affine.Point.map (W' := W) (FiniteField.frobeniusAlgHom (ZMod p) (AlgebraicClosure (ZMod p))) P = P} =
+      Nat.card W.toAffine.Point
+context: |
+  First step of bsd-121 (the Frobenius characteristic equation) and the first input of the count #E(F_p) = #ker(1 − φ)
+  that bsd-089 and bsd-161 need. Here φ is the p-power Frobenius acting on the points of E over the algebraic
+  closure of F_p. Its fixed points are the points with coordinates in F_p, so this counts E(F_p) with the point at
+  infinity included on both sides. The statement is true: a point (x, y) over the algebraic closure with
+  (x^p, y^p) = (x, y) has x and y in F_p, because F_p is exactly the set of roots of X^p − X there, and the point
+  at infinity is fixed. Nothing about isogenies is needed, so this is one of the elementary steps.
+sketch: |
+  Let ι be the map E(F_p) → E(F̄_p) induced by the algebra map ZMod p → F̄_p (WeierstrassCurve.Affine.Point.map). It
+  is injective (Point.map is injective for an injective ring map), and its range is contained in the fixed set because
+  the Frobenius fixes F_p pointwise (FiniteField.frobeniusAlgHom composed with algebraMap is algebraMap, and
+  Point.map composes). For the other inclusion, a fixed affine point (x, y) has x^p = x and y^p = y, so x and y lie in
+  the image of ZMod p: the roots of X^p − X in F̄_p are exactly the elements of F_p (ZMod.pow_card and
+  FiniteField.roots_X_pow_card_sub_X, or Polynomial roots counting). Then the point lies in the range of ι, and the
+  subtype is in bijection with E(F_p) via ι. Conclude with Nat.card_congr (an Equiv built from ι and its inverse) or
+  Nat.card_eq_of_bijective. Handle the point at infinity as a separate case.
+dead: []
