@@ -1,0 +1,33 @@
+id: pnp-233
+problem: pvsnp
+title: Appending the bit of a polynomial-time predicate on the last x.length symbols of w, on the pair encoding, to the second component, is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-006
+- pnp-021
+- pnp-025
+- pnp-026
+- pnp-231
+statement: |
+  ∀ g : Lang, InP g →
+    ∃ s : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) s) ∧
+      ∀ x w : List Bool, s (pair x w) = pair x (w ++ [g ((w.reverse.take x.length).reverse)])
+context: |
+  The same tableau step as pnp-231, with the growing row in the second component. The instance x stays in the first
+  component, so one application grows the encoding by exactly one symbol: the first component is doubled, so
+  appending to it would add two symbols per step, while appending to the second component adds one. This is the
+  form that an exact one-symbol iteration (pnp-061) can use, once the closure of pnp-232 is available.
+  It is a single step: it does not iterate and does not decide P vs NP.
+sketch: |
+  Let d and e be the maps of pnp-021 and pnp-025 (first and second component), and let sw(z) = pair (e z) (d z),
+  which swaps the components of a pair encoding (pnp-026). Let s1 be the map of pnp-231. Then
+  s = sw ∘ s1 ∘ sw is polynomial-time by pnp-006. On pair x w, sw gives pair w x, s1 appends the bit g of the
+  window of w of width x.length, giving pair (w ++ [b]) x, and sw gives pair x (w ++ [b]), as stated.
+dead: []

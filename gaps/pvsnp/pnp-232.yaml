@@ -1,0 +1,35 @@
+id: pnp-232
+problem: pvsnp
+title: Iterating a polynomial-time map that appends one bit to the second component of the pair encoding, a polynomially many times, is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-061
+- pnp-066
+- pnp-233
+statement: |
+  ∀ s : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) s) →
+    (∀ x w : List Bool, ∃ b : Bool, s (pair x w) = pair x (w ++ [b])) →
+    ∀ p : Polynomial ℕ, ∃ T : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) T) ∧
+      ∀ x w : List Bool, T (pair x w) = s^[p.eval (pair x w).length] (pair x w)
+context: |
+  Closure step for the tableau of pnp-100 with a side input. pnp-061 iterates a map with exact one-symbol growth on
+  every input, and it cannot be applied to the windowed step of pnp-233 directly, because that step is only shaped
+  as a pair encoding on pair inputs, and its totalisation needs a pair-shape test that is not yet a gap. This
+  statement restricts the hypothesis to pair inputs. The iterates stay pair encodings, the instance x is preserved,
+  and the count p(|pair x w|) is read from the input, so the time bound is polynomial in the input length.
+  The proof should follow the loop of pnp-066, with the length invariant |s^[i] z| = |z| + i on pair states in place of
+  the all-input hypothesis. It does not decide P vs NP and it is not the universal window rule of pnp-100.
+sketch: |
+  Induction on the count, using the loop machinery of pnp-066 on a total map that agrees with s on pair states. Each
+  iterate is pair x w_i with w_i of length |w| + i, so the time of each step is bounded by the step bound of s at
+  that length, and the count is polynomial in the input length. The total time is a polynomial by the iteration
+  bound of pnp-061, applied to the restricted state.
+dead: []
