@@ -1,0 +1,25 @@
+id: pnp-207
+problem: pvsnp
+title: A row of length n is the window-local step of its predecessor exactly when each cell is the window function of the old row
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (k : ℕ) (G : List Bool → Bool) (n : ℕ) (r r' : List Bool), r.length = n → r'.length = n →
+    ((∀ i, i < n → r'.getD i false = G ((List.range (k + 1)).map fun j => r.getD (i + j) false)) ↔
+      r' = (List.range n).map fun i => G ((List.range (k + 1)).map fun j => r.getD (i + j) false))
+context: |
+  Window bridge for the tableau of a Cook–Levin style reduction (the NP-hardness half of pnp-100). A row of a
+  tableau is a list of cells; a sliding-window rule G of width k + 1 gives each new cell from the window of old
+  cells starting at its position, with cells beyond the end read as false. This statement says that a candidate
+  next row satisfies the cell-by-cell window rule exactly when it is the row produced by the window rule. It is a
+  list-extensionality fact about the window map, with no machine, no polynomial bound, no P, and it does not decide
+  P vs NP. It is the row-level step that pnp-208 iterates. It supersedes the pnp-199 proposal of the open pull
+  request #1209, whose id is now in use.
+sketch: |
+  Both sides have length n. Use List.ext_getElem (or List.ext_get) and List.getElem_map, and rewrite getD of an
+  index below n as getElem. The forward direction compares entries at each index i < n; the backward direction reads
+  the entry of the mapped list at i. No induction is needed.
+dead: []

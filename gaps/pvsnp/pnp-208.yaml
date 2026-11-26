@@ -1,0 +1,28 @@
+id: pnp-208
+problem: pvsnp
+title: Rows of fixed length that obey the window rule at every step are the iterates of the window step from the first row
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (k : ℕ) (G : List Bool → Bool) (n T : ℕ) (r : ℕ → List Bool), (r 0).length = n →
+    (∀ t, t < T → (r (t + 1)).length = n ∧
+      ∀ i, i < n → (r (t + 1)).getD i false = G ((List.range (k + 1)).map fun j => (r t).getD (i + j) false)) →
+    ∀ t, t ≤ T → r t = (fun q : List Bool => (List.range n).map fun i =>
+      G ((List.range (k + 1)).map fun j => q.getD (i + j) false))^[t] (r 0)
+context: |
+  Iteration of the window rule, the time direction of a Cook–Levin tableau. A tableau is a sequence of rows r 0, r 1, …
+  of one fixed length n, where each row is obtained from the previous one by the same window rule G of width k + 1.
+  This statement says that such a sequence is forced: every row up to time T is the t-th iterate of the row-level
+  window step from the first row. It is a pure induction on time with no machine, no polynomial bound, no P, and it
+  does not decide P vs NP. The row-level step is the window bridge of pnp-207, which the proof re-derives inline
+  (a solution file cannot import a solution that is not accepted yet). It supersedes the pnp-200 proposal of the open pull request #1209, whose id is now in use.
+sketch: |
+  Induction on t. The case t = 0 is Function.iterate_zero with r 0 itself. For t + 1 ≤ T, the hypothesis at t gives
+  the length of r (t + 1) and its entries, so r (t + 1) is the window-step image of r t by the list extensionality of
+  pnp-207 (both have length n, and the entries agree at every index below n). The induction hypothesis rewrites r t as
+  the t-th iterate, and Function.iterate_succ_apply' gives the (t + 1)-th iterate as the step applied to it. The length
+  of r t is needed in the induction, so carry it along (it is n for every t ≤ T by the same hypothesis).
+dead: []
