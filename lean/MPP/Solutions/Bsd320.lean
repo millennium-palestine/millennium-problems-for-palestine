@@ -8,7 +8,7 @@ import MPP.Solutions.Bsd325
 namespace MPP.Solutions.Bsd320
 
 /-! The n = 5 elliptic-net relation `N(m+5) N(m-5) - N(m+1) N(m-1) N(5)^2 + N(6) N(4) N(m)^2 = 0`
-for `normEDS`, in an arbitrary commutative ring.
+for `normEDS`, in an arbitrary commutative ring. Its imports bsd-322 to bsd-325 are on main.
 
 In the universal domain `R` with `b ≠ 0` and `normEDS` nonzero off zero, the bracket times
 `N(m-4) N(m-3)` vanishes by the certificate of bsd-322, so the bracket vanishes for m ∉ {3, 4}.
