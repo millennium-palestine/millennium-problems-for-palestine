@@ -1,0 +1,23 @@
+id: bsd-298
+problem: bsd
+title: 'Squarefree preΨ′ 5 with a₁ = a₂ = a₃ = 0 in characteristic 3: over a field with 3 = 0 and 5 nonzero, the preΨ′ 5 of every elliptic Weierstrass curve with a₁ = a₂ = a₃ = 0 is squarefree'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-282
+- bsd-288
+statement: |
+  ∀ (K : Type) [Field K] (W : WeierstrassCurve K) [W.IsElliptic],
+    (3 : K) = 0 → (5 : K) ≠ 0 → W.a₁ = 0 → W.a₂ = 0 → W.a₃ = 0 → Squarefree (W.preΨ' 5)
+context: |
+  First half of the characteristic 3 case of bsd-296 (which is the a₁ = a₃ = 0 part of bsd-294). Split by the value of a₂.
+  When a₂ = 0 the curve is y² = x³ + a₄ x + a₆, the short form of bsd-288, and bsd-288 is stated over any field, so this case
+  is a specialisation of bsd-288 with the Bezout certificate of bsd-282 and the unit Δ of a nonsingular curve. Its only
+  purpose is to shrink bsd-296 to the case a₂ ≠ 0, which is bsd-299. Nothing here is checked in Lean. A counterexample
+  to the statement counts as much as a proof.
+sketch: |
+  Apply bsd-282 with the Bezout identity of bsd-288 for the short form a₁ = a₂ = a₃ = 0. The constant 5¹² Δ²² is a unit
+  because 5 ≠ 0 and Δ is a unit of an elliptic curve. The characteristic 3 hypothesis is not used.
+dead: []
