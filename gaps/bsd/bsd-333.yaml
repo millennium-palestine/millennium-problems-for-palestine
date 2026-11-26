@@ -1,0 +1,33 @@
+id: bsd-333
+problem: bsd
+title: 'Toeplitz symbol nonvanishing at p = 7: for a short cubic x³ + ax + b over F_7 with nonzero discriminant, the 3×3 determinant of the symbols c_s + d_s·Y, K = 3, is nonzero'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (a b : ZMod 7), 4 * a ^ 3 + 27 * b ^ 2 ≠ 0 →
+    ∀ g : Polynomial (ZMod 7),
+      g = (Polynomial.X ^ 3 + Polynomial.C a * Polynomial.X + Polynomial.C b) ^ ((7 - 1) / 2) →
+      (Matrix.of (fun (i t : Fin ((7 - 1) / 2)) =>
+        Polynomial.C (g.coeff ((7 - 1) / 2 + (i : ℕ) - (t : ℕ))) +
+          Polynomial.C (g.coeff ((7 - 1) / 2 + (i : ℕ) - (t : ℕ) + 7)) * (Polynomial.X : Polynomial (ZMod 7)))).det ≠ 0
+context: |
+  The p = 7 instance of bsd-254 (Toeplitz symbol nonvanishing), split off as a case that can be closed by a finite
+  coefficient computation, in the same way as the p = 3 and p = 5 instances (bsd-330, bsd-331). Here K = (p − 1)/2 = 3
+  and g = f³ with f = X³ + aX + b, so that
+  g = X⁹ + 3aX⁷ + 3bX⁶ + 3a²X⁵ + 6abX⁴ + (3b² + a³)X³ + 3a²bX² + 3ab²X + b³.
+  The coefficient of X⁹ is the only one at index 9 ≥ p, so the Y-part of the 3×3 matrix is the superdiagonal
+  (entries (0,1) and (1,2) equal Y, all others are constants). Its determinant P(Y) is a polynomial of degree at most 2
+  in Y with Y²-coefficient 3a². Evaluating at Y = 0, 1, −1 gives P(1) + P(−1) − 2P(0) = 6a², so a = 0 is forced. With
+  a = 0 the matrix is diagonal in its constant part and P = 27b⁶, which is nonzero because 27b² ≠ 0 forces b ≠ 0 in
+  F_7. The statement for all p is bsd-254; this gap only covers p = 7. Not checked in Lean.
+sketch: |
+  Show g equals the explicit expansion above (ring, after unfolding the power and using map_mul / map_ofNat for the
+  constants). Read off the coefficients at indices 1..5 and 8..12 with simp (coeff_add, coeff_C_mul_X_pow,
+  coeff_C_mul_X, coeff_C, coeff_X_pow). Expand the determinant with Matrix.det_fin_three. Apply Polynomial.eval at
+  0, 1 and −1 to the hypothesis det = 0 and simp to get three equations in ZMod 7. linear_combination gives 6a² = 0,
+  hence a = 0 (decide over ZMod 7). Substitute, get 27b⁶ = 0, hence b = 0 (decide), contradicting the discriminant
+  hypothesis.
+dead: []
