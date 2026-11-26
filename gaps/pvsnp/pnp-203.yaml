@@ -1,0 +1,33 @@
+id: pnp-203
+problem: pvsnp
+title: A pair list whose height walk reaches -1 splits at its first visit to -1 into a nonnegative zero-sum prefix, a NAND pair and a rest
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ q : List (Bool × Bool),
+    (∃ j, j ≤ q.length ∧
+      ((q.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum = -1) →
+    ∃ (p s : List (Bool × Bool)) (c : Bool × Bool), q = p ++ c :: s ∧ c = (true, true) ∧
+      (p.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 ∧
+      ∀ j, j ≤ p.length →
+        0 ≤ ((p.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum
+context: |
+  First-passage decomposition for the pnp-152 route. A pair of the fan-out program has height step +1, 0 or -1, as in
+  pnp-192. A program can pop below the height where it started, and then the stack underflows into the part that is
+  not balanced. The first time the height walk reaches -1, the prefix before that moment is a nonnegative zero-sum
+  block (it never went below 0 and ends at 0), the pair at that moment is a NAND pair (step -1 means both bits are
+  true), and what follows is the rest. Iterating this splits any program into balanced blocks and NAND pairs that
+  pop below the start, which is the pushdown shape that a CYK-style argument for pnp-152 needs. It is a fact about
+  lists of pairs and integers: no machine, no polynomial bound, no P, and it does not decide P vs NP.
+sketch: |
+  Let j be the least index with prefix sum -1 (Nat.find). Put p = q.take (j - 1), c = q[j - 1] and s = q.drop j. For
+  i < j the prefix sums are not -1, and they are never below -1, because each step is at least -1 and the sums start
+  at 0 (induct on i: if the sum at i+1 is below 0 then the sum at i is at least 0, and the step is -1, so the sum at
+  i+1 is -1, which contradicts minimality unless i+1 = j). So the prefix sums of p are nonnegative. The sum of p is
+  the sum at j - 1, which is 0, because the sum at j is -1 and the step c is -1 only from 0. The step c has value -1,
+  so c.1 && c.2 holds, which gives c = (true, true) by cases on the two bits. The list identity q = p ++ c :: s is
+  List.take_append_drop with List.getElem and the take/drop lemmas.
+dead: []
