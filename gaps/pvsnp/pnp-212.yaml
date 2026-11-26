@@ -1,0 +1,42 @@
+id: pnp-212
+problem: pvsnp
+title: An up step, a nonnegative zero-sum middle and a NAND down step run from v to g exactly when some top u (equal to v for a copy) and some middle run from u over v give g as the NAND of the middle's output and v
+status: open
+imports:
+- Mathlib
+- MPP.Solutions.Pnp170
+- MPP.Solutions.Pnp174
+- MPP.Solutions.Pnp198
+open: []
+depends:
+- pnp-170
+- pnp-174
+- pnp-198
+statement: |
+  ∀ (F : List Bool × List Bool × Option Bool → Bool → List Bool × List Bool × Option Bool), F = (fun (st : List Bool × List Bool × Option Bool) (b : Bool) => match st.2.2 with | none => (st.1, st.2.1, some b) | some a => if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none) else (st.1, st.2.1, none)) else (if b then (st.1.headD false :: st.1, st.2.1, none) else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) →
+    ∀ (a c : Bool × Bool) (mid : List (Bool × Bool)), a.1 = false → c = (true, true) →
+    (mid.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 →
+    (∀ j, j ≤ mid.length → 0 ≤ ((mid.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) →
+    ∀ (v g : Bool) (t : List Bool),
+      (∃ w : List Bool, w.length = ((a :: (mid ++ [c])).countP fun q : Bool × Bool => !q.1 && !q.2) ∧ ∃ w' : List Bool,
+        ((a :: (mid ++ [c])).flatMap fun r : Bool × Bool => [r.1, r.2]).foldl F (v :: t, w, none) = (g :: t, w', none)) ↔
+      ∃ u : Bool, (a.2 = true → u = v) ∧ ∃ g' : Bool,
+        (∃ w1 : List Bool, w1.length = (mid.countP fun q : Bool × Bool => !q.1 && !q.2) ∧ ∃ w2 : List Bool,
+          (mid.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl F (u :: v :: t, w1, none) = (g' :: v :: t, w2, none)) ∧
+        g = !(g' && v)
+context: |
+  Copy and leaf recurrence of the CYK-style table for the pnp-152 route, in the existential form that pnp-205 and pnp-206
+  state only for fixed witnesses. A primitive block a :: (mid ++ [c]) with a copy or a leaf up step and a NAND down step
+  runs from v to g exactly when, for the top u that the up step creates (u = v for a copy, and the first witness bit for
+  a leaf, which is existentially quantified here), the middle runs from u over v to some g' and g is NAND(g', v). The
+  witness of the block is the witness of the middle, with one bit in front for a leaf. This is the pnp-152 analogue of
+  the existential middle form of pnp-202. A fact about lists of pairs and the fold of pnp-133: no machine, no polynomial
+  bound, no P, and it does not decide P vs NP.
+sketch: |
+  Forward: from the witness w of length cnt(a :: (mid ++ [c])), the up step reads at most one bit. Its state is
+  (u :: v :: t, w.drop (cnt a), none) with u = v for a copy and u = w.headD false for a leaf (pnp-170 and pnp-174 give
+  the stack and the unread witness). Take w1 = (w.drop (cnt a)).take (cnt mid) and use pnp-170 to replace the witness of
+  the middle by w1; pnp-174 says the middle consumes exactly cnt mid bits. The middle run then ends at g' :: v :: t by
+  pnp-198 applied to u over v :: t, and the NAND pair gives g = !(g' && v). Backward: for a copy take w = w1, for a leaf
+  take w = u :: w1; the up step, then the middle, then the NAND compute as above (List.foldl_append, List.flatMap_cons).
+dead: []
