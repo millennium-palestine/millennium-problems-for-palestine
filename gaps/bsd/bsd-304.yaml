@@ -1,0 +1,30 @@
+id: bsd-304
+problem: bsd
+title: 'Resultant of the 3-division and 4-division polynomials: over a field with 2 nonzero, a common root of Ψ₃ and preΨ₄ of a Weierstrass curve forces the discriminant to vanish'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (W : WeierstrassCurve K) (x : K), (2 : K) ≠ 0 →
+    3 * x ^ 4 + W.b₂ * x ^ 3 + 3 * W.b₄ * x ^ 2 + 3 * W.b₆ * x + W.b₈ = 0 →
+    2 * x ^ 6 + W.b₂ * x ^ 5 + 5 * W.b₄ * x ^ 4 + 10 * W.b₆ * x ^ 3 + 10 * W.b₈ * x ^ 2 +
+      (W.b₂ * W.b₈ - W.b₄ * W.b₆) * x + (W.b₄ * W.b₈ - W.b₆ ^ 2) = 0 →
+    -W.b₂ ^ 2 * W.b₈ - 8 * W.b₄ ^ 3 - 27 * W.b₆ ^ 2 + 9 * W.b₂ * W.b₄ * W.b₆ = 0
+context: |
+  Algebraic core of the m = 5 case of bsd-198, used by bsd-305. Write ψ₃ = 3x⁴ + b₂x³ + 3b₄x² + 3b₆x + b₈ and
+  p = 2x⁶ + b₂x⁵ + 5b₄x⁴ + 10b₆x³ + 10b₈x² + (b₂b₈ − b₄b₆)x + (b₄b₈ − b₆²) (so ψ₄ = ψ₂·p). The discriminant is
+  Δ = −b₂²b₈ − 8b₄³ − 27b₆² + 9b₂b₄b₆. The resultant of ψ₃ and p in x is a constant times Δ⁴ once b₈ is replaced by
+  (b₂b₆ − b₄²)/4 (the relation of W.b_relation, which holds for every Weierstrass curve), so ψ₃ and p have a common
+  root only when Δ = 0. A Bezout identity U·ψ₃ + V·p = Δ⁴ holds in Q[b₂, b₄, b₆, x] after that substitution, with
+  U of degree 5 and V of degree 3 in x (computed by extended gcd over Q(b₂, b₄, b₆) and clearing denominators).
+  Its coefficients have denominators that are powers of 2 only, which is why 2 ≠ 0 is assumed; no assumption on 3.
+  The identity was checked by computer algebra (sympy); it is not yet a Lean proof.
+sketch: |
+  Let U, V be the cofactors from the extended gcd, scaled to be polynomials with 2-power denominators cleared. Then
+  Δ⁴ − U·ψ₃ − V·p is divisible by 4b₈ − (b₂b₆ − b₄²) with a quotient Q (computed by sympy), so
+  Δ⁴ = U·ψ₃ + V·p + Q·(4b₈ − b₂b₆ + b₄²) after clearing the 2-powers. In Lean: have key with linear_combination
+  (U) * h3 + (V) * hp + (Q) * W.b_relation (up to sign and the factor 2-power), then Δ⁴ = 0 and pow_eq_zero.
+  If linear_combination is too slow on the full cofactors, split the identity by the powers of x.
+dead: []

@@ -1,0 +1,35 @@
+id: bsd-303
+problem: bsd
+title: 'Five-torsion product identity: for a nonsingular affine point P = (x, y) with 2y + a₁x + a₃ ≠ 0 and 5P = 0, Ψ₃(x) · prePsi₅(x) = 0, where prePsi₅ = preΨ₄·Ψ₂Sq² − Ψ₃³'
+status: open
+imports:
+- Mathlib
+- MPP.Solutions.Bsd265
+open: []
+depends:
+- bsd-265
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) (x y : K)
+    (h : W.toAffine.Nonsingular x y),
+    2 * y + W.a₁ * x + W.a₃ ≠ 0 →
+    (5 : ℤ) • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) = 0 →
+    (3 * x ^ 4 + W.b₂ * x ^ 3 + 3 * W.b₄ * x ^ 2 + 3 * W.b₆ * x + W.b₈) *
+      ((2 * x ^ 6 + W.b₂ * x ^ 5 + 5 * W.b₄ * x ^ 4 + 10 * W.b₆ * x ^ 3 + 10 * W.b₈ * x ^ 2 +
+          (W.b₂ * W.b₈ - W.b₄ * W.b₆) * x + (W.b₄ * W.b₈ - W.b₆ ^ 2)) *
+          (4 * x ^ 3 + W.b₂ * x ^ 2 + 2 * W.b₄ * x + W.b₆) ^ 2 -
+        (3 * x ^ 4 + W.b₂ * x ^ 3 + 3 * W.b₄ * x ^ 2 + 3 * W.b₆ * x + W.b₈) ^ 3) = 0
+context: |
+  First of three steps splitting the m = 5 case of the division-polynomial vanishing (bsd-198), which is the
+  five-torsion case of bsd-198 and not yet covered by bsd-201..203 (those are m = 3). If 5P = 0 then 4P = −P, so
+  the x-coordinate of 4P is x and bsd-265 (accepted, imported here) gives x·Ψ₂Sq·preΨ₄² = x·Ψ₂Sq·preΨ₄² − Ψ₃·prePsi₅.
+  Notation as in bsd-264 and bsd-265: Ψ₂Sq = 4x³ + b₂x² + 2b₄x + b₆, Ψ₃ = 3x⁴ + b₂x³ + 3b₄x² + 3b₆x + b₈,
+  preΨ₄ = 2x⁶ + b₂x⁵ + 5b₄x⁴ + 10b₆x³ + 10b₈x² + (b₂b₈ − b₄b₆)x + (b₄b₈ − b₆²), and prePsi₅ = preΨ₄·Ψ₂Sq² − Ψ₃³
+  (the m = 5 case of Mathlib's preΨ'_odd, with the Mathlib conventions preΨ'₃ = Ψ₃ and preΨ'₄ = preΨ₄).
+  The hypothesis 2y + a₁x + a₃ ≠ 0 is used by bsd-265; it follows from 5P = 0 when P is not 2-torsion.
+  Not a claim that Ψ₃(x) ≠ 0 holds: that is bsd-305.
+sketch: |
+  Let 4P = −P: from (5:ℤ)•P = 0 get (4:ℤ)•P = −P with eq_neg_of_add_eq_zero_left and succ_nsmul / add_nsmul.
+  Point.neg_some gives −P = some x (−y − a₁x − a₃) with nonsingularity from the negation lemma for affine points.
+  Apply bsd-265 (MPP.Solutions.Bsd265.main) to (x, y, x, −y − a₁x − a₃), then linear_combination with the
+  equation it gives: the x·Ψ₂Sq·preΨ₄² terms cancel and what remains is Ψ₃·prePsi₅ = 0.
+dead: []
