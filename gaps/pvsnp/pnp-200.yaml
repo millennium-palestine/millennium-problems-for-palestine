@@ -1,0 +1,47 @@
+id: pnp-200
+problem: pvsnp
+title: A nonnegative zero-sum list of pair steps run on a top value and a stack below it gives the same new top and witness whatever lies below
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- pnp-198
+statement: |
+  ∀ q : List (Bool × Bool),
+    (∀ j, j ≤ q.length → 0 ≤ ((q.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) →
+    (q.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 →
+    ∀ (t t' w w' : List Bool) (v g : Bool),
+      (q.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+        match st.2.2 with
+        | none => (st.1, st.2.1, some b)
+        | some a =>
+          if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+            else (st.1, st.2.1, none))
+          else (if b then (st.1.headD false :: st.1, st.2.1, none)
+            else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (v :: t, w, none) = (g :: t, w', none) →
+      (q.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+        match st.2.2 with
+        | none => (st.1, st.2.1, some b)
+        | some a =>
+          if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+            else (st.1, st.2.1, none))
+          else (if b then (st.1.headD false :: st.1, st.2.1, none)
+            else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (v :: t', w, none) = (g :: t', w', none)
+context: |
+  Frame form of the pnp-133 fold for the pnp-152 route. pnp-198 says a balanced nonnegative list of pair steps replaces
+  the top of the stack and leaves the rest unchanged, but it fixes the stack below the top in its statement, and it
+  gives existence only. For a CYK-style table on blocks one needs that the outcome does not see the stack below the
+  top: the top g and the witness left are the same for every tail t'. Each step of such a block reads at most the top
+  two cells, and the block never reads below its first cell, because a copy needs one cell and a NAND needs two, and
+  the height walk stays nonnegative. So the table entry of a block is indexed by its input top alone. This uses no
+  machine, no polynomial bound and no P, and it does not decide P vs NP.
+sketch: |
+  Prove a frame lemma for one pair step: for a stack r that is nonempty (and has at least two cells when the pair is
+  (true, true)), the step on r ++ X and on r ++ Y yields r' ++ X and r' ++ Y with the same r' and the same witness.
+  The cases are those of pnp-198: a leaf pushes w.headD, a copy pushes r.headD (r is nonempty), a no-op keeps r, and a
+  NAND replaces the first two cells of r. Then induct on the pair list, generalising r and w, exactly as in pnp-198,
+  keeping both tails X and Y in step. For the statement, run the frame lemma on r = [v] with X = t and Y = t'. The
+  run on v :: t gives (g :: t, w'), so the frame form gives r' ++ t = [g] ++ t with the same witness w'. The length of
+  r' is 1 by the zero-sum hypothesis, so r' = [g], and the run on v :: t' gives [g] ++ t' with witness w'.
+dead: []

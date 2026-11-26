@@ -1,0 +1,47 @@
+id: pnp-201
+problem: pvsnp
+title: A balanced pair list followed by a balanced pair list has a witness-exact run to top g exactly when the first ends in some top g1 and the second runs from g1
+status: open
+imports:
+- Mathlib
+- MPP.Solutions.Pnp170
+- MPP.Solutions.Pnp173
+- MPP.Solutions.Pnp174
+- MPP.Solutions.Pnp198
+open: []
+depends:
+- pnp-170
+- pnp-173
+- pnp-174
+- pnp-198
+statement: |
+  ∀ (F : List Bool × List Bool × Option Bool → Bool → List Bool × List Bool × Option Bool), F = (fun (st : List Bool × List Bool × Option Bool) (b : Bool) => match st.2.2 with | none => (st.1, st.2.1, some b) | some a => if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none) else (st.1, st.2.1, none)) else (if b then (st.1.headD false :: st.1, st.2.1, none) else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) →
+    ∀ (ps qs : List (Bool × Bool)),
+      (∀ j, j ≤ ps.length → 0 ≤ ((ps.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) →
+      (ps.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 →
+      (∀ j, j ≤ qs.length → 0 ≤ ((qs.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) →
+      (qs.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 →
+      ∀ (t : List Bool) (v g : Bool),
+        (∃ w : List Bool, w.length = (ps ++ qs).countP (fun q : Bool × Bool => !q.1 && !q.2) ∧ ∃ w' : List Bool,
+          ((ps ++ qs).flatMap fun r : Bool × Bool => [r.1, r.2]).foldl F (v :: t, w, none) = (g :: t, w', none)) ↔
+        ∃ g1 : Bool,
+          (∃ w : List Bool, w.length = ps.countP (fun q : Bool × Bool => !q.1 && !q.2) ∧ ∃ w' : List Bool,
+            (ps.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl F (v :: t, w, none) = (g1 :: t, w', none)) ∧
+          (∃ w : List Bool, w.length = qs.countP (fun q : Bool × Bool => !q.1 && !q.2) ∧ ∃ w' : List Bool,
+            (qs.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl F (g1 :: t, w, none) = (g :: t, w', none))
+context: |
+  Composition of balanced blocks in the CYK table for the pnp-133 language (route to pnp-152). A balanced
+  nonnegative pair list has a top value that is replaced by one new value (pnp-198). The table entry for a
+  concatenation is then a relational composition of the table entries of its two parts: the concatenation can
+  end with top g exactly when the first part can end with some top g1 and the second part can take g1 to g. The
+  witness is exact: each part is given the number of witness bits its leaf pairs consume, so the witness of the
+  whole is the witness of the first part followed by that of the second. This uses no machine, no polynomial
+  bound and no P, and it does not decide P vs NP.
+sketch: |
+  Forward: take w for the concatenation and split it at the leaf count of ps. The top after ps is some g1 by
+  pnp-198. The witness of ps can be taken as the first part (pnp-170 says the top depends only on that prefix)
+  and the witness of qs as the rest (pnp-174 says the unread witness after ps is the witness with one bit dropped
+  per leaf pair). Backward: concatenate the two witnesses. The first part reads only its prefix (pnp-170), leaves
+  the suffix (pnp-174), and the second part then runs on the suffix as in the hypothesis. Composition of the folds
+  is pnp-173. Each step is a list identity once the stack form is fixed by pnp-198.
+dead: []
