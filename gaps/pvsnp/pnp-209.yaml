@@ -1,0 +1,23 @@
+id: pnp-209
+problem: pvsnp
+title: The window rule at a cell reads only the old cells below its row length plus the window width
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (k : ℕ) (G : List Bool → Bool) (n : ℕ) (r r' : List Bool), (∀ j, j < n + k → r.getD j false = r'.getD j false) →
+    ∀ i, i < n → G ((List.range (k + 1)).map fun j => r.getD (i + j) false) =
+      G ((List.range (k + 1)).map fun j => r'.getD (i + j) false)
+context: |
+  Locality of the window rule, the dependency fact behind a Cook–Levin tableau. A new cell of a row of length n is
+  the window rule applied to the old cells at its position and the k cells after it. So two old rows that agree on
+  the first n + k cells produce the same new cell at every position below n. This is what lets a fixed-width window
+  read only a bounded part of the previous row, and it is the cell-level counterpart of the row-level bridge of
+  pnp-207. It is a list fact with no machine, no polynomial bound, no P, and it does not decide P vs NP.
+sketch: |
+  Fix i < n. Congruence of the window map: it suffices that the two windows agree at every index j in range (k + 1).
+  For such j we have j ≤ k, so i + j ≤ (n − 1) + k < n + k, and the hypothesis gives the equality of the two getD
+  values. Use congrArg G and List.map_congr_left, after List.mem_range turns membership into j < k + 1, then omega.
+dead: []
