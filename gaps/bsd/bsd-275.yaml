@@ -1,0 +1,26 @@
+id: bsd-275
+problem: bsd
+title: 'Distinct five-division roots: on an elliptic curve over a field in which 5 is nonzero, the 5-division polynomial preΨ'' 5 has no repeated root over the algebraic closure'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) [W.IsElliptic],
+    (5 : K) ≠ 0 → Squarefree (W.preΨ' 5)
+context: |
+  The separability step of the ℓ = 5 lower bound bsd-193. Over the algebraic closure the twelve roots of ψ₅ must be
+  distinct, so that each root gives a separate pair ±P of points (bsd-273 turns each root into five-torsion points).
+  Standard fact: the x-coordinates of the nonzero m-torsion points of a nonsingular curve are the roots of ψ_m, which
+  for m prime to the characteristic has (m² − 1)/2 distinct roots, because ψ_m is separable exactly when m is
+  invertible and Δ ≠ 0 (Silverman, The Arithmetic of Elliptic Curves, Chapter III and Exercise 3.7). The statement is
+  the squarefree form of that fact for m = 5. Not checked against the text here; the discriminant identity is not in
+  Mathlib.
+sketch: |
+  Route: Squarefree is equivalent to gcd(ψ₅, ψ₅') = 1. The derivative of ψ₅ and ψ₅ are coprime over K because a
+  common root would give a repeated root of ψ₅, and a repeated root of ψ₅ forces the discriminant Δ or 5 to vanish. The
+  cleanest certificate is a Bezout identity A·ψ₅ + B·ψ₅' = c·Δ^k with c a power of 5, which needs a sympy computation
+  over Z[b₂, b₄, b₆, b₈] first (degree 12 in x). Mathlib: Polynomial.squarefree_iff_... and Polynomial.IsCoprime; the
+  discriminant of the Weierstrass curve is the W.Δ of Mathlib, nonzero by W.IsElliptic.
+dead: []

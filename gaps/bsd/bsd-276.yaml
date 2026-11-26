@@ -1,0 +1,34 @@
+id: bsd-276
+problem: bsd
+title: 'Five-torsion lower bound: an elliptic curve over an algebraically closed field in which 2, 3 and 5 are nonzero has at least twenty-five points killed by 5'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-217
+- bsd-243
+- bsd-273
+- bsd-274
+- bsd-275
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] [IsAlgClosed K] (W : WeierstrassCurve K) [W.IsElliptic],
+    (2 : K) ≠ 0 → (3 : K) ≠ 0 → (5 : K) ≠ 0 →
+    25 ≤ Nat.card {P : W.toAffine.Point // (5 : ℤ) • P = 0}
+context: |
+  The ℓ = 5 case of the torsion lower bound bsd-193 (the m-torsion has at least m² points when p ∤ m), the analogue of
+  the ℓ = 3 count of bsd-244 (nine points killed by 3). Over an algebraically closed field the polynomial ψ₅ = preΨ' 5
+  has twelve distinct roots (bsd-275 and the degree (5² − 1)/2 = 12), each root x0 is the x-coordinate of a nonsingular
+  point (bsd-243), and each such point P satisfies 5 • P = 0 (bsd-273, with Ψ₃(x0) ≠ 0 from bsd-274). The points P and −P
+  are distinct because 2y + a₁x + a₃ ≠ 0, and points over different roots have different x-coordinates, so bsd-217 keeps
+  them apart. Together with the zero point this gives 1 + 2 · 12 = 25 points. The statement is true (E[5] ≅ (ℤ/5)² over
+  the algebraic closure when p ≠ 5 and the curve is nonsingular). Not checked against the text here.
+sketch: |
+  (1) R = roots of W.preΨ' 5 as a finset; by bsd-275 and IsAlgClosed, R.card = 12 (natDegree 12 from natDegree_preΨ' with
+  (5 : K) ≠ 0, and splitting).
+  (2) For x0 ∈ R, bsd-274 gives Ψ₃(x0) ≠ 0; bsd-243 gives y0 with W.toAffine.Nonsingular x0 y0. If 2y0 + a₁x0 + a₃ = 0
+  then g(x0) = 0 and ψ₅(x0) = −Ψ₃(x0)³ ≠ 0, a contradiction. So bsd-273 gives 5 • P = 0 for P = some x0 y0 h, and also for −P.
+  (3) Define the injection from R × Bool into the subtype (plus 0), using bsd-217 to show the images are distinct.
+  (4) Nat.card lower bound through Finset.card_le_card_of_injOn or Nat.card_le_card_of_injective; 1 + 2 · 12 = 25.
+  Mathlib: IsAlgClosed.card_roots_eq_natDegree (or Polynomial.card_roots'), Point.neg_some, Point.some_ne_zero.
+dead: []

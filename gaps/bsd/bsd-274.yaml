@@ -1,0 +1,29 @@
+id: bsd-274
+problem: bsd
+title: 'Coprime division polynomials: on an elliptic curve over a field in which 3 and 5 are nonzero, the 3-division polynomial and the 5-division polynomial have no common root'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) [W.IsElliptic] (x : K),
+    (3 : K) ≠ 0 → (5 : K) ≠ 0 →
+    3 * x ^ 4 + W.b₂ * x ^ 3 + 3 * W.b₄ * x ^ 2 + 3 * W.b₆ * x + W.b₈ = 0 →
+    (W.preΨ' 5).eval x ≠ 0
+context: |
+  The coprimality input for the ℓ = 5 lower bound bsd-193. Two uses: it rules out 3P = 0 in bsd-273 (in the form
+  "Ψ₃(x) ≠ 0 for a root x of ψ₅"), and it gives that every root x0 of ψ₅ is not 2-torsion, so that the lift of
+  bsd-243 is not 2-torsion either. The statement is the classical fact that the division polynomials ψ₃ and ψ₅ are
+  coprime (their gcd is ψ₁ = 1) when the discriminant is nonzero: a common root would be the x-coordinate of a point
+  killed by both 3 and 5, hence by 1, which is impossible for a nonzero point. Equivalently the resultant of ψ₃ and ψ₅
+  is a nonzero constant times a power of the discriminant. Not checked against the text here, and the resultant
+  identity has not been computed.
+sketch: |
+  Route A (resultant): compute Res(Ψ₃, preΨ' 5) symbolically over Z[b₂, b₄, b₆, b₈] (sympy), check that it is a
+  unit times a power of Δ times a power of 3 and 5, and write a Bezout certificate A·Ψ₃ + B·ψ₅ = c·Δ^k with
+  A, B explicit. Then at a common root the constant c Δ^k vanishes, so Δ = 0 or 3 = 0 or 5 = 0, all excluded.
+  Route B (geometric): a common root x0 lifts to a point P (bsd-243 over the algebraic closure, which would need
+  the algebraic closure, so Route A is preferred over K). Mathlib: Polynomial.resultant may not be available for this
+  shape; prefer the explicit certificate with linear_combination.
+dead: []
