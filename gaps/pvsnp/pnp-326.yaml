@@ -1,0 +1,68 @@
+id: pnp-326
+problem: pvsnp
+title: The interval relation of a balanced slice of a pnp-133 program satisfies the primitive and split recurrence of pnp-287
+status: open
+imports:
+- Mathlib
+- MPP.Solutions.Pnp201
+- MPP.Solutions.Pnp211
+- MPP.Solutions.Pnp212
+- MPP.Solutions.Pnp290
+open: []
+depends: []
+statement: '∀ (F : List Bool × List Bool × Option Bool → Bool → List Bool × List Bool × Option Bool), F = (fun (st : List Bool × List Bool × Option Bool) (b : Bool) => match st.2.2 with | none => (st.1, st.2.1, some b) | some a => if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none) else (st.1, st.2.1, none)) else (if b then (st.1.headD false :: st.1, st.2.1, none) else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) →
+
+  ∀ (Rel : List (Bool × Bool) → List Bool → Bool → Bool → Prop),
+
+  (∀ (p : List (Bool × Bool)) (T : List Bool) (v g : Bool), Rel p T v g ↔ ∃ w : List Bool, w.length = p.countP (fun x : Bool × Bool => !x.1 && !x.2) ∧ ∃ w'' : List Bool, (p.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl F (v :: T, w, none) = (g :: T, w'', none)) →
+
+  ∀ (q : List (Bool × Bool)) (B : ℕ → ℕ → Prop),
+
+  (∀ a b : ℕ, B a b ↔ ((∀ l, l ≤ b - a → 0 ≤ ((((q.drop a).take (b - a)).map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take l).sum) ∧ (((q.drop a).take (b - a)).map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0)) →
+
+  ∀ (P : ℕ → ℕ → Bool → Bool → Prop) (X : ℕ → ℕ → Bool × Bool → Prop),
+
+  (∀ (i j : ℕ) (r : Bool × Bool), X i j r ↔ ((i = j ∧ r.1 = r.2) ∨ (i < j ∧ j ≤ q.length ∧ B i j ∧ Rel ((q.drop i).take (j - i)) [] r.1 r.2))) →
+
+  (∀ (i j : ℕ) (u v : Bool), P i j u v ↔ ((∃ b : Bool, (q.drop i).take 1 = [(false, b)] ∧ (b = true → u = v)) ∧ (q.drop (j - 1)).take 1 = [(true, true)])) →
+
+  ∀ (i j : ℕ) (r : Bool × Bool), i + 2 ≤ j → (X i j r ↔ ((∃ u : Bool, P i j u r.1 ∧ ∃ g'' : Bool, X (i + 1) (j - 1) (u, g'') ∧ r.2 = !(g'' && r.1)) ∨ (∃ k : ℕ, i < k ∧ k < j ∧ ∃ g1 : Bool, X i k (r.1, g1) ∧ X k j (g1, r.2))))
+
+  '
+context: 'Interval recurrence for the pnp-152 table, the hypothesis of pnp-287 for the fold of pnp-133. Rel p T v g says that the fold of
+
+  pnp-133 run on the pair list p from the stack v :: T, with a witness of exact length, ends with top g and tail T. For a fixed pair
+
+  list q, the relation X i j r on the slice (q.drop i).take (j - i) is the balanced case: the slice is balanced and nonnegative, it
+
+  is a run from input r.1 to output r.2 with the empty stack below, and either i = j with r.1 = r.2 or i < j <= |q|. The
+
+  primitive clause P i j u v says that the first pair of the slice is a leaf (false, b) whose top u is v when b is true, and that the
+
+  last pair is the NAND pair (true, true). The statement is the recurrence that pnp-287 assumes: X i j r holds exactly when the
+
+  primitive clause or the split clause holds on the slices. Its proof uses the list-level case split of pnp-211, the primitive and
+
+  split run lemmas of pnp-212 and pnp-201, and the tail independence of balanced blocks (pnp-323, pnp-324, pnp-325), so that the
+
+  empty tail can be used in X. Together with pnp-287 it shows that any Boolean table with the right base and recurrence agrees with
+
+  the fold relation on every interval. It is a fact about lists of pairs and the fold: no machine, no polynomial bound, no P, and it
+
+  does not decide P vs NP.
+
+  '
+sketch: 'Fix i and j with i + 2 <= j. If j is greater than |q| both sides are false: the primitive clause needs the pair at j - 1, and the
+
+  split clause needs X k j. Otherwise the slice s of length j - i is balanced and nonnegative by B, so pnp-211 gives three cases. A
+
+  slice of length at least two is not the single no-op pair. A primitive slice a :: (mid ++ [c]) is identified with P i j u r.1 and
+
+  the inner slice (q.drop (i + 1)).take (j - 1 - (i + 1)) = mid, and pnp-212 with tail-independence (pnp-325) turns the run of mid
+
+  over the tail v :: t into the run over the empty tail. A split slice p ++ s with i < k < j, where k = i + |p|, uses pnp-201 with
+
+  tail [] and the balance of both parts. The list identities are take and drop arithmetic on q.
+
+  '
+dead: []
