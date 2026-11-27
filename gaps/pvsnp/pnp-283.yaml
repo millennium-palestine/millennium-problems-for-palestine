@@ -1,0 +1,23 @@
+id: pnp-283
+problem: pvsnp
+title: The up steps (false, true) and (false, false) on a stack with top v either copy v or push the next witness bit
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (F : List Bool × List Bool × Option Bool → Bool → List Bool × List Bool × Option Bool), F = (fun (st : List Bool × List Bool × Option Bool) (b : Bool) => match st.2.2 with | none => (st.1, st.2.1, some b) | some a => if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none) else (st.1, st.2.1, none)) else (if b then (st.1.headD false :: st.1, st.2.1, none) else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) →
+    ∀ (v : Bool) (t w : List Bool), ([false, true].foldl F (v :: t, w, none) = (v :: v :: t, w, none)) ∧
+      ([false, false].foldl F (v :: t, w, none) = (w.headD false :: v :: t, w.drop 1, none))
+context: |
+  Up steps of the pnp-152 table. The pair (false, true) is the copy step of pnp-212 (the new top is a copy of the old top v) and the
+  pair (false, false) is the leaf step (the new top is the first unread witness bit, and that bit is consumed). The pnp-212 recurrence
+  states these only through the existential top u; this gap gives the two one-step values of the fold on a stack with top v and
+  tail t, with the witness kept as a parameter, which is what the table base cells need. No machine, no polynomial bound, no P,
+  and it does not decide P vs NP.
+sketch: |
+  After subst of F, both runs have two steps. The first b = false sets the state to (v :: t, w, some false) in both cases. The
+  second step with a = false takes the branch that pushes st.2.1.headD false (true copies v, false pushes the head of w) and
+  either keeps w (for b = true) or drops its first bit (for b = false). Both sides reduce by rfl.
+dead: []

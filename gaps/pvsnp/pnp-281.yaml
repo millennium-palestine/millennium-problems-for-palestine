@@ -1,0 +1,22 @@
+id: pnp-281
+problem: pvsnp
+title: A NAND pair with an empty tail, run on a one-entry stack, leaves the top true whatever the entry is
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (F : List Bool × List Bool × Option Bool → Bool → List Bool × List Bool × Option Bool), F = (fun (st : List Bool × List Bool × Option Bool) (b : Bool) => match st.2.2 with | none => (st.1, st.2.1, some b) | some a => if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none) else (st.1, st.2.1, none)) else (if b then (st.1.headD false :: st.1, st.2.1, none) else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) →
+    ∀ v : Bool, ([true, true].foldl F ([v], [], none)).1 = [true]
+context: |
+  Wrap term of the interval table of the pnp-152 route. The down step of a block a :: (mid ++ [c]) with c = (true, true) reads the
+  two top values of the stack, and the pnp-213 recurrence assumes that the value under the top is the entry v of the block.
+  This gap records the boundary case in which the stack holds only one entry v (the tail t is empty): the NAND step then reads a
+  missing entry as false, so the top becomes true for either v. A table that stores these wrap values must therefore treat
+  the missing entry as false and cannot read it as v. It is a computation on the fold of pnp-133 for one fixed pair: no
+  machine, no polynomial bound, no P, and it does not decide P vs NP.
+sketch: |
+  Case on v. For v = false the fold on [true, true] from ([false], [], none) gives ([true], [], none); for v = true it gives the
+  same. Each step is a definitional reduction of the match in F, so after subst the goal closes by rfl in both cases.
+dead: []
