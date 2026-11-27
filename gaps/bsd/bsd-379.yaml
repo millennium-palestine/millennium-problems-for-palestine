@@ -1,0 +1,47 @@
+id: bsd-379
+problem: bsd
+title: 'Pseudo-division step for the five-division resultant: over any field, (31 a)^2 times the derivative of the short-form five-division polynomial equals 60 (31 a X - 285 b) times N plus an explicit remainder R of degree at most 9'
+status: open
+imports:
+- Mathlib
+open:
+- Polynomial
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (a b : K),
+    (31 * C a) ^ 2 *
+      derivative (32 * (X ^ 6 + 5 * C a * X ^ 4 + 20 * C b * X ^ 3 - 5 * C (a ^ 2) * X ^ 2
+            - 4 * C (a * b) * X - C (a ^ 3) - 8 * C (b ^ 2)) *
+        (X ^ 3 + C a * X + C b) ^ 2
+      - (3 * X ^ 4 + 6 * C a * X ^ 2 + 12 * C b * X - C (a ^ 2)) ^ 3) =
+    (60 * (31 * C a * X - 285 * C b)) *
+      (31 * C a * X ^ 10 + 285 * C b * X ^ 9 - 105 * C (a ^ 2) * X ^ 8 + 300 * C (a * b) * X ^ 7
+      - 450 * C (a ^ 3) * X ^ 6 - 360 * C (b ^ 2) * X ^ 6 - 1218 * C (a ^ 2 * b) * X ^ 5
+      - 250 * C (a ^ 4) * X ^ 4 - 3840 * C (a * b ^ 2) * X ^ 4 - 180 * C (a ^ 3 * b) * X ^ 3
+      - 3600 * C (b ^ 3) * X ^ 3 - 125 * C (a ^ 5) * X ^ 2 - 600 * C (a ^ 2 * b ^ 2) * X ^ 2
+      - 275 * C (a ^ 4 * b) * X - 1760 * C (a * b ^ 3) * X + 3 * C (a ^ 6) - 96 * C (a ^ 3 * b ^ 2)
+      - 768 * C (b ^ 4)) +
+    (- 44800 * C (a ^ 6 * b) - 2256640 * C (a ^ 3 * b ^ 3) - 13132800 * C (b ^ 5)
+      + (- 101680 * C (a ^ 7) - 4985220 * C (a ^ 4 * b ^ 2) - 28667520 * C (a * b ^ 4)) * X
+      + (- 1856640 * C (a ^ 5 * b) - 11599200 * C (a ^ 2 * b ^ 3)) * X ^ 2
+      + (- 248000 * C (a ^ 6) - 9342480 * C (a ^ 3 * b ^ 2) - 61560000 * C (b ^ 4)) * X ^ 3
+      + (- 7284480 * C (a ^ 4 * b) - 58968000 * C (a * b ^ 3)) * X ^ 4
+      + (- 1264800 * C (a ^ 5) - 15069240 * C (a ^ 2 * b ^ 2)) * X ^ 5
+      + (- 3815040 * C (a ^ 3 * b) - 6156000 * C (b ^ 3)) * X ^ 6
+      + (29760 * C (a ^ 4) + 5799600 * C (a * b ^ 2)) * X ^ 7
+      + 933120 * C (a ^ 2 * b) * X ^ 8
+      + (791120 * C (a ^ 3) + 4873500 * C (b ^ 2)) * X ^ 9)
+context: |
+  First step of the Euclid chain that bsd-361 needs for the resultant of N and f′. Here f is the short-form
+  five-division polynomial preΨ′ 5 in a = a₄, b = a₆ (the same f as in bsd-364, f = 32 g h² − ψ³ with
+  h = X³ + aX + b), and N is the degree-10 polynomial of bsd-365, so that 36 f = 3 X f′ + 12 N. Its leading
+  coefficient is 31 a, not a constant, so the Euclid step has to multiply f′ by (31 a)² first. Pseudo-division
+  gives (31 a)² f′ = q N + R with q = 60 (31 a X − 285 b) of degree 1 and R of degree at most 9 with integer
+  coefficients. Checked by sympy expansion over ℤ[a, b][X] (exact, identity holds, deg R = 9), hence it holds over
+  every field. It is a pure ring identity with no hypothesis on the characteristic. Its use is bsd-380.
+sketch: |
+  Unfold the derivative as in bsd-365: derivative_mul, derivative_pow, derivative_sub, derivative_add,
+  derivative_C, derivative_X, and map_ofNat or numerals. Then close with ring. If ring is slow, state the
+  expanded derivative (sympy gives the coefficients of f′, degree 11, leading coefficient 60) as a separate
+  lemma and rewrite. Mathlib: Polynomial.derivative_mul, derivative_pow, derivative_C, derivative_X.
+dead: []
