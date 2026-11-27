@@ -1,0 +1,21 @@
+id: pnp-282
+problem: pvsnp
+title: A leaf pair (true, false) run on a one-entry stack leaves the stack and the witness unchanged
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (F : List Bool × List Bool × Option Bool → Bool → List Bool × List Bool × Option Bool), F = (fun (st : List Bool × List Bool × Option Bool) (b : Bool) => match st.2.2 with | none => (st.1, st.2.1, some b) | some a => if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none) else (st.1, st.2.1, none)) else (if b then (st.1.headD false :: st.1, st.2.1, none) else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) →
+    ∀ (v : Bool) (w : List Bool), [true, false].foldl F ([v], w, none) = ([v], w, none)
+context: |
+  Base term of the interval table of the pnp-152 route. The pair (true, false) is the empty block of pnp-213 (its H value is 0, so it
+  is balanced): it reads no witness bit and writes nothing, so a run over it from a one-entry stack [v] ends at [v] with the witness
+  unchanged. The pnp-213 recurrence gives this as its first disjunct, and the table base cell for a length-one interval is read off
+  from it. This gap is the one-step computation of the fold for that pair, with the witness kept as a parameter. No machine, no
+  polynomial bound, no P, and it does not decide P vs NP.
+sketch: |
+  Case on v. The first b = true sets the state to (st.1, st.2.1, some true), and the second b = false with a = true takes the else
+  branch, which keeps the stack and the witness and clears the pending value. Both cases reduce by rfl after subst of F.
+dead: []
