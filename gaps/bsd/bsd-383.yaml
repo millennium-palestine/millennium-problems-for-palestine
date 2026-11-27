@@ -1,0 +1,27 @@
+id: bsd-383
+problem: bsd
+title: 'Discriminant invariant under the characteristic 3 shift: over a field with 3 = 0, the shift of mk 0 a₂ 0 a₄ a₆ by r has the same discriminant as mk 0 a₂ 0 a₄ a₆'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K], (3 : K) = 0 → ∀ (a2 a4 a6 r : K),
+    (WeierstrassCurve.mk (0 : K) a2 0 (a4 + 2 * r * a2) (a6 + r * a4 + r ^ 2 * a2 + r ^ 3)).Δ =
+      (WeierstrassCurve.mk (0 : K) a2 0 a4 a6).Δ
+context: |
+  Companion of bsd-382. A variable change x = x′ + r does not change the discriminant (it changes it by u^12 = 1),
+  so the shifted curve in bsd-382 is nonsingular exactly when the original one is. In characteristic 3 the shift formulas
+  of bsd-382 are a₂ ↦ a₂, a₄ ↦ a₄ + 2ra₂, a₆ ↦ a₆ + ra₄ + r²a₂ + r³, and the discriminant is
+  Δ = −b₂²b₈ − 8b₄³ − 27b₆² + 9b₂b₄b₆ with b₂ = 4a₂, b₄ = 2a₄, b₆ = 4a₆, b₈ = 4a₂a₆ − a₄². The generator agent checked
+  by sympy that the difference of the two discriminants has zero residual modulo 3 (as a polynomial in a₂, a₄, a₆, r).
+  It is not yet checked in Lean. Needed in bsd-299 to know the slice curve has nonzero discriminant.
+  Proposed by the generator agent. Not claimed by anyone at the time of writing.
+sketch: |
+  Unfold WeierstrassCurve.Δ, b₂, b₄, b₆, b₈ for both curves (the b-invariants of mk 0 a₂ 0 a₄ a₆ are 4a₂, 2a₄, 4a₆ and
+  4a₂a₆ − a₄²). Both sides are polynomials in a₂, a₄, a₆, r. Use ring_nf or linear_combination (q) * h3 with h3 : (3 : K) = 0
+  and q the quotient of the difference by 3. The quotient is a small polynomial (the difference of the two sides is
+  a multiple of 3 in ℤ[a₂, a₄, a₆, r]).
+  Mathlib: WeierstrassCurve.Δ, WeierstrassCurve.b₂, b₄, b₆, b₈ and their simp lemmas.
+dead: []
