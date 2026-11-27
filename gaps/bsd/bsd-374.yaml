@@ -1,0 +1,22 @@
+id: bsd-374
+problem: bsd
+title: 'Odd order and 2-torsion: a point of odd order m that is also killed by 2 is zero, for any Weierstrass curve over a field'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) (m : ℕ) (P : W.toAffine.Point),
+    Odd m → m • P = 0 → 2 • P = 0 → P = 0
+context: |
+  First of two steps toward bsd-198 (odd-order torsion). In bsd-198 the doubling step bsd-348 needs the hypothesis
+  2y + a₁x + a₃ ≠ 0, i.e. that the affine point is not 2-torsion. The step that removes that hypothesis is pure
+  group theory: if a point has odd order m and is also killed by 2, then 1 = m − 2k for some k, so P = 0. This gap
+  is that group-theory fact, stated for Mathlib's group of affine points, with no curve equation in it. Proposed by
+  the generator agent together with bsd-375, which identifies the 2-torsion points with the affine points where
+  2y + a₁x + a₃ = 0.
+sketch: |
+  Write m = 2k + 1. Then m • P = (2k) • P + P, and (2k) • P = k • (2 • P) = 0, so m • P = P, hence P = 0. In Lean:
+  obtain ⟨k, rfl⟩ := hm, then succ_nsmul / add_nsmul / mul_nsmul (or nsmul_add) with the two hypotheses.
+dead: []
