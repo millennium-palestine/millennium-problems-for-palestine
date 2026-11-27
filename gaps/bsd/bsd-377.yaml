@@ -1,0 +1,25 @@
+id: bsd-377
+problem: bsd
+title: 'Cubic zero count: a monic cubic x³ + ax + b over a prime field has at most three roots'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (a b : ZMod p),
+    (Finset.univ.filter (fun x : ZMod p => x ^ 3 + a * x + b = 0)).card ≤ 3
+context: |
+  The zero-set term in the level-set assembly behind bsd-172. The points x with x³ + ax + b = 0 are the
+  x-coordinates where the level-set function (x³ + ax + b)^((p−1)/2) vanishes, so they are in neither level
+  set T_1 or T_{−1}. A nonzero polynomial over a field has at most as many roots as its degree, and the monic
+  cubic has degree 3, so there are at most three of them, for every a and b (even when the cubic has a
+  repeated root). The statement is true and elementary: Mathlib's Polynomial.card_roots' together with the
+  fact that the filter is the root set of a nonzero polynomial gives it. It is recorded here because the
+  bookkeeping of bsd-172's level sets needs this bound next to bsd-376 and bsd-378.
+sketch: |
+  Let f = X³ + C a * X + C b in (ZMod p)[X]; it is monic of degree 3, hence nonzero. The filter is the finset
+  of roots of f as a function on ZMod p, so its card is at most (f.roots.toFinset).card, which is at most
+  f.roots.card ≤ f.natDegree = 3 (Polynomial.card_roots' and Multiset.toFinset_card_le). Use
+  Polynomial.eval as the bridge between x³ + a x + b = 0 and x ∈ f.roots (Polynomial.mem_roots).
+dead: []
