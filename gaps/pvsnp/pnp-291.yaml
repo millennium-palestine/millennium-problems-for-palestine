@@ -1,0 +1,22 @@
+id: pnp-291
+problem: pvsnp
+title: Every position below the triangular count n(n+1)/2 is the triangular index j(j+1)/2 + i of a cell with i at most j below n
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ n t : ℕ, t < n * (n + 1) / 2 → ∃ j i : ℕ, i ≤ j ∧ j < n ∧ j * (j + 1) / 2 + i = t
+context: |
+  Step toward pnp-152. The index maps of the interval table must send a position t of the table, listed
+  by pnp-276 as the triangular index j(j+1)/2 + i of the cell (i, j), back to its two ends. This gap is the
+  inverse direction of pnp-276: every position below the total n(n+1)/2 of the cells of a table of length n
+  comes from some cell (i, j) with i ≤ j < n. It is pure arithmetic on natural numbers, by induction on n:
+  no machine, no list of pairs, no polynomial bound, and it does not decide P vs NP.
+sketch: |
+  Induction on n. The base case has no positions. For n + 1, the count (n + 1)(n + 2)/2 equals n(n+1)/2 + (n + 1),
+  so a position t either lies below n(n+1)/2 (the induction hypothesis gives the cell, with j < n < n + 1), or it is
+  n(n+1)/2 + i with i ≤ n, which is the cell (i, n) with j = n. The count identity is ring plus omega on the
+  product n(n+1) as an atom.
+dead: []
