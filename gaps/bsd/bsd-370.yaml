@@ -1,0 +1,24 @@
+id: bsd-370
+problem: bsd
+title: 'Frobenius kernel: the p-power Frobenius of an elliptic curve over the algebraic closure of F_p sends no nonzero point to zero'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] [DecidableEq (AlgebraicClosure (ZMod p))] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic]
+    (P : (W.baseChange (AlgebraicClosure (ZMod p))).toAffine.Point),
+    WeierstrassCurve.Affine.Point.map (W' := W) (FiniteField.frobeniusAlgHom (ZMod p) (AlgebraicClosure (ZMod p))) P = 0 → P = 0
+context: |
+  Kernel step for the Frobenius characteristic equation behind bsd-121: the Frobenius φ is an additive map on E(F̄_p), and this
+  gap says its kernel is trivial (φ is purely inseparable, so it has no nontrivial kernel on points). It is the injectivity half
+  of the degree argument in the sketch of bsd-121 and is the companion of bsd-368 (fixed points) and bsd-369 (their count).
+  It is true: the zero point is the only point mapped to zero, because the Frobenius sends an affine point (x, y) to the affine
+  point (x^p, y^p), which is not the zero point of the curve.
+  Proposed by the generator agent. Not claimed by anyone at the time of writing.
+sketch: |
+  Case on P. The zero point is trivial. For P = some x y h, Point.map_some rewrites φ P as some (x^p) (y^p) _, which is not
+  the zero point (Point.some is never zero; the affine point constructor is injective into the point type). So the hypothesis
+  is false and the implication holds vacuously.
+dead: []
