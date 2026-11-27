@@ -1,0 +1,24 @@
+id: pnp-297
+problem: pvsnp
+title: The length of a list of stacks written as pair blocks is twice its size plus twice its total bit count (steps toward pnp-100)
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+depends: []
+statement: |
+  ∀ s : List (List Bool),
+    (s.flatMap (fun v => pair v [])).length = 2 * s.length + 2 * (s.map List.length).sum
+context: |
+  Size bound for the stack-list code of pnp-296. Each stack u is written as pair u [], which has
+  length 2 * |u| + 2. So a list of stacks has code length 2 times its number of stacks plus 2
+  times its total number of bits. This is the linear size bound that a polynomial-size
+  tableau for pnp-100 needs when it writes the stacks of each configuration. It is an exact
+  length identity, not a bound on any machine.
+sketch: |
+  Induction on s. The cons case splits the flatMap as pair u [] ++ (rest), uses the length of
+  append, and simplifies the length of pair u [] to 2 * |u| + 2. The result is a linear
+  identity in the lengths.
+dead: []

@@ -1,0 +1,28 @@
+id: pnp-296
+problem: pvsnp
+title: A list of stacks, each written as a pair with empty tail, is written injectively (steps toward pnp-100)
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+- MPP.Solutions.Pnp005
+open:
+- MPP.PvsNP
+depends:
+- pnp-005
+statement: |
+  ∀ s t : List (List Bool),
+    s.flatMap (fun v => pair v []) = t.flatMap (fun v => pair v []) → s = t
+context: |
+  Stack-list code for the configurations of a multi-stack machine. A configuration has a
+  variable number of stacks, each a list of bits. Writing each stack u as pair u [] gives a
+  self-delimiting block (doubled bits, then the separator [false, true]), so a list of stacks
+  is written as the concatenation of these blocks. This gap says the concatenation loses no
+  information. It is the variable-length part of the configuration encoding that the Cook-Levin
+  step of pnp-100 needs. It does not by itself encode TM2 labels or states, and it does not
+  prove pnp-100.
+sketch: |
+  Induction on s, generalizing t. A cons block pair u [] ++ R equals pair u R, so equal
+  concatenations give equal heads by pnp-005 (injectivity of pair) and equal tails, which
+  the induction hypothesis handles. The empty cases are excluded because pair v [] is nonempty.
+dead: []
