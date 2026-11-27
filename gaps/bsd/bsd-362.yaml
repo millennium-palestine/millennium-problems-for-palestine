@@ -1,0 +1,33 @@
+id: bsd-362
+problem: bsd
+title: 'x-addition identity for short curves: for two affine points with distinct x-coordinates, the x-coordinates of P + Q and P − Q satisfy (x₃ + x₄)(x₁ − x₂)² = 2(x₁ + x₂)(x₁x₂ + a₄) + 4a₆'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) (x₁ y₁ x₂ y₂ : K)
+    (h₁ : W.toAffine.Nonsingular x₁ y₁) (h₂ : W.toAffine.Nonsingular x₂ y₂),
+    W.a₁ = 0 → W.a₂ = 0 → W.a₃ = 0 → x₁ ≠ x₂ →
+    ∃ (x₃ y₃ : K) (h₃ : W.toAffine.Nonsingular x₃ y₃) (x₄ y₄ : K) (h₄ : W.toAffine.Nonsingular x₄ y₄),
+      (WeierstrassCurve.Affine.Point.some x₁ y₁ h₁ + WeierstrassCurve.Affine.Point.some x₂ y₂ h₂ :
+        W.toAffine.Point) = WeierstrassCurve.Affine.Point.some x₃ y₃ h₃ ∧
+      (WeierstrassCurve.Affine.Point.some x₁ y₁ h₁ + -WeierstrassCurve.Affine.Point.some x₂ y₂ h₂ :
+        W.toAffine.Point) = WeierstrassCurve.Affine.Point.some x₄ y₄ h₄ ∧
+      (x₃ + x₄) * (x₁ - x₂) ^ 2 = 2 * (x₁ + x₂) * (x₁ * x₂ + W.a₄) + 4 * W.a₆
+context: |
+  Step toward the x(nP) identity that bsd-198, bsd-218 and bsd-192 need (the chain the walled gaps name). The chord
+  step bsd-347 gives the x-coordinate of P + Q for distinct x-coordinates; this gap adds the companion P − Q, that is
+  P + (−Q), and the identity that the two x-coordinates satisfy together. Only a₁ = a₂ = a₃ = 0 (short form) is
+  assumed, which keeps the algebra to one rational identity. It is true: with λ = (y₁ − y₂)/(x₁ − x₂) and λ′ = (y₁ + y₂)/(x₁ − x₂)
+  one gets x₃ = λ² − x₁ − x₂ and x₄ = λ′² − x₁ − x₂, so (x₃ + x₄)(x₁ − x₂)² = 2(y₁² + y₂²) − 2(x₁ + x₂)(x₁ − x₂)²,
+  and the curve equation y² = x³ + a₄x + a₆ turns the right side into 2(x₁ + x₂)(x₁x₂ + a₄) + 4a₆.
+  Proposed by the generator agent. Not claimed by anyone at the time of writing.
+sketch: |
+  Take the two sums with WeierstrassCurve.Affine.Point.add_of_X_ne (as in bsd-347): the first directly, the second
+  with the nonsingular point (x₂, −y₂) given by the negation lemma for nonsingular points (the y-coordinate of −Q is
+  −y₂ − a₁x₂ − a₃ = −y₂ when a₁ = a₃ = 0). Unfold addX and the slope with slope_of_X_ne, then clear the denominator
+  (x₁ − x₂)² with field_simp, and close with linear_combination using the two curve equations (from equation_iff
+  of the nonsingularity hypotheses, with a₁ = a₂ = a₃ = 0 substituted).
+dead: []
