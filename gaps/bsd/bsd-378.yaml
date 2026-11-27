@@ -1,0 +1,29 @@
+id: bsd-378
+problem: bsd
+title: 'Level-set partition: over a prime field with p ≠ 2, the two level sets of (x³ + ax + b)^((p−1)/2) and the zero set of x³ + ax + b together have p elements'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime], p ≠ 2 → ∀ a b : ZMod p,
+    (Finset.univ.filter (fun x : ZMod p => (x ^ 3 + a * x + b) ^ ((p - 1) / 2) = 1)).card
+      + (Finset.univ.filter (fun x : ZMod p => (x ^ 3 + a * x + b) ^ ((p - 1) / 2) = -1)).card
+      + (Finset.univ.filter (fun x : ZMod p => x ^ 3 + a * x + b = 0)).card = p
+context: |
+  The counting identity that ties the level sets T_1 and T_{−1} of bsd-172 to the total p. Every x in ZMod p
+  has f(x) = x³ + ax + b either equal to 0, or with f(x)^((p−1)/2) equal to 1 or −1: this is Euler's
+  criterion for the nonzero values, and for f(x) = 0 the power is 0. The three cases are disjoint, and
+  together they cover ZMod p, which has p elements. Combined with bsd-376 (the character sum is the
+  difference of the first two counts) and bsd-377 (the third count is at most 3), this gives
+  2·|T_1| − p = Σ_x χ(f(x)) − |Z| with Z the zero set, which turns bsd-172 into a bound on the character sum.
+  The statement is true for p ≠ 2 (p ≥ 3, so (p−1)/2 ≥ 1 and 1 ≠ −1). The proof is the partition of the
+  finite type ZMod p by a pointwise trichotomy, followed by a card count.
+sketch: |
+  (1) Pointwise trichotomy: for every y : ZMod p, exactly one of y^((p−1)/2) = 1, y^((p−1)/2) = −1, y = 0 holds
+  when y is the polynomial value f(x); use ZMod.euler_criterion for y ≠ 0 and zero_pow for y = 0, and the
+  fact that p ≠ 2 gives 1 ≠ −1 in ZMod p. (2) Turn the three filter cards into the card of a disjoint union
+  with Finset.filter_or / Finset.card_union_of_disjoint, or into a sum of indicators with Finset.card_filter
+  and Finset.sum_add_distrib. (3) The union is univ, whose card is p (ZMod.card p).
+dead: []
