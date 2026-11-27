@@ -7,7 +7,6 @@ imports:
 open: []
 depends:
 - bsd-221
-- bsd-355
 statement: |
   ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) (x y : K)
     (h : W.toAffine.Nonsingular x y),
@@ -15,7 +14,8 @@ statement: |
     (2 : ℕ) • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) ≠ 0 →
     (W.preΨ' 8).eval x = 0
 context: |
-  The m = 8 instance of the division polynomial input bsd-198, in the form bsd-354 takes for m = 8. Two cases. If 4P = 0,
+  The m = 8 instance of the division polynomial input bsd-198, in the form bsd-354 takes for m = 8. Its solution imports
+  the m = 4 instance bsd-355 (proposed in #1543, not yet merged), which is why bsd-355 is not in depends yet. Two cases. If 4P = 0,
   then preΨ₄(x) = 0 by bsd-355 and preΨ′ 8 = preΨ₄ · C₈ vanishes. Otherwise Q = 2P has 4 • Q = 8P = 0 and 2 • Q = 4P ≠ 0, so
   bsd-355 gives preΨ₄(x2) = 0 for x2 = x(Q). Eliminating x2 with x2 f(x) = g(x) (bsd-221; f = 4x³ + b₂x² + 2b₄x + b₆,
   g = x⁴ − b₄x² − 2b₆x − b₈) gives P₄(g) = 0, where P₄ is the 4-division polynomial written in its first argument, and P₄(g)
