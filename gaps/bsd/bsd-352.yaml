@@ -1,0 +1,38 @@
+id: bsd-352
+problem: bsd
+title: 'Odd-m torsion count from the division polynomial: if the division polynomial vanishes at the x-coordinate of every m-torsion affine point, then the m-torsion subgroup has at most m^2 points'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-198
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) [W.IsElliptic] (m : ℕ),
+    Odd m → (m : K) ≠ 0 →
+    (∀ (x y : K) (h : W.toAffine.Nonsingular x y),
+      m • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) = 0 → (W.preΨ' m).eval x = 0) →
+    Nat.card {P : W.toAffine.Point // m • P = 0} ≤ m ^ 2
+context: |
+  Assembly step for bsd-192 (m-torsion upper bound, odd m), conditional on bsd-198. The hypothesis of this gap is
+  exactly the conclusion of bsd-198 for the given K, W and m, so the gap isolates the one missing input (the group law
+  to division polynomial link) and proves everything else from it. Counting: the zero point, plus the affine m-torsion
+  points. Each nonzero m-torsion point P = (x, y) has preΨ' m vanishing at x (hypothesis), so the x-coordinates form
+  a finite set S of roots of preΨ' m, with |S| at most (m^2 - 1)/2 by bsd-314 (preΨ' m nonzero, (m : K) nonzero). Each
+  x in S has at most two affine points by bsd-315 (three points with the same x have two equal y-coordinates, so the
+  fibre has at most two elements up to the y-coordinate; the points with a given x and y are determined by it).
+  Hence the affine m-torsion has at most 2 (m^2 - 1)/2 = m^2 - 1 points, and with O at most m^2. If the m-torsion
+  is infinite, Nat.card is 0 and the bound is trivial, so the content is the finite case. True for every field, not
+  only algebraically closed ones: the statement quantifies over the points of W.toAffine over K itself.
+  Not checked in Lean.
+sketch: |
+  Let T := {P // m • P = 0} and let F be the finite set of x-coordinates of nonzero affine points of T (the image
+  of T minus zero under the x-coordinate map). Under the hypothesis, F is contained in the roots of preΨ' m, so
+  F.card ≤ (m^2 - 1)/2 by the bsd-314 argument (Polynomial.card_roots' and natDegree_preΨ'). Each fibre of the
+  x-coordinate over F has at most two points (bsd-315 with Finset.card_le_two style counting, or a direct injection
+  into Bool via the y-coordinate). So |T| ≤ 1 + 2 F.card ≤ 1 + 2 (m^2 - 1)/2 = m^2 (m odd, so m^2 - 1 is even).
+  Mathlib: Nat.card_eq_fintype_card or Set.ncard, Finset.card_le_mul_card_image, Finset.card_biUnion_le,
+  Polynomial.card_roots', WeierstrassCurve.natDegree_preΨ', WeierstrassCurve.Affine.Point (cases on zero / some),
+  WeierstrassCurve.Affine.Point.neg_some. Finiteness: a Set.Finite argument is needed before Nat.card can be
+  bounded; if T is infinite the goal is 0 ≤ m^2 directly (Nat.card_of_infinite or Infinite.card_eq_zero).
+dead: []
