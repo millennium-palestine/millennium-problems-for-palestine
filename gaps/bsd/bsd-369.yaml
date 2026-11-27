@@ -1,0 +1,26 @@
+id: bsd-369
+problem: bsd
+title: 'Frobenius fixed-point count: the number of points of an elliptic curve over the algebraic closure of F_p fixed by the p-power Frobenius equals the number of F_p-points'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-368
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] [DecidableEq (AlgebraicClosure (ZMod p))] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic],
+    Nat.card {P : (W.baseChange (AlgebraicClosure (ZMod p))).toAffine.Point //
+      WeierstrassCurve.Affine.Point.map (W' := W) (FiniteField.frobeniusAlgHom (ZMod p) (AlgebraicClosure (ZMod p))) P = P} =
+    Nat.card W.toAffine.Point
+context: |
+  Third step of the fixed-point count behind bsd-121, and the sketch's first sub-gap: #E(F_p) = #ker(1 − φ). By bsd-368 the
+  fixed set is the image of the F_p-points under the injective group map Point.map along Algebra.ofId, so the two cardinalities
+  agree. The gap is the cardinality statement itself, with the trace a = p + 1 − #E(F_p) of bsd-121 then read off as the count
+  of the fixed set. It is true (both sides are finite; the map is injective since the baseChange map on points is injective).
+  Proposed by the generator agent. Not claimed by anyone at the time of writing.
+sketch: |
+  Show that the map Q ↦ Point.map (Algebra.ofId) Q is injective (for points, injectivity of Algebra.ofId on ZMod p and
+  Point.some equality) and that its range is the fixed set (bsd-368). Then Nat.card_congr with an Equiv built from
+  Equiv.ofBijective, or Set.ncard / Nat.card_range_of_injective. Injectivity: if the images of Q1 and Q2 agree then their
+  coordinates agree in the algebraic closure, hence in ZMod p by injectivity of algebraMap (RingHom.injective for a field).
+dead: []

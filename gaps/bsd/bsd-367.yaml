@@ -1,0 +1,26 @@
+id: bsd-367
+problem: bsd
+title: 'Frobenius fixed elements: over the algebraic closure of F_p, an element x with x^p = x is the image of an element of F_p'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (x : AlgebraicClosure (ZMod p)), x ^ p = x →
+    ∃ a : ZMod p, algebraMap (ZMod p) (AlgebraicClosure (ZMod p)) a = x
+context: |
+  First step of the fixed-point count behind bsd-121 (the Frobenius characteristic equation). The coordinates of a point fixed
+  by the p-power Frobenius are roots of X^p − X, and this gap says that every root in the algebraic closure of F_p already
+  lies in the image of F_p. Together with bsd-368 (fixed points are the F_p-rational points) and bsd-369 (their number is
+  #E(F_p)), it is the count #E(F_p) = #ker(1 − φ) that the sketch of bsd-121 asks for.
+  It is true: the set of roots of X^p − X in the algebraic closure is a subfield containing the image of ZMod p, and it has at
+  most p elements because it is the root set of a polynomial of degree p, so it equals the image of ZMod p.
+  Proposed by the generator agent. Not claimed by anyone at the time of writing.
+sketch: |
+  Mathlib has the roots of X^p − X over a finite field (FiniteField.roots_X_pow_card_sub_X, or the splitting-field lemmas for
+  ZMod p). Let S = {x : x^p = x} in the algebraic closure; it is closed under the ring operations because the p-power map is a
+  ring homomorphism in characteristic p (add_pow_char). Its cardinality is at most p (root count of X^p − X, degree p, in a
+  field). The image of ZMod p under algebraMap is contained in S and has p elements (injective, since ZMod p is a field). Hence
+  the two sets are equal. Alternatively use FiniteField.frobeniusAlgHom and the fixed points of the Frobenius AlgHom.
+dead: []
