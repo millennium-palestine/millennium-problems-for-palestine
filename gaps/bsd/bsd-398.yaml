@@ -1,0 +1,20 @@
+id: bsd-398
+problem: bsd
+title: 'Completing the square for the degree form: for integers a, p, m, n, 4 (m² − a m n + p n²) = (2m − a n)² + (4p − a²) n²'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (a p m n : ℤ),
+    4 * (m ^ 2 - a * m * n + p * n ^ 2) = (2 * m - a * n) ^ 2 + (4 * p - a ^ 2) * n ^ 2
+context: |
+  The quadratic form Q(m, n) = m² − a m n + p n², with a = p + 1 − #E(F_p) the trace of Frobenius and p the field size,
+  is the degree form of m − nπ on an elliptic curve over F_p (bsd-089, bsd-327). Its discriminant is a² − 4p, and
+  the identity 4Q = (2m − a n)² + (4p − a²) n² is the usual completion of the square that turns the nonnegativity of Q
+  into the Hasse inequality a² ≤ 4p. This gap is the pure algebra of that step; it contains no curve.
+  Checked by hand: expanding the right side gives 4m² − 4amn + a²n² + 4pn² − a²n², which is 4Q.
+sketch: |
+  Pure ring identity. Expand both sides and compare coefficients of m², m n, n². Lean: `ring`.
+dead: []

@@ -1,0 +1,21 @@
+id: bsd-400
+problem: bsd
+title: 'Integer form of the Hasse-type bound: for a integer and p natural, |a| ≤ 2√p in ℝ holds exactly when a² ≤ 4p in ℤ'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) (a : ℤ), |(a : ℝ)| ≤ 2 * Real.sqrt (p : ℝ) ↔ a ^ 2 ≤ 4 * (p : ℤ)
+context: |
+  bsd-024 states Hasse's bound with real square roots: |#E − (p + 1)| ≤ 2√p. Writing a = p + 1 − #E(F_p) as an integer,
+  the bound reads |a| ≤ 2√p, and the discriminant form bsd-399 needs a² ≤ 4p in ℤ. This gap is the honest bridge
+  between the two forms: it is a fact about real square roots only, with no curve and no Frobenius. Once it is proved,
+  the open content of bsd-024 is exactly the inequality a² ≤ 4p, and bsd-089 reduces to bsd-024 by bsd-398 and bsd-399.
+  Checked by hand: both sides say (|a|/2)² ≤ p, since |a|/2 and √p are nonnegative.
+sketch: |
+  Both sides are equivalent to |a| ≤ 2√p ⇔ |a|/2 ≤ √p ⇔ (|a|/2)² ≤ p (Real.le_sqrt for nonnegative left side, or
+  Real.sqrt_le_sqrt on squares). Cast a² ≤ 4p from ℤ to ℝ with exact_mod_cast and use sq_abs. Lean route: `Real.le_sqrt`,
+  `sq_abs`, `Int.cast_pow`, `push_cast`, `linarith`.
+dead: []
