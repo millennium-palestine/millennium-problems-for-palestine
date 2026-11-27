@@ -1,0 +1,41 @@
+id: bsd-365
+problem: bsd
+title: 'Euclid step for the five-division polynomial: over any field, 36 f = 3 X f′ + 12 N, where f is the short-form preΨ′ 5 in a, b and N is an explicit polynomial of degree 10'
+status: open
+imports:
+- Mathlib
+open:
+- Polynomial
+depends:
+- bsd-364
+statement: |
+  ∀ (K : Type) [Field K] (a b : K),
+    36 * (32 * (X ^ 6 + 5 * C a * X ^ 4 + 20 * C b * X ^ 3 - 5 * C (a ^ 2) * X ^ 2
+            - 4 * C (a * b) * X - C (a ^ 3) - 8 * C (b ^ 2)) *
+        (X ^ 3 + C a * X + C b) ^ 2
+      - (3 * X ^ 4 + 6 * C a * X ^ 2 + 12 * C b * X - C (a ^ 2)) ^ 3) =
+    3 * X * derivative (32 * (X ^ 6 + 5 * C a * X ^ 4 + 20 * C b * X ^ 3 - 5 * C (a ^ 2) * X ^ 2
+            - 4 * C (a * b) * X - C (a ^ 3) - 8 * C (b ^ 2)) *
+        (X ^ 3 + C a * X + C b) ^ 2
+      - (3 * X ^ 4 + 6 * C a * X ^ 2 + 12 * C b * X - C (a ^ 2)) ^ 3) +
+    12 * (31 * C a * X ^ 10 + 285 * C b * X ^ 9 - 105 * C (a ^ 2) * X ^ 8 + 300 * C (a * b) * X ^ 7
+      - 450 * C (a ^ 3) * X ^ 6 - 360 * C (b ^ 2) * X ^ 6 - 1218 * C (a ^ 2 * b) * X ^ 5
+      - 250 * C (a ^ 4) * X ^ 4 - 3840 * C (a * b ^ 2) * X ^ 4 - 180 * C (a ^ 3 * b) * X ^ 3
+      - 3600 * C (b ^ 3) * X ^ 3 - 125 * C (a ^ 5) * X ^ 2 - 600 * C (a ^ 2 * b ^ 2) * X ^ 2
+      - 275 * C (a ^ 4 * b) * X - 1760 * C (a * b ^ 3) * X + 3 * C (a ^ 6) - 96 * C (a ^ 3 * b ^ 2)
+      - 768 * C (b ^ 4))
+context: |
+  The Euclid step of the resultant route to bsd-361. Write f = 32 g h² − ψ³ as in bsd-364 (with a = a₄, b = a₆).
+  Its derivative has leading coefficient 60 and degree 11, and f − (X/12) f′ has degree at most 10. Multiplying by
+  36 gives 36 f = 3X f′ + 12 N, where N = 3 (f − (X/12) f′) is an explicit polynomial with integer coefficients
+  (the numerator printed by sympy). The identity holds over ℤ[a, b][X] (checked by
+  sympy expansion, exact), hence over every field. It is a pure ring identity, no hypothesis on the characteristic.
+  Its use: bsd-366 transfers the resultant of f and f′ to the resultant of N and f′. The leading coefficient of N
+  is 31a, not a constant, so the chain cannot continue as a plain Euclid step over ℤ without further clearing.
+sketch: |
+  Unfold the polynomial on both sides into the expanded form (ring_nf or simp only with derivative_mul,
+  derivative_pow, derivative_C, derivative_X, derivative_add, derivative_sub, map_ofNat or derivative of numerals),
+  then close with ring. The derivative of the explicit polynomial is a finite sum; if ring is slow, first state
+  the derivative explicitly (sympy gives the coefficients) and prove the derivative equality separately.
+  Mathlib: Polynomial.derivative_mul, derivative_pow, derivative_C, derivative_X, derivative_sub, derivative_add.
+dead: []

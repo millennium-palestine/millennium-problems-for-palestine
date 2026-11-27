@@ -1,0 +1,32 @@
+id: bsd-364
+problem: bsd
+title: 'Explicit five-division polynomial in the short form: for a Weierstrass curve with a₁ = a₂ = a₃ = 0 over any field, preΨ′ 5 = 32 g h² − ψ³ with g and h written in a₄, a₆'
+status: open
+imports:
+- Mathlib
+- MPP.Solutions.Bsd283
+open:
+- Polynomial
+depends:
+- bsd-283
+statement: |
+  ∀ (K : Type) [Field K] (W : WeierstrassCurve K),
+    W.a₁ = 0 → W.a₂ = 0 → W.a₃ = 0 →
+    W.preΨ' 5 =
+      32 * (X ^ 6 + 5 * C W.a₄ * X ^ 4 + 20 * C W.a₆ * X ^ 3 - 5 * C (W.a₄ ^ 2) * X ^ 2
+            - 4 * C (W.a₄ * W.a₆) * X - C (W.a₄ ^ 3) - 8 * C (W.a₆ ^ 2)) *
+        (X ^ 3 + C W.a₄ * X + C W.a₆) ^ 2
+      - (3 * X ^ 4 + 6 * C W.a₄ * X ^ 2 + 12 * C W.a₆ * X - C (W.a₄ ^ 2)) ^ 3
+context: |
+  The explicit form of preΨ′ 5 that the resultant route for bsd-361 needs. With a₁ = a₂ = a₃ = 0 the Mathlib
+  invariants are b₂ = 0, b₄ = 2a₄, b₆ = 4a₆, b₈ = −a₄², so Ψ₂Sq = 4h with h = X³ + a₄X + a₆, Ψ₃ = 3X⁴ + 6a₄X² +
+  12a₆X − a₄², and preΨ₄ = 2g with g = X⁶ + 5a₄X⁴ + 20a₆X³ − 5a₄²X² − 4a₄a₆X − a₄³ − 8a₆². Then bsd-283
+  (preΨ′ 5 = preΨ₄ · Ψ₂Sq² − Ψ₃³) gives the displayed form, using 2g · 16h² = 32gh². The statement has integer
+  coefficients in W.a₄ and W.a₆ and is the input of bsd-365 (the identity 36 f = 3X f′ + 12N) and bsd-366 (the
+  resultant transfer). Checked by sympy: the leading coefficient is 5 and the degree is 12.
+sketch: |
+  Use bsd-283 (MPP.Solutions.Bsd283.main, or rewrite with the lemma statement) to replace preΨ′ 5. Unfold preΨ₄,
+  Ψ₂Sq and Ψ₃ with their Mathlib definitions, rewrite the b-invariants with a₁ = a₂ = a₃ = 0 (simp with
+  WeierstrassCurve.b₂, b₄, b₆, b₈ and the three hypotheses), then close with ring. Mathlib: WeierstrassCurve.preΨ₄,
+  Ψ₂Sq, Ψ₃, b₂, b₄, b₆, b₈, WeierstrassCurve.preΨ'_four.
+dead: []
