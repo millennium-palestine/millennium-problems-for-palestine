@@ -1,0 +1,25 @@
+id: pnp-284
+problem: pvsnp
+title: A NAND pair run on a stack with top v and tail t leaves the top !(v && t.headD false) and drops one entry, for any tail
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (F : List Bool × List Bool × Option Bool → Bool → List Bool × List Bool × Option Bool), F = (fun (st : List Bool × List Bool × Option Bool) (b : Bool) => match st.2.2 with | none => (st.1, st.2.1, some b) | some a => if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none) else (st.1, st.2.1, none)) else (if b then (st.1.headD false :: st.1, st.2.1, none) else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) →
+    ∀ (v : Bool) (t w : List Bool), [true, true].foldl F (v :: t, w, none) = ((!(v && t.headD false)) :: t.drop 1, w, none)
+context: |
+  Wrap term of the interval table of the pnp-152 route, for every stack depth. The down step of a block a :: (mid ++ [c]) with
+  c = (true, true) runs the NAND pair on the two top entries of the stack, and the pnp-213 recurrence needs the value of the
+  new top together with the stack below it. pnp-281 records the case of a one-entry stack, with the missing second entry read
+  as false. This gap states the same one-step fact for an arbitrary tail t and an arbitrary witness w, with the pending slot
+  back to none. It is a computation of one step of the fold of pnp-133, with no machine and no polynomial bound, and it does
+  not decide P vs NP. The statement is the t = [] case of pnp-281 when v is fixed, so the two gaps are not independent in
+  content, but this one is the form the table invariant uses.
+sketch: |
+  Intro F and hF, then subst hF. The fold on the two pairs reads the first bit true with pending none, which stores the
+  pending bit, and then the second bit true with pending some true, which applies the NAND case of the match. On the list
+  v :: t the headD of the stack is v, the drop 1 is t, and headD false of t is the second entry, so the new top is
+  !(v && t.headD false), and drop 2 of v :: t is t.drop 1. Each step is a definitional reduction, so rfl should close the goal.
+dead: []
