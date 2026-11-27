@@ -1,0 +1,37 @@
+id: pnp-273
+problem: pvsnp
+title: The bit-level fold of any bit list has the same top as the fold of some list of pairs
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (x : List Bool) (v : Bool) (t w : List Bool), ∃ q : List (Bool × Bool),
+    (x.foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+        match st.2.2 with
+        | none => (st.1, st.2.1, some b)
+        | some a =>
+          if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+            else (st.1, st.2.1, none))
+          else (if b then (st.1.headD false :: st.1, st.2.1, none)
+            else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (v :: t, w, none)).1.headD false =
+    ((q.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+        match st.2.2 with
+        | none => (st.1, st.2.1, some b)
+        | some a =>
+          if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+            else (st.1, st.2.1, none))
+          else (if b then (st.1.headD false :: st.1, st.2.1, none)
+            else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (v :: t, w, none)).1.headD false
+context: |
+  Bit-to-pair bridge for pnp-152, combining pnp-271 (every bit list is a list of pairs plus at most one leftover
+  bit) with pnp-272 (a leftover bit does not change the top). The bit-level fold that the pnp-152 language reads
+  has the same top as the pair-level fold that pnp-269 handles, so the pnp-269 decomposition applies to any input.
+  It is a fact about the fold alone: no machine, no polynomial bound, no P, and it does not decide P vs NP.
+sketch: |
+  Split x as q.flatMap followed by at most one bit o (the argument of pnp-271). If o is empty, take q and the
+  equation is rfl after simplification. If o is one bit c, fold the flattened pairs first and then the bit c; the
+  pending slot is empty after the pairs (the argument of pnp-272), so the bit c leaves the top unchanged. Longer o is
+  excluded by its length. The proof can inline the two arguments as local facts so that it needs only Mathlib.
+dead: []
