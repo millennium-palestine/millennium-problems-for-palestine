@@ -5,8 +5,7 @@ status: open
 imports:
 - Mathlib
 open: []
-depends: 
-- pnp-328
+depends: []
 statement: |
    ∀ (F : List Bool × List Bool × Option Bool → Bool → List Bool × List Bool × Option Bool),
       F = (fun st b => match st.2.2 with
