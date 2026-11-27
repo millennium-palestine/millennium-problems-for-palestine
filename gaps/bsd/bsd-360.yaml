@@ -1,0 +1,20 @@
+id: bsd-360
+problem: bsd
+title: 'Torsion count for m = 8: over a field with 8 nonzero, the 8-torsion subgroup of an elliptic Weierstrass curve has at most 64 points'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-354
+- bsd-359
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K), (8 : K) ≠ 0 →
+    Nat.card {P : W.toAffine.Point // (8 : ℕ) • P = 0} ≤ 64
+context: |
+  The m = 8 case of the m² torsion upper bound (bsd-192): the number 64 = 8². It is bsd-354 specialised to m = 8, with the
+  m = 8 division polynomial input of bsd-359 supplying the hypothesis of bsd-354. The statement is an assembly.
+sketch: |
+  Apply bsd-354 with m = 8: Even 8 (witness 4), (8 : K) ≠ 0 as the cast of 8, and the hypothesis of bsd-354 for m = 8 is
+  bsd-359. Then Nat.card ≤ 8 ^ 2 = 64 by norm_num. Mathlib: Even, Nat.cast_ofNat, norm_num.
+dead: []
