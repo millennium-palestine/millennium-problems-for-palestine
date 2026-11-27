@@ -1,0 +1,25 @@
+id: pnp-265
+problem: pvsnp
+title: Net height of balanced blocks each followed by a NAND step is minus the number of blocks
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ items : List (List (Bool × Bool)),
+      (∀ b ∈ items, (b.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0) →
+      ((((items.map fun b => b ++ [(true, true)]).flatten).map fun r : Bool × Bool =>
+        if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum) = -(items.length : ℤ)
+context: |
+  Net-height identity for the block decomposition of the pnp-152 route (pnp-263), companion to the floor bound
+  pnp-264. Each balanced block contributes height 0 and each NAND pair contributes height -1, so a run of k blocks
+  ends at height -k. Together with pnp-263 this accounts for the net stack change of a pair list as minus the number
+  of NAND steps plus the height of its tail. It is a fact about lists of pairs and integers: it does not mention
+  machines, polynomial bounds, or P, and it does not decide P vs NP.
+sketch: |
+  Induction on the list of blocks. The empty run has sum 0. For b :: rest, the flattened list is b ++ [NAND] ++ rest
+  mapped, so the height map sends it to (b mapped) ++ [-1] ++ (rest mapped). The sum of b mapped is 0 by hypothesis,
+  the NAND contributes -1, and the induction hypothesis gives -(length rest). Use List.map_append, List.map_flatten,
+  List.sum_append and List.map_map.
+dead: []
