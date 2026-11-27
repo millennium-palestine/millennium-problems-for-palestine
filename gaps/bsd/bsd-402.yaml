@@ -1,0 +1,24 @@
+id: bsd-402
+problem: bsd
+title: 'Frobenius fixed elements: an element x of the algebraic closure of F_p with x^p = x lies in the image of ZMod p'
+status: open
+imports:
+- Mathlib
+open:
+- Polynomial
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (x : AlgebraicClosure (ZMod p)), x ^ p = x →
+    ∃ a : ZMod p, algebraMap (ZMod p) (AlgebraicClosure (ZMod p)) a = x
+context: |
+  First step toward the count of Frobenius-fixed points on E(F̄_p) (bsd-403), which is the sub-gap
+  the sketch of bsd-121 (Frobenius characteristic equation) asks for: #E(F_p) = #ker(1 − φ). The fixed
+  points of x ↦ x^p in the algebraic closure of F_p are exactly the p elements of F_p. This is elementary:
+  X^p − X has at most p roots in a field, and the p distinct images of ZMod p are already roots of it.
+  The statement is true and elaborates (checked with `lake env lean` on a scratch file).
+sketch: |
+  Let f be the algebra map ZMod p → F̄_p and S its image, a Finset of card p (injective map, ZMod.card).
+  Suppose x^p = x with x ∉ S. Then insert x S has card p + 1. Every element of it is a root of
+  X^p − X (ZMod.pow_card for the elements of S), and X^p − X is nonzero of natDegree at most p, so
+  Polynomial.card_le_degree_of_subset_roots gives p + 1 ≤ p, a contradiction.
+dead: []
