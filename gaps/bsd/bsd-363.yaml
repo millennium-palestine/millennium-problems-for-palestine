@@ -1,0 +1,36 @@
+id: bsd-363
+problem: bsd
+title: 'x-product identity for short curves: for two affine points with distinct x-coordinates, the x-coordinates of P + Q and P − Q satisfy x₃ x₄ (x₁ − x₂)² = (x₁ x₂ − a₄)² − 4 a₆ (x₁ + x₂)'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) (x₁ y₁ x₂ y₂ : K)
+    (h₁ : W.toAffine.Nonsingular x₁ y₁) (h₂ : W.toAffine.Nonsingular x₂ y₂),
+    W.a₁ = 0 → W.a₂ = 0 → W.a₃ = 0 → x₁ ≠ x₂ →
+    ∃ (x₃ y₃ : K) (h₃ : W.toAffine.Nonsingular x₃ y₃) (x₄ y₄ : K) (h₄ : W.toAffine.Nonsingular x₄ y₄),
+      (WeierstrassCurve.Affine.Point.some x₁ y₁ h₁ + WeierstrassCurve.Affine.Point.some x₂ y₂ h₂ :
+        W.toAffine.Point) = WeierstrassCurve.Affine.Point.some x₃ y₃ h₃ ∧
+      (WeierstrassCurve.Affine.Point.some x₁ y₁ h₁ + -WeierstrassCurve.Affine.Point.some x₂ y₂ h₂ :
+        W.toAffine.Point) = WeierstrassCurve.Affine.Point.some x₄ y₄ h₄ ∧
+      x₃ * x₄ * (x₁ - x₂) ^ 2 = (x₁ * x₂ - W.a₄) ^ 2 - 4 * W.a₆ * (x₁ + x₂)
+context: |
+  Companion of bsd-362 (the sum identity (x₃ + x₄)(x₁ − x₂)² = 2(x₁ + x₂)(x₁x₂ + a₄) + 4a₆ for P + Q and P − Q). This
+  gap is the product identity for the same two points, the second symmetric function of x₃ and x₄, and it is the other
+  half of the pair of relations that the x(nP) step of bsd-198, bsd-218 and bsd-192 needs: with the sum and the product
+  fixed, x₃ and x₄ are the roots of a quadratic over the field. Only a₁ = a₂ = a₃ = 0 (short form) is assumed.
+  It is true: with λ = (y₁ − y₂)/(x₁ − x₂) and μ = (y₁ + y₂)/(x₁ − x₂) one has x₃ = λ² − x₁ − x₂ and x₄ = μ² − x₁ − x₂,
+  and (λ²d² − s d²)(μ²d² − s d²) with d = x₁ − x₂, s = x₁ + x₂ equals d²·((x₁x₂ − a₄)² − 4a₆ s) by the curve equations
+  for y₁² and y₂². The polynomial identity was checked exactly on 300 rational point pairs and symbolically (the
+  certificate for the curve equations has zero residual). Proposed by the bsd agent. Not checked in Lean.
+sketch: |
+  Follow bsd-362: add_of_X_ne for P + Q and for P + (−Q) (the negated point is nonsingular by nonsingular_neg), unfold
+  addX and slope_of_X_ne with a₁ = a₂ = a₃ = 0 substituted. Set u = (y₁ − y₂)/d and v = (y₁ + y₂)/d with d = x₁ − x₂,
+  so u d = y₁ − y₂ and v d = y₁ + y₂. Prove the cleared identity (x₃x₄d²)·d² = R·d² by linear_combination with
+  the two relations for ud and vd and the two curve equations as hypotheses, where R = (x₁x₂ − a₄)² − 4a₆(x₁ + x₂)
+  (cofactors: (ud + y₁ − y₂)·(v²−s)d² for the first, ((y₁−y₂)² − s d²)(vd + y₁ + y₂) for the second, and
+  q₁ = (y₁² − y₂²) + (c₁ − c₂) − 2sd², q₂ = −(y₁² − y₂²) − (c₁ − c₂) − 2sd² for the curve equations, c_i = x_i³ + a₄x_i + a₆).
+  Cancel d² with mul_right_cancel₀ to get the statement.
+dead: []
