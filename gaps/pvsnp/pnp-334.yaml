@@ -1,0 +1,36 @@
+id: pnp-334
+problem: pvsnp
+title: The top of a balanced nonnegative block followed by a second block is the top of the second block run from the top the first block leaves
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (F : List Bool × List Bool × Option Bool → Bool → List Bool × List Bool × Option Bool),
+    F = (fun st b => match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) →
+    ∀ (B1 B2 : List (Bool × Bool)),
+      (B1.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 →
+      (∀ j, j ≤ B1.length → 0 ≤ ((B1.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) →
+      ∀ (g : Bool) (w : List Bool),
+        (((B1 ++ B2).flatMap fun r : Bool × Bool => [r.1, r.2]).foldl F ([g], w, none)).1.headD false =
+          (((B2.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl F
+            ([((B1.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl F ([g], w, none)).1.headD false],
+             w.drop (B1.countP fun q : Bool × Bool => !q.1 && !q.2), none)).1.headD false)
+context: |
+  Top-level form of the split of pnp-333. The top of the run of B1 followed by B2 from a one-cell stack [g] is the top
+  of the run of B2 from the single value that B1 leaves, with the witness bits of B1 already consumed. This is the
+  split clause of the interval table for pnp-152 in the form it is used: the value at the split point is the
+  top of the left block, and the right block reads it. It is pure list and integer arithmetic: no machine, no
+  polynomial bound, and it does not decide P vs NP.
+sketch: |
+  The same argument as pnp-333: core_tail of MPP.Solutions.Pnp331 on p = B1, s = [g] gives the run of B1 as
+  (s', w.drop k, none) with length s' = 1, so s' = [y] and y is the top of the B1 run. Then the run of B1 ++ B2
+  is the run of B2 from that state by List.foldl_append, and the top is read off by simp.
+dead: []
