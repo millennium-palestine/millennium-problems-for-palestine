@@ -1,0 +1,26 @@
+id: pnp-300
+problem: pvsnp
+title: A CNF is satisfied by a list assignment exactly when its Boolean check holds
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (C : List (List (ℕ × Bool))) (w : List Bool),
+    (∀ c ∈ C, ∃ l ∈ c, w.getD l.1 false = l.2) ↔
+      C.all (fun c => c.any (fun l => (w.getD l.1 false == l.2))) = true
+context: |
+  Step toward pnp-100 (Cook–Levin, over TM2 machines), on the CNF route after pnp-298 and pnp-299. A CNF is a list of
+  clauses, each a list of literals (variable index, sign), and an assignment is given as a list of bits read
+  at the index, with false past its end. Membership of CNF satisfiability in NP needs a polynomial-time verifier
+  that checks a witness assignment against the clauses; a verifier computes a Boolean value, so the existential
+  semantics of satisfiability must be the same as the Boolean check. This gap says exactly that: the clauses are
+  all satisfied when every clause has a literal that agrees with the assignment, and that is the Boolean all-any
+  check on the same data. It is pure list logic: no machine, no polynomial bound, and it does not decide P vs NP.
+sketch: |
+  Unfold List.all and List.any with List.all_eq_true and List.any_eq_true, so each side becomes a
+  universal statement over the clauses and an existential over their literals. The only remaining step is
+  that the Boolean equality (w.getD l.1 false == l.2) = true is the Prop equality w.getD l.1 false = l.2, which
+  is beq_iff_eq. The proof is a simp call with these lemmas.
+dead: []
