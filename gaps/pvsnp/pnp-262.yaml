@@ -1,0 +1,31 @@
+id: pnp-262
+problem: pvsnp
+title: Two interval tables that satisfy the same local recurrence agree on every nonempty interval
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ F : (ℕ → ℕ → Bool → Bool → Prop) → ℕ → ℕ → Bool → Bool → Prop,
+    (∀ (T S : ℕ → ℕ → Bool → Bool → Prop) (i j : ℕ) (v g : Bool),
+      (∀ i' j' : ℕ, ∀ v' g' : Bool, i ≤ i' → i' < j' → j' ≤ j → j' - i' < j - i → (T i' j' v' g' ↔ S i' j' v' g')) →
+      (F T i j v g ↔ F S i j v g)) →
+    ∀ T S : ℕ → ℕ → Bool → Bool → Prop,
+      (∀ i j : ℕ, ∀ v g : Bool, i < j → (T i j v g ↔ F T i j v g)) →
+      (∀ i j : ℕ, ∀ v g : Bool, i < j → (S i j v g ↔ F S i j v g)) →
+      ∀ i j : ℕ, ∀ v g : Bool, i < j → (T i j v g ↔ S i j v g)
+context: |
+  The table of the pnp-152 route is indexed by intervals [i, j) of the pair list, and each cell (i, j, v, g) is
+  defined by a recurrence that reads only cells of strictly shorter intervals inside [i, j). This gap is the
+  uniqueness half of the table invariant: a table that satisfies the recurrence is determined by it. It is a
+  statement about functions on natural numbers and Booleans, with no list, no fold, no machine, and no polynomial
+  bound. It does not state the CYK recurrence of pnp-213, the table of any machine, or P vs NP. The recurrence is a
+  parameter F, and the locality hypothesis says that F at [i, j) reads only shorter intervals inside [i, j).
+sketch: |
+  Let d = j - i. Prove by strong induction on d that for all i < j with j - i = d, the two tables agree at (i, j, v, g).
+  Given such i, j, the locality hypothesis needs agreement at every nonempty interval [i', j') inside [i, j) of length
+  less than d, and the induction hypothesis gives exactly that. Then T i j v g is F T i j v g, which is F S i j v g by
+  locality, which is S i j v g by the hypothesis on S. The base case needs no separate treatment, because a length-one
+  interval has no shorter nonempty subinterval and the induction hypothesis is vacuous there.
+dead: []
