@@ -1,0 +1,33 @@
+id: pnp-307
+problem: pvsnp
+title: The window-rule tableau of t steps with its first row fixed to a list has a CNF of size 16nt + n
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- pnp-303
+statement: |
+  ∀ (n t : ℕ) (g : (Fin 3 → Bool) → Bool) (x : List Bool), ∃ D : List (List (ℕ × Bool)),
+    (∀ a : ℕ → Bool, ((∀ i : Fin n, a i.val = x.getD i.val false) ∧
+      ∀ s : Fin t, ∀ i : Fin n,
+        a (n * (s.val + 1) + i.val) = g (fun j => a (n * s.val + (i.val + j.val) % n))) ↔
+      ∀ d ∈ D, ∃ l ∈ d, a l.1 = l.2) ∧
+    D.length ≤ 16 * n * t + n ∧ ∀ d ∈ D, ∀ l ∈ d, l.1 < n * (t + 1)
+context: |
+  Step toward pnp-100 (Cook–Levin, over TM2 machines), on the CNF route, after pnp-303. A run of a window
+  rule is a tableau whose row 0 is the input, and the whole run is determined by that first row. pnp-303 gives
+  the CNF of the local equations of rows 0 to t, but not the first row. This gap adds the input: the first n
+  variables are fixed to the bits of x, read with false past its end, by one unit clause per position. The
+  satisfying assignments are then exactly the runs of the window rule that start from x, and the CNF has at
+  most n more clauses than the one of pnp-303. It is finite combinatorics with no machine and no polynomial
+  bound beyond the linear size, and it does not decide P vs NP. A polynomial-time map that writes this CNF for
+  the input of a verifier, with g taken from a TM2 machine, is still the open part of pnp-100.
+sketch: |
+  Take D to be the CNF of pnp-303 for n, t and g, followed by the n unit clauses [(i, x.getD i false)] for
+  i below n. A assignment satisfies a unit clause exactly when a i equals x.getD i false, and it satisfies the
+  CNF of pnp-303 exactly when the local equations hold, so the two conjunctions match. The length is the bound
+  of pnp-303 plus n by List.length_append and List.length_finRange or List.length_range, and every variable of
+  a unit clause is below n, which is below n * (t + 1). In Lean, import MPP.Solutions.Pnp303 and obtain D from
+  its main theorem, then unfold the membership of the appended list with List.mem_append and List.mem_map.
+dead: []
