@@ -1,0 +1,31 @@
+id: bsd-396
+problem: bsd
+title: 'Seven-division roots: for an elliptic Weierstrass curve over a field and a nonsingular affine point (x, y) with 7 • P = 0, the 7-division polynomial preΨ′ 7 vanishes at x'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-221
+- bsd-394
+- bsd-395
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) (x y : K)
+    (h : W.toAffine.Nonsingular x y),
+    (7 : ℕ) • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) = 0 →
+    (W.preΨ' 7).eval x = 0
+context: |
+  The m = 7 instance of the division polynomial input bsd-198 (odd m). It is the input that bsd-316 needs for the m² torsion
+  bound at m = 7 (see bsd-397). The proof composes three steps: the doubling of P (bsd-221) gives x₂ with x₂ Ψ₂Sq(x) = g(x);
+  the doubling of 2P gives x₄ with x₄ Ψ₂Sq(x₂) = g(x₂); the triple formula (bsd-394) gives x₃ = x(3P) in terms of x; and
+  4 • P = −3 • P, so x₄ = x₃. Then bsd-395 (pure algebra) gives preΨ′ 7 (x) = 0. The only non-polynomial inputs are the
+  nonvanishing conditions: 2 • P ≠ 0 (since 7 • P = 0 and P ≠ 0, the point 2P is nonzero because 7 is odd). No characteristic
+  hypothesis is needed. Not checked in Lean.
+sketch: |
+  (1) P ≠ 0 and 7 • P = 0 give 2 • P ≠ 0 (otherwise P = 7P − 3·2P = 0), so y ≠ negY x y and bsd-221 gives Q₂ := 2 • P = (x₂, y₂)
+  with x₂ Ψ₂Sq(x) = g(x) (curve identity for (2y + a₁x + a₃)²). (2) 4 • P ≠ 0 (else 3P = 0 and P = 0), so bsd-221 applied to
+  Q₂ gives x₄ with x₄ Ψ₂Sq(x₂) = g(x₂) and 4 • P = (x₄, ·). (3) 3 • P ≠ 0 gives 3 • P = some x₃ y₃ h₃ and bsd-394 gives the triple
+  identity. (4) 4 • P + 3 • P = 7 • P = 0, so 4 • P = −(3 • P) and x₄ = x₃ by the injectivity of Point.some and neg_some (as in bsd-357).
+  (5) Apply bsd-395 with u = x, Ψ₂Sq(x) ≠ 0 from step (1). Mathlib: WeierstrassCurve.Affine.Point.some.inj, Point.neg_some,
+  Point.add_self_of_Y_eq (as in bsd-357), and the identities Ψ₂Sq(x) = (2y + a₁x + a₃)² on the curve.
+dead: []

@@ -1,0 +1,30 @@
+id: bsd-395
+problem: bsd
+title: 'Seven-division elimination: over a field, if the x-coordinates u, x₂, x₃, x₄ satisfy the doubling relations of 2P and 4P, the triple identity of P, and x₃ = x₄, with Ψ₂Sq(u) nonzero, then the 7-division polynomial vanishes at u'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (W : WeierstrassCurve K) (u x₂ x₃ x₄ : K),
+    W.Ψ₂Sq.eval u ≠ 0 →
+    x₂ * W.Ψ₂Sq.eval u = u ^ 4 - W.b₄ * u ^ 2 - 2 * W.b₆ * u - W.b₈ →
+    x₄ * W.Ψ₂Sq.eval x₂ = x₂ ^ 4 - W.b₄ * x₂ ^ 2 - 2 * W.b₆ * x₂ - W.b₈ →
+    x₃ * (W.Ψ₃.eval u) ^ 2 = u * (W.Ψ₃.eval u) ^ 2 - W.Ψ₂Sq.eval u * W.preΨ₄.eval u →
+    x₃ = x₄ →
+    (W.preΨ' 7).eval u = 0
+context: |
+  Pure algebra behind the 7-division roots (the target bsd-396). Hypotheses: x₂ = x(2P) by the doubling of P (bsd-221),
+  x₄ = x(4P) by the doubling of 2P, x₃ = x(3P) by the triple formula (bsd-394), and x₃ = x₄ because 4P = −3P when 7P = 0.
+  Eliminating x₄ and x₃ gives Z(x₂) = 0 with Z = (g(x₂) − u·f(x₂))·D(u) + f(x₂)·f(u)·preΨ₄(u), where f = Ψ₂Sq, g = X⁴ − b₄X² − 2b₆X − b₈
+  and D = Ψ₃(u)². Substituting x₂ = g(u)/f(u) gives f(u)⁴ Z(g(u)/f(u)) = −preΨ′₇(u) (checked by sympy, with b₈ eliminated
+  through 4b₈ = b₂b₆ − b₄² and the quotient constant 4096). The proof is a linear_combination with the relation 4b₈ = b₂b₆ − b₄²,
+  which holds for every Weierstrass curve by its definition, followed by cancelling f(u)⁴ ≠ 0. No hypothesis about Ψ₃(u) is needed.
+  Not checked in Lean.
+sketch: |
+  (1) Write Z(x₂) := (g(x₂) − u f(x₂)) D + f(x₂) f(u) preΨ₄(u) with f = Ψ₂Sq and D = Ψ₃(u)². (2) Z(x₂) = f(x₂)·(x₃ D − u D + f(u) preΨ₄(u)) − D·(x₄ f(x₂) − g(x₂)) after substituting x₃ = x₄, so Z(x₂) = 0 by linear_combination.
+  (3) Pseudo-division of f(u)⁴ Z(x₂) by (f(u) x₂ − g(u)) (sympy) gives f(u)⁴ Z(x₂) = Q(u, x₂)·(f(u) x₂ − g(u)) − preΨ′₇(u) + c·(4b₈ − b₂b₆ + b₄²).
+  (4) Use hypothesis 2 for the first term and the relation for the last, then cancel f(u)⁴ ≠ 0. Mathlib: WeierstrassCurve.preΨ'_odd, preΨ'_even
+  with norm_num unfold the 7-division polynomial to ψ₅ψ₃³ − ψ₂ψ₄³, i.e. preΨ′₇ = (preΨ₄·Ψ₂Sq² − Ψ₃³)·Ψ₃³ − Ψ₂Sq²·preΨ₄³.
+dead: []
