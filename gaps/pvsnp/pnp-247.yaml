@@ -1,0 +1,33 @@
+id: pnp-247
+problem: pvsnp
+title: The witness bit at the unary remainder of two polynomial-time lengths is in P
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-234
+- pnp-237
+- pnp-244
+statement: |
+  ∀ a b : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) a) →
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) b) →
+    (∀ x : List Bool, b x ≠ []) →
+    ∃ L : Lang, InP L ∧ ∀ x w : List Bool, L (pair x w) = w.getD ((a x).length % (b x).length) false
+context: |
+  The row and column decode of the table index of the pnp-152 route needs the column t % (n + 1) as a witness
+  index. pnp-244 writes the remainder of two lengths in unary, and pnp-234 reads the witness at a unary index
+  computed from the instance. This gap combines the two, as pnp-246 does for the truncated difference. The index
+  is the remainder of the lengths of two polynomial-time maps a and b applied to the instance x, with the divisor
+  b x assumed nonempty. It is a composition lemma for the table chain. It does not state the table, the CYK
+  recurrence, or the correctness of any cell, and it does not decide P vs NP.
+sketch: |
+  Let p z = pair (a z) (b z) (pnp-026, through pnp-237 pairP), and R be the unary remainder of pnp-244, so
+  R (pair u v) = replicate (u.length % v.length) true when v is nonempty. Then h = R ∘ p is polynomial-time by
+  pnp-237 comp, and h x is unary of length (a x).length % (b x).length, because b x is nonempty. pnp-234 applied
+  to h gives the language L with L (pair x w) = w.getD (h x).length false, which is the statement after rewriting.
+dead: []
