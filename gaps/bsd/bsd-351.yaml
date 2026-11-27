@@ -1,0 +1,30 @@
+id: bsd-351
+problem: bsd
+title: 'Multiplicative domination: a multiplicative function bounded by a nonnegative multiplicative function on prime powers is bounded everywhere'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (f g : ℕ → ℝ), f 1 = 1 → g 1 = 1 →
+    (∀ m n : ℕ, 0 < m → 0 < n → Nat.Coprime m n → f (m * n) = f m * f n) →
+    (∀ m n : ℕ, 0 < m → 0 < n → Nat.Coprime m n → g (m * n) = g m * g n) →
+    (∀ n : ℕ, 0 < n → 0 ≤ g n) →
+    (∀ p k : ℕ, p.Prime → |f (p ^ k)| ≤ g (p ^ k)) →
+    ∀ n : ℕ, 0 < n → |f n| ≤ g n
+context: |
+  Multiplicativity half of bsd-016. The L-coefficients a_n of an elliptic curve over ℚ are multiplicative, and the bound
+  d(n) √n that bsd-016 claims is multiplicative as well (d is multiplicative on coprime arguments and √ is). So the
+  coefficient bound reduces to prime powers: bsd-350 gives |c_k| ≤ (k + 1) √p^k for the prime-power coefficients of a
+  good prime, and bad primes give |c_k| ≤ 1. This gap is the arithmetic step that passes from prime powers to all n:
+  write n as a product of prime powers, and use multiplicativity of both sides and nonnegativity of g. It is curve-free
+  and independent of the other bsd-016 pieces. It is true: f(n) and g(n) are products over the prime-power factorisation
+  of n (induction on n with Nat.recOnPosPrimePosCoprime, or Nat.Coprime factorisation), so |f(n)| = Π |f(p^k)| ≤ Π g(p^k) = g(n).
+  The hypotheses f 1 = 1 and g 1 = 1 are needed, since otherwise f could be 1 at 1 while g is 0 there. Not checked in Lean.
+sketch: |
+  Strong induction on n > 0. For n = 1 use f 1 = 1 and g 1 = 1. For n > 1 pick a prime p dividing n, write n = p^k · m with
+  p ∤ m (Nat.exists_eq_pow_mul_and_not_dvd or Nat.ordProj/ordCompl), 0 < m < n, and Nat.Coprime (p^k) m. Apply the
+  multiplicativity of f and g on the coprime pair (p^k, m), then bound |f(p^k)| ≤ g(p^k) and |f m| ≤ g m by induction, and
+  use g(p^k) ≥ 0 and g m ≥ 0 (from the nonnegativity hypothesis) with abs_mul and mul_le_mul.
+dead: []
