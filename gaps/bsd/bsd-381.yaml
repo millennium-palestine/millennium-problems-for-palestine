@@ -1,0 +1,35 @@
+id: bsd-381
+problem: bsd
+title: 'Squarefree preΨ′ 5 in characteristic 3 for the short curves y² = x³ + a₂x² + a₆: over a field with 3 = 0, if the discriminant of mk 0 a₂ 0 0 a₆ is nonzero then its preΨ′ 5 is squarefree'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-282
+statement: |
+  ∀ (K : Type) [Field K], (3 : K) = 0 → ∀ a2 a6 : K,
+    (WeierstrassCurve.mk (0 : K) a2 0 0 a6).Δ ≠ 0 →
+      Squarefree ((WeierstrassCurve.mk (0 : K) a2 0 0 a6).preΨ' 5)
+context: |
+  Slice case of bsd-299 (characteristic 3, a₁ = a₃ = a₄ = 0). With a₄ = 0 and 3 = 0 the Mathlib invariants are
+  b₂ = 4a₂, b₄ = 0, b₆ = 4a₆, b₈ = 4a₂a₆, and Δ ≡ −a₂³a₆ in K. The discriminant hypothesis forces a₂ ≠ 0 and a₆ ≠ 0.
+  The polynomial f = preΨ′ 5 = preΨ₄ · Ψ₂Sq² − Ψ₃³ (bsd-283) has degree 12 in X and leading coefficient 5 ≡ 2.
+  Explicit cofactors with coefficients in ℤ[a₂, a₆] (A and B are sums of monomials X^i a₂^j a₆^k, listed in the sketch)
+  satisfy A·f + B·f′ ≡ (a₂³a₆)²² = a₂⁶⁶a₆²² modulo 3. The generator agent checked this identity by sympy (coefficientwise
+  reduction mod 3, residual zero). It is not yet checked in Lean. Once 3 = 0, the identity gives a nonzero constant, and
+  bsd-282 turns that into squarefreeness.
+  Proposed by the generator agent. Not claimed by anyone at the time of writing.
+sketch: |
+  Unfold preΨ′ 5 with the bsd-283 identity and the b-invariants of mk 0 a₂ 0 0 a₆ (b₂ = 4a₂, b₄ = 0, b₆ = 4a₆,
+  b₈ = 4a₂a₆). The cofactors, with sign and exponent per monomial, are
+    A = −X⁹a₂⁶⁰a₆¹⁷ + X⁹a₂⁵⁷a₆¹⁸ − X⁸a₂⁶¹a₆¹⁷ + X⁷a₂⁵⁹a₆¹⁸ − X⁶a₂⁵⁷a₆¹⁹ + X⁵a₂⁶¹a₆¹⁸ + X⁵a₂⁵⁸a₆¹⁹ − X⁴a₂⁵⁹a₆¹⁹
+      + X³a₂⁶³a₆¹⁸ − X³a₂⁶⁰a₆¹⁹ + X³a₂⁵⁷a₆²⁰ + X²a₂⁶¹a₆¹⁹ + X²a₂⁵⁸a₆²⁰ + Xa₂⁶²a₆¹⁹ − Xa₂⁵⁹a₆²⁰ − a₂⁶³a₆¹⁹ − a₂⁶⁰a₆²⁰
+    B = −X¹¹a₂⁵⁹a₆¹⁷ + X¹¹a₂⁵⁶a₆¹⁸ − X¹⁰a₂⁶⁰a₆¹⁷ + X⁹a₂⁶¹a₆¹⁷ − X⁷a₂⁶⁰a₆¹⁸ − X⁶a₂⁶¹a₆¹⁸ − X⁶a₂⁵⁸a₆¹⁹ − X⁵a₂⁵⁹a₆¹⁹
+      + X⁴a₂⁶³a₆¹⁸ − X⁴a₂⁶⁰a₆¹⁹ + X³a₂⁶¹a₆¹⁹ + X³a₂⁵⁸a₆²⁰ − X²a₂⁵⁹a₆²⁰ + X²a₂⁵⁶a₆²¹ − Xa₂⁶³a₆¹⁹ + a₂⁶¹a₆²⁰ − a₂⁵⁸a₆²¹
+  Take the derivative by simp with derivative_mul, derivative_pow, derivative_X, derivative_C. Close
+  A f + B f′ = C (a₂⁶⁶ a₆²²) with linear_combination (q) * h3, where h3 : (3 : K) = 0 and q is the quotient of the
+  residual by 3 (the sketch expects about 73 terms; maxHeartbeats up to 4000000 may be needed). Then use
+  Δ = −a₂³a₆ (from h3) to match (−Δ)²² = a₂⁶⁶a₆²², and apply bsd-282 with the constant nonzero from the discriminant
+  hypothesis. Mathlib: Polynomial.derivative, WeierstrassCurve.Δ, b₂, b₄, b₆, b₈ and their simp lemmas.
+dead: []
