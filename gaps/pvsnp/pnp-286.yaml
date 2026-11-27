@@ -7,13 +7,13 @@ imports:
 open: []
 depends: []
 statement: |
-  ∀ (P : ℕ → Bool → Bool → Prop) (X : ℕ → ℕ → Bool × Bool → Prop) (c : ℕ → ℕ → Bool × Bool → Bool) (a b : ℕ) (q : Bool × Bool),
+  ∀ (P : ℕ → ℕ → Bool → Bool → Prop) (X : ℕ → ℕ → Bool × Bool → Prop) (c : ℕ → ℕ → Bool × Bool → Bool) (a b : ℕ) (q : Bool × Bool),
     (∀ i' j' : ℕ, ∀ r : Bool × Bool, i' ≤ j' → j' - i' < b - a → (c i' j' r = true ↔ X i' j' r)) →
     (∀ i j : ℕ, ∀ r : Bool × Bool, i + 2 ≤ j → (X i j r ↔
-      ((∃ u : Bool, P i u r.1 ∧ ∃ g' : Bool, X (i + 1) (j - 1) (u, g') ∧ r.2 = !(g' && r.1)) ∨
+      ((∃ u : Bool, P i j u r.1 ∧ ∃ g' : Bool, X (i + 1) (j - 1) (u, g') ∧ r.2 = !(g' && r.1)) ∨
        (∃ k : ℕ, i < k ∧ k < j ∧ ∃ g1 : Bool, X i k (r.1, g1) ∧ X k j (g1, r.2))))) →
     a + 2 ≤ b → (X a b q ↔
-      ((∃ u : Bool, P a u q.1 ∧ ∃ g' : Bool, c (a + 1) (b - 1) (u, g') = true ∧ q.2 = !(g' && q.1)) ∨
+      ((∃ u : Bool, P a b u q.1 ∧ ∃ g' : Bool, c (a + 1) (b - 1) (u, g') = true ∧ q.2 = !(g' && q.1)) ∨
        (∃ k : ℕ, a < k ∧ k < b ∧ ∃ g1 : Bool, c a k (q.1, g1) = true ∧ c k b (g1, q.2) = true)))
 context: |
   Step toward pnp-152. The invariant of the table fill is proved by strong induction on the length b - a of the interval:
