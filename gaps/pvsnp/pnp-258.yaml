@@ -1,0 +1,39 @@
+id: pnp-258
+problem: pvsnp
+title: The unary quotient of the length of the second component by the successor of the length of the first is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-021
+- pnp-025
+- pnp-028
+- pnp-031
+- pnp-032
+- pnp-093
+statement: |
+  ∃ Q : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) Q) ∧
+    ∀ x w : List Bool, Q (pair x w) = List.replicate (w.length / (x.length + 1)) true
+context: |
+  Decoding step for the table side of pnp-152. The append-only table of the CYK route (pnp-240, pnp-241) writes the
+  cell at position |w| of the witness, and the reads of the recurrence need the row and the column of that position.
+  If a table has n + 1 cells per row, the row of position |w| is the quotient |w| / (n + 1), and the column is the
+  remainder. The remainder is covered by the unary arithmetic of pnp-245 and pnp-247; this gap gives the quotient, in
+  unary, so that pnp-031 and pnp-032 can use it as an index. It is an arithmetic closure lemma: it does not state any
+  table, any CYK recurrence, or any computation of the fold, and it does not decide P vs NP.
+  The quotient is a bounded count: it equals the number of j < |w| + 1 with (j + 1) * (|x| + 1) ≤ |w|. The bit at j is a
+  length comparison of pnp-028 on unary numbers, and the count is the counting pattern of pnp-242 with the bound |w| in
+  place of |x|. The proposal of pnp-242 is still pending a checker re-run, so this gap does not depend on it.
+sketch: |
+  Let N = |w| and n = |x| + 1, both read from the pair encoding. The map Q outputs the unary count of j in range(N + 1)
+  such that the unary product of (j + 1) and n is at most N, using the unary multiplication of pnp-032 and the length
+  comparison of pnp-028. For j ≤ N, the condition holds exactly for j + 1 ≤ N / n, so the count is N / n, and the output
+  is that many true bits. The count over a range is computed by a loop with a unary counter (as in pnp-066), with the
+  step bit given by the composed comparison. The time is polynomial in |x| + |w|, since the loop runs |w| + 1 times and
+  each step is polynomial in the input length.
+dead: []
