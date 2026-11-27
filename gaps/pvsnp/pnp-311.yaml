@@ -1,0 +1,31 @@
+id: pnp-311
+problem: pvsnp
+title: The window-rule tableau with only the first m cells of its first row fixed has a CNF of size 16nt + m
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (n t m : ℕ) (g : (Fin 3 → Bool) → Bool) (x : List Bool), m ≤ n → ∃ D : List (List (ℕ × Bool)),
+    (∀ a : ℕ → Bool, ((∀ i : Fin m, a i.val = x.getD i.val false) ∧
+      ∀ s : Fin t, ∀ i : Fin n,
+        a (n * (s.val + 1) + i.val) = g (fun j => a (n * s.val + (i.val + j.val) % n))) ↔
+      ∀ d ∈ D, ∃ l ∈ d, a l.1 = l.2) ∧
+    D.length ≤ 16 * n * t + m ∧ ∀ d ∈ D, ∀ l ∈ d, l.1 < n * (t + 1)
+context: |
+  Step toward pnp-100 (Cook–Levin, over TM2 machines), on the CNF route, after pnp-303 and pnp-307. In the
+  Cook–Levin reduction for a verifier the first row of the tableau is the instance followed by the witness, and only
+  the instance is known. pnp-307 fixes all n cells of the first row to a list. This gap fixes only the first m cells
+  (m at most n) and leaves the remaining cells free, so that the witness can be chosen by a satisfying assignment.
+  The CNF is the one of pnp-303 with m unit clauses added, so its size grows by m. It is finite combinatorics with no
+  machine and no polynomial bound beyond the linear size, and it does not decide P vs NP. Writing the tableau of a
+  verifier by a polynomial-time map is still the open part of pnp-100.
+sketch: |
+  Take D to be the CNF of pnp-303 for n, t and g, followed by the m unit clauses [(i, x.getD i false)] for i below m.
+  An assignment satisfies the unit clause of i exactly when a i equals x.getD i false, and it satisfies the CNF of
+  pnp-303 exactly when the local equations hold, so the two conjunctions match as in the proof of pnp-307, with m in
+  place of n in the fixed cells. The length is the bound of pnp-303 plus m by List.length_append and
+  List.length_finRange, and each unit variable i is below m ≤ n ≤ n * (t + 1). The proof of pnp-307 applies verbatim
+  with m for n in the first conjunct.
+dead: []
