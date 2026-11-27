@@ -1,0 +1,25 @@
+id: pnp-285
+problem: pvsnp
+title: The existential over a split point and a middle bit is a bounded Boolean disjunction over the list of split points
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (c : ℕ → ℕ → Bool × Bool → Bool) (i j : ℕ) (p : Bool × Bool),
+    (∃ k : ℕ, i < k ∧ k < j ∧ ∃ g1 : Bool, c i k (p.1, g1) = true ∧ c k j (g1, p.2) = true) ↔
+    (List.range j).any (fun k => decide (i < k ∧ k < j) &&
+      (c i k (p.1, false) && c k j (false, p.2) || c i k (p.1, true) && c k j (true, p.2))) = true
+context: |
+  Step toward pnp-152. The interval recurrence of pnp-213 has a clause that splits an interval (i, j) at a point k with
+  i < k < j and a middle bit g1, and asks for two earlier table cells to hold. A polynomial-time machine computes such a
+  clause as one bounded OR over the candidate split points k below j, each term an AND of table reads (the shape of
+  pnp-229 and pnp-240). This gap says that the Prop-level existential equals that Boolean OR, for any table c given as
+  Boolean cells. It is pure logic on Bool and ℕ: no machine, no polynomial bound, and it does not decide P vs NP.
+sketch: |
+  Unfold List.any_eq_true and List.mem_range. The forward direction takes the witness k and g1 and chooses the
+  disjunct by cases on g1 (the first disjunct when g1 = false, the second when g1 = true), with decide (i < k ∧ k < j)
+  true by the hypotheses. The backward direction reads k < j from the range membership, takes g1 from the disjunct that
+  holds, and rewrites the Boolean conditions back to equalities of true. Cases on the Bool g1 and simp close the goal.
+dead: []
