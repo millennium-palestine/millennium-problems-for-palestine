@@ -1,0 +1,28 @@
+id: pnp-267
+problem: pvsnp
+title: A block decomposition whose tail never dips below zero has net height at least minus the block count
+status: open
+imports:
+- Mathlib
+- MPP.Solutions.Pnp266
+open: []
+depends:
+- pnp-266
+statement: |
+  ∀ (items : List (List (Bool × Bool))) (T : List (Bool × Bool)),
+    (∀ b ∈ items, (b.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0) →
+    (∀ j, j ≤ T.length →
+      0 ≤ ((T.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) →
+    -(items.length : ℤ) ≤
+      ((((items.map fun b => b ++ [(true, true)]).flatten ++ T).map fun r : Bool × Bool =>
+        if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum)
+context: |
+  Lower bound companion to pnp-266, for the top-level assembly of the pnp-152 route. When the tail of a block
+  decomposition (pnp-263) never dips below zero, the net height of the whole pair list is at least minus the
+  number of blocks, so a run of NAND steps can drop the stack by at most one per block. It is a fact about lists
+  of pairs and integers: it does not mention machines, polynomial bounds, or P, and it does not decide P vs NP.
+sketch: |
+  Take j = T.length in the tail hypothesis. Since List.take_length gives T.map f with take T.length equal to the
+  whole list, the sum of the tail is nonnegative. Then pnp-266 (MPP.Solutions.Pnp266.main) gives the net height as
+  -(items.length) plus that sum, which is at least -(items.length). Use omega or linarith on the two facts.
+dead: []

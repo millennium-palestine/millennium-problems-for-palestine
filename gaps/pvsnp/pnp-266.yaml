@@ -1,0 +1,28 @@
+id: pnp-266
+problem: pvsnp
+title: Net height of a block decomposition is the tail height minus the block count
+status: open
+imports:
+- Mathlib
+- MPP.Solutions.Pnp265
+open: []
+depends:
+- pnp-265
+statement: |
+  ∀ (items : List (List (Bool × Bool))) (T : List (Bool × Bool)),
+    (∀ b ∈ items, (b.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0) →
+    ((((items.map fun b => b ++ [(true, true)]).flatten ++ T).map fun r : Bool × Bool =>
+      if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum) =
+      -(items.length : ℤ) + (T.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum
+context: |
+  Bookkeeping step for the top-level assembly of the pnp-152 route. pnp-263 writes a pair list as a sequence of
+  balanced nonnegative blocks, each followed by a NAND pair, and a tail T. pnp-265 gives the net height of the
+  blocks with their NAND pairs. This gap combines the two: the net height of the whole list is the net height of
+  the tail minus the number of blocks. It is a fact about lists of pairs and integers, with no machines, no
+  polynomial bounds and no P. It does not decide P vs NP.
+sketch: |
+  Use pnp-265 for the flattened part, which has height -(items.length) and is the prefix of the list. The height
+  map is a list map, so List.map_append and List.sum_append split the sum of the whole list into the sum of the
+  flattened blocks plus the sum of T. Rewrite the first summand with pnp-265 (MPP.Solutions.Pnp265.main) applied to
+  items and the balance hypothesis. The statement needs no induction of its own.
+dead: []
