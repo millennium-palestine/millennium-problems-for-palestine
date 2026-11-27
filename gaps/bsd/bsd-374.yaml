@@ -1,0 +1,24 @@
+id: bsd-374
+problem: bsd
+title: 'Divisor-function series converges: the series of d(n) = #divisors of n is summable at every complex s with Re s > 1'
+status: open
+imports:
+- Mathlib
+- MPP.Defs.BSD
+open:
+- MPP.BSD
+depends: []
+statement: |
+  ∀ s : ℂ, 1 < s.re → LSeriesSummable (fun n : ℕ => (n.divisors.card : ℂ)) s
+context: |
+  Split of bsd-006 (the analytic half). The divisor function is the convolution ζ * ζ, so its
+  L-series is the square of the Riemann zeta series, which is summable for Re s > 1. Mathlib has
+  `LSeriesSummable_zeta_iff` (ζ-series summable iff 1 < Re s), `ArithmeticFunction.LSeriesSummable_mul`
+  (summability of convolutions), and `ArithmeticFunction.sigma_zero_apply` (σ 0 n = #n.divisors).
+  No divisor bound n^ε is needed for this statement. This is the input to bsd-375.
+sketch: |
+  Let ζ be the arithmetic function `ArithmeticFunction.zeta` (coerced to ℂ). Show that
+  ζ * ζ = σ 0 as arithmetic functions (for example through `ArithmeticFunction.zeta_mul_pow_eq_sigma`
+  or by evaluating both sides on divisors), then apply `ArithmeticFunction.LSeriesSummable_mul`
+  to `LSeriesSummable_zeta_iff.mpr`, and finish with `sigma_zero_apply`.
+dead: []

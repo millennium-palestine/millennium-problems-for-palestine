@@ -1,0 +1,26 @@
+id: bsd-375
+problem: bsd
+title: 'Coefficient comparison for L-series: a sequence bounded by d(n)√n has a summable L-series at every s with Re s > 3/2'
+status: open
+imports:
+- Mathlib
+- MPP.Defs.BSD
+open:
+- MPP.BSD
+depends:
+- bsd-374
+statement: |
+  ∀ (f : ℕ → ℂ), (∀ n : ℕ, 0 < n → ‖f n‖ ≤ (n.divisors.card : ℝ) * Real.sqrt n) →
+    ∀ s : ℂ, 3 / 2 < s.re → LSeriesSummable f s
+context: |
+  Split of bsd-006, second half. Together with bsd-016 (the coefficient bound |a_n| ≤ d(n)√n for an
+  elliptic curve over ℚ) this gives bsd-006 with the statement's `(↑) ∘ E.LFunction` as f: apply this
+  gap to f = (↑) ∘ E.LFunction and the bound from bsd-016. This gap is the pure analytic step: the
+  n^{-s} weight turns d(n)√n into d(n) times n^{-(s - 1/2)}, and Re (s - 1/2) > 1 is exactly the
+  summability range of bsd-374. The value at n = 0 does not matter, since the L-series term vanishes there.
+sketch: |
+  Compare norms termwise: `LSeries.norm_term_eq` (or unfold `LSeries.term`) gives
+  ‖term f s n‖ = ‖f n‖ / n^(Re s) for n > 0. Then bound it by d(n) / n^(Re s − 1/2), which is the norm
+  of `LSeries.term (fun n => d(n)) (s − 1/2) n`. Use `Real.sqrt n = n^(1/2)` and `Real.rpow_sub`.
+  Finish with bsd-374 at s − 1/2 and a summability comparison (`Summable.of_norm_bounded` style).
+dead: []
