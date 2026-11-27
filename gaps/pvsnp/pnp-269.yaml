@@ -1,0 +1,46 @@
+id: pnp-269
+problem: pvsnp
+title: Every pair list run from a top and a stack splits into balanced NAND blocks and a nonnegative tail, and the run leaves a new top over the stack with one cell dropped per block
+status: open
+imports:
+- Mathlib
+- MPP.Solutions.Pnp263
+open: []
+depends:
+- pnp-263
+statement: |
+  ∀ (q : List (Bool × Bool)) (v : Bool) (t w : List Bool), ∃ (items : List (List (Bool × Bool))) (T : List (Bool × Bool)),
+    q = (items.map fun b => b ++ [(true, true)]).flatten ++ T ∧
+    (∀ b ∈ items, (b.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 ∧
+      ∀ j, j ≤ b.length → 0 ≤ ((b.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) ∧
+    (∀ j, j ≤ T.length → 0 ≤ ((T.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) ∧
+    ∃ g : Bool, ((q.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+        match st.2.2 with
+        | none => (st.1, st.2.1, some b)
+        | some a =>
+          if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+            else (st.1, st.2.1, none))
+          else (if b then (st.1.headD false :: st.1, st.2.1, none)
+            else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (v :: t, w, none)) =
+      ((T.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+        match st.2.2 with
+        | none => (st.1, st.2.1, some b)
+        | some a =>
+          if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+            else (st.1, st.2.1, none))
+          else (if b then (st.1.headD false :: st.1, st.2.1, none)
+            else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (g :: t.drop items.length, w.drop (items.flatten.countP fun q : Bool × Bool => !q.1 && !q.2), none))
+context: |
+  Top-level decomposition of a run of the pnp-133 fold, the assembly step that combines pnp-263 with pnp-268. pnp-263
+  splits any pair list into balanced nonnegative blocks, each followed by a NAND pair, and a tail that never dips below
+  zero. pnp-268 says that the blocks with their NAND pairs run on a stack as one new top over the stack with one cell
+  dropped per block. Together, a run of any pair list from a top v over a stack t is a run of the tail alone from a new
+  top over the stack with the first items.length cells dropped. The statement says exactly this, with the witness advanced
+  by the reads of the blocks. It is a fact about lists of pairs and the fold: no machine, no polynomial bound, no P, and
+  it does not decide P vs NP.
+sketch: |
+  Take items and T from pnp-263 applied to q. Substitute q by its decomposition, which the equation hypothesis allows, and
+  apply pnp-268 (MPP.Solutions.Pnp268.main items T) to the block hypothesis, which is the same conjunction as in pnp-263.
+  The two statements match term for term, so the existential of pnp-268 is the existential of this gap. Once pnp-268 is
+  merged, add pnp-268 to depends and import MPP.Solutions.Pnp268 in the solution file.
+dead: []
