@@ -1,0 +1,41 @@
+id: pnp-332
+problem: pvsnp
+title: A balanced prefix, one up-step and a nonnegative rest have the top of the rest run from the up-step value
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+   ∀ (F : List Bool × List Bool × Option Bool → Bool → List Bool × List Bool × Option Bool),
+      F = (fun st b => match st.2.2 with
+        | none => (st.1, st.2.1, some b)
+        | some a =>
+          if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+            else (st.1, st.2.1, none))
+          else (if b then (st.1.headD false :: st.1, st.2.1, none)
+            else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) →
+      ∀ (B : List (Bool × Bool)) (c : Bool) (R : List (Bool × Bool)),
+        (B.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 →
+        (∀ j, j ≤ B.length → 0 ≤ ((B.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) →
+        (∀ j, j ≤ R.length → 0 ≤ ((R.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) →
+        ∀ (g : Bool) (w : List Bool),
+          (((B ++ (false, c) :: R).flatMap fun r : Bool × Bool => [r.1, r.2]).foldl F ([g], w, none)).1.headD false =
+            ((R.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl F
+              ([if c then ((B.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl F ([g], w, none)).1.headD false
+                else (w.drop (B.countP fun q : Bool × Bool => !q.1 && !q.2)).headD false],
+               (w.drop (B.countP fun q : Bool × Bool => !q.1 && !q.2)).drop (if c then 0 else 1), none)).1.headD false
+context: |
+  One step of the nonnegative tail DP for pnp-152. Take a nonnegative pair list of the form B, then one up-step (false, c),
+  then a nonnegative rest R, where B is balanced and nonnegative. Balanced B leaves one cell y (pnp-327 and pnp-328
+  style), the up-step pushes either a copy of y (c true) or the next witness bit (c false), and then R runs on top of that
+  cell with y below it, where pnp-331 says the rest does not read y. So the top of the whole run is the top of R run from
+  the single up-step value, which is the chain step of the table: a Boolean value from the block table, then a Boolean
+  value from one leaf or copy. It is a fact about lists of bits and the fold: no machine, no polynomial bound, no P, and it
+  does not decide P vs NP.
+sketch: |
+  Use pnp-327 (core) to get the state [y] after B, with witness w.drop (leaves of B). Unfold the up-step (false, c) by
+  cases on c: a leaf pushes the witness head and drops one witness bit, a copy pushes y and drops nothing. The state is
+  then (u :: [y], witness, none) with u the pushed value, and pnp-331 (tail independence of a nonnegative tail) gives the
+  same top as the run from [u]. The right-hand side is exactly that run.
+dead: []
