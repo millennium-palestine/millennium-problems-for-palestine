@@ -1,0 +1,20 @@
+id: bsd-401
+problem: bsd
+title: 'Completing the square: if a² ≤ 4p then m² − a m n + p n² is nonnegative for all integers m and n'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (a p m n : ℤ), a ^ 2 ≤ 4 * p → 0 ≤ m ^ 2 - a * m * n + p * n ^ 2
+context: |
+  The algebraic step behind bsd-327 (the geometric half of the degree form positivity of bsd-089). With a = p + 1 − #E,
+  the hypothesis a² ≤ 4p is exactly Hasse's bound in squared form (bsd-024), so this gap shows that bsd-327, and hence
+  the geometric half of bsd-089, follows from Hasse's bound alone. It does not use the isogeny kernel count bsd-161:
+  no condition p ∤ m is needed. Not checked in Lean.
+sketch: |
+  The identity 4 (m² − a m n + p n²) = (2m − a n)² + (4p − a²) n² holds in ℤ, and both summands are nonnegative
+  under the hypothesis a² ≤ 4p. In Lean: nlinarith [sq_nonneg (2 * m - a * n), mul_nonneg (sub_nonneg.mpr h) (sq_nonneg n)],
+  where h : a ^ 2 ≤ 4 * p, followed by dividing by 4 (omega or linarith after the identity).
+dead: []
