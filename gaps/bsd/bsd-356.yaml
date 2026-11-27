@@ -1,0 +1,22 @@
+id: bsd-356
+problem: bsd
+title: 'Torsion count for m = 4: over a field with 4 nonzero, the 4-torsion subgroup of an elliptic Weierstrass curve has at most 16 points'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-354
+- bsd-355
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K), (4 : K) ≠ 0 →
+    Nat.card {P : W.toAffine.Point // (4 : ℕ) • P = 0} ≤ 16
+context: |
+  The m = 4 case of the m² torsion upper bound (bsd-192): the number 16 = 4². It is the specialisation of bsd-354 to m = 4
+  with the m = 4 division polynomial input of bsd-355 (which supplies the hypothesis of bsd-354 for m = 4). Both inputs are
+  needed; the statement is an assembly, so it has no new mathematics. For odd m the count is bsd-316 (with the odd input);
+  for even m the count is bsd-354 (with the even input), and this gap is that count at m = 4 with the input proved.
+sketch: |
+  Apply bsd-354 with m = 4: Even 4 (witness 2), (4 : K) ≠ 0 as the cast of 4, and the hypothesis of bsd-354 for m = 4 is
+  bsd-355. Then Nat.card ≤ 4 ^ 2 = 16 by norm_num. Mathlib: Even, Nat.cast_ofNat, norm_num.
+dead: []
