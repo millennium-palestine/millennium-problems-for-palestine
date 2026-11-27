@@ -1,0 +1,25 @@
+id: bsd-345
+problem: bsd
+title: 'Base cases of the addition formula: the elliptic-net relation of bsd-210 holds at n = 0 and at n = 1 for every integer m'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (W : WeierstrassCurve K) (m : ℤ),
+    W.ψ (m + 0) * W.ψ (m - 0) =
+      W.ψ (m + 1) * W.ψ (m - 1) * W.ψ 0 ^ 2 - W.ψ (0 + 1) * W.ψ (0 - 1) * W.ψ m ^ 2 ∧
+    W.ψ (m + 1) * W.ψ (m - 1) =
+      W.ψ (m + 1) * W.ψ (m - 1) * W.ψ 1 ^ 2 - W.ψ (1 + 1) * W.ψ (1 - 1) * W.ψ m ^ 2
+context: |
+  The two base cases of the induction in bsd-344 and bsd-346. For n = 0 the relation reads ψ(m)² = ψ(m+1)ψ(m−1)·0 −
+  ψ(1)ψ(−1)ψ(m)², which holds because ψ(0) = 0, ψ(1) = 1 and ψ(−1) = −1. For n = 1 the relation reads
+  ψ(m+1)ψ(m−1) = ψ(m+1)ψ(m−1)·1 − ψ(2)ψ(0)ψ(m)², which holds because ψ(0) = 0 and ψ(1) = 1. These are the only
+  inputs of bsd-346 besides the step bsd-344. The Mathlib lemmas for ψ at 0, 1 and −1 are in
+  Mathlib/AlgebraicGeometry/EllipticCurve/DivisionPolynomial/Basic.lean. Not checked in Lean.
+sketch: |
+  Unfold the two relations with the Mathlib values W.ψ 0 = 0, W.ψ 1 = 1 and W.ψ (−1) = −1 (check the exact lemma names
+  in DivisionPolynomial/Basic.lean), simplify the integer index arithmetic (m + 0, m − 0, 0 + 1, 0 − 1, 1 + 1, 1 − 1) with
+  simp or norm_num, then close each conjunct with ring.
+dead: []

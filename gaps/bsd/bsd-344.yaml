@@ -1,0 +1,32 @@
+id: bsd-344
+problem: bsd
+title: 'Induction step for the addition formula: if the elliptic-net relation of bsd-210 holds at n = k and at n = k + 1 for every m, then it holds at n = k + 2 for every m'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (W : WeierstrassCurve K) (k : ℤ),
+    (∀ m : ℤ, W.ψ (m + k) * W.ψ (m - k) =
+      W.ψ (m + 1) * W.ψ (m - 1) * W.ψ k ^ 2 - W.ψ (k + 1) * W.ψ (k - 1) * W.ψ m ^ 2) →
+    (∀ m : ℤ, W.ψ (m + (k + 1)) * W.ψ (m - (k + 1)) =
+      W.ψ (m + 1) * W.ψ (m - 1) * W.ψ (k + 1) ^ 2 - W.ψ (k + 1 + 1) * W.ψ (k + 1 - 1) * W.ψ m ^ 2) →
+    ∀ m : ℤ, W.ψ (m + (k + 2)) * W.ψ (m - (k + 2)) =
+      W.ψ (m + 1) * W.ψ (m - 1) * W.ψ (k + 2) ^ 2 - W.ψ (k + 2 + 1) * W.ψ (k + 2 - 1) * W.ψ m ^ 2
+context: |
+  The induction step of bsd-210 (the elliptic-net relation ψ(m+n) ψ(m−n) = ψ(m+1) ψ(m−1) ψ(n)² − ψ(n+1) ψ(n−1) ψ(m)²
+  for all integers m and n). The conclusion is a true instance of bsd-210, so this implication is true; the content is
+  that the two hypotheses at consecutive n determine the case n + 2 by a ring identity, which is Ward's induction in the
+  form "induct on n with two consecutive values". Together with bsd-345 (the cases n = 0 and n = 1) and bsd-346
+  (the assembly over all integers n) this gives bsd-210 without the finitely many separate cases bsd-320 to bsd-343.
+  Ring identities at fixed n are what the finite cases used, so this step is where the general-n argument is needed.
+  Not checked in Lean.
+sketch: |
+  Fix k and write I(n, m) for the relation of bsd-210. Use the two hypotheses I(k, m) and I(k + 1, m) for all m, and
+  the Mathlib recursions for W.ψ at indices m + k + 2, m − k − 2 (normEDS_even and normEDS_odd, or the ψ_{n+1} and
+  ψ_{n−1} recursions in EllipticDivisibilitySequence.lean and DivisionPolynomial/Basic.lean), to express the defect of
+  I(k + 2, m) as a combination of instances of the two hypotheses at m − 1, m, m + 1 with polynomial coefficients.
+  Close the resulting identity by linear_combination. Finding the coefficients is the work: start by a sympy search
+  for them in the variables ψ(m + j), ψ(k + j) for small j, with the hypothesis instances as the basis.
+dead: []
