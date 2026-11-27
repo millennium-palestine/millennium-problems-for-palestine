@@ -1,0 +1,25 @@
+id: bsd-404
+problem: bsd
+title: 'Norm expansion: for an element π of a commutative ring with a conjugation c, (m − nπ)(m − n c(π)) = m² − a m n + p n² when π + c(π) = a and π c(π) = p'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (R : Type) [CommRing R] (c : R →+* R) (π : R) (a p m n : ℤ),
+    π + c π = (a : R) → π * c π = (p : R) →
+      ((m : R) - (n : R) * π) * ((m : R) - (n : R) * c π) =
+        (m : R) ^ 2 - (a : R) * (m : R) * (n : R) + (p : R) * (n : R) ^ 2
+context: |
+  The algebraic core of the degree form in bsd-089. In End(E), the Frobenius π and its dual π̂ = c(π) satisfy
+  π + π̂ = a (the trace) and π π̂ = p (the degree of π), and the degree of m − nπ is (m − nπ)(m − nπ̂).
+  This gap says that once the trace and norm relations hold, the product expands to m² − a m n + p n².
+  It is a ring identity only: it does not say that c is the dual isogeny or that the degree is positive.
+  Those are the geometric inputs that Mathlib lacks, so bsd-089 is still open. Not checked in Lean.
+sketch: |
+  Put h1 : π + c π = a and h2 : π * c π = p. The left side equals m² − m n (π + c π) + n² (π c π) by
+  expanding, and the difference from the right side is −m n (π + c π − a) + n² (π c π − p). In Lean:
+  linear_combination (-(m : R) * (n : R)) * h1 + (n : R) ^ 2 * h2. The conjugation c is only used through
+  the additive and multiplicative structure of a ring hom, so no other hypothesis is needed.
+dead: []
