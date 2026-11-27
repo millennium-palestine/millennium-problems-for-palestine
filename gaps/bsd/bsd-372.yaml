@@ -1,0 +1,27 @@
+id: bsd-372
+problem: bsd
+title: 'Strict upper part of the bsd-254 matrix: the power (X³ + aX + b)^((p−1)/2) has no coefficient at index (p−1)/2 + (i − t) + p when t ≤ i, since its degree is below that index'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (a b : ZMod p) (i t : ℕ), t ≤ i →
+    ((Polynomial.X ^ 3 + Polynomial.C a * Polynomial.X + Polynomial.C b) ^ ((p - 1) / 2)).coeff
+      ((p - 1) / 2 + (i - t) + p) = 0
+context: |
+  First step towards bsd-254 (the Toeplitz determinant that bsd-183 reduces to). Write K = (p−1)/2 and
+  g = (X³ + aX + b)^K, which has degree 3K. In the bsd-254 matrix the entry at (i, t) is c_{K+i−t} + d_{K+i−t}·Y,
+  where d_j is the coefficient of X^(j+p) in g. This gap says that d_{K+i−t} = 0 whenever t ≤ i: the index
+  K + (i−t) + p is at least K + p > 3K = deg g, because 2K ≤ p − 1 < p. So the Y-part of the matrix is strictly
+  upper triangular. Together with bsd-373 (degree of the determinant in Y is at most K − 1) it is a bookkeeping
+  step, not a route to bsd-254 itself: the open part is the nonvanishing of the Y-polynomial.
+  It is true for every prime p (p = 2 gives K = 0 and g = 1, and the index is at least 2).
+  Proposed by the generator agent. The Y=0 specialisation of bsd-254 is known to fail (see its context), so this
+  structure is only useful for an interpolation or evaluation argument in Y.
+sketch: |
+  Let K = (p−1)/2. The natural degree of X³ + aX + b is at most 3 (compute_degree), so Polynomial.natDegree_pow_le gives
+  natDegree g ≤ 3K. Then Polynomial.coeff_eq_zero_of_natDegree_lt reduces the goal to 3K < K + (i − t) + p, which is
+  omega after the fact 2 ≤ p (from Fact p.Prime). A proof of about ten lines.
+dead: []
