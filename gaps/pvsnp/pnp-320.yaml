@@ -1,0 +1,38 @@
+id: pnp-320
+problem: pvsnp
+title: The b-bit window-rule tableau with first row x and output true has a CNF of size 2^(3b+1) n b t + n b + 1, satisfiable exactly when the output is true
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- pnp-316
+- pnp-319
+statement: |
+  ∀ (n b t : ℕ) (G : Fin b → (Fin (3 * b) → Bool) → Bool) (x : List Bool), 0 < n → 0 < b →
+    ∃ D : List (List (ℕ × Bool)),
+      (∀ a : ℕ → Bool, (((∀ k : Fin (n * b), a k.val = x.getD k.val false) ∧
+          ∀ s : Fin t, ∀ i : Fin n, ∀ j : Fin b,
+            a (n * b * (s.val + 1) + i.val * b + j.val) =
+              G j (fun w : Fin (3 * b) => a (n * b * s.val + ((i.val + w.val / b) % n) * b + w.val % b))) ∧
+          a (n * b * t) = true) ↔
+        ∀ d ∈ D, ∃ l ∈ d, a l.1 = l.2) ∧
+      D.length ≤ 2 ^ (3 * b + 1) * (n * b * t) + n * b + 1 ∧
+      ∀ d ∈ D, ∀ l ∈ d, l.1 < n * b * (t + 1)
+context: |
+  Step toward pnp-100 (Cook–Levin, over TM2 machines), on the CNF route, after pnp-316 and pnp-319. pnp-316 gives the CNF
+  of the b-bit window-rule tableau of t steps, and pnp-319 says that its satisfying assignments with the output bit true
+  are exactly the runs whose output is true. This gap adds the input: the first n·b bits are fixed to the bits of x by
+  one unit clause per bit, and the output bit is forced to true by one more unit clause. The satisfying assignments
+  are then exactly the tableaux with first row x whose output is true, and the CNF is larger than the one of pnp-316
+  by n·b + 1 clauses. It is finite combinatorics with no machine, and it does not decide P vs NP. A polynomial-time map
+  that writes this CNF for the b-bit window rule of a verifier, with G taken from a TM2 machine, is still the open part
+  of pnp-100.
+sketch: |
+  Take D = D0 ++ [the unit clauses [(k, x.getD k false)] for k below n·b] ++ [[(n·b·t, true)]], where D0 is the CNF of
+  pnp-316 for n, b, t, G. Membership of a clause in the appended list splits by List.mem_append and List.mem_map. A
+  unit clause is satisfied exactly when the variable has the required value, and the output clause exactly when the
+  output variable is true. The length is the bound of pnp-316 plus n·b + 1 by List.length_append, List.length_map,
+  List.length_finRange and List.length_singleton. The variables of the unit clauses are below n·b, and the output
+  variable is n·b·t < n·b·(t+1) since 0 < n·b; both follow from nlinarith.
+dead: []
