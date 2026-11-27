@@ -1,0 +1,33 @@
+id: pnp-287
+problem: pvsnp
+title: A Boolean table that satisfies the base cases and the Boolean recurrence agrees with the interval relation on every interval
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (P : ℕ → ℕ → Bool → Bool → Prop) (X : ℕ → ℕ → Bool × Bool → Prop) (c : ℕ → ℕ → Bool × Bool → Bool),
+    (∀ i : ℕ, ∀ r : Bool × Bool, X i i r ↔ r.1 = r.2) →
+    (∀ i : ℕ, ∀ r : Bool × Bool, c i i r = true ↔ r.1 = r.2) →
+    (∀ i : ℕ, ∀ r : Bool × Bool, c i (i + 1) r = true ↔ X i (i + 1) r) →
+    (∀ i j : ℕ, ∀ r : Bool × Bool, i + 2 ≤ j → (X i j r ↔
+      ((∃ u : Bool, P i j u r.1 ∧ ∃ g' : Bool, X (i + 1) (j - 1) (u, g') ∧ r.2 = !(g' && r.1)) ∨
+       (∃ k : ℕ, i < k ∧ k < j ∧ ∃ g1 : Bool, X i k (r.1, g1) ∧ X k j (g1, r.2))))) →
+    (∀ i j : ℕ, ∀ r : Bool × Bool, i + 2 ≤ j → (c i j r = true ↔
+      ((∃ u : Bool, P i j u r.1 ∧ ∃ g' : Bool, c (i + 1) (j - 1) (u, g') = true ∧ r.2 = !(g' && r.1)) ∨
+       (∃ k : ℕ, i < k ∧ k < j ∧ ∃ g1 : Bool, c i k (r.1, g1) = true ∧ c k j (g1, r.2) = true)))) →
+    ∀ i j : ℕ, ∀ r : Bool × Bool, i ≤ j → (c i j r = true ↔ X i j r)
+context: |
+  Step toward pnp-152. This is the induction that turns the one-step fact of pnp-286 into the table invariant: if a Boolean
+  table c has the right base cells (empty and length one intervals) and obeys the Boolean recurrence of the interval relation
+  X, then c agrees with X on every interval. The proof is strong induction on the length of the interval, using pnp-286 at
+  each step. The base case for length one is an explicit hypothesis, because the recurrence only covers intervals of length at
+  least two. It is pure logic on Prop, Bool and ℕ: no machine, no polynomial bound, and it does not decide P vs NP.
+sketch: |
+  Prove by induction on n that c i j q ↔ X i j q whenever j - i ≤ n and i ≤ j. For n = 0 the interval is empty and both sides
+  equal r.1 = r.2 by the two base hypotheses. For n + 1: if j - i ≤ n use the induction hypothesis; if j = i + 1 use the length-one
+  hypothesis; otherwise i + 2 ≤ j and every interval read by the two recurrences is shorter than j - i, so the induction
+  hypothesis gives agreement on those reads. Rewrite both sides with their recurrences and match the clauses term by term, as in
+  pnp-286. The statement follows from the case n = j - i.
+dead: []
