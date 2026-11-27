@@ -1,0 +1,39 @@
+id: pnp-261
+problem: pvsnp
+title: The witness bit at the unary affine index a x * b x + c x of three polynomial-time maps is in P
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-025
+- pnp-026
+- pnp-037
+- pnp-081
+- pnp-234
+- pnp-237
+- pnp-260
+statement: |
+  ∀ a b c : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) a) →
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) b) →
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) c) →
+    ∃ L : Lang, InP L ∧ ∀ x w : List Bool,
+      L (pair x w) = w.getD ((a x).length * (b x).length + (c x).length) false
+context: |
+  The read primitive of a table cell: the witness bit at the position i * (n + 1) + j, where the indices are
+  lengths of polynomial-time maps of the instance x. pnp-260 gives the unary index as a polynomial-time map, but
+  pnp-234 needs it as a run of true bits, and pnp-260 writes false bits. This gap converts the index to a run of
+  true bits by complementing it (pnp-081 on a pair, and the witness decoding of pnp-025), and then applies
+  pnp-234. It is a composition lemma for the table chain. It does not state the table, the CYK recurrence, or any
+  cell value, and it does not decide P vs NP.
+sketch: |
+  Let F be the map of pnp-260 for a, b, c. The map Y z = pair z (F z) is polynomial-time by pnp-026 with the identity
+  of pnp-037. Complementing the witness part by pnp-081 and decoding the witness by pnp-025 gives the map
+  G z = (F z).map not, which is replicate (|a z| * |b z| + |c z|) true, since F z is a run of false bits. G is
+  polynomial-time by pnp-237 comp. Then pnp-234 applied to G gives a language L in P with
+  L (pair x w) = w.getD (G x).length false, and (G x).length is the affine index.
+dead: []

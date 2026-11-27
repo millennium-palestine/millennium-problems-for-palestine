@@ -1,0 +1,36 @@
+id: pnp-260
+problem: pvsnp
+title: The unary affine index a z * b z + c z of three polynomial-time maps is polynomial-time
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-026
+- pnp-031
+- pnp-032
+- pnp-237
+statement: |
+  ∀ a b c : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) a) →
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) b) →
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) c) →
+    ∃ F : List Bool → List Bool,
+      Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) F) ∧
+      ∀ z : List Bool, F z = List.replicate ((a z).length * (b z).length + (c z).length) false
+context: |
+  The index of a table cell in the pnp-152 route is an affine expression in lengths: a cell (i, j) of an
+  interval table with n + 1 cells per row lives at position i * (n + 1) + j (see pnp-234). pnp-031 gives the
+  unary sum and pnp-032 the unary product, but nothing composes them on maps applied to one input. This gap
+  is the closure lemma: the unary string of a * b + c, where a, b, c are polynomial-time lengths of maps of the
+  same input, is polynomial-time. It is the index-map step that pnp-261 needs, and it does not state any table,
+  any CYK recurrence, or any cell value. It does not decide P vs NP.
+sketch: |
+  Pair (a z) with (b z) by pnp-237 pairP (pnp-026). Apply the unary product of pnp-032 to that pair: the output
+  is replicate (|a z| * |b z|) false. Pair this output with c z by pnp-237 pairP again, and apply the unary sum of
+  pnp-031: the result is replicate (|a z| * |b z| + |c z|) false, because the sum of the lengths of the two
+  components is the sum of the lengths. Composition is pnp-237 comp, that is pnp-006.
+dead: []
