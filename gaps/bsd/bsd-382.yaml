@@ -1,0 +1,32 @@
+id: bsd-382
+problem: bsd
+title: 'Short shift of preΨ′ 5 in characteristic 3: over a field with 3 = 0, for a Weierstrass curve with a₁ = a₃ = 0, the preΨ′ 5 of the curve equals the shift by r of the preΨ′ 5 of the curve with a₄ replaced by a₄ + 2ra₂ and a₆ replaced by a₆ + ra₄ + r²a₂ + r³'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-283
+statement: |
+  ∀ (K : Type) [Field K], (3 : K) = 0 → ∀ (W : WeierstrassCurve K) (r : K),
+    W.a₁ = 0 → W.a₃ = 0 →
+      W.preΨ' 5 = ((WeierstrassCurve.mk (0 : K) W.a₂ 0 (W.a₄ + 2 * r * W.a₂)
+        (W.a₆ + r * W.a₄ + r ^ 2 * W.a₂ + r ^ 3)).preΨ' 5).comp (Polynomial.X - Polynomial.C r)
+context: |
+  Characteristic 3 replacement for the shift identity of bsd-289. The shift lemma there assumes b₂ = −12r, which is
+  useless in characteristic 3 (there −12r = 0 and the shift cannot kill a₄). Here the shift is the change of variables
+  x = x′ + r with u = 1, s = t = 0, the standard formulas with the terms that carry a factor 3 removed. Then a₂ is
+  unchanged, a₄ ↦ a₄ + 2ra₂, and a₆ ↦ a₆ + ra₄ + r²a₂ + r³. The b-invariants move by b₂ ↦ b₂, b₄ ↦ b₄ + rb₂,
+  b₆ ↦ b₆ + 2rb₄ + r²b₂ + r³, b₈ ↦ b₈ + r³b₂ (all modulo 3). The generator agent checked the identity by sympy: with
+  f = preΨ′ 5 computed from the bsd-283 formula and the b-invariants, f(X) − f′(X − r) has zero residual mod 3 as a
+  polynomial in X, r, a₂, a₄, a₆. It is not yet checked in Lean.
+  Proposed by the generator agent. Not claimed by anyone at the time of writing.
+sketch: |
+  Rewrite preΨ′ 5 with bsd-283 on both sides (preΨ′_five_eq in MPP.Solutions.Bsd289 gives it for any curve). Unfold
+  Ψ₂Sq, Ψ₃, preΨ₄ on both sides, rewrite the b-invariants of W in terms of a₂, a₄, a₆ (b₂ = 4a₂, b₄ = 2a₄, b₆ = 4a₆,
+  b₈ = 4a₂a₆ − a₄²) and those of the target curve the same way with the new a₄ and a₆. Compose with X − C r using
+  Polynomial.comp simp lemmas as in the shift lemmas of bsd-289 (add_comp, mul_comp, pow_comp, X_comp, C_comp). The
+  remaining identity is a polynomial identity in X, r, a₂, a₄, a₆ that holds modulo 3, so close it with
+  linear_combination (q) * h3 with h3 : (3 : K) = 0 and q the quotient by 3 (ring normal form first to find q).
+  Mathlib: WeierstrassCurve.b₂, b₄, b₆, b₈, b_relation, WeierstrassCurve.preΨ', Polynomial.comp.
+dead: []
