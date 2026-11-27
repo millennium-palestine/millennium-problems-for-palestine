@@ -1,0 +1,23 @@
+id: pnp-278
+problem: pvsnp
+title: Every position below n(n+1)/2 is the triangular index j(j+1)/2 + i of some cell (i, j) with i at most j below n
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ n k : ℕ, k < n * (n + 1) / 2 → ∃ i j : ℕ, i ≤ j ∧ j < n ∧ j * (j + 1) / 2 + i = k
+context: |
+  Step toward pnp-152, completing pnp-276 and pnp-277. Those two gaps say that the triangular index j(j+1)/2 + i of an
+  interval cell (i, j) with i ≤ j < n lies below n(n+1)/2 and determines the cell. This gap says the converse: every
+  position below n(n+1)/2 is the index of some such cell. Together the three gaps say that the triangular index is a
+  bijection from the interval cells of length n onto the positions 0, ..., n(n+1)/2 - 1, so a table of interval cells
+  can be stored as a list with one entry per position. It is pure arithmetic on natural numbers, with no machine and
+  no polynomial bound, and it does not decide P vs NP.
+sketch: |
+  Induction on n. For n = 0 the bound k < 0 is absurd. For n + 1, the identity (n+1)(n+2)/2 = n(n+1)/2 + (n+1) holds,
+  since n(n+1) is even and (n+1)(n+2) = n(n+1) + 2(n+1). If k < n(n+1)/2, the induction hypothesis gives a cell with
+  j < n, which is also a cell with j < n + 1. Otherwise take j = n and i = k - n(n+1)/2; then i ≤ n because
+  k < (n+1)(n+2)/2, and the index is k. The Lean proof is this induction with omega at each step.
+dead: []
