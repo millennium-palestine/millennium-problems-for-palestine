@@ -7,6 +7,7 @@ imports:
 - MPP.Solutions.Pnp201
 - MPP.Solutions.Pnp211
 - MPP.Solutions.Pnp212
+- MPP.Solutions.Pnp290
 open: []
 depends: []
 statement: '∀ (F : List Bool × List Bool × Option Bool → Bool → List Bool × List Bool × Option Bool), F = (fun (st : List Bool × List Bool × Option Bool) (b : Bool) => match st.2.2 with | none => (st.1, st.2.1, some b) | some a => if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none) else (st.1, st.2.1, none)) else (if b then (st.1.headD false :: st.1, st.2.1, none) else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) →
