@@ -1,0 +1,27 @@
+id: pnp-270
+problem: pvsnp
+title: A bit list folded from the empty stack and from the stack [false] has the same top
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (F : List Bool × List Bool × Option Bool → Bool → List Bool × List Bool × Option Bool), F = (fun st b => match st.2.2 with | none => (st.1, st.2.1, some b) | some a => if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none) else (st.1, st.2.1, none)) else (if b then (st.1.headD false :: st.1, st.2.1, none) else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) →
+  ∀ (bits w : List Bool), (bits.foldl F ([], w, none)).1.headD false = (bits.foldl F ([false], w, none)).1.headD false
+context: |
+  Start-of-run lemma for the pnp-152 route. The pnp-133 fold of a program starts from the empty stack, but the
+  block decomposition of pnp-269 is stated for a run from a top v over a stack t, so it does not apply to the empty
+  stack directly. This gap says that the empty stack can be replaced by the stack [false] without changing the top
+  of the result, so pnp-269 applies with v = false and t = [] once the bits are paired. The fold reads the stack only
+  through headD, drop 1, drop 2 and the push of a new head, so an empty stack and a stack padded with false below
+  every cell behave the same for the top. It is a fact about lists of bits and the fold: no machine, no polynomial
+  bound, no P, and it does not decide P vs NP.
+sketch: |
+  Prove the stronger statement that two runs from stacks k1, k2 with the same witness and the same pending bit
+  end with the same witness, the same pending bit, and stacks that agree at every index under getD with default
+  false. This holds at the start, since [] and [false] both read false at every index. One step of the fold preserves
+  it: a leaf pushes the same witness head on both sides, a copy pushes the same top value, a NAND pops two and pushes
+  one with the value of the top two, and getD of drop 2 is getD at index plus 2 on both sides. Induction on bits
+  with the stronger statement gives index 0 of the stacks, which is the headD of the top.
+dead: []
