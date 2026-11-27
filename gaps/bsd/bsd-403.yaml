@@ -1,0 +1,30 @@
+id: bsd-403
+problem: bsd
+title: 'Frobenius fixed points: for an elliptic curve over a prime field, the points of the base change to the algebraic closure fixed by the p-power Frobenius are as many as the points over the prime field'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-402
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] [DecidableEq (AlgebraicClosure (ZMod p))] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic],
+    let φ := WeierstrassCurve.Affine.Point.map (W' := W)
+      (FiniteField.frobeniusAlgHom (ZMod p) (AlgebraicClosure (ZMod p)))
+    Nat.card {P : (W.baseChange (AlgebraicClosure (ZMod p))).toAffine.Point // φ P = P} =
+      Nat.card W.toAffine.Point
+context: |
+  The count step of the sketch of bsd-121 (Frobenius characteristic equation): the kernel of 1 − φ on the
+  points over the algebraic closure of F_p has as many elements as E(F_p). Its coordinate input is bsd-402
+  (a Frobenius-fixed element of the algebraic closure lies in F_p). Then a fixed point (x, y) has both
+  coordinates in F_p, so it comes from an F_p-point, and the base change of F_p-points to the closure is
+  injective; the point at infinity is fixed and comes from the F_p-point at infinity. The statement is true.
+  It is a step toward bsd-121, not the characteristic equation itself. It elaborates (checked with
+  `lake env lean` on a scratch file, same expression as bsd-161).
+sketch: |
+  Use bsd-402 on the affine coordinates of a fixed point to show they lie in the image of ZMod p. Then build the
+  inverse map from fixed points to W.toAffine.Point: a fixed affine point with coordinates in the image of
+  ZMod p gives a nonsingular F_p-point, and the base change map on points is injective (Mathlib's
+  WeierstrassCurve.Affine.Point.map with an injective algebra map). Conclude that the two finite sets have the
+  same cardinality with Nat.card_congr or Nat.card_eq_of_bijective.
+dead: []
