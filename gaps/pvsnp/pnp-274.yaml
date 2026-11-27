@@ -1,0 +1,54 @@
+id: pnp-274
+problem: pvsnp
+title: The pnp-152 fold of any bit list from the empty stack has the top of a block decomposition with a nonnegative tail
+status: open
+imports:
+- Mathlib
+- MPP.Solutions.Pnp269
+- MPP.Solutions.Pnp271
+- MPP.Solutions.Pnp272
+open: []
+depends:
+- pnp-269
+- pnp-271
+- pnp-272
+statement: |
+  ∀ (x w : List Bool), ∃ (q : List (Bool × Bool)) (o : List Bool)
+      (items : List (List (Bool × Bool))) (T : List (Bool × Bool)) (g : Bool),
+      x = q.flatMap (fun r : Bool × Bool => [r.1, r.2]) ++ o ∧ o.length ≤ 1 ∧
+      q = (items.map fun b => b ++ [(true, true)]).flatten ++ T ∧
+      (∀ b ∈ items, (b.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 ∧
+        ∀ j, j ≤ b.length → 0 ≤ ((b.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) ∧
+      (∀ j, j ≤ T.length → 0 ≤ ((T.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) ∧
+      (x.foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+          match st.2.2 with
+          | none => (st.1, st.2.1, some b)
+          | some a =>
+            if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+              else (st.1, st.2.1, none))
+            else (if b then (st.1.headD false :: st.1, st.2.1, none)
+              else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) ([], w, none)).1.headD false =
+        ((T.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+          match st.2.2 with
+          | none => (st.1, st.2.1, some b)
+          | some a =>
+            if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+              else (st.1, st.2.1, none))
+            else (if b then (st.1.headD false :: st.1, st.2.1, none)
+              else (st.2.1.headD false :: st.1, st.2.1.drop 1, none)))
+          (g :: ([] : List Bool).drop items.length, w.drop (items.flatten.countP fun q : Bool × Bool => !q.1 && !q.2), none)).1.headD false
+context: |
+  Start-of-run assembly for the pnp-152 route. The bit list x is first split into a list of pairs q and at most one
+  leftover bit (pnp-271). The leftover bit does not change the top (pnp-272), the empty start stack can be replaced by
+  [false] without changing the top (the lemma of pnp-270, proved again in the solution file as a helper), and the pair
+  run of q from [false] splits into balanced NAND blocks and a nonnegative tail (pnp-269). The statement records this for the bit-level fold that the pnp-152 language reads, from
+  the empty stack with the witness w. The decomposition is tied to x: q and the leftover o must rebuild x. It is a fact
+  about the fold alone: no machine, no polynomial bound, no P, and it does not decide P vs NP. The table over the blocks,
+  which is the rest of pnp-152, has to compute the top of the tail run.
+sketch: |
+  Apply pnp-271 to x to get q and o with x = flatten q ++ o and o.length ≤ 1. Apply pnp-269 to q with v = false, t = [] and
+  the witness w to get items, T, the block and tail conditions, and the full-state equality with the tail run from g.
+  Substitute x. If o = [], rewrite append_nil, then chain pnp-270 (the empty stack to [false]) with the equality of pnp-269
+  taken at the top. If o = [c], chain pnp-270 with pnp-272 (MPP.Solutions.Pnp272.main q c false [] w) and the pnp-269 top.
+  The length bound rules out o with two or more bits.
+dead: []
