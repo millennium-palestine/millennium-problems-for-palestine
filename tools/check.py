@@ -214,12 +214,15 @@ def check_gap_proposal(g: dict, known_ids: set[str], problems: set[str]) -> list
 
 def elaborate_gaps(gs: list[dict]) -> tuple[list[str], str]:
     """Check that each statement elaborates as a Prop, in a scratch file."""
-    r = run(["lake", "build", "MPP"])
-    if r.returncode:
-        return ["the project does not build"], (r.stdout + r.stderr)[-4000:]
+    # Build only what the statements import: `lake build MPP` rebuilds every solution
+    # and times out on a fresh checkout.
+    imports = list(dict.fromkeys(m for g in gs for m in g["imports"]))
+    if imports:
+        r = run(["lake", "build", *imports])
+        if r.returncode:
+            return ["the project does not build"], (r.stdout + r.stderr)[-4000:]
     check_dir = LEAN_DIR / ".check"
     check_dir.mkdir(exist_ok=True)
-    imports = list(dict.fromkeys(m for g in gs for m in g["imports"]))
     lines = [f"import {m}" for m in imports]
     for g in gs:
         lines += ["", "section"]
