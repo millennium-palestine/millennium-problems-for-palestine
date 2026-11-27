@@ -1,0 +1,30 @@
+id: pnp-313
+problem: pvsnp
+title: The window-rule tableau with first row x has a satisfying assignment, namely the rows of the iterates of the window map
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (n t : ℕ) (g : (Fin 3 → Bool) → Bool) (x : List Bool), ∃ a : ℕ → Bool,
+    (∀ i : Fin n, a i.val = x.getD i.val false) ∧
+      ∀ s : Fin t, ∀ i : Fin n,
+        a (n * (s.val + 1) + i.val) = g (fun j => a (n * s.val + (i.val + j.val) % n))
+context: |
+  Step toward pnp-100 (Cook–Levin, over TM2 machines), on the CNF route, after pnp-307 and pnp-312. pnp-307 gives the
+  CNF of the window-rule tableau with first row x, and pnp-312 says that any satisfying tableau has row s equal to the
+  s-th iterate of the window map started from x. This gap is the converse: the iterate tableau does satisfy the local
+  equations, so the CNF of pnp-307 is satisfiable for every input x. Together the two say that the run of a window rule
+  is exactly the unique satisfying tableau, which is the correctness half of the tableau reduction. It is pure
+  arithmetic on the indices n·s + i and no machine is involved, so it does not decide P vs NP. The polynomial-time map
+  that writes the window rule of a verifier is still the open part of pnp-100.
+sketch: |
+  Take a k := (Nat.iterate step (k / n) x0) (k % n), where step r k = g (fun j : Fin 3 => r ((k + j.val) % n)) and
+  x0 = fun k => x.getD k false. For i : Fin n, (i.val) / n = 0 and i.val % n = i.val, so the first-row clause is
+  rfl up to Nat.div_eq_of_lt and Nat.mod_eq_of_lt. For the local equation, (n * (s + 1) + i) / n = s + 1 and
+  % n = i by Nat.mul_add_div and Nat.mul_add_mod with i < n, so the left side is one step of the iterate at i. For the
+  argument n * s + (i + j) % n, the quotient is s and the remainder is (i + j) % n < n, which gives the iterate
+  value at that index. Then Function.iterate_succ_apply' finishes. Use omega or simp with Nat.mul_add_div for the
+  index arithmetic, and Nat.mod_lt for n > 0 from i : Fin n.
+dead: []
