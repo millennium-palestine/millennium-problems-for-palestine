@@ -1,0 +1,27 @@
+id: bsd-391
+problem: bsd
+title: 'Euclid step 6 of the bsd-361 resultant chain: lc(B)^2 A = Q B + g S over any field, with explicit polynomials A, B, S of formal degrees 4, 3 and 2'
+status: open
+imports:
+- Mathlib
+open:
+- Polynomial
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (a b : K) (A B : K[X]),
+      A = (C (-14081622784 * a ^ 10 - 341662142016 * a ^ 7 * b ^ 2 - 1469747385936 * a ^ 4 * b ^ 4 - 1858321237500 * a * b ^ 6) * X ^ 4
+        + C (9672995136 * a ^ 9 * b - 640764612144 * a ^ 6 * b ^ 3 - 2057719212900 * a ^ 3 * b ^ 5 - 762359495625 * b ^ 7) * X ^ 3
+        + C (-5758428928 * a ^ 11 + 54942193728 * a ^ 8 * b ^ 2 - 332324027856 * a ^ 5 * b ^ 4 - 169980419700 * a ^ 2 * b ^ 6) * X ^ 2
+        + C (-23173561408 * a ^ 10 * b - 173022626448 * a ^ 7 * b ^ 3 - 1153494772524 * a ^ 4 * b ^ 5 - 682205398875 * a * b ^ 7) * X
+        + C (197961216 * a ^ 12 - 11121499392 * a ^ 9 * b ^ 2 - 118562934816 * a ^ 6 * b ^ 4 - 613195259040 * a ^ 3 * b ^ 6 - 188071065000 * b ^ 8)) →
+      B = (C (4520632384 * a ^ 9 - 67187764656 * a ^ 6 * b ^ 2 - 555872475636 * a ^ 3 * b ^ 4 - 887464643625 * b ^ 6) * X ^ 3
+        + C (35925337728 * a ^ 8 * b + 64238173632 * a ^ 5 * b ^ 3 - 145324312920 * a ^ 2 * b ^ 5) * X ^ 2
+        + C (-1186543424 * a ^ 10 + 38146234608 * a ^ 7 * b ^ 2 + 37866059172 * a ^ 4 * b ^ 4 - 260485314075 * a * b ^ 6) * X
+        + C (-1433909888 * a ^ 9 * b + 5898847680 * a ^ 6 * b ^ 3 - 44831173032 * a ^ 3 * b ^ 5 - 218934009000 * b ^ 7)) →
+      ∃ Q S : K[X], Q.natDegree ≤ 1 ∧ S.natDegree ≤ 2 ∧
+        C ((4520632384*a ^ 9 - 67187764656*a ^ 6*b ^ 2 - 555872475636*a ^ 3*b ^ 4 - 887464643625*b ^ 6) ^ 2) * A = Q * B + C (24*a ^ 2*(4*a ^ 3 + 27*b ^ 2)*(3520405696*a ^ 9 + 85415535504*a ^ 6*b ^ 2 + 367436846484*a ^ 3*b ^ 4 + 464580309375*b ^ 6) ^ 2) * S
+context: |
+  Step 6 of the Euclid chain for bsd-361 (after bsd-385, which gives the first remainder). Here A and B are the two previous remainders, with formal degrees 4 and 3, and S is the primitive part of the pseudo-remainder of A by B: lc(B)^2 A = Q B + g S, where lc(B) is the leading coefficient of B in X and g ∈ ℤ[a, b] is the content of the pseudo-remainder (the gcd of its coefficients). Degree of Q is at most 1, and S has degree at most 2. The identity was checked by exact expansion over ℤ[a, b][X] (sympy). It is a ring identity, so it holds over every field. It is stated with A, B, S as explicit polynomials so that the statement elaborates within the checker's default heartbeat limit; Q is only in the proof.
+sketch: |
+  Substitute A, B, S (subst). Give the explicit quotient Q, prove the two degree bounds by compute_degree!, and prove the identity by simp only [map_pow, map_mul, map_add, map_sub, map_neg, map_ofNat, map_natCast, Nat.cast_ofNat] then ring. Proofs may set maxHeartbeats for the proof of main.
+dead: []

@@ -1,0 +1,37 @@
+id: bsd-386
+problem: bsd
+title: 'Euclid step 1 of the bsd-361 resultant chain: lc(B)^2 A = Q B + g S over any field, with explicit polynomials A, B, S of formal degrees 9, 8 and 7'
+status: open
+imports:
+- Mathlib
+open:
+- Polynomial
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (a b : K) (A B : K[X]),
+      A = (C (791120 * a ^ 3 + 4873500 * b ^ 2) * X ^ 9
+        + C (933120 * a ^ 2 * b) * X ^ 8
+        + C (29760 * a ^ 4 + 5799600 * a * b ^ 2) * X ^ 7
+        + C (-3815040 * a ^ 3 * b - 6156000 * b ^ 3) * X ^ 6
+        + C (-1264800 * a ^ 5 - 15069240 * a ^ 2 * b ^ 2) * X ^ 5
+        + C (-7284480 * a ^ 4 * b - 58968000 * a * b ^ 3) * X ^ 4
+        + C (-248000 * a ^ 6 - 9342480 * a ^ 3 * b ^ 2 - 61560000 * b ^ 4) * X ^ 3
+        + C (-1856640 * a ^ 5 * b - 11599200 * a ^ 2 * b ^ 3) * X ^ 2
+        + C (-101680 * a ^ 7 - 4985220 * a ^ 4 * b ^ 2 - 28667520 * a * b ^ 4) * X
+        + C (-44800 * a ^ 6 * b - 2256640 * a ^ 3 * b ^ 3 - 13132800 * b ^ 5)) →
+      B = (C (-66446295379200 * a ^ 8 - 1139787278409600 * a ^ 5 * b ^ 2 - 4666104796050000 * a ^ 2 * b ^ 4) * X ^ 8
+        + C (275474939904000 * a ^ 7 * b + 1859455844352000 * a ^ 4 * b ^ 3) * X ^ 7
+        + C (-250623018624000 * a ^ 9 - 2384814094272000 * a ^ 6 * b ^ 2 - 4678483850280000 * a ^ 3 * b ^ 4) * X ^ 6
+        + C (-335073939609600 * a ^ 8 * b - 2126866207564800 * a ^ 5 * b ^ 3 + 910459472400000 * a ^ 2 * b ^ 5) * X ^ 5
+        + C (-150385583040000 * a ^ 10 - 2632806802080000 * a ^ 7 * b ^ 2 - 10919502786780000 * a ^ 4 * b ^ 4) * X ^ 4
+        + C (-18380642611200 * a ^ 9 * b - 895504784025600 * a ^ 6 * b ^ 3 - 5207189263200000 * a ^ 3 * b ^ 5) * X ^ 3
+        + C (-75740183270400 * a ^ 11 - 836871926054400 * a ^ 8 * b ^ 2 - 1280769783969600 * a ^ 5 * b ^ 4 + 6191124412320000 * a ^ 2 * b ^ 6) * X ^ 2
+        + C (-151031338137600 * a ^ 10 * b - 2038923064857600 * a ^ 7 * b ^ 3 - 6881365343894400 * a ^ 4 * b ^ 5) * X
+        + C (1877612563200 * a ^ 12 - 28145358998400 * a ^ 9 * b ^ 2 - 643925816802000 * a ^ 6 * b ^ 4 - 2486672467776000 * a ^ 3 * b ^ 6)) →
+      ∃ Q S : K[X], Q.natDegree ≤ 1 ∧ S.natDegree ≤ 7 ∧
+        C (11968832160000*a ^ 4*(4*a ^ 3 + 27*b ^ 2) ^ 2*(4801588*a ^ 3 + 49953375*b ^ 2) ^ 2) * A = Q * B + C (5106701721600000*a ^ 4*(4*a ^ 3 + 27*b ^ 2) ^ 2*(39556*a ^ 3 + 243675*b ^ 2) ^ 2) * S
+context: |
+  Step 1 of the Euclid chain for bsd-361 (after bsd-385, which gives the first remainder). Here A and B are the two previous remainders, with formal degrees 9 and 8, and S is the primitive part of the pseudo-remainder of A by B: lc(B)^2 A = Q B + g S, where lc(B) is the leading coefficient of B in X and g ∈ ℤ[a, b] is the content of the pseudo-remainder (the gcd of its coefficients). Degree of Q is at most 1, and S has degree at most 7. The identity was checked by exact expansion over ℤ[a, b][X] (sympy). It is a ring identity, so it holds over every field. It is stated with A, B, S as explicit polynomials so that the statement elaborates within the checker's default heartbeat limit; Q is only in the proof.
+sketch: |
+  Substitute A, B, S (subst). Give the explicit quotient Q, prove the two degree bounds by compute_degree!, and prove the identity by simp only [map_pow, map_mul, map_add, map_sub, map_neg, map_ofNat, map_natCast, Nat.cast_ofNat] then ring. Proofs may set maxHeartbeats for the proof of main.
+dead: []
