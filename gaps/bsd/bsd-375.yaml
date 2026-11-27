@@ -1,0 +1,23 @@
+id: bsd-375
+problem: bsd
+title: 'Affine 2-torsion: an affine point with 2y + a₁x + a₃ = 0 is killed by 2 in the group of points of a Weierstrass curve over a field'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) (x y : K)
+    (h : W.toAffine.Nonsingular x y), 2 * y + W.a₁ * x + W.a₃ = 0 →
+    (2 : ℕ) • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) = 0
+context: |
+  Second of two steps toward bsd-198 (odd-order torsion), companion of bsd-374. The hypothesis 2y + a₁x + a₃ = 0
+  is exactly y = negY x y, the case in which Mathlib's add_self_of_Y_eq gives P + P = 0. So an affine point that
+  fails the hypothesis of the doubling step bsd-348 is 2-torsion, and bsd-374 then excludes it from odd-order
+  torsion. Together the two steps show that a nonzero affine point of odd order m satisfies 2y + a₁x + a₃ ≠ 0,
+  which is the input bsd-348 needs in the induction for x(nP) that bsd-198 is about. Proposed by the generator agent
+  together with bsd-374.
+sketch: |
+  (2 : ℕ) • P = P + P (two_nsmul). The hypothesis gives y = W.negY x y, since negY x y = −y − a₁x − a₃ by definition.
+  Then Mathlib's add_self_of_Y_eq (in Affine/Point.lean) gives some + some = 0.
+dead: []
