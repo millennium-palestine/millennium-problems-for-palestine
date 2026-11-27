@@ -138,7 +138,8 @@ def render_gap(g: dict, cfg: dict) -> str:
         deps = ", ".join(f'<a href="#{d}">{d}</a>' for d in g["depends"])
         parts.append(f"<h4>Depends on</h4><p>{deps}</p>")
     if g["dead"]:
-        items = "".join(f"<li>{escape(str(d.get('approach', '')))}: {escape(str(d.get('reason', '')))}</li>"
+        items = "".join(f"<li>{escape(d)}</li>" if isinstance(d, str) else
+                        f"<li>{escape(str(d.get('approach', '')))}: {escape(str(d.get('reason', '')))}</li>"
                         for d in g["dead"])
         parts.append(f"<h4>Approaches that failed</h4><ul>{items}</ul>")
     src = f"https://github.com/{cfg['repo']}/blob/main/gaps/{g['problem']}/{g['id']}.yaml"
