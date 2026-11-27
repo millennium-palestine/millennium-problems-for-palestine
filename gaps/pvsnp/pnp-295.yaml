@@ -1,0 +1,34 @@
+id: pnp-295
+problem: pvsnp
+title: A nonnegative pair list whose height walk ends at m splits into m balanced nonnegative blocks, each followed by an up pair, and one balanced nonnegative last block
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (H : Bool × Bool → ℤ), (∀ r : Bool × Bool, H r = if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1) →
+    ∀ (m : ℕ) (q : List (Bool × Bool)), (∀ j, j ≤ q.length → 0 ≤ ((q.map H).take j).sum) → (q.map H).sum = (m : ℤ) →
+    ∃ (bs : List (List (Bool × Bool))) (us : List (Bool × Bool)) (last : List (Bool × Bool)),
+      bs.length = m ∧ us.length = m ∧ (∀ u ∈ us, H u = 1) ∧
+      (∀ b ∈ bs ++ [last], (∀ j, j ≤ b.length → 0 ≤ ((b.map H).take j).sum) ∧ (b.map H).sum = 0) ∧
+      q = (List.zipWith (fun b u => b ++ [u]) bs us).flatten ++ last
+context: |
+  Step toward pnp-152, the top-level tail of a run of the pnp-133 fold. pnp-294 splits a nonnegative walk with positive
+  total at its last zero, into a balanced nonnegative block, one up pair and a nonnegative rest. This gap is the iterated
+  form: a nonnegative walk that ends at height m is m balanced nonnegative blocks, each closed by an up pair, followed by
+  one balanced nonnegative block. The top-level tail DP of pnp-152 reads a tail as such a sequence of balanced blocks
+  separated by up pairs, so the table of balanced blocks needs exactly this shape. The step H is the one of pnp-211 and
+  pnp-213. It is a fact about lists of pairs and integers: no machine, no polynomial bound, no P, and it does not decide
+  P vs NP.
+sketch: |
+  Induction on m, generalizing q. For m = 0 the walk ends at zero, so take bs = us = [] and last = q; q is balanced by
+  hypothesis. For m + 1, let P j be the prefix sum of q.map H of length j, and let k be Nat.findGreatest (fun j => P j = 0)
+  (q.length), so P k = 0 by the search and k is maximal with this property. Then P j ≠ 0 for k < j ≤ q.length, and P j ≥ 0
+  for all j, so P j ≥ 1 for those j, in particular for j = q.length where P = m + 1 ≥ 1 (so k < q.length). Write
+  q = p ++ r :: s with p = take k q and r = q[k]. Then P (k+1) = H r is at least one, and it is at most one, so H r = 1 and
+  r.1 = false. The block p is balanced and nonnegative by choice of k. The rest s has total m, and its prefix sums are
+  P (k + 1 + j) - 1 ≥ 0. Apply the induction hypothesis to s with m to get bs', us', last'. Then bs = p :: bs', us = r :: us'
+  and last = last', and List.zipWith and List.flatten of cons lists unfold to the required equation. Use List.sum_take_succ
+  and omega on integer inequalities.
+dead: []
