@@ -1,0 +1,32 @@
+id: bsd-332
+problem: bsd
+title: 'Odd torsion count from the division polynomial: on a Weierstrass curve over a field K with m odd and m nonzero in K, if the x-coordinate of every nonzero m-torsion point is a root of preΨ'' m, then the m-torsion of the affine point group has at most m^2 elements'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) [W.IsElliptic] (m : ℕ),
+    Odd m → (m : K) ≠ 0 →
+    (∀ (x y : K) (h : W.toAffine.Nonsingular x y),
+      m • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) = 0 → (W.preΨ' m).eval x = 0) →
+    Nat.card {P : W.toAffine.Point // m • P = 0} ≤ m ^ 2
+context: |
+  The odd-m case of bsd-192 (m-torsion upper bound, m^2 points when p does not divide m), as an assembly. The
+  hypothesis is the instance of bsd-198 for this curve and this m: a nonzero m-torsion point has its x-coordinate
+  a root of the division polynomial. Given that, the count is elementary: the origin is one point; the nonzero
+  torsion points have x-coordinates in the root set of preΨ' m, which has at most (m^2 - 1)/2 elements (degree of
+  preΨ' m for odd m, WeierstrassCurve.natDegree_preΨ'); and over each x-coordinate there are at most two affine
+  points, since three nonsingular points on one vertical line have two equal y-coordinates (the bsd-315 fact). So the
+  count is at most 1 + 2 · (m^2 - 1)/2 = m^2. The statement is a true reduction: bsd-198 is the open input, and this
+  gap isolates the counting from it. Even m is not covered. Not checked in Lean beyond elaboration.
+sketch: |
+  Work in a finite type (if the m-torsion subtype is infinite, Nat.card is 0). Split off the origin, which is the
+  only point with x-coordinate undefined. Let f send a nonzero point to its x-coordinate. The fibres of f on the
+  nonzero torsion points have at most two elements (three distinct points with equal x would share two y-coordinates
+  by the vertical-line fact, so two of them are equal as points). The image of f lies in the roots of preΨ' m, which
+  has at most (m^2 - 1)/2 elements. Use Finset.card_le_mul_card_image for the fibres, and omega with m^2 odd for the
+  final arithmetic. Mathlib: Nat.card_eq_fintype_card, Finset.card_le_mul_card_image, Finset.two_lt_card,
+  Finset.card_filter_add_card_filter_not, Polynomial.card_roots', WeierstrassCurve.natDegree_preΨ'.
+dead: []
