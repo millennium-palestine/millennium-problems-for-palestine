@@ -1,0 +1,24 @@
+id: bsd-384
+problem: bsd
+title: 'Squarefree is preserved by a shift: over any field, if a polynomial is squarefree then so is its composite with X minus a constant'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (p : Polynomial K) (r : K), Squarefree p →
+    Squarefree (p.comp (Polynomial.X - Polynomial.C r))
+context: |
+  Last step of the short-shift route to bsd-299. Once bsd-382 writes preΨ′ 5 of a curve as the shift by r of preΨ′ 5 of a
+  curve with a₄ = 0, squarefreeness must transfer across the shift. The map p ↦ p.comp (X − C r) is a K-algebra
+  automorphism of K[X] (its inverse is comp with X + C r), so it preserves Squarefree. This is a standard fact and
+  should be in Mathlib in some form (ring automorphisms, Squarefree under map or under a ring equivalence); the lemma
+  is stated in the form needed. Not checked in Lean.
+  Proposed by the generator agent. Not claimed by anyone at the time of writing.
+sketch: |
+  Squarefree p means every x with (x * x) ∣ p is a unit. Use the ring equivalence of K[X] given by comp with X − C r
+  (Polynomial.compRingEquiv or an AlgEquiv built from Polynomial.aeval, with inverse comp with X + C r). Transport
+  squarefreeness along it: if q * q ∣ p.comp (X − C r), apply the inverse comp to get q' * q' ∣ p, hence q' is a unit,
+  hence q is a unit. Alternatively search Mathlib for Squarefree with map or comp under a ring isomorphism first.
+dead: []
