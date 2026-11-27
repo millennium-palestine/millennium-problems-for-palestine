@@ -1,0 +1,31 @@
+id: bsd-394
+problem: bsd
+title: 'Triple x-coordinate formula: for a nonsingular affine point (x, y) of a Weierstrass curve with 3 • P = (x₃, y₃), the identity x₃ Ψ₃(x)² = x Ψ₃(x)² − Ψ₂Sq(x) preΨ₄(x) holds'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-221
+- bsd-347
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) (x y x₃ y₃ : K)
+    (h : W.toAffine.Nonsingular x y) (h₃ : W.toAffine.Nonsingular x₃ y₃),
+    (3 : ℕ) • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) =
+      WeierstrassCurve.Affine.Point.some x₃ y₃ h₃ →
+    x₃ * (W.Ψ₃.eval x) ^ 2 = x * (W.Ψ₃.eval x) ^ 2 - W.Ψ₂Sq.eval x * W.preΨ₄.eval x
+context: |
+  The standard x-coordinate formula x(3P) = x − ψ₂ψ₄/ψ₃² written without division: ψ₂² = Ψ₂Sq and ψ₄ = ψ₂ · preΨ₄, so
+  ψ₂ψ₄ = Ψ₂Sq · preΨ₄. It is the triple step of the 7-division route (the step that replaces the x-coordinate of 3P by
+  a polynomial in x). It is not the same as bsd-347 (chord, which needs the y-coordinates), so it is a separate step.
+  Checked symbolically: with a₁ = a₂ = a₃ = 0 and Ψ₂Sq = 4X³ + 4aX + 4b, preΨ₄ = 2X⁶ + 10aX⁴ + 40bX³ − 10a²X² − 8abX − 2a³ − 16b²,
+  Ψ₃ = 3X⁴ + 6aX² + 12bX − a², the identity follows from the chord and the doubling relation x(2P) = g(x)/Ψ₂Sq(x). The
+  identity is an identity of the curve, so it holds in every characteristic. Not checked in Lean.
+sketch: |
+  (1) If 2 • P = 0 then Ψ₂Sq(x) = 0 (since 2y + a₁x + a₃ = 0), and 3 • P = P gives x₃ = x; both sides then reduce to
+  x Ψ₃(x)² = x Ψ₃(x)² (the right side has Ψ₂Sq · preΨ₄ = 0). (2) Otherwise Q := 2 • P = (x₂, y₂) by bsd-221, and
+  x₂ ≠ x (else 3 • P = 0 or 2 • P = 0, using the two cases of bsd-347's distinct-x hypothesis). (3) bsd-347 applied to P and
+  Q gives x₃ = λ² + a₁λ − a₂ − x − x₂ with λ = (y₂ − y)/(x₂ − x). (4) Clear denominators and use the curve equations for
+  P and Q together with (2y₂ + a₁x₂ + a₃)² = Ψ₂Sq(x₂) and x₂ Ψ₂Sq(x) = g(x) to obtain the identity by linear_combination.
+  The exact cofactors can be found with sympy (pseudo-division in y and y₂), as was done for bsd-357.
+dead: []

@@ -1,0 +1,23 @@
+id: pnp-309
+problem: pvsnp
+title: A unit clause is satisfied exactly when its variable has the required value
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (k : ℕ) (b : Bool) (a : ℕ → Bool),
+    (∀ c ∈ [[(k, b)]], ∃ l ∈ c, a l.1 = l.2) ↔ a k = b
+context: |
+  Step toward pnp-100 (Cook–Levin, over TM2 machines), on the CNF route after pnp-308. The output of the
+  tableau is a single cell of its last row, and the formula forces it to be true by appending the unit clause
+  [(k, true)] (the clause list with one clause, which has one literal). Its satisfaction has to mean that the
+  cell k of the assignment equals the required value, so that the Boolean output of the machine and the
+  existential semantics of the CNF agree. It is pure list logic and does not decide P vs NP.
+sketch: |
+  The clause list is [[(k, b)]], a single clause with one literal. Membership of the clause in the list
+  reduces to equality with [(k, b)] by List.mem_singleton, and the existential over its literals reduces to
+  equality with (k, b) by List.mem_singleton again. The condition a k = b is then the statement itself. The
+  proof is a simp call with List.mem_singleton, forall_eq and exists_eq_left.
+dead: []

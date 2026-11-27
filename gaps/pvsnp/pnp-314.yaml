@@ -1,0 +1,34 @@
+id: pnp-314
+problem: pvsnp
+title: The window-rule tableau with first row x has a satisfying assignment whose output cell is true exactly when the iterate of the window map has output true
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- pnp-312
+- pnp-313
+statement: |
+  ∀ (n t : ℕ) (g : (Fin 3 → Bool) → Bool) (x : List Bool), 0 < n →
+    ((∃ a : ℕ → Bool, ((∀ i : Fin n, a i.val = x.getD i.val false) ∧
+        ∀ s : Fin t, ∀ i : Fin n,
+          a (n * (s.val + 1) + i.val) = g (fun j => a (n * s.val + (i.val + j.val) % n))) ∧
+        a (n * t) = true) ↔
+      (Nat.iterate (fun (r : ℕ → Bool) (k : ℕ) => g (fun j : Fin 3 => r ((k + j.val) % n)))
+        t (fun k => x.getD k false)) 0 = true)
+context: |
+  Step toward pnp-100 (Cook–Levin, over TM2 machines), on the CNF route, after pnp-312 and pnp-313. Those two say
+  that the satisfying tableaux of the window rule with first row x are exactly the iterates of the window map. This
+  gap is the output half of the tableau reduction: the tableau can be satisfied with the output cell (row t, cell 0,
+  which is the index n·t) set to true exactly when the iterate of the window map from x has output true. A
+  polynomial-time map that writes the window rule of a verifier, with the first row the input, would then turn NP
+  membership into satisfiability of this tableau. The statement is pure Boolean and index arithmetic, with no machine,
+  so it does not decide P vs NP, and the TM2 writer of the window rule is still the open part of pnp-100.
+sketch: |
+  Forward: from a satisfying a with a (n·t) = true, pnp-312 at s = t and i = 0 (0 < n) gives a (n·t + 0) equal to
+  the iterate's cell 0 at row t, and n·t + 0 = n·t by Nat.add_zero. Backward: pnp-313 gives some satisfying a, and
+  pnp-312 applied to that a gives a (n·t) equal to the iterate's output, which is true by hypothesis. Use
+  Pnp312.main and Pnp313.main (import MPP.Solutions.Pnp312 and MPP.Solutions.Pnp313), with le_rfl for t ≤ t and
+  ⟨0, hn⟩ for the index. The positivity of n is needed: for n = 0 the first row and the equations are vacuous, so
+  the left side is always satisfiable with a 0 = true, while the right side can be false.
+dead: []

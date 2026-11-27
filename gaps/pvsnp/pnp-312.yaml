@@ -1,0 +1,33 @@
+id: pnp-312
+problem: pvsnp
+title: A satisfying assignment of the window-rule tableau with first row x has each row equal to an iterate of the window map
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (n t : ℕ) (g : (Fin 3 → Bool) → Bool) (x : List Bool) (a : ℕ → Bool),
+    ((∀ i : Fin n, a i.val = x.getD i.val false) ∧
+      ∀ s : Fin t, ∀ i : Fin n,
+        a (n * (s.val + 1) + i.val) = g (fun j => a (n * s.val + (i.val + j.val) % n))) →
+    ∀ s : ℕ, s ≤ t → ∀ i : Fin n,
+      a (n * s + i.val) =
+        (Nat.iterate (fun (r : ℕ → Bool) (k : ℕ) => g (fun j : Fin 3 => r ((k + j.val) % n)))
+          s (fun k => x.getD k false)) i.val
+context: |
+  Step toward pnp-100 (Cook–Levin, over TM2 machines), on the CNF route, after pnp-307. pnp-307 gives the CNF whose
+  satisfying assignments are exactly the tableaux of the window rule g with first row x: row s occupies the variables
+  n·s, ..., n·s + n − 1, and each cell of row s+1 is g of the three cells of row s at offsets j. That says that
+  the tableau obeys the local equations, but not what the rows are. This gap is the forward half of the run
+  semantics: since the window map is deterministic, every satisfying tableau is forced row by row to be the
+  iterate of the window map started from x. It is induction on s with the equations of row s, and it does not
+  decide P vs NP. The converse (the iterate tableau is satisfying) is pnp-313.
+sketch: |
+  Induction on s. For s = 0 the claim is the first-row hypothesis, since x.getD i false is the iterate of the empty
+  count. For s + 1 ≤ t, the equation at s and i gives a (n·(s+1) + i) = g (fun j => a (n·s + (i + j) % n)). Since
+  (i + j) % n < n, the induction hypothesis rewrites each argument of g to the corresponding entry of the iterate,
+  so the value is g (fun j => iterate_s ((i + j) % n)), which is one application of the step to iterate_s at i. Use
+  Function.iterate_succ_apply' to unfold the iterate on the right, Fin.val and Nat.mod_lt for the bounds (n > 0 when
+  i : Fin n is present), and congrArg or funext to pass the induction hypothesis under g. Nat.iterate is in Mathlib.
+dead: []

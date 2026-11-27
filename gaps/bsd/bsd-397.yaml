@@ -1,0 +1,22 @@
+id: bsd-397
+problem: bsd
+title: 'Torsion count for m = 7: over a field with 7 nonzero, the 7-torsion subgroup of an elliptic Weierstrass curve has at most 49 points'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-316
+- bsd-396
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K), (7 : K) ≠ 0 →
+    Nat.card {P : W.toAffine.Point // (7 : ℕ) • P = 0} ≤ 49
+context: |
+  The m = 7 case of the m² torsion upper bound (bsd-192): the number 49 = 7². It is bsd-316 (odd-m count from the
+  division polynomial, already accepted) specialised to m = 7, with the m = 7 division-polynomial input of bsd-396 supplying
+  its hypothesis. The statement is an assembly with no new mathematics, like bsd-358 for m = 6.
+sketch: |
+  Apply bsd-316 with m = 7: Odd 7 (witness 3), (7 : K) ≠ 0 is the hypothesis, and the hypothesis of bsd-316 for m = 7 is
+  bsd-396 (its statement matches with m = 7 after the cast (7 : ℕ) = 7). Then Nat.card ≤ (7 : ℤ) ^ 2 = 49 by norm_num.
+  Mathlib: Odd, Nat.cast_ofNat, norm_num.
+dead: []
