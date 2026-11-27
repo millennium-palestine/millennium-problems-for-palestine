@@ -5,9 +5,7 @@ status: open
 imports:
 - Mathlib
 open: []
-depends:
-- pnp-307
-- pnp-314
+depends: []
 statement: |
   ∀ (n t : ℕ) (g : (Fin 3 → Bool) → Bool) (x : List Bool), 0 < n →
     ∃ D : List (List (ℕ × Bool)), D.length ≤ 16 * n * t + n + 1 ∧
