@@ -1,0 +1,26 @@
+id: pnp-292
+problem: pvsnp
+title: In the order j(j+1)/2 + (j - i), the split cells (i, k) and (k, j) of an interval (i, j) with i < k < j come before (i, j)
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ i j k : ℕ, i < k → k < j →
+    k * (k + 1) / 2 + (k - i) < j * (j + 1) / 2 + (j - i) ∧
+    j * (j + 1) / 2 + (j - k) < j * (j + 1) / 2 + (j - i)
+context: |
+  Step toward pnp-152, and a correction to the cell order of pnp-276. The interval recurrence of pnp-213 computes
+  the cell (i, j) from the cells (i, k) and (k, j) for i < k < j, so a table that is filled in one pass needs every
+  such split cell earlier than (i, j). The listing of pnp-276, by right end j and then by left end i increasing, puts
+  (k, j) after (i, j) when k > i, so it cannot be the order of the table. This gap gives the order that works: by
+  right end j, and within j by left end i decreasing, with position j(j+1)/2 + (j - i). Both split cells have a
+  smaller position: (i, k) lies in an earlier right-end block, and (k, j) lies in the same block with a larger left
+  end. It is pure arithmetic on natural numbers: no machine, no polynomial bound, and it does not decide P vs NP.
+sketch: |
+  The second conjunct is omega, since j - k < j - i when i < k. For the first, let B = k(k+1). Then (k+1)(k+2) =
+  B + 2(k+1), and monotonicity of the triangular count from k + 1 ≤ j gives (k+1)(k+2)/2 ≤ j(j+1)/2. So
+  k(k+1)/2 + k < j(j+1)/2, and the left side is at most k(k+1)/2 + k because k - i ≤ k. omega closes both
+  conjuncts once these two facts are in context, with the products as atoms.
+dead: []
