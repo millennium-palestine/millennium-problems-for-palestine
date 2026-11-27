@@ -1,0 +1,29 @@
+id: pnp-264
+problem: pvsnp
+title: Balanced nonnegative blocks each followed by a NAND step keep the height at least minus the number of blocks
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ items : List (List (Bool × Bool)),
+      (∀ b ∈ items, (b.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 ∧
+        ∀ j, j ≤ b.length →
+          0 ≤ ((b.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) →
+      ∀ j, j ≤ ((items.map fun b => b ++ [(true, true)]).flatten).length →
+        -(items.length : ℤ) ≤
+          ((((items.map fun b => b ++ [(true, true)]).flatten).map fun r : Bool × Bool =>
+            if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum
+context: |
+  Floor bound for the top-level decomposition of the pnp-152 route. pnp-263 splits a pair list into balanced
+  nonnegative blocks, each closed by a NAND pair (height step -1), and a tail. This gap says that along such a
+  run of blocks the height walk never goes below minus the number of blocks. So the stack underflow below the
+  starting height is bounded by the count of NAND steps. The statement is a fact about lists of pairs and
+  integers: it does not mention machines, polynomial bounds, or P, and it does not decide P vs NP.
+sketch: |
+  Induction on the list of blocks. Empty list: the only prefix is the empty one, sum 0. For a block b :: rest,
+  the walk on b stays at least 0 (its prefix sums are nonnegative by hypothesis) and returns to 0; the NAND pair
+  then contributes -1; the rest of the walk is at least -(length rest) by induction, shifted by -1. Use
+  List.take_append and List.take_append_of_le_length to split a prefix at the boundary of b ++ [-1].
+dead: []
