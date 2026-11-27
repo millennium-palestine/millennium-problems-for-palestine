@@ -1,0 +1,38 @@
+id: pnp-329
+problem: pvsnp
+title: Top of a block decomposition from the stack [false] is the top of the tail run from [false] or [true]
+status: open
+imports:
+- Mathlib
+open: []
+depends: 
+- pnp-328
+statement: |
+   ∀ (F : List Bool × List Bool × Option Bool → Bool → List Bool × List Bool × Option Bool),
+      F = (fun st b => match st.2.2 with
+        | none => (st.1, st.2.1, some b)
+        | some a =>
+          if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+            else (st.1, st.2.1, none))
+          else (if b then (st.1.headD false :: st.1, st.2.1, none)
+            else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) →
+      ∀ (items : List (List (Bool × Bool))) (T : List (Bool × Bool)),
+        (∀ b ∈ items, (b.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 ∧
+          ∀ j, j ≤ b.length → 0 ≤ ((b.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) →
+      ∀ (w : List Bool),
+        ((((items.map fun b => b ++ [(true, true)]).flatten ++ T).flatMap fun r : Bool × Bool => [r.1, r.2]).foldl F
+            ([false], w, none)).1.headD false =
+          (((T.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl F
+            ((if items.isEmpty then [false] else [true]), w.drop (items.flatten.countP fun q : Bool × Bool => !q.1 && !q.2), none)).1.headD false)
+context: |
+  The top-level reduction for the pnp-152 route. A pair list q = (blocks, each followed by NAND) ++ T, with balanced
+  nonnegative blocks and an arbitrary tail T, folded from the stack [false] has the same top as the tail T folded from
+  the single cell [false] when there are no blocks and from the single cell [true] when there is at least one block.
+  So the existential cell g of pnp-268 and pnp-274 is determined: it is false if there are no blocks and true otherwise.
+  The tail T is not required to be nonnegative here. It is a fact about lists of bits and the fold: no machine, no
+  polynomial bound, no P, and it does not decide P vs NP.
+sketch: |
+  Rewrite the bit fold of the append as the fold of the blocks followed by the fold of the tail (List.foldl_append), then
+  replace the fold of the blocks by its value from pnp-328 with start x = false. The two sides then agree
+  definitionally, so the top components are equal.
+dead: []
