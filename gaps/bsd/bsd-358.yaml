@@ -1,0 +1,21 @@
+id: bsd-358
+problem: bsd
+title: 'Torsion count for m = 6: over a field with 6 nonzero, the 6-torsion subgroup of an elliptic Weierstrass curve has at most 36 points'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-354
+- bsd-357
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K), (6 : K) ≠ 0 →
+    Nat.card {P : W.toAffine.Point // (6 : ℕ) • P = 0} ≤ 36
+context: |
+  The m = 6 case of the m² torsion upper bound (bsd-192): the number 36 = 6². It is bsd-354 specialised to m = 6, with the
+  m = 6 division polynomial input of bsd-357 supplying the hypothesis of bsd-354. The statement is an assembly with no new
+  mathematics, and it is the first even m beyond 4 for which the input is proved here.
+sketch: |
+  Apply bsd-354 with m = 6: Even 6 (witness 3), (6 : K) ≠ 0 as the cast of 6, and the hypothesis of bsd-354 for m = 6 is
+  bsd-357. Then Nat.card ≤ 6 ^ 2 = 36 by norm_num. Mathlib: Even, Nat.cast_ofNat, norm_num.
+dead: []

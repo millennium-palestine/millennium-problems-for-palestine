@@ -1,0 +1,32 @@
+id: bsd-357
+problem: bsd
+title: 'Six-division roots: for an elliptic Weierstrass curve over a field and a nonsingular affine point (x, y) with 6 • P = 0 and 2 • P ≠ 0, the 6-division polynomial preΨ′ 6 vanishes at x'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-221
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) (x y : K)
+    (h : W.toAffine.Nonsingular x y),
+    (6 : ℕ) • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) = 0 →
+    (2 : ℕ) • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) ≠ 0 →
+    (W.preΨ' 6).eval x = 0
+context: |
+  The m = 6 instance of the division polynomial input bsd-198, in the form bsd-354 (even-m torsion count) takes as its
+  hypothesis: for m = 6 the affine points with 6 • P = 0 and 2 • P ≠ 0 have x-coordinate a root of preΨ′ 6. The point
+  Q = 2P is a nonzero point with 3 • Q = 0, so its x-coordinate x2 is a root of the 3-division polynomial Ψ₃ (the
+  doubling of Q is -Q, by bsd-221). Eliminating x2 with x2 (2y + a₁x + a₃)² = x⁴ − b₄x² − 2b₆x − b₈ gives the resultant
+  3g⁴ + b₂g³f + 3b₄g²f² + 3b₆gf³ + b₈f⁴ (with f = 4x³ + b₂x² + 2b₄x + b₆ and g = x⁴ − b₄x² − 2b₆x − b₈), and that
+  resultant equals preΨ′ 6 = Ψ₃ (preΨ′ 5 − preΨ₄²) modulo 4b₈ = b₂b₆ − b₄² (sympy: the difference is a multiple of the
+  relation). Numerical check over F_5, F_7, F_11, F_13 (all short curves, all points with 6P = 0, 2P ≠ 0): 528 points, no
+  counterexample. The statement holds over every field (no division by 2 or 3 is used). Not checked by the checker yet.
+sketch: |
+  (1) y ≠ negY x y from 2 • P ≠ 0. (2) bsd-221 on P gives Q = P + P = (x2, y2) with x2 (2y + a₁x + a₃)² = g(x).
+  (3) 3 • Q = 6 • P = 0, so Q + Q = −Q; 2Q ≠ 0 (else Q = 3Q − 2Q = 0). (4) bsd-221 on Q gives the x-coordinate of Q + Q, which
+  is x2 since Q + Q = −Q; hence x2 (2y2 + a₁x2 + a₃)² = g(x2), and with the curve identity (2y2 + …)² = f(x2) this gives
+  Ψ₃(x2) = 0 (linear_combination). (5) linear_combination: preΨ′ 6 = f⁴·Ψ₃(x2) − T·(x2 f − g) − E·(4b₈ − b₂b₆ + b₄²), where
+  T = 3(u³ + u²g + ug² + g³) + b₂f(u² + ug + g²) + 3b₄f²(u + g) + 3b₆f³ with u = x2 f, and E = Ψ₃·(explicit degree-8 form).
+  (6) Mathlib: WeierstrassCurve.preΨ'_even 0 and preΨ'_odd 0 with norm_num give preΨ′ 6 = Ψ₃ (preΨ′ 5 − preΨ₄²).
+dead: []
