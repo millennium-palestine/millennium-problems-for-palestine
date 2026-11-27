@@ -1,0 +1,36 @@
+id: pnp-325
+problem: pvsnp
+title: A balanced nonnegative block of pairs gives the same run on every stack tail, so its output top does not depend on the stack below
+status: open
+imports:
+- Mathlib
+- MPP.Solutions.Pnp201
+- MPP.Solutions.Pnp211
+- MPP.Solutions.Pnp212
+open: []
+depends: []
+statement: |
+  ∀ (F : List Bool × List Bool × Option Bool → Bool → List Bool × List Bool × Option Bool), F = (fun (st : List Bool × List Bool × Option Bool) (b : Bool) => match st.2.2 with | none => (st.1, st.2.1, some b) | some a => if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none) else (st.1, st.2.1, none)) else (if b then (st.1.headD false :: st.1, st.2.1, none) else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) →
+    ∀ (Rel : List (Bool × Bool) → List Bool → Bool → Bool → Prop),
+    (∀ (q : List (Bool × Bool)) (T : List Bool) (v g : Bool), Rel q T v g ↔ ∃ w : List Bool, w.length = q.countP (fun x : Bool × Bool => !x.1 && !x.2) ∧ ∃ w' : List Bool, (q.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl F (v :: T, w, none) = (g :: T, w', none)) →
+    ∀ (q : List (Bool × Bool)),
+    (∀ j, j ≤ q.length → 0 ≤ ((q.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) →
+    (q.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 →
+    ∀ (t t' : List Bool) (v g : Bool), Rel q t v g → Rel q t' v g
+context: |
+  Tail independence of the interval table for the pnp-152 route, all balanced blocks. Rel q T v g says that the fold of pnp-133
+  run on the pair list q from the stack v :: T, with a witness of exact length, ends with top g and tail T. A balanced nonnegative
+  block reads only its own input and the entries it pushes, so the output top and the witness use do not depend on the stack
+  under it. The proof is strong induction on the length of q. By pnp-211 a nonempty block is a single no-op pair, a primitive
+  block (case pnp-323) or a concatenation of two nonempty balanced blocks (case pnp-324); the empty block is trivial. The
+  no-op pair writes nothing and reads nothing, so its output is its input. This is the table fact that makes the pnp-287 interval
+  relation a relation on pairs alone. It is a fact about lists of pairs and the fold: no machine, no polynomial bound, no P, and
+  it does not decide P vs NP.
+sketch: |
+  Strong induction on q.length, generalising q. The empty list: the fold does nothing, so g = v and the witness is empty in both
+  tails. Otherwise pnp-211 gives three cases. The no-op case q = [(true, false)]: the fold reads two bits with no effect, so
+  Rel q t v g forces g = v, and Rel q t' v v holds with the empty witness. The primitive case: apply the step of pnp-323 with the
+  induction hypothesis for mid, which is shorter than q by two. The split case q = p ++ s with both parts nonempty: apply the step
+  of pnp-324 with the induction hypotheses for p and s, which are shorter than q. The step lemmas are copied into the proof file
+  as helper theorems, since the proposal cannot import them before they merge.
+dead: []
