@@ -1,0 +1,51 @@
+id: pnp-268
+problem: pvsnp
+title: A run of balanced nonnegative blocks, each followed by a NAND pair, leaves a single new top and drops one stack cell per block
+status: open
+imports:
+- Mathlib
+- MPP.Solutions.Pnp204
+open: []
+depends:
+- pnp-204
+statement: |
+  ∀ (items : List (List (Bool × Bool))) (T : List (Bool × Bool)),
+    (∀ b ∈ items, (b.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 ∧
+      ∀ j, j ≤ b.length → 0 ≤ ((b.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) →
+    ∀ (v : Bool) (t w : List Bool), ∃ g : Bool,
+      ((((items.map fun b => b ++ [(true, true)]).flatten ++ T).flatMap fun r : Bool × Bool => [r.1, r.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+        match st.2.2 with
+        | none => (st.1, st.2.1, some b)
+        | some a =>
+          if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+            else (st.1, st.2.1, none))
+          else (if b then (st.1.headD false :: st.1, st.2.1, none)
+            else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (v :: t, w, none)) =
+      ((T.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+        match st.2.2 with
+        | none => (st.1, st.2.1, some b)
+        | some a =>
+          if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+            else (st.1, st.2.1, none))
+          else (if b then (st.1.headD false :: st.1, st.2.1, none)
+            else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) (g :: t.drop items.length, w.drop (items.flatten.countP fun q : Bool × Bool => !q.1 && !q.2), none))
+context: |
+  Iterated pushdown step for the pnp-152 route, the sequence version of pnp-204. pnp-263 writes a pair list as balanced
+  nonnegative blocks, each followed by a NAND pair, and a tail T. pnp-204 says that one such block with its NAND pair
+  replaces the top of the stack by NAND(g, value below) and drops one cell, where g is the top the block leaves. This
+  gap runs the whole sequence: after all the blocks and their NAND pairs, the stack is a new top over the old stack
+  with one cell dropped for each block, and the witness is advanced by the number of witness reads of the blocks. The
+  new top is some Boolean, which the statement leaves existential, since its exact value is the CYK value of the
+  sequence and is not needed for the assembly. It is a fact about lists of pairs and the fold of pnp-133: no machine,
+  no polynomial bound, no P, and it does not decide P vs NP.
+sketch: |
+  Induction on items, generalising over v, t and w, with T fixed. The empty list gives g = v, since the flatten is T
+  and both sides drop nothing. For b :: rest, the flatten of the NAND-mapped list is b ++ [(true, true)] ++ (the rest),
+  so List.map_cons, List.flatten_cons and List.append_assoc turn the left side into p ++ c :: s with p = b, c = (true, true)
+  and s = (rest mapped, flattened) ++ T. The balance and prefix hypotheses for b come from the hypothesis on items, and
+  pnp-204 (MPP.Solutions.Pnp204.main) rewrites the fold to the fold of s from (!(g && t.headD false)) :: t.drop 1 with
+  witness w.drop (b.countP ...). The induction hypothesis on rest, applied to v' = !(g && t.headD false), t' = t.drop 1 and
+  w' = w.drop (b.countP ...), gives a top g' with the fold of T from (g' :: (t.drop 1).drop rest.length) and the witness
+  w'.drop (rest.flatten.countP ...). Finish with List.drop_drop, List.drop_drop on the witness, List.countP_append,
+  List.length_cons and omega for the stack index, and List.flatten_cons for the count.
+dead: []
