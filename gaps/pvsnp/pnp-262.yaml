@@ -1,0 +1,27 @@
+id: pnp-262
+problem: pvsnp
+title: A pair list whose height walk goes below zero has a prefix whose height is exactly -1
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ q : List (Bool × Bool),
+    (∃ j, j ≤ q.length ∧
+      ((q.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum < 0) →
+    ∃ j, j ≤ q.length ∧
+      ((q.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum = -1
+context: |
+  Discrete intermediate value step for the pnp-152 route. Each pair of the fan-out program has height step +1, 0 or -1, as
+  in pnp-192 and pnp-203. Because a step is at least -1, a walk that dips below zero must pass through -1 exactly, and
+  the first visit below zero is at -1. pnp-203 needs a prefix at height -1 as its hypothesis; this gap supplies that
+  hypothesis from the weaker condition "some prefix is negative", which is the form that the case split of the
+  top-level decomposition (pnp-263) produces. It is a fact about lists of pairs and integers: no machine, no polynomial
+  bound, no P, and it does not decide P vs NP.
+sketch: |
+  Let j be the least index with prefix sum negative (Nat.find). Index 0 has sum 0, so j is at least 1, and the sum at
+  j - 1 is nonnegative by minimality. The step at position j - 1 is the value of the pair q[j - 1] under the height map,
+  which lies in {-1, 0, 1}, so the sum at j is at least -1. Being negative, it equals -1. Take that j as the witness.
+  The take and map identities are List.take_succ, List.getElem and List.sum_append on the take of length j.
+dead: []

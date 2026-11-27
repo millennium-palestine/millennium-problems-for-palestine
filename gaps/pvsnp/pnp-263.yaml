@@ -1,0 +1,35 @@
+id: pnp-263
+problem: pvsnp
+title: A pair list splits into balanced nonnegative blocks, each followed by a NAND pair, and a tail whose height never goes below zero
+status: open
+imports:
+- Mathlib
+- MPP.Solutions.Pnp203
+open: []
+depends:
+- pnp-203
+- pnp-262
+statement: |
+  ∀ q : List (Bool × Bool), ∃ (items : List (List (Bool × Bool))) (T : List (Bool × Bool)),
+    q = (items.map fun b => b ++ [(true, true)]).flatten ++ T ∧
+    (∀ b ∈ items,
+      (b.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 ∧
+      ∀ j, j ≤ b.length →
+        0 ≤ ((b.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) ∧
+    ∀ j, j ≤ T.length →
+      0 ≤ ((T.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum
+context: |
+  Top-level decomposition for the pnp-152 route, the step left open in the pnp-152 release on issue 945. Iterating the
+  first-visit split of pnp-203 on the rest of a program gives a finite sequence of balanced nonnegative blocks, each
+  closed by a NAND pair (a pair with both bits true, height step -1), followed by a tail that never dips below zero. The
+  NAND pairs are the points where the stack underflows into the part below the block, and each balanced block is a
+  pushdown excursion that returns to its start. The statement is a pure fact about lists of pairs and integers: it does
+  not mention machines, polynomial bounds, or P, and it does not decide P vs NP. It is stated as an existence claim so
+  that a CYK-style recurrence can be built on the blocks, with the NAND pair applied to the current top.
+sketch: |
+  Strong induction on the length of q. If some prefix of q has height negative, pnp-262 gives a prefix at height -1,
+  and pnp-203 splits q = p ++ c :: s with p a balanced nonnegative block and c = (true, true). The induction hypothesis
+  on s gives items' and T' with s = (items'.map (· ++ [(true, true)])).flatten ++ T'. Take items = p :: items' and
+  T = T'. The equation for q is then List.map_cons, List.flatten_cons and List.append_assoc. If no prefix of q is
+  negative, take items = [] and T = q; the nonnegativity of the prefixes is the hypothesis of the negative case.
+dead: []
