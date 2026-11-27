@@ -1,0 +1,34 @@
+id: pnp-324
+problem: pvsnp
+title: A concatenation of two balanced blocks gives the same run on every stack tail, given the same for each block
+status: open
+imports:
+- Mathlib
+- MPP.Solutions.Pnp201
+open: []
+depends: []
+statement: |
+  ∀ (F : List Bool × List Bool × Option Bool → Bool → List Bool × List Bool × Option Bool), F = (fun (st : List Bool × List Bool × Option Bool) (b : Bool) => match st.2.2 with | none => (st.1, st.2.1, some b) | some a => if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none) else (st.1, st.2.1, none)) else (if b then (st.1.headD false :: st.1, st.2.1, none) else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) →
+    ∀ (Rel : List (Bool × Bool) → List Bool → Bool → Bool → Prop),
+    (∀ (q : List (Bool × Bool)) (T : List Bool) (v g : Bool), Rel q T v g ↔ ∃ w : List Bool, w.length = q.countP (fun x : Bool × Bool => !x.1 && !x.2) ∧ ∃ w' : List Bool, (q.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl F (v :: T, w, none) = (g :: T, w', none)) →
+    ∀ (p s : List (Bool × Bool)),
+    (∀ j, j ≤ p.length → 0 ≤ ((p.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) →
+    (p.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 →
+    (∀ j, j ≤ s.length → 0 ≤ ((s.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) →
+    (s.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 →
+    (∀ (T T' : List Bool) (u g : Bool), Rel p T u g → Rel p T' u g) →
+    (∀ (T T' : List Bool) (u g : Bool), Rel s T u g → Rel s T' u g) →
+    ∀ (t t' : List Bool) (v g : Bool), Rel (p ++ s) t v g → Rel (p ++ s) t' v g
+context: |
+  Tail independence of the interval table for the pnp-152 route, split step. Rel q T v g says that the fold of pnp-133 run on the
+  pair list q from the stack v :: T, with a witness of exact length, ends with top g and tail T. For a concatenation of two
+  balanced nonnegative blocks, pnp-201 writes the run as a composition through an intermediate top g1. If each block is
+  independent of its tail (the hypotheses), the intermediate top does not depend on the tail either, so the concatenation is
+  independent too. This is the split case of the tail-independence fact that the pnp-287 table needs; the primitive case is
+  the separate gap pnp-323. It is a fact about lists of pairs and the fold: no machine, no polynomial bound, no P, and it does
+  not decide P vs NP.
+sketch: |
+  From Rel (p ++ s) t v g, the spec and pnp-201 give g1 with Rel p t v g1 and Rel s t g1 g. The hypothesis on p with T := t and
+  T' := t' gives Rel p t' v g1, and the hypothesis on s gives Rel s t' g1 g. The pnp-201 iff at the tail t' then gives
+  Rel (p ++ s) t' v g. Both directions of the pnp-201 iff are used once; the spec of Rel converts between the two forms.
+dead: []
