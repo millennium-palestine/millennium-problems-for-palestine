@@ -1,0 +1,29 @@
+id: bsd-350
+problem: bsd
+title: 'Second-order recurrence bound: a sequence with c_0 = 1, c_1 = a and c_(k+2) = a c_(k+1) − p c_k with a² ≤ 4p has |c_k| ≤ (k + 1) √p^k'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (a p : ℝ), 0 < p → a ^ 2 ≤ 4 * p → ∀ c : ℕ → ℝ, c 0 = 1 → c 1 = a →
+    (∀ k : ℕ, c (k + 2) = a * c (k + 1) - p * c k) →
+    ∀ k : ℕ, |c k| ≤ ((k : ℝ) + 1) * Real.sqrt p ^ k
+context: |
+  Second step of the coefficient bound in bsd-016. For an elliptic curve with good reduction at p, the local factor of the
+  L-series is 1 − a_p T + p T², and its inverse has coefficients c_k with c_0 = 1, c_1 = a_p and c_(k+2) = a_p c_(k+1) − p c_k.
+  Hasse's bound |a_p| ≤ 2√p is the hypothesis a² ≤ 4p. The conclusion |c_k| ≤ (k + 1) √p^k is the bound d(p^k) √(p^k) that
+  bsd-016 needs for prime powers. The naive triangle inequality on the recurrence gives only (3k − 1) p^(k/2), so the
+  bound needs the sine form: writing a = 2√p cos θ, one has sin θ · c_k = √p^k sin((k + 1)θ), and the sine multiple
+  bound of bsd-349 finishes it. This gap is self-contained: bsd-349 is proved inside the solution, not imported.
+  The case sin θ = 0 (a = ±2√p) is separate: then c_k = ±(k + 1) √p^k, by induction. The statement is true and is not
+  checked in Lean. Hasse's bound itself is not needed here, only the hypothesis a² ≤ 4p. Curve-independent.
+sketch: |
+  Case a² < 4p and a² = 4p split on whether sin θ = 0. Let x = a / (2√p) in [−1, 1] and θ = Real.arccos x, so that
+  cos θ = x (Real.cos_arccos) and a = 2√p cos θ. Prove by strong induction on k the joint statement
+  sin θ · c_k = √p^k · sin((k + 1)θ), using the recurrence and Real.sin_add / Real.sin_two_mul to match
+  2 cos θ sin((k+2)θ) = sin((k+3)θ) + sin((k+1)θ). Then |sin θ| |c_k| ≤ √p^k (k + 1) |sin θ| by bsd-349, and divide
+  when sin θ ≠ 0. For a = ±2√p, prove c_k = (±1)^k (k + 1) √p^k by two-step induction. Use Real.sqrt_pos and
+  Real.sq_sqrt to rewrite √p^2 = p.
+dead: []

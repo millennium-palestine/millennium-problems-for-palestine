@@ -1,0 +1,23 @@
+id: bsd-349
+problem: bsd
+title: 'Sine multiple bound: |sin((n + 1) θ)| ≤ (n + 1) |sin θ| for every real θ and natural n'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (θ : ℝ) (n : ℕ), |Real.sin (((n : ℝ) + 1) * θ)| ≤ ((n : ℝ) + 1) * |Real.sin θ|
+context: |
+  First step of the coefficient bound in bsd-016, which bounds the prime-power coefficients of the L-series of an
+  elliptic curve by (k + 1) p^(k/2). For a good prime the local factor is 1 − a_p T + p T², and the coefficients c_k of
+  its inverse satisfy c_k = a_p c_{k−1} − p c_{k−2}. Writing a_p = 2√p cos θ turns this into Chebyshev-type sines, and
+  the bound on c_k then reduces to the sine multiple bound stated here. It has no curve in it and no Hasse input, so it
+  can be proved on its own. It is true: by induction on n, sin((n + 2)θ) = sin((n + 1)θ) cos θ + cos((n + 1)θ) sin θ
+  gives |sin((n + 2)θ)| ≤ (n + 1)|sin θ| |cos θ| + |sin θ| ≤ (n + 2)|sin θ|. Not checked in Lean.
+sketch: |
+  Induction on n, using the two-term angle identity Real.sin_add (sin(x + y) = sin x cos y + cos x sin y) with x = (n+1)θ
+  and y = θ, together with |cos θ| ≤ 1 (Real.abs_cos_le_one) and |cos((n+1)θ)| ≤ 1. The base case n = 0 is an equality.
+  The step gives |sin((n+2)θ)| ≤ (n+1)|sin θ| + |sin θ|. Cast the natural number with push_cast; the form of the
+  product (n + 1 + 1) * θ needs a ring_nf or congr step before rewriting.
+dead: []
