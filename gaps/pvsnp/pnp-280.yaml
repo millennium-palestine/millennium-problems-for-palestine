@@ -1,0 +1,21 @@
+id: pnp-280
+problem: pvsnp
+title: Inside a row j, with decreasing left end, a cell with a larger left end i' is listed before one with a smaller left end i
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ i i' j : ℕ, i < i' → i' ≤ j →
+    j * (j + 1) / 2 + (j - i') < j * (j + 1) / 2 + (j - i)
+context: |
+  Step toward pnp-152, the enumeration invariant. In the order of pnp-279 (right end j, then decreasing left end), the
+  cell (i, j) sits at position j(j+1)/2 + (j - i). The split cell (k + 1, j) of the CYK recurrence has a larger left end
+  than (i, j) and must be listed before it. This gap says that a larger left end inside a row gives an earlier
+  position. Together with pnp-279 it says the cells read by the recurrence come earlier in the listing. It is pure
+  arithmetic on natural numbers and does not decide P vs NP.
+sketch: |
+  Since i < i' ≤ j, the subtraction j - i' is strictly smaller than j - i, so the two positions differ only in the
+  last summand and the inequality holds. The Lean proof is omega.
+dead: []
