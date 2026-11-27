@@ -1,0 +1,31 @@
+id: bsd-350
+problem: bsd
+title: 'Two-torsion count over the algebraic closure: for an elliptic curve over ZMod p with p not dividing 2, the points killed by 2 over the algebraic closure of F_p number 2²'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-231
+- bsd-234
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] [DecidableEq (AlgebraicClosure (ZMod p))] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic],
+    ¬ (p : ℤ) ∣ 2 →
+    (Nat.card {P : (W.baseChange (AlgebraicClosure (ZMod p))).toAffine.Point // (2 : ℤ) • P = 0} : ℤ) = (2 : ℤ) ^ 2
+context: |
+  The m = 2 instance of bsd-191 (the m-torsion over the algebraic closure of F_p has m² points when p does not divide m).
+  It is the prime-order case m = 2 of that statement, which is the first split of bsd-191 that needs no new theory:
+  both bounds are already solved. bsd-231 gives at most four points killed by 2 over any field of characteristic not 2,
+  and bsd-234 gives at least four over an algebraically closed field of characteristic not 2. Here the field is the
+  algebraic closure of ZMod p and the curve is the base change of W to it. The hypothesis ¬ p ∣ 2 is the one of bsd-191
+  and already forces p ≠ 2. The general m case of bsd-191 stays open: it needs the division-polynomial count for
+  every m (bsd-192 and bsd-193 with the separability input), not the Frobenius isogeny theory. The statement is true.
+sketch: |
+  Apply bsd-231 and bsd-234 to K = AlgebraicClosure (ZMod p) with W' = W.baseChange K. (1) (2 : K) ≠ 0: the
+  characteristic of K is p (CharP instance) and p does not divide 2, so the cast of 2 is nonzero (CharP.cast_eq_zero_iff).
+  (2) Upper bound from bsd-231 and lower bound from bsd-234 (IsAlgClosed instance of AlgebraicClosure). Nat.card_le
+  and le_antisymm give Nat.card = 4. (3) Convert the integer smul (2 : ℤ) • P to the natural smul (2 : ℕ) • P
+  (natCast_zsmul or zsmul_eq_nsmul), and the cast of the Nat.card to ℤ with (2 : ℤ)^2 = 4 by norm_num.
+  If Mathlib lacks IsElliptic for the base change, produce it as inferInstanceAs ((W.map (algebraMap _ _)).IsElliptic),
+  as in the bsd-036 solution route.
+dead: []
