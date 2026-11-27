@@ -1,6 +1,6 @@
 id: bsd-366
 problem: bsd
-title: 'Resultant transfer for the five-division polynomial: over any field, 3 to the 11 times the resultant of f and f′ at degrees 12 and 11 equals 3600 times the resultant of N and f′ at degrees 10 and 11'
+title: 'Resultant transfer for the five-division polynomial: over any field, 36 to the 11 times the resultant of f and f′ at degrees 12 and 11 equals 12 to the 11 times 3600 times the resultant of N and f′ at degrees 10 and 11'
 status: open
 imports:
 - Mathlib
@@ -10,7 +10,7 @@ depends:
 - bsd-365
 statement: |
   ∀ (K : Type) [Field K] (a b : K),
-    (3 : K) ^ 11 *
+    (36 : K) ^ 11 *
       (32 * (X ^ 6 + 5 * C a * X ^ 4 + 20 * C b * X ^ 3 - 5 * C (a ^ 2) * X ^ 2
             - 4 * C (a * b) * X - C (a ^ 3) - 8 * C (b ^ 2)) *
         (X ^ 3 + C a * X + C b) ^ 2
@@ -19,7 +19,7 @@ statement: |
             - 4 * C (a * b) * X - C (a ^ 3) - 8 * C (b ^ 2)) *
         (X ^ 3 + C a * X + C b) ^ 2
       - (3 * X ^ 4 + 6 * C a * X ^ 2 + 12 * C b * X - C (a ^ 2)) ^ 3)) 12 11 =
-    3600 *
+    12 ^ 11 * 3600 *
       (31 * C a * X ^ 10 + 285 * C b * X ^ 9 - 105 * C (a ^ 2) * X ^ 8 + 300 * C (a * b) * X ^ 7
       - 450 * C (a ^ 3) * X ^ 6 - 360 * C (b ^ 2) * X ^ 6 - 1218 * C (a ^ 2 * b) * X ^ 5
       - 250 * C (a ^ 4) * X ^ 4 - 3840 * C (a * b ^ 2) * X ^ 4 - 180 * C (a ^ 3 * b) * X ^ 3
@@ -32,22 +32,23 @@ statement: |
       - (3 * X ^ 4 + 6 * C a * X ^ 2 + 12 * C b * X - C (a ^ 2)) ^ 3)) 10 11
 context: |
   The resultant transfer that moves bsd-361 off the degree-12 polynomial. Let f be the short-form preΨ′ 5 of
-  bsd-364 (in a = a₄, b = a₆) and f′ its derivative (leading coefficient 60, degree 11), and let N be the
-  polynomial of bsd-365, so 36 f = 3X f′ + 12 N. Mathlib's resultant_mul_left (or resultant_C_mul_left) gives
-  Res(36 f, f′) = 36^11 Res(f, f′). The reduction 36 f ↦ 12 N (subtract 3X f′, resultant_add_mul_right) gives
-  Res_{12,11}(12 N, f′) = 12^11 Res_{12,11}(N, f′), and since deg N = 10 < 12 the formal degree bump multiplies by
-  lc(f′)^{12−10} = 60² (resultant_add_left_deg or resultant_succ_left_deg). Hence 36^11 Res(f, f′) = 12^11 · 3600 ·
-  Res_{10,11}(N, f′) up to the sign convention, and 36^11 / 12^11 = 3^11. Sympy (exact, integer polynomials in a, b)
-  confirms 3^11 · Res(f, f′) = 3600 · Res(N, f′) with degrees 12, 11 for f and 10, 11 for N. Together with bsd-364
-  and bsd-365 this leaves bsd-361 as the single identity Res_{10,11}(N, f′) = 3⁹ · 5¹⁰ · 2⁸⁴ · (4a³ + 27b²)²², which
-  is a 21 × 21 determinant identity over ℤ[a, b].
+  bsd-364 (in a = a₄, b = a₆), g = f′ its derivative (leading coefficient 60, degree 11), and N the polynomial of
+  bsd-365, so 36 f = 3X g + 12 N. Mathlib's resultant_C_mul_left gives Res(36 f, g) = 36^11 Res(f, g) at degrees 12,
+  11. The identity 36 f = 12 N + g · (3X) and resultant_add_mul_left (degree of 3X plus 11 is at most 12) give
+  Res(12 N, g) = 12^11 Res(N, g) at degrees 12, 11. Finally the formal degree bump from 10 to 12 for N gives
+  lc(g)^2 = 60^2 with sign (−1)^(11·2) = 1 (resultant_add_left_deg). So 36^11 Res_{12,11}(f, g) =
+  12^11 · 3600 · Res_{10,11}(N, g) holds with no division: the statement is kept in this form on purpose, so the
+  proof never cancels 12^11 (a cancellation would fail in characteristic 2 and 3). Sympy (exact, over ℤ[a, b])
+  confirms the corresponding identity 3^11 · Res(f, g) = 3600 · Res(N, g). Together with bsd-364 and bsd-365 this
+  leaves bsd-361 as the single identity Res_{10,11}(N, g) = 3⁹ · 5¹⁰ · 2⁸⁴ · (4a³ + 27b²)², which is a 21 × 21
+  determinant identity over ℤ[a, b].
 sketch: |
-  Let f and g := f′ be the two polynomials. Prove 36 ^ 11 * Res(f, g) = Res(C 36 * f, g) (resultant_C_mul_left,
-  exponent deg g = 11), then rewrite
-  C 36 * f with bsd-365 as 3 * X * g + 12 * N. Use resultant_add_mul_right (p = C 3 * X, the multiplier of g)
-  to drop 3 X g, then resultant_C_mul_left to pull out 12^11, and finally the formal-degree bump from 10 to 12
-  (resultant_add_left_deg / resultant_succ_left_deg) which contributes lc g^2 = 60^2. Check the sign
-  convention of Polynomial.sylvester against the statement at the start of the proof with a norm_num instance on
-  numerals. Mathlib: Polynomial.resultant, resultant_C_mul_left, resultant_add_mul_right, resultant_add_left_deg,
-  resultant_succ_left_deg, Polynomial.derivative.
+  Let f, g := derivative f, N be the three polynomials (set). Turn 36 into C 36 with map_ofNat and rewrite with
+  bsd-365 as C 36 * f = 12 * N + g * (3 * X). Apply resultant_C_mul_left (r = 36), then resultant_add_mul_left
+  with p = 3 * X, m = 12, n = 11: its hypotheses are natDegree (3 * X) + 11 ≤ 12 and natDegree g ≤ 11, where
+  natDegree g ≤ natDegree f − 1 ≤ 11 by natDegree_derivative_le and compute_degree!. Then resultant_C_mul_left
+  with r = 12 and natDegree N ≤ 10 (compute_degree!) for resultant_add_left_deg with m = 10, k = 2, n = 11:
+  coeff g 11 = 60 by coeff_derivative and coeff f 12 = 5 (compute_degree!). Finish with ring/norm_num on the sign
+  (−1)^22 = 1 and 60^2 = 3600. Mathlib: Polynomial.resultant, resultant_C_mul_left, resultant_add_mul_left,
+  resultant_add_left_deg, natDegree_derivative_le, coeff_derivative, compute_degree.
 dead: []
