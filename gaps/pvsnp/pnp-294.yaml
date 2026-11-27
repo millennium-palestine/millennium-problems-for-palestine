@@ -1,0 +1,29 @@
+id: pnp-294
+problem: pvsnp
+title: A pair list whose height walk is nonnegative with positive total splits at its last zero into a balanced nonnegative block, one up pair and a nonnegative rest
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (H : Bool × Bool → ℤ), (∀ r : Bool × Bool, H r = if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1) →
+    ∀ q : List (Bool × Bool), (∀ j, j ≤ q.length → 0 ≤ ((q.map H).take j).sum) → 0 < (q.map H).sum →
+    ∃ p s : List (Bool × Bool), ∃ r : Bool × Bool, q = p ++ r :: s ∧ H r = 1 ∧ (p.map H).sum = 0 ∧
+      (∀ j, j ≤ p.length → 0 ≤ ((p.map H).take j).sum) ∧ (∀ j, j ≤ s.length → 0 ≤ ((s.map H).take j).sum)
+context: |
+  Step toward pnp-152, the top-level tail of a run of the pnp-133 fold. pnp-263 splits any pair list into balanced
+  nonnegative blocks, each followed by a NAND pair, and a tail whose height walk never goes below zero. When the tail
+  ends above zero, its final top depends on its last unmatched up pair, so the tail must be read as a balanced block,
+  one up pair and a shorter nonnegative tail. This gap is that decomposition for the height walk of pnp-211 (the step
+  H is the one of pnp-213 and pnp-290): the split point is the last time the walk is at zero. It is a fact about lists
+  of pairs and integers: no machine, no polynomial bound, no P, and it does not decide P vs NP.
+sketch: |
+  Let n = q.length and let k be the largest index at most n whose prefix sum is zero (Nat.findGreatest on the
+  predicate; index 0 qualifies). Then k < n, since the total is positive. Let r = q[k], p = take k q, s = drop (k+1) q.
+  The prefix sum at k+1 is H r, which is nonnegative by hypothesis and nonzero by maximality of k, so H r = 1 (the
+  values of H lie in {-1, 0, 1}). The prefix sums of p are nonnegative and its total is zero by choice of k. For s,
+  the prefix sum of length j is the prefix sum at k+1+j minus one; that sum is nonnegative and nonzero by maximality,
+  hence at least one, so the difference is nonnegative. Use List.take_append_drop style lemmas with the sum of take
+  and List.sum_take_succ, and omega on the integer inequalities.
+dead: []
