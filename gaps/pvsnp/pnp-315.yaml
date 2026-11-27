@@ -1,0 +1,35 @@
+id: pnp-315
+problem: pvsnp
+title: For a fixed window rule and first row, a CNF of size 16nt + n + 1 is satisfiable exactly when the iterate of the window map has output true
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- pnp-307
+- pnp-314
+statement: |
+  ∀ (n t : ℕ) (g : (Fin 3 → Bool) → Bool) (x : List Bool), 0 < n →
+    ∃ D : List (List (ℕ × Bool)), D.length ≤ 16 * n * t + n + 1 ∧
+      (∀ d ∈ D, ∀ l ∈ d, l.1 < n * (t + 1)) ∧
+      ((∃ a : ℕ → Bool, ∀ d ∈ D, ∃ l ∈ d, a l.1 = l.2) ↔
+        (Nat.iterate (fun (r : ℕ → Bool) (k : ℕ) => g (fun j : Fin 3 => r ((k + j.val) % n)))
+          t (fun k => x.getD k false)) 0 = true)
+context: |
+  Step toward pnp-100 (Cook–Levin, over TM2 machines), on the CNF route, after pnp-307 and pnp-314. pnp-307 gives the CNF
+  of the window-rule tableau with first row x, and pnp-314 says that the tableau can be satisfied with its output cell
+  true exactly when the iterate of the window map has output true. This gap puts the two together as one CNF: the
+  clauses of pnp-307 plus the single unit clause that forces the output cell (index n·t) to true. Its satisfiability is
+  then exactly the output of the run, which is the pure-logic correctness of the tableau reduction for one fixed window
+  rule and input. The CNF has at most 16nt + n + 1 clauses on the variables below n·(t+1). It is finite combinatorics
+  and does not decide P vs NP. A polynomial-time map that writes this CNF for the input of a verifier is still the open
+  part of pnp-100.
+sketch: |
+  Take D from pnp-307 for n, t, g, x (its iff, length and variable bounds), and the list D ++ [[(n * t, true)]]. The
+  length is at most 16nt + n + 1 by List.length_append and omega. The unit clause has variable n·t < n·(t+1), since
+  n·(t+1) = n·t + n with n > 0. For the iff: a satisfying a of the appended list satisfies D, so it has the first-row
+  and local equations by pnp-307, and it satisfies the unit clause, so a (n·t) = true; pnp-314 then gives the iterate
+  output. Conversely, pnp-314 gives a satisfying assignment with the first row, local equations and output true, and
+  pnp-307 says it satisfies D; the unit clause is then satisfied by a (n·t) = true. Use List.mem_append, List.mem_singleton
+  and List.mem_append_right. Import MPP.Solutions.Pnp307 and MPP.Solutions.Pnp314.
+dead: []
