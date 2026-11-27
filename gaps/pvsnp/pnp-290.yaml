@@ -1,0 +1,35 @@
+id: pnp-290
+problem: pvsnp
+title: The balanced-block relation on the slices of a pair list satisfies the interval recurrence, with a primitive-block clause and a split clause
+status: open
+imports:
+- Mathlib
+- MPP.Solutions.Pnp211
+open: []
+depends:
+- pnp-211
+statement: |
+  ∀ (H : Bool × Bool → ℤ), (∀ r : Bool × Bool, H r = if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1) →
+    ∀ (q : List (Bool × Bool)) (B : ℕ → ℕ → Prop),
+    (∀ a b : ℕ, B a b ↔ ((∀ l, l ≤ b - a → 0 ≤ ((((q.drop a).take (b - a)).map H).take l).sum) ∧
+      (((q.drop a).take (b - a)).map H).sum = 0)) →
+    ∀ i j : ℕ, i + 2 ≤ j → j ≤ q.length →
+    (B i j ↔ ((∃ b : Bool, (q.drop i).take 1 = [(false, b)]) ∧ (q.drop (j - 1)).take 1 = [(true, true)] ∧ B (i + 1) (j - 1)) ∨
+      (∃ k : ℕ, i < k ∧ k < j ∧ B i k ∧ B k j))
+context: |
+  Step toward pnp-152, the interval bridge for the table. pnp-287 gives the table invariant for an abstract interval relation
+  X i j that obeys the recurrence of pnp-287, with a primitive clause (an up pair at i, a down pair at j - 1, and X on the
+  interior) and a split clause (X on (i, k) and (k, j)). This gap instantiates that recurrence with the balance predicate B
+  of a slice of a pair list: B i j says the slice (q.drop i).take (j - i) has nonnegative height walk with zero total, for
+  the step function H of pnp-211. The primitive clause is the decomposition of pnp-211 and the split clause is the
+  concatenation of balanced nonnegative blocks. It is pure list and integer arithmetic: no machine, no polynomial bound,
+  and it does not decide P vs NP.
+sketch: |
+  Both directions go through the slice identities of the list: the ends identity (the slice of length at least two is its
+  first pair, the interior slice (i + 1, j - 1), and its last pair) and the split identity at an inner point k. For the
+  forward direction, apply pnp-211 to the slice; its no-op clause has length one, which is excluded, and its primitive and
+  split clauses are read back through the two identities with List.append_inj. For the backward direction, a nonnegative
+  walk with zero total is built from the interior walk by adding an up step in front and a down step behind (prefix sums
+  are at least zero because the interior prefixes are), and a concatenation of two balanced blocks is balanced by adding
+  the two walks. The proof checked locally with lake env lean; the helper identities are proved in the solution file.
+dead: []
