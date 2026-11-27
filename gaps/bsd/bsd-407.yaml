@@ -1,0 +1,26 @@
+id: bsd-407
+problem: bsd
+title: 'Isogeny kernel count at m = n = 1: the points P over the algebraic closure with P − φP = 0 number m² − a m n + p n² = #E(F_p) for m = n = 1, where a = p + 1 − #E(F_p)'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-406
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] [DecidableEq (AlgebraicClosure (ZMod p))] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic],
+    let φ := WeierstrassCurve.Affine.Point.map (W' := W)
+      (FiniteField.frobeniusAlgHom (ZMod p) (AlgebraicClosure (ZMod p)))
+    (Nat.card {P : (W.baseChange (AlgebraicClosure (ZMod p))).toAffine.Point // (1 : ℤ) • P - (1 : ℤ) • φ P = 0} : ℤ) =
+      (1 : ℤ) ^ 2 - ((p : ℤ) + 1 - (Nat.card W.toAffine.Point : ℤ)) * 1 * 1 + (p : ℤ) * 1 ^ 2
+context: |
+  The m = n = 1 instance of bsd-161 (the isogeny kernel count for m − nφ). Here ker(1 − φ) is the set of points fixed by
+  the Frobenius, which bsd-406 counts as #E(F_p), and the right side 1 − a + p with a = p + 1 − #E(F_p) is also #E(F_p).
+  It is a true special case of bsd-161 and does not give its general statement: separability and degree for general
+  m and n are the missing steps (Silverman, Chapter III and V).
+  Proposed by the generator agent.
+sketch: |
+  Rewrite the kernel condition: (1 : ℤ) • P − (1 : ℤ) • φP = 0 is equivalent to φP = P (one_smul, sub_eq_zero), so the
+  subtype is the fixed set of bsd-406 and its Nat.card is Nat.card W.toAffine.Point. Then the right side is
+  1 − (p + 1 − N) + p = N by ring, so both sides are equal as integers.
+dead: []
