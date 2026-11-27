@@ -1,0 +1,23 @@
+id: pnp-288
+problem: pvsnp
+title: An interval of a pair list, of length at least two, is its first pair, then the interval strictly inside, then its last pair
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (q : List (Bool × Bool)) (i j : ℕ), i + 2 ≤ j → j ≤ q.length →
+    (q.drop i).take (j - i) = (q.drop i).take 1 ++ (q.drop (i + 1)).take (j - i - 2) ++ (q.drop (j - 1)).take 1
+context: |
+  Step toward pnp-152, the slice bridge for the interval table. pnp-287 gives the table invariant for an abstract interval
+  relation X i j that obeys the recurrence of pnp-287. To instantiate it with the balanced-run relation of pnp-213, the
+  interval (i, j) of a pair list q has to be written as a :: (mid ++ [c]), where a is the pair at i, c the pair at j - 1 and
+  mid the interior (i + 1, j - 1). This gap is that rewrite, for slices (q.drop i).take (j - i) of the list. It is pure list
+  algebra: no machine, no polynomial bound, and it does not decide P vs NP.
+sketch: |
+  Let n = j - i. Then (q.drop i).take n has length n since j ≤ q.length. Write the interior and the last element with
+  List.drop_drop and List.take_add: (q.drop i).take n = (q.drop i).take 1 ++ ((q.drop i).drop 1).take (n - 1), and then
+  ((q.drop i).drop 1) = q.drop (i + 1), while the last piece of the interval is the take 1 of the drop at j - 1. The
+  arithmetic on the lengths is closed by omega after the rewrite (n - 1 = (n - 2) + 1 since n ≥ 2).
+dead: []
