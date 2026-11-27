@@ -1,0 +1,32 @@
+id: pnp-246
+problem: pvsnp
+title: The witness bit at the unary truncated difference of two polynomial-time lengths is in P
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-234
+- pnp-237
+- pnp-245
+statement: |
+  ∀ a b : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) a) →
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) b) →
+    ∃ L : Lang, InP L ∧ ∀ x w : List Bool, L (pair x w) = w.getD ((a x).length - (b x).length) false
+context: |
+  The table step of the pnp-152 route reads the cell one row up, at the position w.length - (n + 1), which is a
+  truncated difference of two lengths. pnp-245 writes that difference in unary, and pnp-234 reads the witness at a
+  unary index computed from the instance. This gap combines the two: the index is the truncated difference of the
+  lengths of two polynomial-time maps a and b applied to the instance x, and the read of the witness w at that index
+  is a language in P on the pair encoding. It is a composition lemma for the table chain. It does not state the table,
+  the CYK recurrence, or the correctness of any cell, and it does not decide P vs NP.
+sketch: |
+  Let p z = pair (a z) (b z) (pnp-026, through pnp-237 pairP), and S be the unary truncated subtraction of pnp-245, so
+  S (pair u v) = replicate (u.length - v.length) true. Then h = S ∘ p is polynomial-time by pnp-006 (pnp-237 comp), it
+  is unary, and its length is (a x).length - (b x).length. pnp-234 applied to h gives the language L with
+  L (pair x w) = w.getD (h x).length false, which is the statement after rewriting.
+dead: []
