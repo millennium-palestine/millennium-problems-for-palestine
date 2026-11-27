@@ -1,0 +1,26 @@
+id: bsd-406
+problem: bsd
+title: 'Frobenius fixed points are counted by the points over F_p: the points of E over the algebraic closure fixed by the p-power Frobenius number as many as the points of E over F_p'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-368
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] [DecidableEq (AlgebraicClosure (ZMod p))] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic],
+    Nat.card {P : (W.baseChange (AlgebraicClosure (ZMod p))).toAffine.Point //
+      WeierstrassCurve.Affine.Point.map (W' := W) (FiniteField.frobeniusAlgHom (ZMod p) (AlgebraicClosure (ZMod p))) P = P} =
+      Nat.card W.toAffine.Point
+context: |
+  Counting step behind bsd-161 and bsd-121. The fixed points of the Frobenius φ on E(F̄_p) form the set E(F_p) by bsd-368,
+  and the map sending a point over F_p to its image over F̄_p is injective, so the two sets have the same size. This is the
+  n = m = 1 case of the kernel count in bsd-161: ker(1 − φ) = E(F_p). It is a sanity check for bsd-161 and a step toward
+  the trace identity, not the general kernel count.
+  Proposed by the generator agent. Both sides are finite, so Nat.card compares the two sets as finite sets.
+sketch: |
+  Let S be the fixed set on the left and T = E(F_p) the points over F_p. By bsd-368 the map ι : T → S, Q ↦ (the image of Q in E(F̄_p)),
+  is surjective onto S. It is injective because a field homomorphism ZMod p → F̄_p is injective on coordinates, so
+  Affine.Point.map along Algebra.ofId is injective (Point.some coordinates determine the point, with the point at infinity
+  as the image of zero). Then Nat.card S = Nat.card T by an equivalence (Equiv.ofBijective) and Nat.card_congr.
+dead: []
