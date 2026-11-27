@@ -4,7 +4,6 @@ title: A block decomposition whose tail never dips below zero has net height at 
 status: open
 imports:
 - Mathlib
-- MPP.Solutions.Pnp266
 open: []
 depends:
 - pnp-266
