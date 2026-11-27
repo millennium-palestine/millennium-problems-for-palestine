@@ -1,0 +1,21 @@
+id: pnp-289
+problem: pvsnp
+title: An interval of a pair list splits at any inner point into two consecutive intervals
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (q : List (Bool × Bool)) (i k j : ℕ), i ≤ k → k ≤ j →
+    (q.drop i).take (j - i) = (q.drop i).take (k - i) ++ (q.drop k).take (j - k)
+context: |
+  Step toward pnp-152, the split bridge for the interval table. The split clause of the interval recurrence (pnp-287 and
+  pnp-213) reads the two halves (i, k) and (k, j) of an interval. This gap says that the slice of a pair list over (i, j)
+  is the concatenation of its slices over (i, k) and (k, j) for any inner point k. It is pure list algebra: no machine,
+  no polynomial bound, and it does not decide P vs NP.
+sketch: |
+  Since i ≤ k ≤ j, the length j - i equals (k - i) + (j - k). Rewrite j - i that way and apply List.take_add to the
+  outer take on q.drop i. The second summand is take (j - k) of (q.drop i).drop (k - i), and List.drop_drop turns that
+  into q.drop (i + (k - i)) = q.drop k, using i + (k - i) = k from i ≤ k. Close with omega for the arithmetic.
+dead: []
