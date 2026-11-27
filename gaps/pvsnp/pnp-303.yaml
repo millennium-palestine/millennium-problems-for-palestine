@@ -1,0 +1,29 @@
+id: pnp-303
+problem: pvsnp
+title: A window-rule tableau of t steps and width n has a CNF of size 16nt, on the rows 0 to t
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (n t : ℕ) (g : (Fin 3 → Bool) → Bool), ∃ D : List (List (ℕ × Bool)),
+    (∀ a : ℕ → Bool, (∀ s : Fin t, ∀ i : Fin n,
+      a (n * (s.val + 1) + i.val) = g (fun j => a (n * s.val + (i.val + j.val) % n))) ↔
+      ∀ d ∈ D, ∃ l ∈ d, a l.1 = l.2) ∧
+    D.length ≤ 16 * n * t ∧ ∀ d ∈ D, ∀ l ∈ d, l.1 < n * (t + 1)
+context: |
+  Step toward pnp-100 (Cook–Levin, over TM2 machines), on the CNF route, after pnp-302 (one row). A computation
+  tableau is a list of rows, row s+1 being the window step of row s, and the whole run is satisfiable exactly
+  when every local equation of every row holds. Here row s occupies the variables n·s, ..., n·s + n − 1, so the
+  rows 0 to t are the variables below n·(t+1). This gap gives the CNF of the whole tableau of t steps: the row
+  constraints of pnp-302 for each s, renamed to the offset of row s, with at most 16n clauses per step. It is
+  finite combinatorics with linear size in n·t, and it does not decide P vs NP. Writing this CNF by a
+  polynomial-time map for a verifier of a language in NP is still the open part of pnp-100.
+sketch: |
+  Repeat the proof of pnp-302 with an offset: the local equation at (s, i) involves variables n·s + (i+j) mod n
+  for the window and n·(s+1) + i for the output, and the same truth-table CNF of the 4-ary function is renamed
+  by these indices. The clauses are collected over s, then over i, with List.finRange and List.mem_flatMap. The
+  length bound multiplies 16n by t, and the variable bound uses n·s + n ≤ n·(t+1) and n·(s+1) + n ≤ n·(t+1) for
+  s < t, which follow from Nat.mul_le_mul_left.
+dead: []
