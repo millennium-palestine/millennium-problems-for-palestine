@@ -1,0 +1,38 @@
+id: pnp-317
+problem: pvsnp
+title: A satisfying assignment of the b-bit window-rule tableau with first row x has each row equal to an iterate of the b-bit window map
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (n b t : ℕ) (G : Fin b → (Fin (3 * b) → Bool) → Bool) (x : List Bool) (a : ℕ → Bool),
+    ((∀ k : Fin (n * b), a k.val = x.getD k.val false) ∧
+      ∀ s : Fin t, ∀ i : Fin n, ∀ j : Fin b,
+        a (n * b * (s.val + 1) + i.val * b + j.val) =
+          G j (fun w : Fin (3 * b) => a (n * b * s.val + ((i.val + w.val / b) % n) * b + w.val % b))) →
+    ∀ s : ℕ, s ≤ t → ∀ k : Fin (n * b),
+      a (n * b * s + k.val) =
+        (Nat.iterate (fun (r : ℕ → Bool) (m : ℕ) =>
+          if h : m % b < b then
+            G ⟨m % b, h⟩ (fun w : Fin (3 * b) => r (((m / b + w.val / b) % n) * b + w.val % b))
+          else false) s (fun m => x.getD m false)) k.val
+context: |
+  Step toward pnp-100 (Cook–Levin, over TM2 machines), on the CNF route, after pnp-316. This is pnp-312 for
+  cells of b bits, the form the CNF of pnp-316 needs. Row s occupies the bits n·b·s, ..., n·b·s + n·b − 1, the
+  cell i and bit j of row s+1 is the output of G j on the 3b bits of the cells i−1, i, i+1 (mod n) of row s,
+  and the row is read as a list of bits of length n·b. A satisfying assignment of the local equations, with
+  first row x, is forced row by row: each row is the iterate of the b-bit window map started from x. This is
+  induction on the row, using the equations of that row and the fact that the window map is a function of the
+  previous row only. It is finite combinatorics and does not decide P vs NP. With b = 1 it is pnp-312. The
+  converse (the iterate is a satisfying assignment) is the b-bit version of pnp-313. Writing this as a
+  polynomial-time map for a verifier is still the open part of pnp-100.
+sketch: |
+  Induction on s, with the first-row hypothesis as the base case (Function.iterate_zero, then the first row at k).
+  For s + 1 ≤ t, write k = (k / b) · b + k % b (Nat.div_add_mod'), so k % b < b and k / b < n. The equation at
+  row s, cell k / b, bit k % b gives a (n·b·(s+1) + k) = G (k % b) of the window bits, and each window bit lies
+  below n·b because ((k / b + d) % n) < n, so the induction hypothesis rewrites each window bit to the
+  iterate of row s. Function.iterate_succ_apply' unfolds the iterate, and dif_pos on k % b < b finishes it. The
+  bound on the window index is ((r) · b + q < (r + 1) · b ≤ n · b with r < n, by Nat.mod_lt and nlinarith.
+dead: []
