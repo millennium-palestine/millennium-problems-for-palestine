@@ -1,0 +1,28 @@
+id: pnp-306
+problem: pvsnp
+title: A CNF over variables below n with a satisfying assignment has one of length exactly n
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- pnp-305
+statement: |
+  ∀ (C : List (List (ℕ × Bool))) (n : ℕ),
+    (∀ c ∈ C, ∀ l ∈ c, l.1 < n) →
+    (∃ w : List Bool, ∀ c ∈ C, ∃ l ∈ c, w.getD l.1 false = l.2) →
+    ∃ v : List Bool, v.length = n ∧ ∀ c ∈ C, ∃ l ∈ c, v.getD l.1 false = l.2
+context: |
+  Step toward pnp-100 (Cook–Levin, over TM2 machines), on the CNF route. If every literal of a CNF C
+  refers to a variable below n, then whether an assignment satisfies C depends only on its first n bits.
+  So a satisfiable CNF has a satisfying assignment of length exactly n, which is the witness shape an NP
+  verifier reads: a bit list of length given by the number of variables, which is polynomially bounded
+  in the size of the input. This gap is the existential form of that fact, stated with the Boolean
+  all-any check of pnp-300 replaced by its Prop meaning. It is pure list logic and does not decide P vs NP.
+sketch: |
+  Take v to be List.ofFn (fun i : Fin n => w.getD i false), the first n bits of w. Its length is n by
+  List.length_ofFn. For a clause c in C and a literal l in c with l.1 < n, the read-off identity of
+  pnp-305 gives v.getD l.1 false = w.getD l.1 false, so the witness literal of w is a witness literal of v.
+  The proof is an intro of the hypotheses, the obtain of w, and a use of v with the two facts, closed by
+  simp on the clause membership.
+dead: []

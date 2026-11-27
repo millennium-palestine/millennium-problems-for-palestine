@@ -1,0 +1,26 @@
+id: pnp-305
+problem: pvsnp
+title: Reading a bit list at the first n positions gives a list of length n with the same bits
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (w : List Bool) (n : ℕ),
+    (List.ofFn (fun i : Fin n => w.getD i false)).length = n ∧
+      ∀ i : ℕ, i < n → (List.ofFn (fun i : Fin n => w.getD i false)).getD i false = w.getD i false
+context: |
+  Step toward pnp-100 (Cook–Levin, over TM2 machines), on the CNF route after pnp-298 to pnp-304. A CNF
+  is checked against an assignment given as a list of bits, read at each index with false past its end.
+  An NP verifier for CNF satisfiability must be given a witness of polynomially bounded length, and a
+  satisfying assignment may have any length. This gap is the read-off identity that lets an arbitrary
+  assignment be cut down to exactly the first n positions: the new list has length n, and it agrees
+  with the old one at every index below n, where the old list is read with false past its end. It is
+  pure list logic with no machine and no polynomial bound, and it does not decide P vs NP.
+sketch: |
+  Take the length from List.length_ofFn. For the second conjunct, rewrite with List.getD_eq_getElem?_getD
+  (or List.getD_eq_getElem) and List.getElem?_ofFn, which reads the function at i when i < n; then both
+  sides are w.getD i false by the definition of the function. A simp call with List.getD_eq_getElem?_getD,
+  List.getElem?_ofFn and Fin.is_lt should close it, with an intro and omega-free case on i < n.
+dead: []
