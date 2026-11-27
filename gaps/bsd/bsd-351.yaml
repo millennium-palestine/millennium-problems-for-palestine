@@ -1,0 +1,30 @@
+id: bsd-351
+problem: bsd
+title: 'Three-torsion count over the algebraic closure: for an elliptic curve over ZMod p with p ≠ 2 and p not dividing 3, the points killed by 3 over the algebraic closure of F_p number 3²'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-244
+- bsd-245
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] [DecidableEq (AlgebraicClosure (ZMod p))] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic],
+    p ≠ 2 → ¬ (p : ℤ) ∣ 3 →
+    (Nat.card {P : (W.baseChange (AlgebraicClosure (ZMod p))).toAffine.Point // (3 : ℤ) • P = 0} : ℤ) = (3 : ℤ) ^ 2
+context: |
+  The m = 3 instance of bsd-191 (the m-torsion over the algebraic closure of F_p has m² points when p does not divide m),
+  with the extra hypothesis p ≠ 2 that the lower bound needs. The lower bound bsd-244 is stated for characteristic not 2
+  or 3 over an algebraically closed field, and the upper bound bsd-245 for any field in which 3 is nonzero. Both are
+  solved, so this is a direct assembly, the same shape as bsd-350 for m = 2. Characteristic 2 is left open here: the
+  count nine should still hold for p = 2, but bsd-244 does not cover it, so it would need its own gap. Together with
+  bsd-350 this covers the primes m = 2 and m = 3 of bsd-191 for every odd p ≠ 3; the general m case stays open.
+  The statement is true (E[3] ≅ (ℤ/3)² over the algebraic closure when the characteristic is not 3).
+sketch: |
+  Apply bsd-245 (upper bound, needs (3 : K) ≠ 0) and bsd-244 (lower bound, needs (2 : K) ≠ 0, (3 : K) ≠ 0 and IsAlgClosed K)
+  to K = AlgebraicClosure (ZMod p) and W' = W.baseChange K. (1) (3 : K) ≠ 0 and (2 : K) ≠ 0 from the CharP instance
+  of K (characteristic p) and p ≠ 3 (from ¬ p ∣ 3), p ≠ 2 (hypothesis); use CharP.cast_eq_zero_iff. (2) Upper bound from
+  bsd-245 and lower bound from bsd-244, so Nat.card = 9 by le_antisymm. (3) Convert the integer smul (3 : ℤ) • P as in
+  bsd-350 (natCast_zsmul) and the cast of Nat.card with (3 : ℤ)^2 = 9 by norm_num. The IsElliptic instance for
+  W.baseChange K is needed as in bsd-350.
+dead: []
