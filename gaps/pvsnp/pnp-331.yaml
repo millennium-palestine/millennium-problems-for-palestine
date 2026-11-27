@@ -1,0 +1,35 @@
+id: pnp-331
+problem: pvsnp
+title: A nonnegative pair list run on a stack with cell u on top has the same top as the run on the single cell [u]
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+   ∀ (F : List Bool × List Bool × Option Bool → Bool → List Bool × List Bool × Option Bool),
+      F = (fun st b => match st.2.2 with
+        | none => (st.1, st.2.1, some b)
+        | some a =>
+          if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+            else (st.1, st.2.1, none))
+          else (if b then (st.1.headD false :: st.1, st.2.1, none)
+            else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) →
+      ∀ (T : List (Bool × Bool)),
+        (∀ j, j ≤ T.length → 0 ≤ ((T.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) →
+      ∀ (u : Bool) (t w : List Bool),
+        ((T.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl F (u :: t, w, none)).1.headD false =
+          ((T.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl F ([u], w, none)).1.headD false
+context: |
+  Tail independence for nonnegative tails, the nonnegative analogue of pnp-323..326 (which treat balanced blocks). A pair
+  list whose height never goes below zero (every prefix sum of the heights is nonnegative) only pops cells that it pushed
+  or the entry cell u: a NAND at height zero would go negative. So the stack below u is never read, and the top after the
+  run is the same whether the stack is [u] or u :: t. This lets the nonnegative tail of pnp-263 be run from its base value
+  alone, which is what the top-level reduction of pnp-329 and pnp-330 needs for the tail. It is a fact about lists of bits
+  and the fold: no machine, no polynomial bound, no P, and it does not decide P vs NP.
+sketch: |
+  Prove, by induction on the pair list with the stack from s and from s ++ t, that the runs agree up to the same suffix t:
+  the second run ends with the first run's stack followed by t, with the same witness and pending state. A pair step on
+  s keeps the length of s at least 1 (nonnegative heights), and a NAND has length at least 2 before it, so it pops only
+  cells of s; leaves and copies push onto the front, and the head of s is the head of s ++ t because s is nonempty.
+dead: []
