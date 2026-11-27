@@ -1,0 +1,35 @@
+id: bsd-373
+problem: bsd
+title: 'Degree in Y of the bsd-254 determinant: over F_p with K = (p−1)/2 and g = (X³ + aX + b)^K, the K×K Toeplitz determinant of c_s + d_s·Y has natural degree at most K − 1 in Y'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-372
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] (a b : ZMod p), 2 < p →
+    ∀ g : Polynomial (ZMod p),
+      g = (Polynomial.X ^ 3 + Polynomial.C a * Polynomial.X + Polynomial.C b) ^ ((p - 1) / 2) →
+      (Matrix.of (fun (i t : Fin ((p - 1) / 2)) =>
+        Polynomial.C (g.coeff ((p - 1) / 2 + (i : ℕ) - (t : ℕ))) +
+          Polynomial.C (g.coeff ((p - 1) / 2 + (i : ℕ) - (t : ℕ) + p)) *
+            (Polynomial.X : Polynomial (ZMod p)))).det.natDegree ≤ (p - 1) / 2 - 1
+context: |
+  Second step towards bsd-254, the Toeplitz determinant in the statement of bsd-254 (same matrix, same g). The
+  determinant is a polynomial in Y of degree at most K − 1, where K = (p−1)/2. Reason: each entry has Y-degree at most 1,
+  and by bsd-372 the Y-part of the entry (i, t) vanishes when t ≤ i. In the Leibniz expansion of the determinant, a
+  permutation σ cannot satisfy σ(i) > i for every i (the values would strictly increase on a finite cycle), so some
+  factor has no Y. Hence every term has Y-degree at most K − 1.
+  This is true. Computer algebra (sympy, exact over Z[a,b,Y] before reduction mod p) gives Y-degrees 1, 2, 4 for p = 5, 7,
+  11, i.e. exactly K − 1 there. It is bookkeeping: together with bsd-254 it would make the nonvanishing a finite check
+  of K values of Y for each cubic, which is not a proof, so bsd-254 stays open.
+  Proposed by the generator agent. Not claimed by anyone at the time of writing.
+sketch: |
+  Use Matrix.det_apply and bound natDegree of the sum by the maximum over permutations (Polynomial.natDegree_sum_le
+  or a finset induction). For a fixed σ, each factor M (σ i) i has natDegree at most 1, and it has natDegree 0 when
+  σ i ≥ i: that factor is the entry in row σ i and column i, and bsd-372 (with t = i ≤ σ i) kills its Y-part. The step that needs care is the
+  existence of i with σ i ≥ i for a permutation of Fin K, which is Finset.sum_bij or the fact that Σ σ i = Σ i forces
+  some σ i ≥ i (a finite argument: if σ i < i for all i, summing gives a contradiction). Then
+  natDegree (∏ factors) ≤ Σ_i natDegree(factor_i) ≤ K − 1. The trivial case K = 0 gives det of the empty matrix = 1.
+dead: []
