@@ -1,0 +1,33 @@
+id: bsd-354
+problem: bsd
+title: 'Even-m torsion count from the division polynomial: for even m with m nonzero in the field, if the division polynomial vanishes at the x-coordinate of every affine m-torsion point of order not dividing 2, then the m-torsion subgroup has at most m^2 points'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) (m : ℕ),
+    Even m → (m : K) ≠ 0 →
+    (∀ (x y : K) (h : W.toAffine.Nonsingular x y),
+      m • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) = 0 →
+      2 • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) ≠ 0 →
+      (W.preΨ' m).eval x = 0) →
+    Nat.card {P : W.toAffine.Point // m • P = 0} ≤ m ^ 2
+context: |
+  Even-m companion of bsd-192 (m-torsion upper bound), conditional on the even-m input of bsd-198 (the hypothesis
+  says that the division polynomial preΨ' m vanishes at the x-coordinate of an affine m-torsion point that is not
+  two-torsion; for even m the full division polynomial is preΨ' m times the two-division factor, which vanishes on
+  the two-torsion). Split of the count. The two-torsion points P with 2 • P = 0 are all m-torsion, and there are at
+  most 4 of them (zero included, bsd-353). The other affine m-torsion points have x-coordinate a root of preΨ' m, of
+  degree (m^2 - 4)/2 by Mathlib (natDegree_preΨ' with Even m), and each x-coordinate carries at most two points
+  (bsd-315). Total at most 4 + 2 (m^2 - 4)/2 = m^2 when the two-torsion is counted with its zero. Not checked in Lean.
+sketch: |
+  Let T := {P // m • P = 0}. Split T into T2 := {P | 2 • P = 0} and Tn := {P | 2 • P ≠ 0}. T2 has at most 4 elements
+  (bsd-353; use (2 : K) ≠ 0, which holds since m is even and (m : K) ≠ 0). For Tn, the x-coordinates of the affine
+  points lie in the roots of preΨ' m (hypothesis), a nonzero polynomial (WeierstrassCurve.preΨ'_ne_zero) of natDegree
+  (m^2 - 4)/2 (natDegree_preΨ' with the Even branch), so there are at most (m^2 - 4)/2 of them, each with at most two
+  points (bsd-315 argument). Hence |Tn| ≤ 2 (m^2 - 4)/2 = m^2 - 4 and |T| ≤ 4 + m^2 - 4 = m^2 (m^2 - 4 is even for
+  even m, and m ≥ 2 because m ≠ 0 in K). Mathlib: Finset.card_le_mul_card_image (as in the odd case), Polynomial.card_roots',
+  Nat.not_odd_iff_even, WeierstrassCurve.natDegree_preΨ'.
+dead: []
