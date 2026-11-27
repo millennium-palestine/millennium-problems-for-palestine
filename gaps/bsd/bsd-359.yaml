@@ -1,0 +1,32 @@
+id: bsd-359
+problem: bsd
+title: 'Eight-division roots: for an elliptic Weierstrass curve over a field and a nonsingular affine point (x, y) with 8 • P = 0 and 2 • P ≠ 0, the 8-division polynomial preΨ′ 8 vanishes at x'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-221
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) (x y : K)
+    (h : W.toAffine.Nonsingular x y),
+    (8 : ℕ) • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) = 0 →
+    (2 : ℕ) • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) ≠ 0 →
+    (W.preΨ' 8).eval x = 0
+context: |
+  The m = 8 instance of the division polynomial input bsd-198, in the form bsd-354 takes for m = 8. Its solution imports
+  the m = 4 instance bsd-355 (proposed in #1543, not yet merged), which is why bsd-355 is not in depends yet. Two cases. If 4P = 0,
+  then preΨ₄(x) = 0 by bsd-355 and preΨ′ 8 = preΨ₄ · C₈ vanishes. Otherwise Q = 2P has 4 • Q = 8P = 0 and 2 • Q = 4P ≠ 0, so
+  bsd-355 gives preΨ₄(x2) = 0 for x2 = x(Q). Eliminating x2 with x2 f(x) = g(x) (bsd-221; f = 4x³ + b₂x² + 2b₄x + b₆,
+  g = x⁴ − b₄x² − 2b₆x − b₈) gives P₄(g) = 0, where P₄ is the 4-division polynomial written in its first argument, and P₄(g)
+  equals C₈ = Ψ₃² preΨ′ 6 − preΨ′ 5² modulo 4b₈ = b₂b₆ − b₄² (integer cofactor, checked with sympy). Hence C₈(x) = 0, and
+  preΨ′ 8 = preΨ₄ · C₈ gives the claim. Numerical check was not run for m = 8; the identities are checked symbolically.
+  The statement holds over every field: no division is used in the Lean proof.
+sketch: |
+  (1) If 4 • P = 0, bsd-355 gives preΨ₄(x) = 0 and the recursion preΨ′ 8 = preΨ₄ (Ψ₃² preΨ′ 6 − preΨ′ 5²) finishes.
+  (2) Otherwise y ≠ negY (2P ≠ 0), bsd-221 gives Q = P + P = (x2, y2) with x2 (2y + a₁x + a₃)² = g(x), and 4 • Q = 8 • P = 0,
+  2 • Q = 4 • P ≠ 0, so bsd-355 applied to Q gives preΨ₄(x2) = 0. (3) linear_combination: P₄(x2 f) = f⁶ preΨ₄(x2) = 0, and
+  P₄(x2 f) − P₄(g) = (x2 f − g) T with an explicit T; with x2 f = g this gives P₄(g) = 0. (4) C₈ = P₄(g) − E₈ (4b₈ − b₂b₆ + b₄²),
+  with an explicit integer E₈ (degree 20 in x). (5) Mathlib: WeierstrassCurve.preΨ'_even 1, preΨ'_odd 0, preΨ'_even 0 (norm_num)
+  give the recursion and preΨ′ 5, preΨ′ 6 in terms of preΨ₄ and Ψ₃.
+dead: []
