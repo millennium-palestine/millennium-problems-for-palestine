@@ -1,0 +1,38 @@
+id: pnp-327
+problem: pvsnp
+title: A balanced nonnegative block followed by a NAND, run from a one-cell stack [x], leaves the stack [true]
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+   ∀ (F : List Bool × List Bool × Option Bool → Bool → List Bool × List Bool × Option Bool),
+      F = (fun st b => match st.2.2 with
+        | none => (st.1, st.2.1, some b)
+        | some a =>
+          if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+            else (st.1, st.2.1, none))
+          else (if b then (st.1.headD false :: st.1, st.2.1, none)
+            else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) →
+      ∀ (b : List (Bool × Bool)) (x : Bool) (w : List Bool),
+        (b.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 →
+        (∀ j, j ≤ b.length → 0 ≤ ((b.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) →
+        ((b ++ [(true, true)]).flatMap fun r : Bool × Bool => [r.1, r.2]).foldl F ([x], w, none) =
+          ([true], w.drop (b.countP fun q : Bool × Bool => !q.1 && !q.2), none)
+context: |
+  Step toward pnp-152 (top-level assembly). A pnp-133 pair list is folded with a stack of bits; the pair (true, true)
+  pops two cells and pushes their NAND. The block decomposition of pnp-263 writes a pair list as balanced nonnegative
+  blocks, each followed by a NAND pair, and a nonnegative tail. This gap is the single-block case from a stack with one
+  cell [x]: the block never pops below its own base beyond the cell x, so after the block the stack is a single cell y,
+  and the NAND then combines y with the missing cell below, which the fold reads as false. So the stack becomes [true]
+  whatever y and x are, and the witness used is exactly the leaves of the block. This is a fact about lists of bits and
+  the fold: no machine, no polynomial bound, no P, and it does not decide P vs NP.
+sketch: |
+  Prove, by induction on the pair list p with the invariant 1 <= s.length + (prefix sum of heights of p) for every
+  prefix, that the fold of p from (s, w, none) ends in a stack of length s.length + (sum of heights of p) with witness
+  w.drop (leaves of p) and pending none. A pair step is case analysis on the two bits: a leaf and a copy push one cell,
+  a no-op changes nothing, and a NAND pops two and pushes one, which is allowed because the invariant gives length at
+  least 2 before the NAND. With the block nonnegative and balanced the final stack has length 1, so it is [y]; the
+  NAND pair then gives [!(y && false)] = [true] with the witness unchanged by it.
+dead: []

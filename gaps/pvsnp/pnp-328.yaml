@@ -1,0 +1,36 @@
+id: pnp-328
+problem: pvsnp
+title: Balanced nonnegative blocks, each followed by a NAND, leave the stack [true] from any one-cell start
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+   ∀ (F : List Bool × List Bool × Option Bool → Bool → List Bool × List Bool × Option Bool),
+      F = (fun st b => match st.2.2 with
+        | none => (st.1, st.2.1, some b)
+        | some a =>
+          if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+            else (st.1, st.2.1, none))
+          else (if b then (st.1.headD false :: st.1, st.2.1, none)
+            else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) →
+      ∀ (items : List (List (Bool × Bool))),
+        (∀ b ∈ items, (b.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 ∧
+          ∀ j, j ≤ b.length → 0 ≤ ((b.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) →
+        ∀ (x : Bool) (w : List Bool),
+          ((items.map fun b => b ++ [(true, true)]).flatten.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl F ([x], w, none) =
+            ((if items.isEmpty then [x] else [true]), w.drop (items.flatten.countP fun q : Bool × Bool => !q.1 && !q.2), none)
+context: |
+  Iterating pnp-327 over the blocks of a pnp-263 decomposition. After the first block and its NAND the stack is [true]
+  again, so every later block starts from the same one-cell shape. The statement gives the final stack exactly: [x] when
+  there are no blocks, [true] otherwise, and the witness is the input witness with the leaves of all blocks dropped.
+  This removes the existential cell of pnp-268, which the top-level chain does not need once the stack below is the
+  padding false. It is a fact about lists of bits and the fold; no machine, no polynomial bound, no P, and it does not
+  decide P vs NP.
+sketch: |
+  Induction on the list of blocks, generalising the start cell x and the witness w. For the empty list the fold is the
+  empty fold. For a block b followed by the rest, the bit list splits as (b ++ [NAND]) then the rest; pnp-327 turns the
+  first part into the stack [true] with witness w.drop (leaves of b); the induction hypothesis with start true and
+  witness w.drop (leaves of b) finishes, and the leaf counts add because drop of drop is drop of the sum.
+dead: []
