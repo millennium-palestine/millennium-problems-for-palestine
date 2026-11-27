@@ -1,0 +1,22 @@
+id: pnp-271
+problem: pvsnp
+title: Every bit list is a list of pairs followed by at most one leftover bit
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ x : List Bool, ∃ (q : List (Bool × Bool)) (o : List Bool), x = q.flatMap (fun r : Bool × Bool => [r.1, r.2]) ++ o ∧ o.length ≤ 1
+context: |
+  Bridge between the bit-level fold of pnp-152 and the pair-level run of pnp-269. The fold in pnp-152 reads a bit
+  list x one bit at a time, while pnp-263 and pnp-269 read a list of pairs q, each pair being two consecutive bits
+  of the input. This gap says that every bit list is the flattening of some list of pairs, followed by at most one
+  leftover bit that the fold reads last. It is a fact about lists alone: no machine, no polynomial bound, no P,
+  and it does not decide P vs NP.
+sketch: |
+  Strong induction on the length, written as induction on n with the hypothesis x.length ≤ n. The empty list gives
+  q = [] and o = []. The one-element list [a] gives q = [] and o = [a]. For a :: b :: rest, apply the hypothesis to
+  rest, obtaining q and o, and put the pair (a, b) in front of q. The flattening of (a, b) :: q is [a, b] followed by
+  the flattening of q, so the equation holds and the leftover is unchanged.
+dead: []
