@@ -1,0 +1,27 @@
+id: pnp-275
+problem: pvsnp
+title: Appending a run of (true, false) pairs to a bit list with an empty pending slot leaves the fold state unchanged
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (F : List Bool × List Bool × Option Bool → Bool → List Bool × List Bool × Option Bool),
+    F = (fun st b => match st.2.2 with | none => (st.1, st.2.1, some b) | some a => if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none) else (st.1, st.2.1, none)) else (if b then (st.1.headD false :: st.1, st.2.1, none) else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) →
+    ∀ (bits w : List Bool) (k : ℕ), (bits.foldl F ([], w, none)).2.2 = none →
+      (bits ++ (List.replicate k [true, false]).flatten).foldl F ([], w, none) = bits.foldl F ([], w, none)
+context: |
+  Padding step for the pnp-141 route. The Cook–Levin construction in pnp-141 pads a postfix program with no-op pairs
+  to reach the witness bound of the verifier. This gap says that such padding does not change the fold of pnp-133:
+  the pair (true, false) read from an empty pending slot sets the slot and then clears it with the stack and the
+  witness unchanged, so a run of k such pairs returns the same state, provided the pending slot is empty before the
+  padding. It is a fact about the fold alone: no machine, no polynomial bound, no P, and it does not decide P vs NP.
+  The gap does not prove pnp-141; it removes one of its bookkeeping steps (the padding to length p(|x|)).
+sketch: |
+  Let pad_pair say that folding [true, false] from a state with an empty pending slot returns the state: the first bit
+  sets the pending slot to true, and the second bit, with a = true and b = false, leaves the stack and the witness
+  unchanged and clears the slot. Let pad_run be the same statement for k copies, by induction on k, using that the
+  flattening of replicate (k + 1) is [true, false] followed by the flattening of replicate k, and foldl over an append.
+  Then the main statement follows by foldl over an append, since the state after bits has an empty pending slot.
+dead: []
