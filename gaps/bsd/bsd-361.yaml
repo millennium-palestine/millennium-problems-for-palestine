@@ -1,0 +1,37 @@
+id: bsd-361
+problem: bsd
+title: 'Resultant of the 5-division polynomial and its derivative: for a Weierstrass curve with a₁ = a₂ = a₃ = 0 over any field, the Sylvester resultant of preΨ′ 5 and its derivative is 5¹² Δ²²'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (W : WeierstrassCurve K),
+    W.a₁ = 0 → W.a₂ = 0 → W.a₃ = 0 →
+    (W.preΨ' 5).resultant (Polynomial.derivative (W.preΨ' 5)) 12 11 = (5 : K) ^ 12 * W.Δ ^ 22
+context: |
+  A resultant form of the Bezout certificate in bsd-288. With a₁ = a₂ = a₃ = 0, Mathlib gives
+  preΨ′ 5 = preΨ₄ · Ψ₂Sq² − Ψ₃³ (the preΨ'_odd lemma at m = 0), where Ψ₂Sq = 4h with h = X³ + a₄X + a₆,
+  so the polynomial is f = 32 g h² − Ψ₃³ with g = X⁶ + 5a₄X⁴ + 20a₆X³ − 5a₄²X² − 4a₄a₆X − a₄³ − 8a₆²,
+  degree 12 with leading coefficient 5. Computer algebra (sympy, exact over ℚ, not checked in Lean) gives
+  Res_X(f, f′) = 5¹² · 2⁸⁸ · (4a₄³ + 27a₆²)²² as a polynomial in a₄, a₆. Since Δ = −16 (4a₄³ + 27a₆²),
+  this is 5¹² Δ²², an identity with integer coefficients, so it specialises to every field.
+  The proof of bsd-288 then follows in a few lines from this statement and Mathlib's
+  Polynomial.exists_mul_add_mul_eq_C_resultant (RingTheory/Polynomial/Resultant/Basic.lean): it gives p, q with
+  f p + f′ q = C (resultant f f′ 12 11), with degrees below 11 and 12, which are the cofactors of bsd-288.
+  So this gap moves the whole difficulty of bsd-288 from the size of the cofactors (216 and 236 monomials,
+  whose ring identity timed out in the checker) to one determinant identity of size 23. No Δ-power smaller
+  than 22 works: the resultant itself has Δ-exponent exactly 22.
+sketch: |
+  Route 1 (Euclid chain): f′ has constant leading coefficient 60, so the first division f = q₁ f′ + r₁ with
+  deg q₁ = 1 and deg r₁ = 10 is over ℚ[a₄, a₆][X]; r₁ has 11 terms and coefficients with denominator 3. Continue
+  with resultant_add_mul_right (f + g·h leaves the resultant unchanged when the degree bound holds) and
+  resultant_mul_left / resultant_C_mul_right to strip leading coefficients, until the last remainder is a constant.
+  Each step is a polynomial identity of moderate size checkable by ring. Work over a field with 3 invertible,
+  or over ℤ with the identity multiplied by a power of 3.
+  Route 2 (direct): unfold resultant and sylvester, simplify the 23 × 23 determinant with the explicit entries.
+  This is expected to be far too large for ring, so Route 1 is the one to try first.
+  Mathlib: Polynomial.resultant, Polynomial.sylvester, resultant_add_mul_right, resultant_mul_left,
+  resultant_C_right, exists_mul_add_mul_eq_C_resultant, WeierstrassCurve.preΨ'_odd, WeierstrassCurve.Δ.
+dead: []
