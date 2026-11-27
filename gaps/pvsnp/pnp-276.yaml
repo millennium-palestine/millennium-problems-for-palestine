@@ -1,0 +1,21 @@
+id: pnp-276
+problem: pvsnp
+title: A left end i at most a right end j below n has triangular index j(j+1)/2 + i below n(n+1)/2
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ n i j : ℕ, i ≤ j → j < n → j * (j + 1) / 2 + i < n * (n + 1) / 2
+context: |
+  Step toward pnp-152. The interval table of the CYK recurrence (pnp-213) has one cell per interval (i, j) with i ≤ j < n.
+  One way to list these cells is by the right end j, then the left end i; the position of the cell (i, j) in that
+  listing is the triangular index j(j+1)/2 + i. This gap says that every such position lies below the total number of
+  cells n(n+1)/2, so a table for inputs of length n has a bounded index range. It is pure arithmetic on
+  natural numbers: no machine, no list of pairs, no polynomial bound, and it does not decide P vs NP.
+sketch: |
+  The triangular number satisfies 2 * (a(a+1)/2) = a(a+1), since a(a+1) is even. For a < b, the inequality
+  (a+1)(a+2) ≤ b(b+1) gives a(a+1)/2 + a < b(b+1)/2. Apply it with a = j and b = n: then j(j+1)/2 + i ≤
+  j(j+1)/2 + j < n(n+1)/2. The Lean proof is the helper lemma tri_add_lt_of_lt followed by omega.
+dead: []
