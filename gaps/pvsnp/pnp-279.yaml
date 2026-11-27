@@ -1,0 +1,23 @@
+id: pnp-279
+problem: pvsnp
+title: A cell (k, j) with k below j, read from a cell (i, k) with i at most k, comes earlier than any cell of row j in the order by right end and decreasing left end
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ i k j m : ℕ, i ≤ k → k < j → m ≤ j →
+    k * (k + 1) / 2 + (k - i) < j * (j + 1) / 2 + (j - m)
+context: |
+  Step toward pnp-152, the enumeration invariant. Order the interval cells (i, j), i ≤ j < n, by right end j, and inside a
+  row by decreasing left end, so the cell (i, j) sits at position j(j+1)/2 + (j - i). The CYK recurrence of pnp-213 builds
+  the cell (i, j) from the cells (i, k) and (k + 1, j) for a split point i ≤ k < j. This gap is the cross-row half of
+  the fact that this order respects the recurrence: the cell (i, k) with k < j is listed before every cell of row j.
+  It is pure arithmetic on natural numbers; the row-internal half is pnp-280. Neither is the full invariant, and
+  neither decides P vs NP.
+sketch: |
+  Take the helper a(a+1)/2 + a < b(b+1)/2 for a < b, as in pnp-276, with a = k and b = j. Since k - i ≤ k, and
+  j - m ≥ 0, the left side is at most k(k+1)/2 + k < j(j+1)/2 ≤ the right side. The Lean proof is the helper lemma
+  followed by omega.
+dead: []

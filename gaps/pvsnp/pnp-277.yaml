@@ -1,0 +1,21 @@
+id: pnp-277
+problem: pvsnp
+title: The triangular index j(j+1)/2 + i of a cell (i, j) with i at most j determines the cell
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ i j i' j' : ℕ, i ≤ j → i' ≤ j' → j * (j + 1) / 2 + i = j' * (j' + 1) / 2 + i' → i = i' ∧ j = j'
+context: |
+  Step toward pnp-152. A table of interval cells (i, j) with i ≤ j is stored in one list, and a cell is found by the
+  position j(j+1)/2 + i in that list (pnp-276 bounds this position). For the read of a cell to return the value that
+  was written for that cell, distinct cells need distinct positions. This gap says that the position determines the
+  pair: if two cells have the same triangular index, they are the same cell. It is pure arithmetic on natural numbers,
+  with no machine and no polynomial bound, and it does not decide P vs NP.
+sketch: |
+  Use the same inequality as pnp-276: if a < b then a(a+1)/2 + a < b(b+1)/2. By trichotomy on j and j'. If j < j',
+  then j(j+1)/2 + i ≤ j(j+1)/2 + j < j'(j'+1)/2 ≤ j'(j'+1)/2 + i', so the two sides differ, a contradiction. The case
+  j' < j is symmetric. If j = j', the equation gives i = i' by omega, and j = j' holds by assumption.
+dead: []
