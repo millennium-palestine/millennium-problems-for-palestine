@@ -1,0 +1,38 @@
+id: pnp-316
+problem: pvsnp
+title: A window-rule tableau of t steps with b-bit cells has a CNF of size 2^(3b+1) n b t
+status: open
+imports:
+- Mathlib
+- MPP.Solutions.Pnp303
+open: []
+depends:
+- pnp-303
+statement: |
+  ∀ (n b t : ℕ) (G : Fin b → (Fin (3 * b) → Bool) → Bool), ∃ D : List (List (ℕ × Bool)),
+    (∀ a : ℕ → Bool, (∀ s : Fin t, ∀ i : Fin n, ∀ j : Fin b,
+      a (n * b * (s.val + 1) + i.val * b + j.val) =
+        G j (fun k : Fin (3 * b) => a (n * b * s.val + ((i.val + k.val / b) % n) * b + k.val % b))) ↔
+      ∀ d ∈ D, ∃ l ∈ d, a l.1 = l.2) ∧
+    D.length ≤ 2 ^ (3 * b + 1) * (n * b * t) ∧ ∀ d ∈ D, ∀ l ∈ d, l.1 < n * b * (t + 1)
+context: |
+  Step toward pnp-100 (Cook–Levin, over TM2 machines), on the CNF route, after pnp-303. The window-rule
+  tableau of pnp-303 has one Boolean per cell, so it can carry only a constant-size alphabet of one bit. A
+  Turing machine cell needs b bits (symbol, and whether the head is there with its state), and the local rule
+  of a machine is then a function of the 3b bits of a window of three cells, one Boolean function per output
+  bit. This gap gives the CNF of such a tableau of t steps and n cells of b bits each: row s is the variables
+  n·b·s, ..., n·b·s + n·b − 1, and the cell i, bit j of row s+1 is the output of G j on the 3b bits of the
+  cells i−1, i, i+1 (taken mod n) of row s. Each output bit contributes one truth-table CNF with 2^(3b+1)
+  clauses, so the total is linear in n·b·t for fixed b. It is finite combinatorics, it does not decide P vs NP,
+  and with b = 1 it is pnp-303 with a window of three cells. Writing this CNF by a polynomial-time map for a
+  verifier is still the open part of pnp-100.
+sketch: |
+  For each s, i, j, take the truth-table CNF of pnp-303's Boolean lemma tt_cnf (imported from
+  MPP.Solutions.Pnp303) for the function on 3b + 1 variables that compares the last variable with
+  G j applied to the first 3b, and the variable map that sends v below 3b to the window index and the last one
+  to the output index a(n·b·(s+1) + i·b + j). Each such CNF has at most 2^(3b+1) clauses and its variables are
+  below n·b·(s+2) ≤ n·b·(t+1). Collect them over s, then i, then j with nested List.finRange and
+  List.mem_flatMap, as in the proof of pnp-303. The window index is below n·b·(s+1) because
+  ((i + d) % n) < n, so ((i + d) % n) · b + r < n · b, by Nat.mod_lt and nlinarith. The length bound
+  multiplies 2^(3b+1) by n·b, then by t, with List.sum_le_card_nsmul.
+dead: []
