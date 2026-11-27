@@ -1,0 +1,25 @@
+id: pnp-308
+problem: pvsnp
+title: A CNF made of two clause lists is satisfied exactly when each list is
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (C D : List (List (ℕ × Bool))) (a : ℕ → Bool),
+    (∀ c ∈ C ++ D, ∃ l ∈ c, a l.1 = l.2) ↔
+      (∀ c ∈ C, ∃ l ∈ c, a l.1 = l.2) ∧ (∀ c ∈ D, ∃ l ∈ c, a l.1 = l.2)
+context: |
+  Step toward pnp-100 (Cook–Levin, over TM2 machines), on the CNF route after pnp-307. The CNF of the
+  window-rule tableau is built from several pieces: the transition clauses of pnp-307, the clauses that fix
+  the first row to the instance and the witness (pnp-304), and the unit clause that forces the output cell
+  (pnp-309). The final formula is the concatenation of these clause lists, so satisfaction of the whole must
+  split as satisfaction of each part. This gap says exactly that, for an arbitrary assignment a : ℕ → Bool.
+  It is pure list logic: no machine, no polynomial bound, and it does not decide P vs NP.
+sketch: |
+  Induction on C. For the empty list the claim is the trivial equivalence with True ∧ (∀ c ∈ D, ...).
+  For a cons c :: C, the membership in (c :: C) ++ D unfolds by List.cons_append and List.forall_mem_cons,
+  and the conjunction is rearranged with and_assoc. Alternatively, use List.mem_append to split the
+  universal quantifier over C ++ D into two universals, then and_comm and and_assoc.
+dead: []
