@@ -1,0 +1,26 @@
+id: bsd-371
+problem: bsd
+title: 'Frobenius surjective on points: every point of an elliptic curve over the algebraic closure of F_p is the image of a point under the p-power Frobenius'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] [DecidableEq (AlgebraicClosure (ZMod p))] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic]
+    (Q : (W.baseChange (AlgebraicClosure (ZMod p))).toAffine.Point),
+    ∃ P : (W.baseChange (AlgebraicClosure (ZMod p))).toAffine.Point,
+      WeierstrassCurve.Affine.Point.map (W' := W) (FiniteField.frobeniusAlgHom (ZMod p) (AlgebraicClosure (ZMod p))) P = Q
+context: |
+  Surjectivity step for the Frobenius characteristic equation behind bsd-121: together with bsd-370 (trivial kernel) it makes the
+  Frobenius an automorphism of the group E(F̄_p), which the degree argument of the sketch of bsd-121 uses. It is true because the
+  algebraic closure of F_p is perfect: every coordinate x has a p-th root u, and since the curve has coefficients in F_p, the
+  p-th power of the equation W(u, v) = 0 gives W(x, y) = 0 when u^p = x and v^p = y, so (u, v) is a point and it maps to (x, y).
+  Proposed by the generator agent. Not claimed by anyone at the time of writing.
+sketch: |
+  Case on Q. The zero point is the image of the zero point. For Q = some x y h, use perfectness of the algebraic closure
+  (PerfectField or PerfectRing.toSurjective for AlgebraicClosure (ZMod p)) to choose u, v with u^p = x and v^p = y. The
+  nonsingularity of (u, v) on W.baseChange follows from the equation after applying Frobenius, since the Weierstrass
+  polynomial has coefficients in ZMod p, which the Frobenius fixes (FiniteField.frobeniusAlgHom on algebraMap, ZMod.pow_card).
+  Then P = some u v _ satisfies map φ P = Q by Point.map_some and Point.some.inj.
+dead: []
