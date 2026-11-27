@@ -1,0 +1,27 @@
+id: pnp-293
+problem: pvsnp
+title: A single balanced pair run from a top v leaves the top unchanged and is the no-op pair (true, false)
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (F : List Bool × List Bool × Option Bool → Bool → List Bool × List Bool × Option Bool), F = (fun (st : List Bool × List Bool × Option Bool) (b : Bool) => match st.2.2 with | none => (st.1, st.2.1, some b) | some a => if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none) else (st.1, st.2.1, none)) else (if b then (st.1.headD false :: st.1, st.2.1, none) else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) →
+  ∀ (H : Bool × Bool → ℤ), H = (fun r => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1) →
+  ∀ r : Bool × Bool, H r = 0 → ∀ (v g : Bool) (t : List Bool),
+    (∃ w : List Bool, w.length = [r].countP (fun x => !x.1 && !x.2) ∧ ∃ w' : List Bool,
+      ([r].flatMap fun x : Bool × Bool => [x.1, x.2]).foldl F (v :: t, w, none) = (g :: t, w', none)) ↔
+    (r = (true, false) ∧ g = v)
+context: |
+  Base case of the fold-level instance of pnp-287 for the pnp-152 table. A one-pair block of zero height is the no-op
+  pair (true, false) (the only pair with height 0 in the height function H of pnp-213), and the fold of the pnp-133
+  program on it reads a true and then a false, so it leaves the stack and the witness unchanged. This is the length-one
+  hypothesis of pnp-287 for the balanced-block relation of pnp-290. It is a fact about the pair fold on one pair: no
+  machine, no polynomial bound, no P, and it does not decide P vs NP.
+sketch: |
+  Forward: H r = 0 forces r = (true, false), by cases on the two bits (H (true, true) = -1, H (false, _) = 1). Then the
+  witness length is countP of [(true, false)] = 0, so w = [], and the fold of [true, false] from (v :: t, [], none)
+  goes (v :: t, [], some true) and then (v :: t, [], none), so g = v. Backward: for r = (true, false) take w = [] and
+  w' = [], and the same two fold steps give (v :: t, [], none). Use simp with the equation for F from the first hypothesis.
+dead: []
