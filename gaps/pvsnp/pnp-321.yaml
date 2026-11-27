@@ -1,0 +1,36 @@
+id: pnp-321
+problem: pvsnp
+title: The b-bit window-rule tableau with a fixed prefix of its first row and output true has a CNF of size 2^(3b+1) n b t + m + 1, m the prefix length
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- pnp-316
+statement: |
+  ∀ (n b t : ℕ) (G : Fin b → (Fin (3 * b) → Bool) → Bool) (p : List Bool), 0 < n → 0 < b → p.length ≤ n * b →
+    ∃ D : List (List (ℕ × Bool)),
+      (∀ a : ℕ → Bool, (((∀ k : Fin p.length, a k.val = p.getD k.val false) ∧
+          ∀ s : Fin t, ∀ i : Fin n, ∀ j : Fin b,
+            a (n * b * (s.val + 1) + i.val * b + j.val) =
+              G j (fun w : Fin (3 * b) => a (n * b * s.val + ((i.val + w.val / b) % n) * b + w.val % b))) ∧
+          a (n * b * t) = true) ↔
+        ∀ d ∈ D, ∃ l ∈ d, a l.1 = l.2) ∧
+      D.length ≤ 2 ^ (3 * b + 1) * (n * b * t) + p.length + 1 ∧
+      ∀ d ∈ D, ∀ l ∈ d, l.1 < n * b * (t + 1)
+context: |
+  Step toward pnp-100 (Cook–Levin, over TM2 machines), on the CNF route, after pnp-316 and pnp-320. pnp-320 fixes the
+  whole first row to an input. A certificate is a first row that starts with the input and continues with a free
+  witness, so the prefix that is fixed has length m and the rest of the first row is left free. This gap is pnp-320
+  with the first m bits fixed, for any m at most n·b: the rest of the first row is free, which is what a witness
+  needs. The satisfying assignments are exactly the tableaux of the b-bit window rule whose first row starts with the
+  prefix and whose output is true. The CNF is larger than the one of pnp-316 by m + 1 clauses. It is finite
+  combinatorics with no machine, and it does not decide P vs NP. Writing this CNF by a polynomial-time map from an
+  input, with G taken from a TM2 machine, is still the open part of pnp-100.
+sketch: |
+  Take D = D0 ++ [the unit clauses [(k, p.getD k false)] for k below m] ++ [[(n·b·t, true)]], where D0 is the CNF of
+  pnp-316 for n, b, t, G. This is the proof of pnp-320 with the unit clauses indexed by Fin p.length instead of
+  Fin (n·b). The rest of the first row carries no clause, so the iff needs no witness. The length is the bound of
+  pnp-316 plus m + 1, and the unit variables are below m ≤ n·b ≤ n·b·(t+1), the output variable is below
+  n·b·(t+1) since 0 < n·b.
+dead: []
