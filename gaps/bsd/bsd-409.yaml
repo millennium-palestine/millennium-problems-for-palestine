@@ -1,0 +1,28 @@
+id: bsd-409
+problem: bsd
+title: 'Root count of the division polynomial: over an algebraically closed field, a squarefree preΨ′ m for odd m with m nonzero has exactly (m² − 1)/2 roots'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-408
+statement: |
+  ∀ (K : Type) [Field K] [IsAlgClosed K] (W : WeierstrassCurve K) [W.IsElliptic] (m : ℕ),
+    Odd m → (m : K) ≠ 0 → Squarefree (W.preΨ' m) →
+      Nat.card {x : K // (W.preΨ' m).eval x = 0} = (m ^ 2 - 1) / 2
+context: |
+  Counting step of bsd-193 (odd-m torsion lower bound), the root count that the sketch of bsd-193 needs in
+  step (5). For odd m, preΨ′ m is the classical division polynomial ψ_m, of degree (m² − 1)/2 with leading
+  coefficient m, so the degree is exact when m is nonzero in the field. Over an algebraically closed field a
+  squarefree polynomial of degree d has exactly d distinct roots. The statement is therefore a consequence of the
+  degree formula and of squarefreeness, both of which are in Mathlib or reduce to it (IsAlgClosed.splits,
+  Polynomial.card_roots, Polynomial.Separable). It does not need the curve beyond the fact that preΨ′ m has the
+  degree (m² − 1)/2. Proposed by the generator agent; the squarefreeness hypothesis is the content of bsd-408.
+sketch: |
+  Let f = preΨ′ m. Its degree is (m² − 1)/2, from Mathlib's degree formula for odd m (the leading coefficient is m,
+  which is nonzero). Over an algebraically closed field f splits into linear factors, and squarefreeness makes all
+  of them distinct, so the root set {x | f.eval x = 0} is in bijection with the roots of f as a multiset without
+  repetition, which has card equal to natDegree f. Then (m² − 1)/2 is the natural number value of natDegree, and
+  the Nat.card of the finite subtype equals the Finset card of roots.toFinset.
+dead: []
