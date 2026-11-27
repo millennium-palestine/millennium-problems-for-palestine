@@ -1,0 +1,29 @@
+id: bsd-368
+problem: bsd
+title: 'Frobenius fixed points: a point of an elliptic curve over the algebraic closure of F_p is fixed by the p-power Frobenius exactly when it comes from a point over F_p'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-367
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] [DecidableEq (AlgebraicClosure (ZMod p))] (W : WeierstrassCurve (ZMod p)) [W.IsElliptic]
+    (P : (W.baseChange (AlgebraicClosure (ZMod p))).toAffine.Point),
+    WeierstrassCurve.Affine.Point.map (W' := W) (FiniteField.frobeniusAlgHom (ZMod p) (AlgebraicClosure (ZMod p))) P = P ↔
+      ∃ Q : W.toAffine.Point, WeierstrassCurve.Affine.Point.map (W' := W) (Algebra.ofId (ZMod p) (AlgebraicClosure (ZMod p))) Q = P
+context: |
+  Second step of the fixed-point count behind bsd-121: the fixed points of the Frobenius on E(F̄_p) are the points defined over
+  F_p, that is ker(1 − φ) = E(F_p). Mathlib's WeierstrassCurve.Affine.Point.map along the Frobenius AlgHom is the map φ of
+  bsd-121 (the statement elaborates, checked with lake env lean), and Algebra.ofId gives the inclusion of the F_p-points.
+  It is true: the point at infinity is fixed and is the image of 0; for an affine point (x, y), φ fixes it exactly when x^p = x
+  and y^p = y, which by bsd-367 are images of elements of F_p, and the F_p-point they define is nonsingular because the map
+  on nonsingular points is injective on coordinates (baseChange_nonsingular).
+  Proposed by the generator agent. Not claimed by anyone at the time of writing.
+sketch: |
+  Case on P: the zero point maps to zero. For P = some x y h, the map sends it to some (frob x) (frob y) _. Equality of points
+  gives frob x = x and frob y = y (Point.some injectivity). Apply bsd-367 to x and y to get a, b in ZMod p with their images,
+  and take Q = some a b (nonsingularity from the baseChange nonsingularity lemma, since the image of (a, b) is (x, y)).
+  Conversely, the image of Q is fixed because the Frobenius fixes algebraMap of ZMod p elements (FiniteField.frobeniusAlgHom
+  on algebraMap, or the power law for ZMod p with ZMod.pow_card).
+dead: []
