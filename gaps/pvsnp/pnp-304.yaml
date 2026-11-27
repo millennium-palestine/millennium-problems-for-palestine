@@ -1,0 +1,24 @@
+id: pnp-304
+problem: pvsnp
+title: A row of n variables fixed to a Boolean vector has a CNF of n unit clauses
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (n : ℕ) (x : Fin n → Bool), ∃ D : List (List (ℕ × Bool)),
+    (∀ a : ℕ → Bool, (∀ i : Fin n, a i.val = x i) ↔ ∀ d ∈ D, ∃ l ∈ d, a l.1 = l.2) ∧
+    D.length ≤ n ∧ ∀ d ∈ D, ∀ l ∈ d, l.1 < n
+context: |
+  Step toward pnp-100 (Cook–Levin, over TM2 machines), on the CNF route, after pnp-303. A reduction from a language
+  in NP to CNF satisfiability must force the first row of the tableau to be the input, and the accepting cell to be
+  true. Forcing a variable to a value is a unit clause, so a row of n variables fixed to a vector x is the CNF of
+  n unit clauses, on the variables 0, ..., n − 1 of the row of pnp-302 and pnp-303. Its conjunction with the CNF of
+  the tableau is again a CNF, by list append. This is the initial-row constraint: finite combinatorics, no machine,
+  no polynomial bound beyond the linear size, and it does not decide P vs NP.
+sketch: |
+  Take D to be the list over the positions i in Fin n of the singleton clause [(i, x i)]. The clause of i is
+  satisfied by a exactly when a i = x i, by List.mem_singleton and List.mem_map. The length is n by List.length_map
+  and List.length_finRange, and every literal variable is the position i < n.
+dead: []
