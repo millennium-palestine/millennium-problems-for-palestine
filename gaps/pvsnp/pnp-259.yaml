@@ -1,0 +1,33 @@
+id: pnp-259
+problem: pvsnp
+title: The witness bit at the unary quotient of two polynomial-time lengths is in P
+status: open
+imports:
+- Mathlib
+- MPP.Defs.PvsNP
+open:
+- MPP.PvsNP
+- Turing
+depends:
+- pnp-234
+- pnp-237
+- pnp-258
+statement: |
+  ∀ a b : List Bool → List Bool,
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) a) →
+    Nonempty (TM2ComputableInPolyTime (id : List Bool → List Bool) (id : List Bool → List Bool) b) →
+    ∃ L : Lang, InP L ∧ ∀ x w : List Bool,
+      L (pair x w) = w.getD ((a x).length / ((b x).length + 1)) false
+context: |
+  The row decode of the table index of the pnp-152 route needs the row t / (n + 1) as a witness index, where n is
+  the length of the instance-dependent row width. pnp-258 writes the quotient of two lengths in unary, and pnp-234
+  reads the witness at a unary index computed from the instance. This gap combines the two, as pnp-247 does for the
+  remainder: the index is the quotient of the length of a x by the successor of the length of b x, for polynomial-time
+  maps a and b. It is a composition lemma for the table chain. It does not state the table, the CYK recurrence, or the
+  correctness of any cell, and it does not decide P vs NP.
+sketch: |
+  Let p z = pair (b z) (a z) (pnp-237 pairP), and Q be the unary quotient of pnp-258, so Q (pair u v) =
+  replicate (v.length / (u.length + 1)) true. Then h = Q ∘ p is polynomial-time by pnp-237 comp, and h x is unary of
+  length (a x).length / ((b x).length + 1), because the divisor is a successor. pnp-234 applied to h gives the language
+  L with L (pair x w) = w.getD (h x).length false, which is the statement after rewriting.
+dead: []
