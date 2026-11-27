@@ -1,0 +1,23 @@
+id: bsd-405
+problem: bsd
+title: 'Characteristic equation from trace and norm: for an element π of a commutative ring with a conjugation c, if π + c(π) = a and π c(π) = p then π² − a π + p = 0'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (R : Type) [CommRing R] (c : R →+* R) (π : R) (a p : ℤ),
+    π + c π = (a : R) → π * c π = (p : R) →
+      π ^ 2 - (a : R) * π + (p : R) = 0
+context: |
+  The algebraic step behind the characteristic equation in bsd-121: π² − aπ + p = 0 for the Frobenius π of E.
+  In End(E) the dual π̂ = c(π) satisfies π + π̂ = a and π π̂ = p, and then π² − aπ + p = π² − (π + π̂)π + π π̂ = 0.
+  The gap isolates this ring step from the geometric facts that Mathlib lacks, namely that the dual isogeny exists
+  with these trace and norm relations (bsd-121 and bsd-161). With bsd-404 it shows that the degree form of bsd-089
+  and the characteristic equation of bsd-121 both reduce to those two relations. Not checked in Lean.
+sketch: |
+  Put h1 : π + c π = a and h2 : π * c π = p. Then π ^ 2 - a * π + p - (π * (π + c π - a) - (π * c π - p)) = 0
+  as a ring identity, so the goal is π * h1 minus h2 with a and p cast to R. In Lean:
+  linear_combination (π : R) * h1 - h2.
+dead: []
