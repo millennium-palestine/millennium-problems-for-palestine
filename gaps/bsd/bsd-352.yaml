@@ -7,8 +7,6 @@ imports:
 open: []
 depends:
 - bsd-198
-- bsd-314
-- bsd-315
 statement: |
   ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) [W.IsElliptic] (m : ℕ),
     Odd m → (m : K) ≠ 0 →
