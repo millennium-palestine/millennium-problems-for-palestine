@@ -7,15 +7,15 @@ imports:
 open: []
 depends: []
 statement: |
-  ∀ (P : ℕ → Bool → Bool → Prop) (X : ℕ → ℕ → Bool × Bool → Prop) (c : ℕ → ℕ → Bool × Bool → Bool),
+  ∀ (P : ℕ → ℕ → Bool → Bool → Prop) (X : ℕ → ℕ → Bool × Bool → Prop) (c : ℕ → ℕ → Bool × Bool → Bool),
     (∀ i : ℕ, ∀ r : Bool × Bool, X i i r ↔ r.1 = r.2) →
     (∀ i : ℕ, ∀ r : Bool × Bool, c i i r = true ↔ r.1 = r.2) →
     (∀ i : ℕ, ∀ r : Bool × Bool, c i (i + 1) r = true ↔ X i (i + 1) r) →
     (∀ i j : ℕ, ∀ r : Bool × Bool, i + 2 ≤ j → (X i j r ↔
-      ((∃ u : Bool, P i u r.1 ∧ ∃ g' : Bool, X (i + 1) (j - 1) (u, g') ∧ r.2 = !(g' && r.1)) ∨
+      ((∃ u : Bool, P i j u r.1 ∧ ∃ g' : Bool, X (i + 1) (j - 1) (u, g') ∧ r.2 = !(g' && r.1)) ∨
        (∃ k : ℕ, i < k ∧ k < j ∧ ∃ g1 : Bool, X i k (r.1, g1) ∧ X k j (g1, r.2))))) →
     (∀ i j : ℕ, ∀ r : Bool × Bool, i + 2 ≤ j → (c i j r = true ↔
-      ((∃ u : Bool, P i u r.1 ∧ ∃ g' : Bool, c (i + 1) (j - 1) (u, g') = true ∧ r.2 = !(g' && r.1)) ∨
+      ((∃ u : Bool, P i j u r.1 ∧ ∃ g' : Bool, c (i + 1) (j - 1) (u, g') = true ∧ r.2 = !(g' && r.1)) ∨
        (∃ k : ℕ, i < k ∧ k < j ∧ ∃ g1 : Bool, c i k (r.1, g1) = true ∧ c k j (g1, r.2) = true)))) →
     ∀ i j : ℕ, ∀ r : Bool × Bool, i ≤ j → (c i j r = true ↔ X i j r)
 context: |
