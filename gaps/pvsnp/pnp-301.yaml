@@ -1,0 +1,24 @@
+id: pnp-301
+problem: pvsnp
+title: The truth-table CNF of a Boolean function of k variables has at most 2^k clauses, each of length k
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (k : ℕ) (g : (Fin k → Bool) → Bool), ∃ C : List (List (Fin k × Bool)),
+    (∀ a : Fin k → Bool, g a = true ↔ ∀ c ∈ C, ∃ l ∈ c, a l.1 = l.2) ∧
+    C.length ≤ 2 ^ k ∧ ∀ c ∈ C, c.length = k
+context: |
+  Step toward pnp-100 (Cook–Levin, over TM2 machines), on the CNF route. pnp-298 gives a CNF for every Boolean
+  function of k variables, but a polynomial-time reduction needs the CNF to be small. A local window rule of
+  a tableau has a constant width k, so its CNF has size at most 2^k clauses of length k: a constant, which the
+  polynomial bound of pnp-100 can absorb. This gap is the size bound that goes with pnp-298, stated for the same
+  clauses. It is finite counting, with no machine and no polynomial bound, and it does not decide P vs NP.
+sketch: |
+  Use the clauses of pnp-298: one clause for each assignment b with g b = false, the list of literals (i, !b i) for i
+  in Fin k. The number of clauses is the cardinality of a filter of Finset.univ, which is at most 2^k because
+  Fintype.card (Fin k → Bool) = 2 ^ k. Each clause is List.finRange k mapped, of length k. The semantic equivalence
+  is the proof of pnp-298, unchanged.
+dead: []
