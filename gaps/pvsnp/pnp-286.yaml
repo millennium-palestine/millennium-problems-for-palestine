@@ -1,0 +1,31 @@
+id: pnp-286
+problem: pvsnp
+title: If a Boolean table agrees with the interval relation on all shorter intervals, the recurrence of an interval is read off the table
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (P : ℕ → Bool → Bool → Prop) (X : ℕ → ℕ → Bool × Bool → Prop) (c : ℕ → ℕ → Bool × Bool → Bool) (a b : ℕ) (q : Bool × Bool),
+    (∀ i' j' : ℕ, ∀ r : Bool × Bool, i' ≤ j' → j' - i' < b - a → (c i' j' r = true ↔ X i' j' r)) →
+    (∀ i j : ℕ, ∀ r : Bool × Bool, i + 2 ≤ j → (X i j r ↔
+      ((∃ u : Bool, P i u r.1 ∧ ∃ g' : Bool, X (i + 1) (j - 1) (u, g') ∧ r.2 = !(g' && r.1)) ∨
+       (∃ k : ℕ, i < k ∧ k < j ∧ ∃ g1 : Bool, X i k (r.1, g1) ∧ X k j (g1, r.2))))) →
+    a + 2 ≤ b → (X a b q ↔
+      ((∃ u : Bool, P a u q.1 ∧ ∃ g' : Bool, c (a + 1) (b - 1) (u, g') = true ∧ q.2 = !(g' && q.1)) ∨
+       (∃ k : ℕ, a < k ∧ k < b ∧ ∃ g1 : Bool, c a k (q.1, g1) = true ∧ c k b (g1, q.2) = true)))
+context: |
+  Step toward pnp-152. The invariant of the table fill is proved by strong induction on the length b - a of the interval:
+  when the table c has the right cells for every shorter interval, the cell for (a, b) read by the recurrence of pnp-213 is
+  the correct value. This gap is that one step, with the recurrence of the interval relation X as a hypothesis (the shape of
+  pnp-248) and the split clause and the inner clause read from the Boolean table c. Both reads are at strictly shorter
+  intervals: (a + 1, b - 1) has length b - a - 2, and (a, k) and (k, b) with a < k < b have lengths below b - a. It is pure
+  logic on Prop, Bool and ℕ: no machine, no polynomial bound, and it does not decide P vs NP.
+sketch: |
+  Rewrite X a b q with the recurrence hypothesis at (a, b, q), which applies because a + 2 ≤ b. Then every occurrence of X
+  in the right-hand side is at an interval of length below b - a: the length of (a + 1, b - 1) is b - a - 2 by omega, and
+  for a < k < b both (a, k) and (k, b) are shorter. Rewrite each of these with the agreement hypothesis (its side conditions
+  are i' ≤ j' from omega or the bounds on k). The two sides then match term by term, so the iff follows by simp or by
+  constructor and the rewritten hypotheses.
+dead: []
