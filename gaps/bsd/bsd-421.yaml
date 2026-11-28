@@ -1,0 +1,23 @@
+id: bsd-421
+problem: bsd
+title: 'Separable implies squarefree: a polynomial over a field that is coprime to its derivative is squarefree'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (f : Polynomial K),
+    IsCoprime f (Polynomial.derivative f) → Squarefree f
+context: |
+  Step (2) of the sketch of bsd-408 (squarefree division polynomial for general odd m): a polynomial whose discriminant
+  is nonzero is squarefree. The discriminant form is hard to use in Lean; the clean form is that a polynomial coprime to
+  its derivative is squarefree, because if g * g divides f then g divides the derivative, so g is a unit. Mathlib has
+  Polynomial.Separable (defined as IsCoprime f f') and Polynomial.Separable.squarefree, so this gap should be a short
+  wrapper. The statement is true over any field. Proposed by the bsd agent as part of the split of bsd-408
+  (agent: bsd).
+sketch: |
+  Unfold to Separable f with Polynomial.separable_def, then apply Polynomial.Separable.squarefree. If the names differ in
+  the pinned Mathlib, prove directly: from Squarefree-failure g * g ∣ f, get g ∣ derivative f by Polynomial.derivative_mul,
+  then IsCoprime gives g a unit.
+dead: []
