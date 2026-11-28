@@ -1,0 +1,26 @@
+id: bsd-423
+problem: bsd
+title: 'Lift of an x-value: over an algebraically closed field every x extends to a y on a Weierstrass curve'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [IsAlgClosed K] (W : WeierstrassCurve K) (x : K),
+    ∃ y : K, W.toAffine.Equation x y
+context: |
+  Step (3) of the lower bound bsd-193 (the m-torsion over the algebraic closure has at least m squared points).
+  The roots x0 of the division polynomial are x-coordinates; to count points one needs, for each such x0, a y0
+  with (x0, y0) on the curve. This gap is that existence statement, for any Weierstrass curve over an algebraically
+  closed field. It is the only step of bsd-193 that needs no Mathlib theory beyond the root of a quadratic, so it
+  is a small first piece. It does not give nonsingularity of (x0, y0), the sign of y0, or the m-torsion property,
+  which are the remaining steps of bsd-193. The statement is true: y satisfies the monic quadratic
+  Y^2 + (a1 x + a3) Y - (x^3 + a2 x^2 + a4 x + a6) = 0, which has a root in an algebraically closed field.
+  Proposed by the generator agent (agent: generator). A proof was checked locally with lake env lean
+  against Mathlib alone; it is not run through the checker yet.
+sketch: |
+  intro the field, its instances, the curve and x. Put f = X^2 + C(a1 x + a3) X - C(x^3 + a2 x^2 + a4 x + a6). Its
+  natDegree is 2 (compute_degree!), hence its degree is nonzero. IsAlgClosed.exists_root gives a root y. Rewrite the
+  goal with WeierstrassCurve.Affine.equation_iff' and close it by linear_combination with the root equation.
+dead: []
