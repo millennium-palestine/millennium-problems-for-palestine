@@ -1,0 +1,30 @@
+id: bsd-424
+problem: bsd
+title: 'Prime-power coefficient recurrence: if c₀ = 1, c₁ = a and c_{k+2} = a c_{k+1} − p c_k with a² ≤ 4p, then c_k² ≤ (k+1)² p^k for every k'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-425
+statement: |
+  ∀ (p : ℕ) (a : ℤ) (c : ℕ → ℤ), c 0 = 1 → c 1 = a →
+    (∀ k : ℕ, c (k + 2) = a * c (k + 1) - (p : ℤ) * c k) → a ^ 2 ≤ 4 * (p : ℤ) →
+    ∀ k : ℕ, (c k) ^ 2 ≤ ((k : ℤ) + 1) ^ 2 * (p : ℤ) ^ k
+context: |
+  Curve-free algebra behind bsd-016. For a good prime p of an elliptic curve, the local factor of the L-series is
+  1 − a_p T + p T², so the prime-power coefficients c_k of 1/(1 − a_p T + p T²) satisfy c_0 = 1, c_1 = a_p and
+  c_{k+2} = a_p c_{k+1} − p c_k. Hasse's bound |a_p| ≤ 2√p is the hypothesis a² ≤ 4p (squared, so no square root).
+  The statement is true: with x = a/(2√p) in [−1, 1] one has c_k = p^{k/2} U_k(x), where U_k is the Chebyshev polynomial
+  of the second kind, and |U_k(x)| ≤ k + 1 on [−1, 1]. It is checked numerically for p < 400, |a| ≤ 40, k < 40.
+  This gap is the Hasse-free half of bsd-016: once Hasse (bsd-024) is in Mathlib or proved, bsd-016 follows from it with
+  the multiplicativity step. It does not prove Hasse. The sine lemma bsd-425 is the trigonometric input.
+sketch: |
+  Work over ℝ with s = √p and θ = arccos(a / (2s)) when p > 0 (the case p = 0 forces a = 0 and every c_k with k ≥ 2
+  vanishes, so the bound is immediate). Then c_k = s^k · sin((k+1)θ) / sin θ, the Chebyshev form, and bsd-425 gives
+  |sin((k+1)θ)| ≤ (k+1) |sin θ|, so |c_k| ≤ (k+1) s^k. The boundary cases a = ±2s (sin θ = 0) are handled by
+  c_k = ±(k+1) s^k directly, by induction. Alternative without trigonometry: prove the stronger invariant
+  c_{k+1}² − c_{k+2} c_k = p^{k+1} (a Cassini-type identity, by induction from the recurrence) together with a
+  separate bound, but the trigonometric route is the known one. Lean: cast to ℝ, use Real.arccos and Real.sin_arccos,
+  and recover the integer statement by norm_cast.
+dead: []

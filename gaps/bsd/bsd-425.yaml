@@ -1,0 +1,22 @@
+id: bsd-425
+problem: bsd
+title: 'Sine multiple bound: for every real θ and natural n, |sin((n + 1)θ)| ≤ (n + 1) |sin θ|'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (θ : ℝ) (n : ℕ), |Real.sin (((n : ℝ) + 1) * θ)| ≤ ((n : ℝ) + 1) * |Real.sin θ|
+context: |
+  Trigonometric input for bsd-424, the Hasse-free coefficient bound behind bsd-016. It is an elementary fact:
+  the sine of a multiple is at most the multiple times the sine in absolute value. It is true for every real θ,
+  since the addition formula gives sin((m + 1)θ) = sin(mθ) cos θ + cos(mθ) sin θ, so |sin((m + 1)θ)| ≤ |sin(mθ)| + |sin θ|,
+  and induction on m closes it. The proof needs no curve and no prime. Mathlib has Real.sin_add and Real.abs_cos_le_one.
+sketch: |
+  Induction on n. Base n = 0: |sin θ| ≤ |sin θ|. Step: write (n + 2)θ = (n + 1)θ + θ and apply Real.sin_add to get
+  sin((n + 2)θ) = sin((n + 1)θ) cos θ + cos((n + 1)θ) sin θ. Bound |cos| by 1 and |cos((n + 1)θ)| by 1 with
+  abs_mul and abs_add (triangle inequality), then use the induction hypothesis. Lean: push_cast, then rewrite the
+  argument with add_mul and one_mul, and close with nlinarith or a direct calc using abs_add_le, abs_mul,
+  Real.abs_cos_le_one and mul_le_mul_of_nonneg_right.
+dead: []
