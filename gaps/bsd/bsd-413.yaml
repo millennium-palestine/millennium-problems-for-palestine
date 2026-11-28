@@ -1,0 +1,31 @@
+id: bsd-413
+problem: bsd
+title: 'Bezout identity for the 3-division quartic: 3X⁴ + b₂X³ + 3b₄X² + 3b₆X + b₈ and its derivative satisfy u·f + v·f′ = −81Δ² for explicit polynomials u, v over the field, when 4b₈ = b₂b₆ − b₄²'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (b2 b4 b6 b8 : K), 4 * b8 = b2 * b6 - b4 ^ 2 →
+    ∃ u v : Polynomial K, u * (3 * Polynomial.X ^ 4 + Polynomial.C b2 * Polynomial.X ^ 3 +
+      3 * Polynomial.C b4 * Polynomial.X ^ 2 + 3 * Polynomial.C b6 * Polynomial.X + Polynomial.C b8) +
+      v * (12 * Polynomial.X ^ 3 + 3 * Polynomial.C b2 * Polynomial.X ^ 2 + 6 * Polynomial.C b4 * Polynomial.X +
+      3 * Polynomial.C b6) = Polynomial.C (-81 * (-b2 ^ 2 * b8 + 9 * b2 * b4 * b6 - 8 * b4 ^ 3 - 27 * b6 ^ 2) ^ 2)
+context: |
+  Algebraic input for the m = 3 squarefreeness of the division polynomial (bsd-414, an instance of bsd-408).
+  For a Weierstrass curve, Mathlib's Ψ₃ = 3X⁴ + b₂X³ + 3b₄X² + 3b₆X + b₈ (WeierstrassCurve.Ψ₃). The resultant of
+  Ψ₃ and its derivative is −81 Δ² once the relation 4b₈ = b₂b₆ − b₄² (WeierstrassCurve.b_relation) is imposed,
+  with Δ = −b₂²b₈ + 9b₂b₄b₆ − 8b₄³ − 27b₆². This gap is the explicit Bezout certificate behind that resultant: u and v
+  have degree 2 and 3 in X, with coefficients polynomial in b₂, b₄, b₆, b₈ and integer coefficients. The identity holds
+  in every characteristic, because it is a polynomial identity in the b's modulo the one relation. It is checked by
+  computer algebra (sympy resultant and solve) and, for the Lean step, the difference of the two sides is a multiple
+  of 4b₈ − b₂b₆ + b₄² with explicit cofactor, so `linear_combination` closes it. Proposed by the bsd agent.
+sketch: |
+  Take u, v as the unique solution of the Sylvester system u·f + v·f′ = Res(f, f′) with deg u ≤ 2, deg v ≤ 3, where
+  Res(f, f′) = −81 Q(b₂, b₄, b₆, b₈) and Q is a degree-24 weighted polynomial in the b's (it does not involve the
+  relation). Then Q − Δ² = −4·k·(4b₈ − b₂b₆ + b₄²) with k = 3b₂²b₄b₈ + b₂²b₆² − 20b₂b₄²b₆ − 8b₂b₆b₈ + 16b₄⁴ − 28b₄²b₈ +
+  81b₄b₆² + 16b₈², so −81Q = −81Δ² + 324·k·(4b₈ − b₂b₆ + b₄²). Lean: push C through the sums (map_mul, map_pow,
+  map_sub, map_add, map_neg, map_ofNat), then linear_combination (324·k) * h where h : 4 * C b₈ = C b₂ * C b₆ − C b₄ ^ 2.
+  Heartbeats need raising (set_option maxHeartbeats) for the linear_combination step.
+dead: []
