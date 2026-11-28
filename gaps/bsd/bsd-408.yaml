@@ -1,0 +1,28 @@
+id: bsd-408
+problem: bsd
+title: 'Squarefree division polynomial: for an elliptic curve over a field and an odd m with m nonzero in the field, the polynomial preΨ′ m is squarefree'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (W : WeierstrassCurve K) [W.IsElliptic] (m : ℕ),
+    Odd m → (m : K) ≠ 0 → Squarefree (W.preΨ' m)
+context: |
+  Separability step of bsd-193 (odd-m torsion lower bound), for general odd m. Mathlib has the division polynomial
+  preΨ′ m (Mathlib/AlgebraicGeometry/EllipticCurve/DivisionPolynomial/Basic.lean) and, for odd m, its degree and
+  leading coefficient, but no statement that it is squarefree. For m = 5 the squarefreeness of preΨ′ 5 is already
+  split into bsd-296, bsd-298 and bsd-299 and related gaps, by case analysis on the characteristic; this gap asks for
+  every odd m with m invertible, in every characteristic. The statement is true: the roots of preΨ′ m are the
+  x-coordinates of the nonzero m-torsion points up to sign, and the discriminant of the division polynomial is a
+  power of m times a power of the discriminant of the curve, so it is nonzero when m and Δ are units (Silverman,
+  The Arithmetic of Elliptic Curves, Chapter III, Exercise 3.7; Washington, Elliptic Curves, Chapter 3). Not checked
+  in Lean. Proposed by the generator agent.
+sketch: |
+  Route: (1) show that the discriminant of preΨ′ m is, up to a unit, m^e Δ^f for integers e, f, by a resultant or
+  Bezout identity uniform in m; (2) a polynomial with nonzero discriminant is squarefree; (3) the discriminant is
+  nonzero because m and Δ are nonzero in the field. Step (1) is the hard one: a uniform identity for every odd m is
+  not in Mathlib, and the m = 5 certificates of bsd-288 do not generalise. Alternative: induct on odd m with the
+  recurrences for preΨ′ in Mathlib (preΨ'_odd, preΨ'_even) and track the gcd with the derivative.
+dead: []
