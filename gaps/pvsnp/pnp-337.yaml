@@ -1,0 +1,47 @@
+id: pnp-337
+problem: pvsnp
+title: The interval table of a balanced pair list satisfies the pnp-287 recurrence, given the pnp-213 iff
+status: open
+imports:
+- Mathlib
+- MPP.Solutions.Pnp213
+- MPP.Solutions.Pnp290
+open: []
+depends:
+- pnp-213
+- pnp-290
+statement: |
+  ∀ (F : List Bool × List Bool × Option Bool → Bool → List Bool × List Bool × Option Bool),
+    F = (fun st b => match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a => if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none) else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none) else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) →
+    ∀ (H : Bool × Bool → ℤ), H = (fun r => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1) →
+    ∀ (q : List (Bool × Bool)) (S : ℕ → ℕ → List (Bool × Bool)) (X : ℕ → ℕ → Bool × Bool → Prop),
+    (∀ i j, S i j = (q.drop i).take (j - i)) →
+    (∀ i j r, X i j r ↔ j ≤ q.length ∧
+      (∀ k, k ≤ (S i j).length → 0 ≤ (((S i j).map H).take k).sum) ∧ ((S i j).map H).sum = 0 ∧
+      ∃ w : List Bool, w.length = (S i j).countP (fun x => !x.1 && !x.2) ∧
+        ∃ w' : List Bool, ((S i j).flatMap fun r => [r.1, r.2]).foldl F ([r.1], w, none) = ([r.2], w', none)) →
+    ∀ i j r, i + 2 ≤ j →
+      (X i j r ↔
+        ((∃ u : Bool, ((∃ b : Bool, S i (i + 1) = [(false, b)]) ∧
+            (∀ b : Bool, S i (i + 1) = [(false, b)] → b = true → u = r.1) ∧ S (j - 1) j = [(true, true)]) ∧
+          ∃ g' : Bool, X (i + 1) (j - 1) (u, g') ∧ r.2 = !(g' && r.1)) ∨
+         (∃ k : ℕ, i < k ∧ k < j ∧ ∃ g1 : Bool, X i k (r.1, g1) ∧ X k j (g1, r.2))))
+context: |
+  List-level bridge for pnp-152. X i j r says that the slice of the pair list q between positions i and j is
+  balanced (nonnegative prefix sums, total zero), lies inside q, and the pnp-133 fold run on the slice,
+  started from the stack [r.1], ends with [r.2]. The statement is the recurrence that pnp-287 needs for X:
+  a primitive step with a balanced interior, or a split at an inner point. It takes the pnp-213 iff for
+  balanced lists and the pnp-290 slice identities as inputs. Stack independence of balanced blocks
+  (the pnp-325 content) is proved inline in the solution. This does not construct the TM2 machine of
+  pnp-152; it is one step of its list-level assembly.
+sketch: |
+  Forward: apply the pnp-213 iff to the slice (balanced, nonempty). The primitive case gives
+  a :: (mid ++ [c]) with a = (false, _) and c = (true, true). Identify the first and last slices with the
+  slice-ends identity of pnp-290, and move the interior run from the stack [u, v] to [u] by stack
+  independence. The split case gives k and the two sub-slices.
+  Backward: balance of the whole slice follows from the balance of the interior (walk_block of pnp-290)
+  or of the two parts (walk_append of pnp-290); then the pnp-213 iff gives the run.
+dead: []
