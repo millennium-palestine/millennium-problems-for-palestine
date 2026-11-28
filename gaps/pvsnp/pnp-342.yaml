@@ -1,0 +1,25 @@
+id: pnp-342
+problem: pvsnp
+title: A chain of functional steps is an existential chain exactly when the Boolean fold ends at the target (block-chain value of pnp-152)
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (n : ℕ) (F : ℕ → Bool → Bool) (R : ℕ → Bool → Bool → Prop),
+    (∀ k x y, R k x y ↔ F k x = y) → ∀ v t : Bool,
+    ((∃ s : ℕ → Bool, s 0 = v ∧ s n = t ∧ ∀ k, k < n → R k (s k) (s (k + 1))) ↔
+      (List.range n).foldl (fun acc k => F k acc) v = t)
+context: |
+  Block-chain step for pnp-152. The pnp-268 decomposition reads the top-level run of a pair list as a chain of
+  block outputs: the state g after block k is determined by the state before it. The existential form of that
+  chain (a witness sequence s with s 0 = v, s n = t and each step related by R k) is equivalent to a Boolean fold
+  as soon as every step relation is functional, R k x y iff F k x = y. This gap states that equivalence for a
+  general sequence of Boolean steps, so the pnp-152 chain can be written as a fold of block out-values, which
+  a computable table can evaluate. Nothing here decides P vs NP.
+sketch: |
+  Forward: by induction on m ≤ n the witness satisfies s m = fold of the first m steps, since each step is
+  functional. Backward: take s k to be the fold of the first k steps; the step relations hold by the functional
+  hypothesis and List.range_succ.
+dead: []
