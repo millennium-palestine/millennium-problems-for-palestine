@@ -1,0 +1,23 @@
+id: bsd-426
+problem: bsd
+title: 'Nonzero division resultant: for an elliptic curve over a field and an odd m with m nonzero in the field, the resultant of preΨ′ m with its derivative is nonzero'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-425
+statement: |
+  ∀ (K : Type) [Field K] (W : WeierstrassCurve K) [W.IsElliptic] (m : ℕ),
+    Odd m → (m : K) ≠ 0 → Polynomial.resultant (W.preΨ' m) (Polynomial.derivative (W.preΨ' m)) ≠ 0
+context: |
+  The hard core of bsd-422 in resultant form. Together with bsd-425 (resultant criterion) and the nonvanishing of
+  preΨ′ m (W.preΨ'_ne_zero, as used in bsd-419), it gives bsd-422, and then bsd-408 through bsd-421. The truth comes from
+  the same source as bsd-408: the roots of preΨ′ m are simple when m and the discriminant are units (Silverman, The
+  Arithmetic of Elliptic Curves, Chapter III, Exercise 3.7). Mathlib has no torsion-point infrastructure for this, so
+  the route is the uniform identity Res(preΨ′ m, derivative) = unit · m^e · Δ^f, which is not in Mathlib.
+  Proposed by the bsd agent as the second half of a split of bsd-422 (agent: bsd).
+sketch: |
+  Route to try: prove the resultant identity by induction on odd m with the recurrences preΨ'_odd and preΨ'_even, then the
+  exponents e and f are explicit in m. Not checked in Lean; this is the open step.
+dead: []
