@@ -1,0 +1,31 @@
+id: bsd-315
+problem: bsd
+title: 'Two points per x-coordinate: over a field, among any three nonsingular affine points with the same x-coordinate two have the same y-coordinate'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (W : WeierstrassCurve K) (x y₁ y₂ y₃ : K),
+    W.toAffine.Nonsingular x y₁ → W.toAffine.Nonsingular x y₂ → W.toAffine.Nonsingular x y₃ →
+    y₁ = y₂ ∨ y₁ = y₃ ∨ y₂ = y₃
+context: |
+  Step (3) of bsd-192 (m-torsion upper bound, odd m): each x-coordinate of a point on the curve is shared by at most
+  two affine points P and -P. The equation W.Equation x y is a monic quadratic in y, y^2 + (a1 x + a3) y - (x^3 + a2 x^2
+  + a4 x + a6) = 0, and a nonzero polynomial of degree 2 over a field has at most two roots. So three distinct
+  y-coordinates would be three roots of a nonzero quadratic. Nonsingular implies Equation, so the hypothesis is used
+  only through its equation part. The statement is true for any Weierstrass curve over any field. Not checked in Lean.
+  Together with bsd-314 (x-coordinates of nonzero m-torsion points are at most (m^2 - 1)/2 in number) and bsd-198
+  (the x-coordinate of a nonzero m-torsion point is a root of the division polynomial, odd m) this gives bsd-192 for
+  odd m: at most 2 (m^2 - 1)/2 + 1 = m^2 points.
+sketch: |
+  Let q(Y) := Y^2 + (a1 x + a3) Y - (x^3 + a2 x^2 + a4 x + a6), a polynomial over K whose evaluation at y is zero
+  exactly when W.Equation x y holds (unfold WeierstrassCurve.Affine.Nonsingular to get the equation part, then
+  ring_nf or linear_combination to match q.eval y). If y1, y2, y3 are pairwise distinct roots of q, then q has at
+  least three roots, but q is nonzero of degree 2, so by Polynomial.card_roots' (or Polynomial.card_roots_sub_C) the
+  count of roots is at most 2. Alternative without polynomials: from q(y1) = q(y2) = 0 with y1 ≠ y2 one gets
+  y1 + y2 = -(a1 x + a3) by cancelling y1 - y2 (mul_left_cancel₀), and similarly y1 + y3 = -(a1 x + a3), so y2 = y3
+  by linearity, contradicting distinctness. Mathlib: WeierstrassCurve.Affine.Nonsingular, WeierstrassCurve.Affine.equation_iff
+  or WeierstrassCurve.Equation, mul_left_cancel₀, linear_combination.
+dead: []
