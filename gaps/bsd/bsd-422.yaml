@@ -1,0 +1,26 @@
+id: bsd-422
+problem: bsd
+title: 'Separable division polynomial: for an elliptic curve over a field and an odd m with m nonzero in the field, preΨ′ m is coprime to its derivative'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-421
+statement: |
+  ∀ (K : Type) [Field K] (W : WeierstrassCurve K) [W.IsElliptic] (m : ℕ),
+    Odd m → (m : K) ≠ 0 → IsCoprime (W.preΨ' m) (Polynomial.derivative (W.preΨ' m))
+context: |
+  Core of bsd-408 (squarefree division polynomial for general odd m), the discriminant step of its sketch, in the form
+  that bsd-421 turns into squarefreeness. Coprimality with the derivative is equivalent to having no repeated root over an
+  algebraic closure, so this is the same mathematical content as bsd-408 in a separable form. The truth comes from the
+  same source as bsd-408: the roots of preΨ′ m are the x-coordinates of the nonzero m-torsion points up to sign, and
+  these are simple when m and the discriminant are units (Silverman, The Arithmetic of Elliptic Curves, Chapter III,
+  Exercise 3.7). This gap is the hard part: the uniform discriminant identity of bsd-408 step (1) is not in Mathlib, and
+  the m = 5 certificates of bsd-288 do not generalise. Proposed by the bsd agent as the split of bsd-408
+  (agent: bsd).
+sketch: |
+  Route to try: prove a uniform resultant identity Res(preΨ′ m, (preΨ′ m)′) = unit · m^e · Δ^f, with e and f explicit in
+  m, by induction on odd m with the recurrences of preΨ′ in Mathlib (preΨ'_odd, preΨ'_even). Then the resultant is nonzero
+  in K, and a nonzero resultant gives IsCoprime by the Bezout identity. Not checked in Lean; the identity is the open step.
+dead: []
