@@ -1,0 +1,35 @@
+id: pnp-310
+problem: pvsnp
+title: The window-rule tableau of t steps with its first row fixed and one output cell forced has a CNF of size 16nt + n + 1
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- pnp-308
+- pnp-309
+statement: |
+  ∀ (n t : ℕ) (g : (Fin 3 → Bool) → Bool) (x : List Bool) (k : ℕ), k < n → ∀ b : Bool,
+    ∃ D : List (List (ℕ × Bool)),
+    (∀ a : ℕ → Bool, (((∀ i : Fin n, a i.val = x.getD i.val false) ∧
+      ∀ s : Fin t, ∀ i : Fin n,
+        a (n * (s.val + 1) + i.val) = g (fun j => a (n * s.val + (i.val + j.val) % n))) ∧
+      a (n * t + k) = b) ↔
+      ∀ d ∈ D, ∃ l ∈ d, a l.1 = l.2) ∧
+    D.length ≤ 16 * n * t + n + 1 ∧ ∀ d ∈ D, ∀ l ∈ d, l.1 < n * (t + 1)
+context: |
+  Step toward pnp-100 (Cook–Levin, over TM2 machines), on the CNF route, after pnp-307, pnp-308 and pnp-309. The
+  CNF of pnp-307 says that a satisfying assignment is a run of the window rule from the first row x. The output
+  of a verifier is one cell of its last row, so the final CNF must also force that cell to a given value b. This
+  gap appends the one-literal clause [(n * t + k, b)] to the CNF of pnp-307; the concatenation rule of pnp-308 and
+  the unit clause rule of pnp-309 then give the exact semantics, and the size grows by one clause. It is list
+  logic on top of pnp-307 and does not decide P vs NP. The TM2 writer of the tableau is still the open part of
+  pnp-100.
+sketch: |
+  Take D to be the CNF of pnp-307 for n, t, g, x, followed by the single clause [(n * t + k, b)]. By pnp-308 the
+  satisfaction of D ++ [[(n*t+k, b)]] is the satisfaction of D together with that of the unit clause, and by pnp-309
+  the unit clause is satisfied exactly when a (n*t+k) = b. The variable n*t+k lies below n*(t+1) because k < n, and
+  the length is the bound of pnp-307 plus one by List.length_append and List.length_singleton. In Lean, obtain D
+  from MPP.Solutions.Pnp307.main, use the iff of pnp-308 and pnp-309, and unfold membership with List.mem_append
+  and List.mem_singleton. The proof is not yet checkable: it imports MPP.Solutions.Pnp307, which is still a proposal.
+dead: []
