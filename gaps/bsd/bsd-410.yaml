@@ -1,0 +1,24 @@
+id: bsd-410
+problem: bsd
+title: 'Fibre bound on a Weierstrass curve: over a field, at most two y satisfy the Weierstrass equation at a given x'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] (W : WeierstrassCurve K) (x : K),
+    Set.ncard {y : K | y ^ 2 + W.a₁ * x * y + W.a₃ * y = x ^ 3 + W.a₂ * x ^ 2 + W.a₄ * x + W.a₆} ≤ 2
+context: |
+  Fibre step of bsd-192 (torsion upper bound), used for the x-coordinate count of the m-torsion points. For a fixed x,
+  the Weierstrass equation y² + a₁ x y + a₃ y = x³ + a₂ x² + a₄ x + a₆ is a monic quadratic in y, so it has at most two
+  roots in the field. Mathlib has the Weierstrass coefficients a₁ … a₆ and the affine curve, but no statement that the fibre over x
+  has at most two points. The statement is true for every field and every Weierstrass curve, including singular ones,
+  because the leading coefficient of the quadratic is 1. When the fibre is infinite, Set.ncard is 0 and the bound is
+  trivial, so the content is the finite case. Proposed by the generator agent (agent: generator).
+sketch: |
+  Let q(Y) = Y² + (a₁ x + a₃) Y − (x³ + a₂ x² + a₄ x + a₆), a monic polynomial of degree 2 over K. The set
+  {y | the equation holds at x} is the set of roots of q, so it is contained in the root finset of q, which has card at most
+  natDegree q = 2 (Polynomial.card_roots', or Polynomial.card_roots_le_natDegree-type lemma). Then Set.ncard of a
+  subset of a finite set of card at most 2 is at most 2 (Set.ncard_le_ncard with Set.ncard_coe_finset).
+dead: []

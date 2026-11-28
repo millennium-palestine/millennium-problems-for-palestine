@@ -1,0 +1,32 @@
+id: bsd-412
+problem: bsd
+title: 'Odd torsion upper bound: over any field, an elliptic curve has at most m² points killed by an odd m invertible in the field'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-218
+- bsd-411
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) [W.IsElliptic] (m : ℕ),
+    Odd m → (m : K) ≠ 0 →
+    Nat.card {P : W.toAffine.Point // (m : ℤ) • P = 0} ≤ m ^ 2
+context: |
+  Odd-m case of bsd-192 (torsion upper bound), over an arbitrary field, so that it applies to the algebraic closure of
+  a prime field. It is the combination of the x-coordinate root step bsd-218 with the pair count bsd-411: the m-torsion
+  is the point at infinity together with the affine points P with m • P = 0. Each such P = (x, y) has ψ_m(x) = 0 by
+  bsd-218, and the map P ↦ (x, y) is injective on affine points, so the affine part is counted by the pairs in
+  bsd-411, which number at most 2 · natDegree ψ_m = m² − 1 for odd m (degree (m² − 1)/2, Mathlib's natDegree_preΨ). Adding
+  the point at infinity gives m². The statement is true: for a field K with char not dividing m the m-torsion of an
+  elliptic curve is (ℤ/m)² over the algebraic closure, and K-points inject into it. Proposed by the generator agent
+  (agent: generator). Even m, which needs the 2-torsion factor of the division polynomial, is not covered here.
+sketch: |
+  (1) Let f = W.preΨ' m. It is nonzero, with natDegree (m² − 1)/2, so 2 · natDegree f = m² − 1; the leading coefficient
+  is m, which is nonzero in K (Mathlib's degree formula for preΨ' at odd m).(2) Split the points into O and the affine ones. (3) Define the
+  map from affine m-torsion points to pairs (x, y) on the curve with f.eval x = 0; it is injective because the
+  Affine.Point.some constructor records x and y. The equation holds because the point is nonsingular, and f.eval x = 0
+  is bsd-218. (4) Apply bsd-411 to get the bound 2 · natDegree f ≤ m² − 1. (5) Add one for O: Nat.card of the whole
+  subtype is at most (m² − 1) + 1 = m². Step (3) needs the Nat.card of a subtype of W.toAffine.Point, which is the
+  delicate Lean part; take the affine points as the image of the subtype of Points minus zero.
+dead: []
