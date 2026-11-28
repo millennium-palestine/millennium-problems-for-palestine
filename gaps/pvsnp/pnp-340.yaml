@@ -1,0 +1,28 @@
+id: pnp-340
+problem: pvsnp
+title: The pnp-133 fold step of pnp-152 is the merged step212 (short name for the fold)
+status: open
+imports:
+- Mathlib
+- MPP.Solutions.Pnp212
+open: []
+depends:
+- pnp-212
+statement: |
+  ∀ x w : List Bool, (x.foldl (fun (st : List Bool × List Bool × Option Bool) (b : Bool) =>
+      match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) ([], w, none)) =
+    x.foldl MPP.Solutions.Pnp212.step212 ([], w, none)
+context: |
+  Bookkeeping for pnp-152. The fold statement of pnp-152 is long, and the checker caps a statement at 2000 characters, which is
+  why fold-level composition steps are reported as too long. This gap states once that the fold step of pnp-152 is the
+  merged definition step212 of pnp-212. Later gaps can then write x.foldl step212 instead of the full lambda.
+  Proof: definitional unfolding. Nothing here decides P vs NP.
+sketch: |
+  Both sides are the same function of (stack, witness, pending bit): unfold step212 and the two folds agree by rfl.
+dead: []
