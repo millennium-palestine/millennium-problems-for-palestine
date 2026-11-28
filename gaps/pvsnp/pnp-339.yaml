@@ -1,0 +1,30 @@
+id: pnp-339
+problem: pvsnp
+title: The interval relation of a pair list is reflexive on the empty slice exactly when its two ends agree
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (F : List Bool × List Bool × Option Bool → Bool → List Bool × List Bool × Option Bool) (H : Bool × Bool → ℤ)
+    (q : List (Bool × Bool)) (S : ℕ → ℕ → List (Bool × Bool)) (X : ℕ → ℕ → Bool × Bool → Prop),
+    (∀ i j, S i j = (q.drop i).take (j - i)) →
+    (∀ i j r, X i j r ↔ j ≤ q.length ∧
+      (∀ k, k ≤ (S i j).length → 0 ≤ (((S i j).map H).take k).sum) ∧ ((S i j).map H).sum = 0 ∧
+      ∃ w : List Bool, w.length = (S i j).countP (fun x => !x.1 && !x.2) ∧
+        ∃ w' : List Bool, ((S i j).flatMap fun r => [r.1, r.2]).foldl F ([r.1], w, none) = ([r.2], w', none)) →
+    ∀ (i : ℕ) (r : Bool × Bool), i ≤ q.length → (X i i r ↔ r.1 = r.2)
+context: |
+  Step toward pnp-152, the base case that pnp-287 needs for the interval relation of pnp-337. The base
+  cases of pnp-287 are X i i r ↔ r.1 = r.2 for every i. pnp-337 only defines X on indices up to the length of
+  the pair list q, so the base case holds exactly when i ≤ q.length. This gap states the base case for an
+  arbitrary fold F and weight H, since the empty slice never reads them. It is pure list logic: the slice is
+  empty, the sums vanish, and the fold returns its starting stack. It does not decide P vs NP.
+sketch: |
+  The slice S i i is the empty list, since take 0 of anything is empty. Unfolding the relation at (i, i), the
+  balance and nonnegative-prefix clauses hold trivially, and the length of the witness w is 0 with w = [].
+  The fold over the empty list returns its starting value ([r.1], w, none), so the final equation reads
+  ([r.1], [], none) = ([r.2], w', none), which holds exactly when r.1 = r.2. Conversely, if r.1 = r.2, take
+  w = w' = [] and the equation holds by reflexivity.
+dead: []
