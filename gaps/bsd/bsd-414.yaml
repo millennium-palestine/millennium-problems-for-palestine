@@ -1,0 +1,27 @@
+id: bsd-414
+problem: bsd
+title: 'Squarefree 3-division polynomial: over a field K with 3 ≠ 0, the polynomial preΨ′ 3 of every elliptic Weierstrass curve is squarefree'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-413
+- bsd-282
+statement: |
+  ∀ (K : Type) [Field K] (W : WeierstrassCurve K) [W.IsElliptic], (3 : K) ≠ 0 → Squarefree (W.preΨ' 3)
+context: |
+  The m = 3 instance of the separability input bsd-408 (squarefree preΨ′ m for odd m invertible in the field), in every
+  characteristic with 3 ≠ 0. Mathlib: WeierstrassCurve.preΨ'_three (preΨ′ 3 = Ψ₃), WeierstrassCurve.Ψ₃,
+  WeierstrassCurve.b_relation (4b₈ = b₂b₆ − b₄²), WeierstrassCurve.isUnit_Δ (Δ is a unit on an elliptic curve).
+  The squarefreeness follows from the Bezout identity of bsd-413 with the unit constant −81Δ² (a unit because 3 and
+  Δ are nonzero), together with the generic criterion of bsd-282. The statement is true: the squarefreeness of ψ₃
+  is the usual separability of the 3-division polynomial (Silverman, The Arithmetic of Elliptic Curves, III.2),
+  and the identity above shows the discriminant is a unit times a power of Δ. Proposed by the bsd agent; this is the
+  m = 3 case of bsd-408, which stays open for general odd m.
+sketch: |
+  rw [preΨ'_three] to reach Squarefree W.Ψ₃. Apply the identity of bsd-413 with b₂ = W.b₂, b₄ = W.b₄, b₆ = W.b₆,
+  b₈ = W.b₈ and W.b_relation: u·Ψ₃ + v·Ψ₃′ = C(−81 Δ²) with Ψ₃′ = 12X³ + 3b₂X² + 6b₄X + 3b₆ (derivative by simp with
+  map_ofNat). Then Δ = W.Δ is a unit (isUnit_Δ) and 81 = 3⁴ ≠ 0, so c = −81Δ² ≠ 0. Finally bsd-282: take
+  a = C c⁻¹ * u and b = C c⁻¹ * v, so a·Ψ₃ + b·Ψ₃′ = 1 and Separable.squarefree applies.
+dead: []
