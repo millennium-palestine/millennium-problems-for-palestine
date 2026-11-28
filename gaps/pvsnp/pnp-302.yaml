@@ -1,0 +1,30 @@
+id: pnp-302
+problem: pvsnp
+title: One row of local constraints of a window rule has a CNF of size 16n, on the cells of the row and its successor
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (n : ℕ) (g : (Fin 3 → Bool) → Bool), ∃ D : List (List (ℕ × Bool)),
+    (∀ a : ℕ → Bool, (∀ i : Fin n, a (n + i.val) = g (fun j => a ((i.val + j.val) % n))) ↔
+      ∀ d ∈ D, ∃ l ∈ d, a l.1 = l.2) ∧
+    D.length ≤ 16 * n ∧ ∀ d ∈ D, ∀ l ∈ d, l.1 < 2 * n
+context: |
+  Step toward pnp-100 (Cook–Levin, over TM2 machines), on the CNF route. A tableau row of length n is a list of cells,
+  and the next row is given by a window rule: the new cell i is a Boolean function g of the three cells at
+  positions i, i + 1, i + 2 of the row (mod n). Here the old row is the variables 0, ..., n - 1 and the new row is
+  the variables n, ..., 2n - 1, so the constraint "every new cell is g of its window" is the conjunction over i of
+  one local equation. This gap gives its CNF: the clauses of pnp-298 for the 4-variable function (window, output),
+  transported to the cells of position i by pnp-299 style renaming, with at most 16 clauses per position (pnp-301)
+  and all variables below 2n. Finite combinatorics: no machine, no polynomial bound beyond the linear size, and it
+  does not decide P vs NP. The polynomial-time map that writes this CNF for a verifier's tableau is the open part.
+sketch: |
+  Take the truth-table CNF of pnp-298 and pnp-301 for the 4-ary function b ↦ (b 3 == g (window of b)), with
+  pnp-301 giving at most 16 clauses. For each position i, rename its variable j to (i + j) mod n when j < 3 and to
+  n + i when j = 3, and collect the renamed clauses over all positions with List.finRange n. Each renamed equation
+  is the local equation at i, by a funext on the window indices; the combination over i is the position-indexed
+  renaming argument. The length bound is the number of positions times 16, and the variable bound uses the mod
+  and the position bound.
+dead: []
