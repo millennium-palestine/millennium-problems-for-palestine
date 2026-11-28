@@ -1,0 +1,37 @@
+id: pnp-330
+problem: pvsnp
+title: Every pair list has a block decomposition whose tail run from the forced base has the top of the whole fold
+status: open
+imports:
+- Mathlib
+open: []
+depends: 
+- pnp-263
+statement: |
+   ∀ (F : List Bool × List Bool × Option Bool → Bool → List Bool × List Bool × Option Bool),
+      F = (fun st b => match st.2.2 with
+        | none => (st.1, st.2.1, some b)
+        | some a =>
+          if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+            else (st.1, st.2.1, none))
+          else (if b then (st.1.headD false :: st.1, st.2.1, none)
+            else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) →
+      ∀ q : List (Bool × Bool), ∃ (items : List (List (Bool × Bool))) (T : List (Bool × Bool)),
+        q = (items.map fun b => b ++ [(true, true)]).flatten ++ T ∧
+        (∀ b ∈ items, (b.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 ∧
+          ∀ j, j ≤ b.length → 0 ≤ ((b.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) ∧
+        (∀ j, j ≤ T.length → 0 ≤ ((T.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) ∧
+        ∀ w : List Bool,
+          (((q.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl F ([false], w, none)).1.headD false) =
+            (((T.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl F
+              ((if items.isEmpty then [false] else [true]), w.drop (items.flatten.countP fun q : Bool × Bool => !q.1 && !q.2), none)).1.headD false)
+context: |
+  Composition of pnp-263 (every pair list splits into balanced nonnegative blocks, each followed by a NAND, and a
+  nonnegative tail) with pnp-329 (for such a split, the top of the fold from [false] equals the top of the tail fold
+  from the forced base: [false] with no blocks, [true] otherwise). The statement is existential only in the split, which
+  pnp-263 provides, and for that split it says the top of the whole fold is the top of the tail fold from the forced base
+  for every witness. So the existential cell of pnp-268 and pnp-274 is gone from the top-level chain of pnp-152.
+  It is a fact about lists of bits and the fold: no machine, no polynomial bound, no P, and it does not decide P vs NP.
+sketch: |
+  Take the split from pnp-263, substitute it for q, and apply pnp-329 to the split with the witness w.
+dead: []
