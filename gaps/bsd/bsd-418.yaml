@@ -1,0 +1,31 @@
+id: bsd-418
+problem: bsd
+title: 'Toeplitz symbol nonvanishing at p = 7: for a short cubic x³ + ax + b over F_7 with nonzero discriminant, the 3×3 determinant of the symbol c_s + d_s·Y, K = 3, is nonzero as a polynomial in Y'
+status: open
+imports:
+- Mathlib
+- MPP.Solutions.Bsd417
+open: []
+depends:
+- bsd-417
+statement: |
+  ∀ (a b : ZMod 7), 4 * a ^ 3 + 27 * b ^ 2 ≠ 0 →
+    ∀ g : Polynomial (ZMod 7),
+      g = (Polynomial.X ^ 3 + Polynomial.C a * Polynomial.X + Polynomial.C b) ^ ((7 - 1) / 2) →
+      (Matrix.of (fun (i t : Fin ((7 - 1) / 2)) =>
+        Polynomial.C (g.coeff ((7 - 1) / 2 + (i : ℕ) - (t : ℕ))) +
+          Polynomial.C (g.coeff ((7 - 1) / 2 + (i : ℕ) - (t : ℕ) + 7)) * (Polynomial.X : Polynomial (ZMod 7)))).det ≠ 0
+context: |
+  The p = 7 instance of bsd-254 (Toeplitz symbol nonvanishing), next to the p = 3, 5, 11 and 13 instances already
+  proposed or merged. Here K = (p − 1)/2 = 3, so the Toeplitz matrix is 3×3 with entries c_s + d_s·Y, as in bsd-254.
+  The coefficients of g = f³ are c_1 = 3ab², c_2 = 3a²b, c_3 = a³ + 3b², c_4 = 6ab, c_5 = 3a², and d_2 = 1 (the
+  coefficient of X^9) with all other d_s for s in {1..5} zero. The gap bsd-417 is the finite witness statement over
+  ZMod 7: for each nonsingular (a, b) it gives a y in F_7 at which the determinant of the matrix with Y replaced by y
+  is nonzero. This gap is the bridge: evaluate the Toeplitz determinant at that y (RingHom.map_det with evalRingHom)
+  and identify the entries. The statement for all p is bsd-254; this gap only covers p = 7. Not checked in Lean.
+sketch: |
+  Use bsd-417 to get y0. Assume the determinant is zero, evaluate at y0 with Polynomial.evalRingHom and
+  RingHom.map_det, so the evaluated matrix has determinant zero, contradicting bsd-417. The entries match after the
+  coefficient facts c_1..c_5, c_8..c_12 are computed from g = f³ (rw hg, norm_num, ring, then simp of coeff_add and
+  coeff_C_mul_X_pow), as in the bsd-337 solution for p = 11.
+dead: []

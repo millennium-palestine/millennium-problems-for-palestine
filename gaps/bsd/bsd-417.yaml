@@ -1,0 +1,26 @@
+id: bsd-417
+problem: bsd
+title: 'Toeplitz symbol at p = 7, witness table: for every a, b in F_7 with nonzero discriminant there is y in F_7 at which the 3×3 determinant with the entries below is nonzero'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ a b : ZMod 7, 4 * a ^ 3 + 27 * b ^ 2 ≠ 0 → ∃ y : ZMod 7,
+    Matrix.det !![(a ^ 3 + 3 * b ^ 2) + (0) * y, (3 * a ^ 2 * b) + (1) * y, (3 * a * b ^ 2) + (0) * y;
+    (6 * a * b) + (0) * y, (a ^ 3 + 3 * b ^ 2) + (0) * y, (3 * a ^ 2 * b) + (1) * y;
+    (3 * a ^ 2) + (0) * y, (6 * a * b) + (0) * y, (a ^ 3 + 3 * b ^ 2) + (0) * y] ≠ 0
+context: |
+  The finite algebra behind the p = 7 instance of bsd-254 (Toeplitz symbol nonvanishing), split off so that the
+  decidable part is a separate gap. For p = 7 the Toeplitz matrix of the symbol has size K = (p − 1)/2 = 3. Its
+  entries are c_s + d_s·Y, where c_s is the coefficient of X^s in f³ for f = X³ + aX + b, and d_s is the coefficient
+  of X^(s+7). Expanding f³ gives c_1 = 3ab², c_2 = 3a²b, c_3 = a³ + 3b², c_4 = 6ab, c_5 = 3a², and d_2 = 1 with all
+  other d_s zero for s in {1..5}. The matrix above is that Toeplitz matrix written with Y replaced by a free variable
+  y. Over F_7 the determinant is a polynomial of degree 2 in y, and an exhaustive check over all (a, b) finds, for
+  every nonsingular pair, some y in F_7 with a nonzero value. The statement is closed and decidable over ZMod 7
+  (the existential is a finite search over Fin 7). The bridge from the Toeplitz matrix to this matrix is bsd-418.
+sketch: |
+  Closed finite search: `decide +kernel` on the whole statement. The bsd-337 solution (p = 11) uses the same shape
+  for its decidable part. No bridge is needed here; the bridge to the Toeplitz determinant is the next gap, bsd-418.
+dead: []
