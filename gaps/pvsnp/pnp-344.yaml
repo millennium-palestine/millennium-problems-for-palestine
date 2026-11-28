@@ -1,0 +1,40 @@
+id: pnp-344
+problem: pvsnp
+title: A chain over block boundaries of a table that agrees with the interval relation is decided by the Boolean fold of the table
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ → ℕ) (X : ℕ → ℕ → Bool × Bool → Prop) (c : ℕ → ℕ → Bool × Bool → Bool),
+    (∀ k, p k ≤ p (k + 1)) →
+    (∀ i j : ℕ, ∀ r : Bool × Bool, i ≤ j → (c i j r = true ↔ X i j r)) →
+    ∀ (n : ℕ) (v t : Bool),
+    ((∃ s : ℕ → Bool, s 0 = v ∧ s n = t ∧ ∀ k, k < n → X (p k) (p (k + 1)) (s k, s (k + 1))) ↔
+      ((t = true ∧ ((List.range n).foldl (fun (S : Bool × Bool) (k : ℕ) =>
+          ((S.1 && c (p k) (p (k + 1)) (false, false)) || (S.2 && c (p k) (p (k + 1)) (true, false)),
+           (S.1 && c (p k) (p (k + 1)) (false, true)) || (S.2 && c (p k) (p (k + 1)) (true, true))))
+          (!v, v)).2 = true) ∨
+       (t = false ∧ ((List.range n).foldl (fun (S : Bool × Bool) (k : ℕ) =>
+          ((S.1 && c (p k) (p (k + 1)) (false, false)) || (S.2 && c (p k) (p (k + 1)) (true, false)),
+           (S.1 && c (p k) (p (k + 1)) (false, true)) || (S.2 && c (p k) (p (k + 1)) (true, true))))
+          (!v, v)).1 = true)))
+context: |
+  Step toward pnp-152, the block-chain value step. pnp-341 and pnp-287 say that a Boolean table c agrees with the
+  interval relation X of the pnp-133 fold on every interval, so the table entries at the block boundaries of a
+  decomposition are the block relations. The block chain is an existential chain over those boundaries: a Boolean
+  state is carried from one boundary to the next, and the chain reaches the target t from the start v. This gap says
+  that such an existential chain over X is decided by a Boolean fold over the table entries: the fold keeps two
+  flags, whether the value false and whether the value true is reachable after each boundary. The step is a
+  reachable-set fold rather than a functional composition, because the block relations need not be functions (pnp-342
+  alone does not apply). Pure logic on Prop, Bool and ℕ: no machine, no polynomial bound, and it does not decide
+  P vs NP. The table entries are only compared, never computed, so the statement is independent of how c is built.
+sketch: |
+  Let R k x y be c (p k) (p (k + 1)) (x, y). The hypothesis (∀ k, p k ≤ p (k + 1)) gives, for each k, that the table
+  agrees with X on the boundary pair p k, p (k + 1), so an existential chain over X is the same as one over R. Then
+  prove by induction on m, for every end value y, that the existential chain of length m from v to y is equivalent to
+  the disjunction in the statement, with the two flags of the fold after m steps. The step case adds one boundary:
+  the new end value y is reachable from a value x reachable after m steps exactly when R m x y holds, and the four
+  cases (x, y) in {false, true}^2 are read off the two flags.
+dead: []
