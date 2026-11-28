@@ -1,0 +1,25 @@
+id: pnp-299
+problem: pvsnp
+title: CNFs indexed by the positions of a row combine into one CNF over the cells
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (n k m : ℕ) (σ : Fin n → Fin k → Fin m) (C : Fin n → List (List (Fin k × Bool))),
+    ∃ D : List (List (Fin m × Bool)), ∀ a : Fin m → Bool,
+      (∀ i : Fin n, ∀ c ∈ C i, ∃ l ∈ c, a (σ i l.1) = l.2) ↔ ∀ d ∈ D, ∃ l ∈ d, a l.1 = l.2
+context: |
+  Step toward pnp-100 (Cook–Levin, over TM2 machines), on the CNF route, after pnp-298. A tableau has one local
+  constraint per position of a row, and each constraint is a CNF on a few cells of the row, with the cells
+  numbered by the position i of the constraint and an index of its window. This gap says that the conjunction
+  over all positions is again one CNF, on the global cell numbers m. The index map σ i sends the local variable
+  l.1 of position i to its global cell. It is pure list logic: no machine, no polynomial bound, and it does not
+  decide P vs NP. It is the bookkeeping that lets pnp-298 be applied at every position of a row at once.
+sketch: |
+  Take D to be the concatenation over the positions i in Fin n (List.finRange n) of the clauses of C i, each
+  literal (x, b) of a clause moved to the global cell (σ i x, b). Then a clause d of D is the image of a clause
+  c of C i, and a satisfies d exactly when a (σ i l.1) = l.2 for some literal of c. The two sides agree by
+  List.mem_flatMap, List.mem_map and Fin.forall_iff style unfolding over the position i.
+dead: []

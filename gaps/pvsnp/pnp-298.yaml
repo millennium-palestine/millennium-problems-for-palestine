@@ -1,0 +1,28 @@
+id: pnp-298
+problem: pvsnp
+title: Every Boolean function of k variables has a CNF on those variables
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (k : ℕ) (g : (Fin k → Bool) → Bool), ∃ C : List (List (Fin k × Bool)), ∀ a : Fin k → Bool,
+    g a = true ↔ ∀ c ∈ C, ∃ l ∈ c, a l.1 = l.2
+context: |
+  Step toward pnp-100 (Cook–Levin, over TM2 machines), on the CNF route. Cook–Levin turns the local rule of a
+  tableau into clauses: each cell of a row is a Boolean function of a constant number of cells of the row
+  above, and the whole run is satisfiable exactly when every local constraint holds. This gap is the
+  finite-logic core of that step: any Boolean function of k variables, given as a function on Fin k → Bool,
+  is the conjunction of its clauses, each clause a disjunction of literals on the same variables. No machine,
+  no polynomial bound, and it does not decide P vs NP. It does not give the hardness half of pnp-100 by
+  itself: a polynomial-time map must still write the clauses for each input, and CNF satisfiability must still
+  be shown to be in NP by a TM2 evaluator.
+sketch: |
+  Take C to be the list, over the assignments b with g b = false, of the clause that forbids b: the list
+  of literals (i, !b i) for i in Fin k, which is satisfied exactly when a i ≠ b i for some i. If g a = true,
+  then a differs from every falsifying b, so each such clause is satisfied. If g a = false, the clause of
+  b = a has no satisfied literal, because a i = !a i is false for every i. The list of assignments can be
+  taken as Finset.univ filtered by g b = false, under classical logic, and the membership of a clause in the
+  mapped list unfolds with List.mem_map and Finset.mem_toList.
+dead: []
