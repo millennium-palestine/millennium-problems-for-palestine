@@ -1,0 +1,50 @@
+id: pnp-341
+problem: pvsnp
+title: A Boolean table with the explicit base cells and the pnp-287 recurrence agrees with the fold relation on all intervals up to the length
+status: open
+imports:
+- Mathlib
+- MPP.Solutions.Pnp337
+open: []
+depends:
+- pnp-337
+statement: |
+  ∀ (F : List Bool × List Bool × Option Bool → Bool → List Bool × List Bool × Option Bool),
+    F = (fun st b => match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a => if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none) else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none) else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) →
+    ∀ (H : Bool × Bool → ℤ), H = (fun r => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1) →
+    ∀ (q : List (Bool × Bool)) (S : ℕ → ℕ → List (Bool × Bool)) (X : ℕ → ℕ → Bool × Bool → Prop) (c : ℕ → ℕ → Bool × Bool → Bool),
+    (∀ i j, S i j = (q.drop i).take (j - i)) →
+    (∀ i j r, X i j r ↔ j ≤ q.length ∧
+      (∀ k, k ≤ (S i j).length → 0 ≤ (((S i j).map H).take k).sum) ∧ ((S i j).map H).sum = 0 ∧
+      ∃ w : List Bool, w.length = (S i j).countP (fun x => !x.1 && !x.2) ∧
+        ∃ w' : List Bool, ((S i j).flatMap fun r => [r.1, r.2]).foldl F ([r.1], w, none) = ([r.2], w', none)) →
+    (∀ i r, i ≤ q.length → (c i i r = true ↔ r.1 = r.2)) →
+    (∀ i r, i + 1 ≤ q.length → (c i (i + 1) r = true ↔ (q.drop i).take 1 = [(true, false)] ∧ r.1 = r.2)) →
+    (∀ i j r, i + 2 ≤ j → j ≤ q.length → (c i j r = true ↔
+      ((∃ u : Bool, ((∃ b : Bool, S i (i + 1) = [(false, b)]) ∧
+          (∀ b : Bool, S i (i + 1) = [(false, b)] → b = true → u = r.1) ∧ S (j - 1) j = [(true, true)]) ∧
+        ∃ g' : Bool, c (i + 1) (j - 1) (u, g') = true ∧ r.2 = !(g' && r.1)) ∨
+       (∃ k : ℕ, i < k ∧ k < j ∧ ∃ g1 : Bool, c i k (r.1, g1) = true ∧ c k j (g1, r.2) = true)))) →
+    ∀ i j r, j ≤ q.length → i ≤ j → (c i j r = true ↔ X i j r)
+context: |
+  Composition step for pnp-152, between the bounded table invariant (pnp-287 restricted to indices up to
+  a bound, as in the pnp-338 content) and the fold relation X of pnp-337. Here c is any Boolean table on
+  the slices of the pair list q that has the diagonal cells (the empty slice is true exactly for equal
+  ends), the length-one cells (the single slice (true, false) with equal ends), and the interval recurrence
+  of pnp-287 with the primitive-block predicate written out. The conclusion is that c agrees with the
+  fold relation X on every interval inside q. The proof imports the merged pnp-337 (the fold relation
+  satisfies the recurrence) and proves the bounded induction inline, so it does not wait for the bounded
+  invariant to merge. It is one step of the list-level assembly; it does not construct the TM2 machine
+  of pnp-152.
+sketch: |
+  Let P i j u v be the primitive-block clause of pnp-337. The fold relation X satisfies the recurrence
+  with P by pnp-337. The diagonal cells of X hold exactly for equal ends, by the empty slice (the fold
+  of the empty list leaves the stack unchanged). The length-one cells of X are the single slice (true,
+  false) with equal ends: the only balanced one-element slice is (true, false), and the fold of
+  [true, false] on the stack [r.1] leaves it. Then strong induction on j - i, as in the bounded
+  pnp-287 invariant: at each interval the recurrence of c and of X are the same formula, and the
+  induction hypotheses cover the sub-intervals (i + 1, j - 1) and (i, k), (k, j).
+dead: []
