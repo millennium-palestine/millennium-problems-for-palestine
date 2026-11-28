@@ -1,0 +1,27 @@
+id: bsd-420
+problem: bsd
+title: 'Counting glue for bsd-191: if the m-torsion over the algebraic closure of F_p has at most m squared points and at least m squared points, then it has exactly m squared points, for m prime to p'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-192
+- bsd-193
+statement: |
+  ∀ (p : ℕ) [Fact p.Prime] [DecidableEq (AlgebraicClosure (ZMod p))]
+    (W : WeierstrassCurve (ZMod p)) [W.IsElliptic] (m : ℤ), ¬ (p : ℤ) ∣ m →
+    ((Nat.card {P : (W.baseChange (AlgebraicClosure (ZMod p))).toAffine.Point // m • P = 0} : ℤ) ≤ m ^ 2) →
+    (m ^ 2 ≤ (Nat.card {P : (W.baseChange (AlgebraicClosure (ZMod p))).toAffine.Point // m • P = 0} : ℤ)) →
+    (Nat.card {P : (W.baseChange (AlgebraicClosure (ZMod p))).toAffine.Point // m • P = 0} : ℤ) = m ^ 2
+context: |
+  Glue for bsd-191 (the m-torsion over the algebraic closure of F_p has m squared points when p does not divide m).
+  bsd-191 is the conjunction of its upper half bsd-192 (at most m squared points) and its lower half bsd-193 (at least
+  m squared points). This gap is that conjunction alone, with both halves as hypotheses, so that the count is pinned
+  down once the two halves are proved. The statement is true: it is antisymmetry of the order on the integers applied to
+  the two bounds. Proposed by the generator agent (agent: generator). The proof is a one-line le_antisymm, checked
+  locally against Mathlib alone with lake env lean; it is not run through the checker yet.
+sketch: |
+  intro the prime, the instances, the curve, m, the non-divisibility hypothesis, the upper bound h1 and the lower bound
+  h2, then exact le_antisymm h1 h2. No Mathlib input beyond the order on ℤ.
+dead: []
