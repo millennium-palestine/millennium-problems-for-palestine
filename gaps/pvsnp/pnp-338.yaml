@@ -1,0 +1,36 @@
+id: pnp-338
+problem: pvsnp
+title: The table invariant of pnp-287 holds on every interval up to a bound N
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (N : ℕ) (P : ℕ → ℕ → Bool → Bool → Prop) (X : ℕ → ℕ → Bool × Bool → Prop) (c : ℕ → ℕ → Bool × Bool → Bool),
+    (∀ i : ℕ, i ≤ N → ∀ r : Bool × Bool, X i i r ↔ r.1 = r.2) →
+    (∀ i : ℕ, i ≤ N → ∀ r : Bool × Bool, c i i r = true ↔ r.1 = r.2) →
+    (∀ i : ℕ, i + 1 ≤ N → ∀ r : Bool × Bool, c i (i + 1) r = true ↔ X i (i + 1) r) →
+    (∀ i j : ℕ, j ≤ N → ∀ r : Bool × Bool, i + 2 ≤ j → (X i j r ↔
+      ((∃ u : Bool, P i j u r.1 ∧ ∃ g' : Bool, X (i + 1) (j - 1) (u, g') ∧ r.2 = !(g' && r.1)) ∨
+       (∃ k : ℕ, i < k ∧ k < j ∧ ∃ g1 : Bool, X i k (r.1, g1) ∧ X k j (g1, r.2))))) →
+    (∀ i j : ℕ, j ≤ N → ∀ r : Bool × Bool, i + 2 ≤ j → (c i j r = true ↔
+      ((∃ u : Bool, P i j u r.1 ∧ ∃ g' : Bool, c (i + 1) (j - 1) (u, g') = true ∧ r.2 = !(g' && r.1)) ∨
+       (∃ k : ℕ, i < k ∧ k < j ∧ ∃ g1 : Bool, c i k (r.1, g1) = true ∧ c k j (g1, r.2) = true)))) →
+    ∀ i j : ℕ, j ≤ N → ∀ r : Bool × Bool, i ≤ j → (c i j r = true ↔ X i j r)
+context: |
+  Step toward pnp-152, and the bounded form of pnp-287 that its stuck report asks for. pnp-287 assumes the base
+  cases and the two recurrences for every pair of indices, but the interval relation of pnp-337 is only
+  empty-based and only defined up to the length of the pair list q. This gap assumes every hypothesis, and
+  states the conclusion, only for indices up to a bound N. The proof is the induction of pnp-287 with each
+  read kept at most N. It is pure logic on Prop, Bool and ℕ: no machine, no polynomial bound, and it does
+  not decide P vs NP. With N the length of q, pnp-337 supplies the base cases and the recurrence, so the
+  two together identify every Boolean table that satisfies the recurrence with the interval relation.
+sketch: |
+  Fix N and the hypotheses. Prove by induction on n that for all i, j with j ≤ N, j - i ≤ n, i ≤ j and all r,
+  c i j r = true ↔ X i j r. For n = 0 the interval is empty, so j = i, and both sides are r.1 = r.2 by the
+  two base hypotheses at i ≤ j ≤ N. For n + 1: if j - i ≤ n use the induction hypothesis; if j = i + 1 use the
+  length-one hypothesis, which needs i + 1 ≤ N; otherwise i + 2 ≤ j, and the reads (i + 1, j - 1), (i, k) and
+  (k, j) all have upper index at most j ≤ N and length below j - i, so the induction hypothesis applies to each.
+  Rewrite both sides with their recurrences and match the clauses term by term, as in the proof of pnp-287.
+dead: []
