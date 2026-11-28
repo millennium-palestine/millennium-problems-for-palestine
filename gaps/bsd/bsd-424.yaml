@@ -1,0 +1,27 @@
+id: bsd-424
+problem: bsd
+title: 'Prime-power coefficient recurrence: if c₀ = 1, c₁ = a and c_{k+2} = a c_{k+1} − p c_k with a² ≤ 4p, then c_k² ≤ (k+1)² p^k for every k'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (p : ℕ) (a : ℤ) (c : ℕ → ℤ), c 0 = 1 → c 1 = a →
+    (∀ k : ℕ, c (k + 2) = a * c (k + 1) - (p : ℤ) * c k) → a ^ 2 ≤ 4 * (p : ℤ) →
+    ∀ k : ℕ, (c k) ^ 2 ≤ ((k : ℤ) + 1) ^ 2 * (p : ℤ) ^ k
+context: |
+  Curve-free algebra behind bsd-016. For a good prime p of an elliptic curve, the local factor of the L-series is
+  1 − a_p T + p T², so the prime-power coefficients c_k of 1/(1 − a_p T + p T²) satisfy c_0 = 1, c_1 = a_p and
+  c_{k+2} = a_p c_{k+1} − p c_k. Hasse's bound |a_p| ≤ 2√p is the hypothesis a² ≤ 4p (squared, so no square root).
+  The statement is true: with x = a/(2√p) in [−1, 1] one has c_k = p^{k/2} U_k(x), where U_k is the Chebyshev polynomial
+  of the second kind, and |U_k(x)| ≤ k + 1 on [−1, 1]. It is checked numerically for p < 400, |a| ≤ 40, k < 40.
+  This gap is the Hasse-free half of bsd-016: once Hasse (bsd-024) is in Mathlib or proved, bsd-016 follows from it with
+  the multiplicativity step. It does not prove Hasse.
+sketch: |
+  Work in ℂ. Let t = √(p − a²/4) (real, since a² ≤ 4p), α = a/2 + t i and β = a/2 − t i. Then α + β = a, αβ = p and
+  |α| = |β| = √p. The sequence c_k equals the sum S_k = Σ_{j ≤ k} α^j β^{k−j}: both satisfy the recurrence, and
+  S_{k+1} = β S_k + α^{k+1} (split the last term), which gives S_{k+2} = (α+β) S_{k+1} − αβ S_k. Each term of S_k has
+  norm s^k, so |S_k| ≤ (k+1) s^k with s = |α|, and squaring gives c_k² ≤ (k+1)² (s²)^k = (k+1)² p^k. No trigonometry
+  and no square roots beyond t are needed. Lean: a two-step induction, a finite-sum lemma, and norm_sum_le.
+dead: []
