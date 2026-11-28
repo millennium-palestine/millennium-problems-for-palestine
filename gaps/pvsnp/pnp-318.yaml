@@ -1,0 +1,32 @@
+id: pnp-318
+problem: pvsnp
+title: The b-bit window-rule tableau with first row x has a satisfying assignment, namely the rows of the iterates of the b-bit window map
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (n b t : ℕ) (G : Fin b → (Fin (3 * b) → Bool) → Bool) (x : List Bool), ∃ a : ℕ → Bool,
+    (∀ k : Fin (n * b), a k.val = x.getD k.val false) ∧
+      ∀ s : Fin t, ∀ i : Fin n, ∀ j : Fin b,
+        a (n * b * (s.val + 1) + i.val * b + j.val) =
+          G j (fun w : Fin (3 * b) => a (n * b * s.val + ((i.val + w.val / b) % n) * b + w.val % b))
+context: |
+  Step toward pnp-100 (Cook–Levin, over TM2 machines), on the CNF route, after pnp-317. This is pnp-313 for cells of
+  b bits: the b-bit window-rule tableau with first row x is satisfiable, and a satisfying assignment is the rows of
+  the iterates of the b-bit window map. pnp-317 gives the forward half (every satisfying tableau is forced row by
+  row to be an iterate). This gap is the converse: the assignment that reads row s at offset o as the iterate of
+  row s is a satisfying assignment of the local equations of every row. So the CNF of pnp-316 is satisfiable for
+  every input x, and together the two say that the run of a b-bit window rule is exactly the unique satisfying
+  tableau. It is index arithmetic with no machine, so it does not decide P vs NP. The polynomial-time map that
+  writes the b-bit window rule of a verifier is still the open part of pnp-100.
+sketch: |
+  Take a m := (Nat.iterate step (m / (n·b)) x0) (m % (n·b)), where x0 = fun q => x.getD q false and step is the
+  b-bit window map on bit lists (bit index m, cell m / b, bit m % b). For k below n·b, k / (n·b) = 0 and
+  k % (n·b) = k (Nat.div_eq_of_lt, Nat.mod_eq_of_lt), so the first row is x0. For the local equation, the index
+  n·b·(s+1) + i·b + j has row s+1 and offset i·b + j below n·b (Nat.mul_add_div, Nat.mul_add_mod), so the
+  left side is one step of the iterate at s (Function.iterate_succ_apply'). The window indices have row s and
+  offset below n·b (nlinarith with Nat.mod_lt), so they read the iterate at s, and (i·b + j) / b = i,
+  (i·b + j) % b = j finish the match with G.
+dead: []
