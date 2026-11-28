@@ -1,0 +1,39 @@
+id: pnp-333
+problem: pvsnp
+title: A balanced nonnegative block run from a single cell leaves one cell, so the run of a block followed by a second block splits at that cell
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (F : List Bool × List Bool × Option Bool → Bool → List Bool × List Bool × Option Bool),
+    F = (fun st b => match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) →
+    ∀ (B1 B2 : List (Bool × Bool)),
+      (B1.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 →
+      (∀ j, j ≤ B1.length → 0 ≤ ((B1.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) →
+      ∀ (g : Bool) (w : List Bool),
+        ((B1 ++ B2).flatMap fun r : Bool × Bool => [r.1, r.2]).foldl F ([g], w, none) =
+          (B2.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl F
+            ([((B1.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl F ([g], w, none)).1.headD false],
+             w.drop (B1.countP fun q : Bool × Bool => !q.1 && !q.2), none)
+context: |
+  Split of the run of two balanced nonnegative blocks, the state form of the split clause of the interval
+  recurrence for pnp-152. A balanced nonnegative pair list started on a one-cell stack [g] ends with a one-cell
+  stack, and it consumes exactly the witness bits of its (false, false) pairs. So the run of B1 followed by B2
+  is the run of B2 started on the single cell that B1 leaves, with the witness after B1. The proof is the
+  foldl-append identity together with the net-height and stack-length lemma of pnp-331 (core_tail in its
+  solution file). It is pure list and integer arithmetic: no machine, no polynomial bound, and it does not decide
+  P vs NP.
+sketch: |
+  Apply core_tail of MPP.Solutions.Pnp331 to p = B1 and s = [g], with the prefix hypothesis 1 + prefix ≥ 1 from the
+  nonnegativity of B1. It gives a stack s' with the run of B1 equal to (s', w.drop k, none), where k is the countP
+  of B1, and length s' = 1 + sum = 1. A one-element list is [s'.headD false]. Rewrite the append of B1 and B2 with
+  List.flatMap_append and List.foldl_append, then the B1 run with the first conjunct of core_tail.
+dead: []

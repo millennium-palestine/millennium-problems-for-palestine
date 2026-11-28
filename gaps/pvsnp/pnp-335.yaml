@@ -1,0 +1,35 @@
+id: pnp-335
+problem: pvsnp
+title: A balanced nonnegative block run from any one-cell stack leaves a one-cell stack and consumes the witness bits of its leaves
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (F : List Bool × List Bool × Option Bool → Bool → List Bool × List Bool × Option Bool),
+    F = (fun st b => match st.2.2 with
+      | none => (st.1, st.2.1, some b)
+      | some a =>
+        if a then (if b then ((!(st.1.headD false && (st.1.drop 1).headD false)) :: st.1.drop 2, st.2.1, none)
+          else (st.1, st.2.1, none))
+        else (if b then (st.1.headD false :: st.1, st.2.1, none)
+          else (st.2.1.headD false :: st.1, st.2.1.drop 1, none))) →
+    ∀ (B : List (Bool × Bool)),
+      (B.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).sum = 0 →
+      (∀ j, j ≤ B.length → 0 ≤ ((B.map fun r : Bool × Bool => if r.1 && r.2 then (-1 : ℤ) else if r.1 then 0 else 1).take j).sum) →
+      ∀ (g : Bool) (w : List Bool),
+        ∃ y : Bool,
+          (B.flatMap fun r : Bool × Bool => [r.1, r.2]).foldl F ([g], w, none) =
+            ([y], w.drop (B.countP fun q : Bool × Bool => !q.1 && !q.2), none)
+context: |
+  Existence form of the single-block step of pnp-152. A balanced nonnegative pair list read from a one-cell stack
+  [g] ends with a one-cell stack [y], for some value y, and the witness is shifted by the number of its (false, false)
+  pairs. This is the fact used to say that a block of the table produces one Boolean value. It follows from
+  core_tail of MPP.Solutions.Pnp331, whose stack length is 1 plus the net height, which is 0. It is pure list and
+  integer arithmetic: no machine, no polynomial bound, and it does not decide P vs NP.
+sketch: |
+  core_tail of MPP.Solutions.Pnp331 with p = B, s = [g] and the prefix hypothesis from nonnegativity gives a stack s'
+  with the run equal to (s', w.drop k, none) and length s' = 1 + 0. A list of length one is [y] for y = s'.headD false,
+  so take that y and rewrite with the first conjunct.
+dead: []
