@@ -1,0 +1,31 @@
+id: pnp-343
+problem: pvsnp
+title: An existential chain of Boolean relation steps is decided by a Boolean reachable-set fold (table form of the pnp-152 chain)
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (n : ℕ) (R : ℕ → Bool → Bool → Bool) (v t : Bool),
+    ((∃ s : ℕ → Bool, s 0 = v ∧ s n = t ∧ ∀ k, k < n → R k (s k) (s (k + 1)) = true) ↔
+      ((t = true ∧ ((List.range n).foldl (fun (S : Bool × Bool) (k : ℕ) =>
+          ((S.1 && R k false false) || (S.2 && R k true false), (S.1 && R k false true) || (S.2 && R k true true)))
+          (!v, v)).2 = true) ∨
+       (t = false ∧ ((List.range n).foldl (fun (S : Bool × Bool) (k : ℕ) =>
+          ((S.1 && R k false false) || (S.2 && R k true false), (S.1 && R k false true) || (S.2 && R k true true)))
+          (!v, v)).1 = true)))
+context: |
+  Table form of the chain step for pnp-152. The pnp-268 and pnp-204 decomposition writes the state after a block as an
+  existential bit g, and the table of the pnp-287 invariant gives, for each block, a Boolean relation between the
+  input bit and the output bit. Going from one block to the next is a chain of such relations, and the existential
+  chain is not a deterministic fold in general (several outputs may be consistent with one input). This gap says
+  that the existence of a chain of length n from v to t is decided by a fold over pairs of Boolean flags: the
+  first flag says that false is reachable after k steps, the second that true is reachable. The fold is computable
+  from the Boolean table, which is what a DP over the pnp-287 intervals needs. Nothing here decides P vs NP.
+sketch: |
+  Induction on n, proving for every target y that a chain of length m to y exists exactly when the
+  reachable-set flag for y after m steps is true. The step adds one relation R m: a chain of length m+1 to y is a
+  chain of length m to some x with R m x y. For the converse, glue the chain for x with the final value y at
+  position m+1. Boolean cases on x and y close the flag identity.
+dead: []
