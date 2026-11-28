@@ -1,0 +1,38 @@
+id: pnp-319
+problem: pvsnp
+title: The b-bit window-rule tableau with first row x and output bit true is satisfiable exactly when the iterate of the b-bit window map has output true
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- pnp-317
+- pnp-318
+statement: |
+  ∀ (n b t : ℕ) (G : Fin b → (Fin (3 * b) → Bool) → Bool) (x : List Bool), 0 < n → 0 < b →
+    ((∃ a : ℕ → Bool, ((∀ k : Fin (n * b), a k.val = x.getD k.val false) ∧
+        ∀ s : Fin t, ∀ i : Fin n, ∀ j : Fin b,
+          a (n * b * (s.val + 1) + i.val * b + j.val) =
+            G j (fun w : Fin (3 * b) => a (n * b * s.val + ((i.val + w.val / b) % n) * b + w.val % b))) ∧
+        a (n * b * t) = true) ↔
+      (Nat.iterate (fun (r : ℕ → Bool) (m : ℕ) =>
+        if h : m % b < b then
+          G ⟨m % b, h⟩ (fun w : Fin (3 * b) => r (((m / b + w.val / b) % n) * b + w.val % b))
+        else false) t (fun m => x.getD m false)) 0 = true)
+context: |
+  Step toward pnp-100 (Cook–Levin, over TM2 machines), on the CNF route, after pnp-317 and pnp-318. Those two say that
+  the satisfying assignments of the b-bit window-rule tableau with first row x are exactly the rows of the iterates of
+  the b-bit window map. This gap reads that off at the output: the output bit is cell 0, bit 0 of row t, at index
+  n·b·t, and the tableau has a satisfying assignment with that bit true exactly when the iterate of t steps has its
+  first bit true. It is the b-bit version of pnp-315 and the composition of pnp-317 and pnp-318 at the output cell.
+  The hypotheses 0 < n and 0 < b make the output cell and the rows well defined. It is index arithmetic with no
+  machine, so it does not decide P vs NP. Writing the b-bit window rule of a verifier as a polynomial-time map is
+  still the open part of pnp-100.
+sketch: |
+  Forward: from a satisfying assignment a with the output bit true, pnp-317 at s = t and k = 0 gives
+  a (n·b·t + 0) = the iterate of t steps at 0, and n·b·t + 0 is the output index, so the iterate has output true.
+  Backward: pnp-318 gives an assignment a satisfying the local equations and the first row. Its value at the output
+  index is the iterate at 0 by pnp-317 at s = t and k = 0, which is true by the right-hand side. In Lean, use
+  MPP.Solutions.Pnp317.main and MPP.Solutions.Pnp318.main, with k = ⟨0, Nat.mul_pos hn hb⟩ : Fin (n * b), and
+  Nat.add_zero to identify the output index.
+dead: []
