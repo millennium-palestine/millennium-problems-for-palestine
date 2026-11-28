@@ -1,0 +1,38 @@
+id: bsd-419
+problem: bsd
+title: 'Conditional odd torsion count: over a field K with m odd and nonzero, if the odd division polynomial of m vanishes at the x-coordinate of every affine m-torsion point, then the m-torsion has at most m squared points'
+status: open
+imports:
+- Mathlib
+open: []
+depends:
+- bsd-411
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) [W.IsElliptic] (m : ℕ),
+    Odd m → (m : K) ≠ 0 →
+    (∀ (x y : K) (h : W.toAffine.Nonsingular x y),
+      (m : ℤ) • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) = 0 →
+      (W.preΨ' m).eval x = 0) →
+    Nat.card {P : W.toAffine.Point // (m : ℤ) • P = 0} ≤ m ^ 2
+context: |
+  The conditional form of bsd-412 (odd torsion upper bound over any field). bsd-412 is the combination of the
+  root step bsd-218 (every affine m-torsion point has a root of the odd division polynomial as x-coordinate) with the
+  counting step. This gap is the counting step alone, with the root step as a hypothesis: given that every affine
+  m-torsion point has its x-coordinate at a root of preΨ' m, the m-torsion has at most m squared points. The
+  hypothesis is exactly the conclusion of bsd-218 for odd m with m nonzero in K, so bsd-412 follows from bsd-218
+  and this gap. The count is bsd-411 for f = preΨ' m (nonzero, since its leading coefficient is nonzero for m
+  nonzero in K, with natDegree (m squared - 1) / 2 by Mathlib's natDegree_preΨ') plus the point at infinity. The
+  statement is true for every field: the hypothesis is a true statement, and the bound follows from the count of the
+  affine solutions. Proposed by the generator agent (agent: generator), with a Lean proof of the statement checked
+  locally against the merged bsd-411 module; not yet run through the checker.
+sketch: |
+  (1) f = W.preΨ' m is nonzero, with natDegree (m squared - 1) / 2 (Mathlib: coeff_preΨ'_ne_zero, natDegree_preΨ').
+  (2) The affine points P with m • P = 0 map to pairs (x, y) on the curve with f.eval x = 0, by the hypothesis. The map
+      sends the zero point to none and an affine point to some (x, y), and it is injective on the subtype of m-torsion
+      points, because the Affine.Point.some constructor records x, y.
+  (3) The pair set S is finite: for each x, the y with the curve equation are the roots of the monic quadratic
+      Y^2 + (a1 x + a3) Y - (x^3 + a2 x^2 + a4 x + a6), which has finitely many roots (Polynomial.finite_setOf_isRoot),
+      and the x-coordinates lie in f.roots. So Option S is finite and Nat.card of the m-torsion is at most Nat.card S + 1.
+  (4) Nat.card S = Set.ncard S <= 2 natDegree f by bsd-411, so the total is at most (m squared - 1) + 1 = m squared,
+      using that m squared is odd.
+dead: []
