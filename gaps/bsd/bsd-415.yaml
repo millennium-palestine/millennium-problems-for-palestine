@@ -1,0 +1,32 @@
+id: bsd-415
+problem: bsd
+title: 'Doubling step of the x-coordinate identity: for an affine point P with 2P affine, x(2P) times the cubic Ψ₂Sq at x equals the quartic Φ₂ at x'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) [W.IsElliptic] (x y x2 y2 : K)
+    (h : W.toAffine.Nonsingular x y) (h2 : W.toAffine.Nonsingular x2 y2),
+    (2 : ℕ) • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) =
+      WeierstrassCurve.Affine.Point.some x2 y2 h2 →
+    x2 * (W.Ψ₂Sq).eval x = (W.Φ 2).eval x
+context: |
+  First step of the x-coordinate identity x(nP) = Φ_n(x) / Ψ_n(x)² (with Ψ_n² replaced by the y-free ΨSq_n for odd n and
+  by Ψ₂Sq · preΨ_n² for even n), which is the missing point-level input for bsd-218 (division polynomial vanishes at the
+  x-coordinate of an odd torsion point). Mathlib has the division polynomials W.Φ, W.Ψ₂Sq and the two-torsion polynomial
+  (Φ_two, Ψ₂Sq_eq, twoTorsionPolynomial) but no lemma relating them to nsmul on W.toAffine.Point. The statement is the
+  classical doubling formula x(2P) = (x⁴ − b₄x² − 2b₆x − b₈) / (4x³ + b₂x² + 2b₄x + b₆) (Silverman, The Arithmetic of
+  Elliptic Curves, III.2.3 and Exercise 3.7). The hypothesis that 2P is affine excludes P being 2-torsion, so the
+  denominator is nonzero there. Proposed by the generator agent (agent: generator).
+sketch: |
+  Case split on the doubling formula in Mathlib's Affine.Point group law: 2P = P + P is affine exactly when
+  2y + a₁x + a₃ ≠ 0, and then x2 = λ² + a₁λ − a₂ − 2x with λ = (3x² + 2a₂x + a₄ − a₁y)/(2y + a₁x + a₃).
+  (1) Unfold two_nsmul and Affine.Point.add_some (or the doubling case of addX) to get x2 as that explicit rational
+  expression, with the curve equation at (x, y) available from h.
+  (2) Show (2y + a₁x + a₃)² = Ψ₂Sq evaluated in the Weierstrass coordinates, i.e. 4x³ + b₂x² + 2b₄x + b₆ is the square of
+  the 2-division value after using the curve equation (ring identity modulo the Weierstrass equation, via linear_combination).
+  (3) Clear denominators with field_simp and close the identity with linear_combination using the curve equation.
+  If Mathlib's Affine.Point API is awkward, prove the identity for the explicit addX formula first and transfer.
+dead: []

@@ -1,0 +1,31 @@
+id: bsd-416
+problem: bsd
+title: 'Tripling step of the x-coordinate identity: for an affine point P with 3P affine, x(3P) times the square of Ψ₃ at x equals the quartic Φ₃ at x'
+status: open
+imports:
+- Mathlib
+open: []
+depends: []
+statement: |
+  ∀ (K : Type) [Field K] [DecidableEq K] (W : WeierstrassCurve K) [W.IsElliptic] (x y x3 y3 : K)
+    (h : W.toAffine.Nonsingular x y) (h3 : W.toAffine.Nonsingular x3 y3),
+    (3 : ℕ) • (WeierstrassCurve.Affine.Point.some x y h : W.toAffine.Point) =
+      WeierstrassCurve.Affine.Point.some x3 y3 h3 →
+    x3 * (W.Ψ₃ ^ 2).eval x = (W.Φ 3).eval x
+context: |
+  Second step of the x-coordinate identity x(nP) = Φ_n(x) / Ψ_n(x)² for odd n, the point-level input missing for bsd-218
+  (see bsd-415 for the doubling step). Here n = 3: Mathlib's Φ_three is X·Ψ₃² − preΨ₄·Ψ₂Sq, so the statement says
+  x(3P) = x − ψ₂ψ₄/ψ₃² at x, the classical formula (Silverman, Exercise 3.7). The hypothesis that 3P is affine forces
+  Ψ₃(x) ≠ 0, since a 3-division point is sent to the point at infinity. Mathlib has W.Ψ₃, W.Φ and W.preΨ₄ but no lemma
+  relating them to nsmul on W.toAffine.Point. Proposed by the generator agent (agent: generator).
+sketch: |
+  Write 3P = 2P + P. Let (x2, y2) be the affine coordinates of 2P, which exist because 3P is affine and 2P ≠ −P.
+  (1) Use bsd-415 (proved separately or inlined): x2·Ψ₂Sq(x) = Φ₂(x).
+  (2) Apply the chord formula to P and 2P: x3 = λ² + a₁λ − a₂ − x − x2 with λ = (y2 − y)/(x2 − x), valid since x2 ≠ x
+  when 3P ≠ O.
+  (3) Eliminate λ and y using the curve equations at (x, y) and (x2, y2), then clear denominators with field_simp and
+  close with linear_combination (the coefficients come from the two curve equations and the identity of (1)).
+  Check the normalisation Φ_three = X·Ψ₃² − preΨ₄·Ψ₂Sq against the computed numerator before writing the final
+  linear_combination. A fallback is to prove the identity via a Gröbner-style certificate found by sympy with
+  pseudo-division, as in the earlier cofactor notes.
+dead: []
